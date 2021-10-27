@@ -1,0 +1,11 @@
+[meta]
+name = "ManiaExchange"
+author = "Greep"
+category = "TMX"
+perms = "paid"
+siteid = TBA
+
+version = "1.0"
+
+[script]
+imports = [ "Icons.as", "Permissions.as", "Dialogs.as" ]
