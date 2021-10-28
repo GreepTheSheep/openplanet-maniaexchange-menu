@@ -25,6 +25,7 @@ void RenderMenuMain(){
 }
 
 void Main(){
+    startnew(MX::GetAllMapTags);
     // Json::Value data = httpGet("https://trackmania.exchange/mapsearch2/search?api=on&format=json&mode=2");
     // print(data["results"][0]["Name"]);
 }
