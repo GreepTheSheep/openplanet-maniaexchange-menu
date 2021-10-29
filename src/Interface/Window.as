@@ -6,7 +6,7 @@ class Window{
     Tab@ c_lastActiveTab;
 
     Window(){
-        AddTab(MapListTab());
+        AddTab(LatestMapsTab());
     }
 
     void AddTab(Tab@ tab, bool select = false){
