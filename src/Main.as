@@ -1,23 +1,27 @@
 void RenderMenu()
 {
     if(UI::MenuItem(nameMenu, "", mxMenu.isOpened)) {
+#if TMNEXT
         if (!Permissions::PlayLocalMap()) {
             vec4 color = UI::HSV(0.0, 0.5, 1.0);
             error("You don't have permission to play local maps");
             return;
         }
+#endif
 		mxMenu.isOpened = !mxMenu.isOpened;
 	}
 }
 
 void RenderMenuMain(){
-    if(Permissions::PlayLocalMap() && UI::BeginMenu(nameMenu)) {
+    if(UI::BeginMenu(nameMenu)) {
         if(UI::MenuItem(pluginColor + Icons::WindowMaximize+"\\$z Open "+shortMXName+" menu", "", mxMenu.isOpened)) {
+#if TMNEXT
             if (!Permissions::PlayLocalMap()) {
                 vec4 color = UI::HSV(0.0, 0.5, 1.0);
                 error("You don't have permission to play local maps");
                 return;
             }
+#endif
             mxMenu.isOpened = !mxMenu.isOpened;
         }
         UI::EndMenu();
