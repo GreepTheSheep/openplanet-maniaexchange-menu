@@ -30,6 +30,7 @@ void RenderMenuMain(){
 
 void Main(){
     startnew(MX::GetAllMapTags);
+    startnew(MX::LookForMapToLoad);
     // Json::Value data = httpGet("https://trackmania.exchange/mapsearch2/search?api=on&format=json&mode=2");
     // print(data["results"][0]["Name"]);
 }
