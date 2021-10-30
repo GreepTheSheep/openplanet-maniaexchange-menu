@@ -16,7 +16,7 @@ namespace IfaceRender
         else if (map.Tags.get_Length() == 1) UI::Text(map.Tags[0].Name);
         else{
             string tags = "";
-            for (uint i = 1; i < map.Tags.get_Length(); i++) {
+            for (uint i = 0; i < map.Tags.get_Length(); i++) {
                 if (i == map.Tags.get_Length() - 1) tags += map.Tags[i].Name;
                 else tags += map.Tags[i].Name + ", ";
             }
