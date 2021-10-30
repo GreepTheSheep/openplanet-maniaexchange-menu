@@ -6,6 +6,8 @@ class MapListTab : Tab
 
     void GetRequestParams(dictionary@ params)
     {
+        params.Set("api", "on");
+        params.Set("format", "json");
     }
 
     void StartRequest()
@@ -23,11 +25,15 @@ class MapListTab : Tab
                 string value;
                 params.Get(key, value);
 
-                urlParams += "&" + key + "=" + Net::UrlEncode(value);
+                urlParams += (i == 0 ? "?" : "&");
+				urlParams += key + "=" + Net::UrlEncode(value);
             }
         }
 
-        @m_request = API::Get("https://"+MXURL+"/mapsearch2/search?api=on&"+urlParams);
+        string url = "https://"+MXURL+"/mapsearch2/search"+urlParams;
+
+        if (IsDevMode()) log("MapListTab::StartRequest: " + url);
+        @m_request = API::Get(url);
     }
 
     void CheckStartRequest()
@@ -75,12 +81,14 @@ class MapListTab : Tab
 
         if (UI::BeginTable("List", 5)) {
             UI::TableSetupScrollFreeze(0, 1);
+            PushTabStyle();
             UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
             UI::TableSetupColumn("Created by", UI::TableColumnFlags::WidthStretch);
             UI::TableSetupColumn("Style", UI::TableColumnFlags::WidthStretch);
             UI::TableSetupColumn(Icons::Trophy, UI::TableColumnFlags::WidthFixed, 40);
             UI::TableSetupColumn("Actions", UI::TableColumnFlags::WidthFixed, 80);
             UI::TableHeadersRow();
+            PopTabStyle();
             for(uint i = 0; i < maps.get_Length(); i++)
             {
                 UI::PushID("ResMap"+i);
