@@ -8,6 +8,7 @@ class MapListTab : Tab
     {
         params.Set("api", "on");
         params.Set("format", "json");
+        params.Set("limit", "100");
     }
 
     void StartRequest()
