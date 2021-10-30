@@ -13,7 +13,7 @@ class MapListTab : Tab
 
     void StartRequest()
     {
-        //Clear();
+        Clear();
 
         dictionary params;
         GetRequestParams(params);
@@ -76,6 +76,11 @@ class MapListTab : Tab
 		}
 	}
 
+    void Clear()
+    {
+        maps.RemoveRange(0, maps.get_Length());
+        totalItems = 0;
+    }
     void Render() override
     {
         CheckRequest();
