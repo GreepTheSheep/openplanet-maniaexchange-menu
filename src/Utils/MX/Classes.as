@@ -17,7 +17,6 @@ namespace MX
         bool Unlisted;
         string Mood;
         int DisplayCost;
-        string ModName;
         string LengthName;
         int Laps;
         string DifficultyName;
@@ -44,7 +43,6 @@ namespace MX
             Unlisted = json["Unlisted"];
             Mood = json["Mood"];
             DisplayCost = json["DisplayCost"];
-            ModName = json["ModName"];
             LengthName = json["LengthName"];
             Laps = json["Laps"];
             DifficultyName = json["DifficultyName"];
