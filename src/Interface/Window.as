@@ -7,6 +7,7 @@ class Window{
 
     Window(){
         AddTab(LatestMapsTab());
+        AddTab(RecentlyAwardedTab());
     }
 
     void AddTab(Tab@ tab, bool select = false){
