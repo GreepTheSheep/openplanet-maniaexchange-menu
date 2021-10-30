@@ -6,6 +6,7 @@ class Window{
     Tab@ c_lastActiveTab;
 
     Window(){
+        AddTab(BestOfTheMonthTab());
         AddTab(FeaturedMapsTab());
         AddTab(LatestMapsTab());
         AddTab(RecentlyAwardedTab());
