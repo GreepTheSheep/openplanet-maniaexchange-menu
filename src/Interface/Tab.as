@@ -10,8 +10,8 @@ class Tab
 	void PushTabStyle()
 	{
 		vec4 color = GetColor();
-		UI::PushStyleColor(UI::Col::Tab, color * vec4(0.8f, 0.8f, 0.8f, 1));
-		UI::PushStyleColor(UI::Col::TabHovered, color * vec4(1.1f, 1.1f, 1.1f, 1));
+		UI::PushStyleColor(UI::Col::Tab, color * vec4(0.5f, 0.5f, 0.5f, 0.75f));
+		UI::PushStyleColor(UI::Col::TabHovered, color * vec4(1.2f, 1.2f, 1.2f, 0.85f));
 		UI::PushStyleColor(UI::Col::TabActive, color);
 	}
 
