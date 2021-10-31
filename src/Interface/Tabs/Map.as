@@ -139,7 +139,9 @@ class MapTab : Tab
         if(UI::BeginTabItem("Leaderboard")){
             UI::BeginChild("MapLeaderboardChild");
             UI::Text("Leaderboard coming soon!");
-            if(UI::Button(Icons::ExternalLink + " View on Trackmania.io")) OpenBrowserURL("https://trackmania.io/#/leaderboard/"+m_map.TrackUID);
+#if TMNEXT
+            if (UI::Button(Icons::ExternalLink + " View on Trackmania.io")) OpenBrowserURL("https://trackmania.io/#/leaderboard/"+m_map.TrackUID);
+#endif
             UI::EndChild();
             UI::EndTabItem();
         }
