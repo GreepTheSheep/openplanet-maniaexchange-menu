@@ -5,6 +5,8 @@ class MapTab : Tab
     int m_mapId;
     bool m_isLoading;
 
+    Resources::Font@ g_fontHeader = Resources::GetFont("DroidSans-Bold.ttf", 24);
+
     MapTab(int trackId) {
         m_mapId = trackId;
         StartRequest(m_mapId);
@@ -26,11 +28,11 @@ class MapTab : Tab
     }
 
     void StartRequest(int trackId)
-	{
+    {
         string url = "https://"+MXURL+"/api/maps/get_map_info/multi/"+trackId;
         if (IsDevMode()) log("MapTab::StartRequest: "+url);
-		@m_request = API::Get(url);
-	}
+        @m_request = API::Get(url);
+    }
 
     void CheckRequest()
     {
@@ -42,6 +44,10 @@ class MapTab : Tab
             @m_request = null;
             auto json = Json::Parse(res);
 
+            if (json.get_Length() == 0) {
+                log("MapTab::CheckRequest: Error parsing response");
+                return;
+            }
             // Handle the response
             HandleResponse(json[0]);
         }
@@ -63,6 +69,68 @@ class MapTab : Tab
             return;
         }
 
-        UI::Text(Icons::Map + " " + m_map.Name);
+        int width = UI::GetWindowSize().x*0.35;
+        vec2 posTop = UI::GetCursorPos();
+
+        UI::BeginChild("Summary", vec2(width,0));
+
+        auto img = Images::CachedFromURL("https://"+MXURL+"/maps/"+m_map.TrackID+"/image/1");
+
+        if (img.m_texture !is null){
+            vec2 thumbSize = img.m_texture.GetSize();
+            UI::Image(img.m_texture, vec2(
+                width,
+                thumbSize.y / (thumbSize.x / width)
+            ));
+        }
+
+        UI::Text(Icons::Trophy + " \\$f77" + m_map.AwardCount);
+        UI::Text(Icons::Hourglass + " \\$f77" + m_map.LengthName);
+        if (m_map.Laps != 1) UI::Text(Icons::Refresh+ " \\$f77" + m_map.Laps);
+        UI::Text(Icons::LevelUp+ " \\$f77" + m_map.DifficultyName);
+        UI::Text(Icons::Calendar + " \\$f77" + m_map.UploadedAt);
+        if (m_map.UploadedAt != m_map.UpdatedAt) UI::Text(Icons::Refresh + " \\$f77" + m_map.UpdatedAt);
+#if MP4
+        UI::Text(Icons::Inbox + " \\$f77" + m_map.TitlePack);
+#endif
+        UI::Text(Icons::Sun + " \\$f77" + m_map.Mood);
+        UI::Text(Icons::Money + " \\$f77" + m_map.DisplayCost);
+        if (UI::CyanButton(Icons::ExternalLink + " View on "+pluginName)) OpenBrowserURL("https://"+MXURL+"/maps/"+m_map.TrackID);
+#if TMNEXT
+        if(UI::Button(Icons::ExternalLink + " View on Trackmania.io")) OpenBrowserURL("https://trackmania.io/#/leaderboard/"+m_map.TrackUID);
+#endif
+
+        UI::EndChild();
+
+        UI::SetCursorPos(posTop + vec2(width + 8, 0));
+        UI::BeginChild("Description");
+
+        UI::PushFont(g_fontHeader);
+        UI::Text(ColoredString(m_map.GbxMapName));
+        UI::PopFont();
+
+        UI::TextDisabled("By " + m_map.Username);
+
+        UI::Separator();
+
+        UI::BeginTabBar("MapTabs");
+
+        if(UI::BeginTabItem("Description")){
+            UI::BeginChild("MapDescriptionChild");
+            UI::Markdown(m_map.Comments);
+            UI::EndChild();
+            UI::EndTabItem();
+        }
+        if(UI::BeginTabItem("Leaderboard")){
+            UI::BeginChild("MapLeaderboardChild");
+            UI::Text("Leaderboard coming soon!");
+            if(UI::Button(Icons::ExternalLink + " View on Trackmania.io")) OpenBrowserURL("https://trackmania.io/#/leaderboard/"+m_map.TrackUID);
+            UI::EndChild();
+            UI::EndTabItem();
+        }
+
+        UI::EndTabBar();
+
+        UI::EndChild();
     }
 }
