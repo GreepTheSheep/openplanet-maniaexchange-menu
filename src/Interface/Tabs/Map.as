@@ -109,6 +109,12 @@ class MapTab : Tab
         if (UI::Button(Icons::ExternalLink + " View on Trackmania.io")) OpenBrowserURL("https://trackmania.io/#/leaderboard/"+m_map.TrackUID);
 #endif
 
+        if (UI::GreenButton(Icons::Play + " Play Map")) {
+            if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
+            UI::ShowNotification("Loading map...", ColoredString(map.GbxMapName) + "\\$z\\$s by " + map.Username);
+            MX::mapToLoad = map.TrackID;
+        }
+
         UI::EndChild();
 
         UI::SetCursorPos(posTop + vec2(width + 8, 0));
