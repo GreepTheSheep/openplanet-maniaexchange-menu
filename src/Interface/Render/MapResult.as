@@ -30,7 +30,11 @@ namespace IfaceRender
         // buttons
         vec2 pos_orig = UI::GetCursorPos();
         UI::SetCursorPos(vec2(pos_orig.x + 35, pos_orig.y));
-        if (UI::GreenButton(Icons::Play)) MX::mapToLoad = map.TrackID;
+        if (UI::GreenButton(Icons::Play)) {
+            if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
+            UI::ShowNotification("Loading map...", ColoredString(map.GbxMapName) + "\\$z\\$s by " + map.Username);
+            MX::mapToLoad = map.TrackID;
+        }
         UI::SetCursorPos(pos_orig);
     }
 }
