@@ -111,8 +111,8 @@ class MapTab : Tab
 
         if (UI::GreenButton(Icons::Play + " Play Map")) {
             if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
-            UI::ShowNotification("Loading map...", ColoredString(map.GbxMapName) + "\\$z\\$s by " + map.Username);
-            MX::mapToLoad = map.TrackID;
+            UI::ShowNotification("Loading map...", ColoredString(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
+            MX::mapToLoad = m_map.TrackID;
         }
 
         UI::EndChild();
