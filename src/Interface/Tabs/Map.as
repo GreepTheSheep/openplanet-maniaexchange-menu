@@ -82,6 +82,15 @@ class MapTab : Tab
                 width,
                 thumbSize.y / (thumbSize.x / width)
             ));
+        } else {
+            auto thumb = Images::CachedFromURL("https://"+MXURL+"/maps/thumbnail/"+m_map.TrackID);
+            if (thumb.m_texture !is null){
+                vec2 thumbSize = thumb.m_texture.GetSize();
+                UI::Image(thumb.m_texture, vec2(
+                    width,
+                    thumbSize.y / (thumbSize.x / width)
+                ));
+            }
         }
 
         UI::Text(Icons::Trophy + " \\$f77" + m_map.AwardCount);
@@ -97,7 +106,7 @@ class MapTab : Tab
         UI::Text(Icons::Money + " \\$f77" + m_map.DisplayCost);
         if (UI::CyanButton(Icons::ExternalLink + " View on "+pluginName)) OpenBrowserURL("https://"+MXURL+"/maps/"+m_map.TrackID);
 #if TMNEXT
-        if(UI::Button(Icons::ExternalLink + " View on Trackmania.io")) OpenBrowserURL("https://trackmania.io/#/leaderboard/"+m_map.TrackUID);
+        if (UI::Button(Icons::ExternalLink + " View on Trackmania.io")) OpenBrowserURL("https://trackmania.io/#/leaderboard/"+m_map.TrackUID);
 #endif
 
         UI::EndChild();
