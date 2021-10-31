@@ -102,6 +102,10 @@ class MapListTab : Tab
             string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
             UI::Text(Hourglass + " Loading...");
         } else {
+            if (maps.get_Length() == 0) {
+                UI::Text("No maps found.");
+                return;
+            }
             if (UI::BeginTable("List", 5)) {
                 UI::TableSetupScrollFreeze(0, 1);
                 PushTabStyle();

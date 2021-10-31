@@ -10,6 +10,7 @@ class Window{
         AddTab(FeaturedMapsTab());
         AddTab(LatestMapsTab());
         AddTab(RecentlyAwardedTab());
+        AddTab(SearchTab());
     }
 
     void AddTab(Tab@ tab, bool select = false){
