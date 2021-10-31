@@ -41,14 +41,14 @@ class Window{
                 int flags = 0;
 				if (tab is activeTab) {
 					flags |= UI::TabItemFlags::SetSelected;
-					@activeTab = null;
+                    if (!tab.GetLabel().Contains("Loading")) @activeTab = null;
 				}
 
                 tab.PushTabStyle();
 
                 if (tab.CanClose()){
                     bool open = true;
-                    if(UI::BeginTabItem(tab.GetLabel())){
+                    if(UI::BeginTabItem(tab.GetLabel(), open, flags)){
                         @c_lastActiveTab = tab;
 
                         UI::BeginChild("Tab");
