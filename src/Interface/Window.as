@@ -24,7 +24,7 @@ class Window{
         if(!isOpened) return;
 
         UI::SetNextWindowSize(800, 500);
-        if(UI::Begin(nameMenu, isOpened)){
+        if(UI::Begin(nameMenu + " \\$666(v"+Meta::ExecutingPlugin().get_Version()+" by "+Meta::ExecutingPlugin().get_Author()+")", isOpened)){
             // Push the last active tab style so that the separator line is colored (this is drawn in BeginTabBar)
 			auto lastActiveTab = c_lastActiveTab;
 			if (lastActiveTab !is null) {
