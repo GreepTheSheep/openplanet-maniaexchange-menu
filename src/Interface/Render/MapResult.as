@@ -50,6 +50,5 @@ namespace IfaceRender
             UI::ShowNotification("Loading map...", ColoredString(map.GbxMapName) + "\\$z\\$s by " + map.Username);
             MX::mapToLoad = map.TrackID;
         }
-        UI::Separator();
     }
 }

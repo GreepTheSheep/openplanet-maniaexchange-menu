@@ -8,6 +8,7 @@ class Window{
     Window(){
         AddTab(MostAwardedTab());
         AddTab(FeaturedMapsTab());
+        AddTab(TagsListTab());
         AddTab(LatestMapsTab());
         AddTab(RecentlyAwardedTab());
         AddTab(SearchTab());
