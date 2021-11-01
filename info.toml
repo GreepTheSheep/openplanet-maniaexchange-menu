@@ -8,4 +8,4 @@ siteid = TBA
 version = "1.0"
 
 [script]
-imports = [ "Icons.as", "Permissions.as", "Dialogs.as", "Formatting.as" ]
+imports = [ "Icons.as", "Permissions.as", "Formatting.as" ]
