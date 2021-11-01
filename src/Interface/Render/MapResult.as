@@ -15,12 +15,10 @@ namespace IfaceRender
         if (map.Tags.get_Length() == 0) UI::Text("No tags");
         else if (map.Tags.get_Length() == 1) UI::Text(map.Tags[0].Name);
         else{
-            string tags = "";
-            for (uint i = 0; i < map.Tags.get_Length(); i++) {
-                if (i == map.Tags.get_Length() - 1) tags += map.Tags[i].Name;
-                else tags += map.Tags[i].Name + ", ";
+            for (uint i = 0; i < map.Tags.Length; i++) {
+                IfaceRender::MapTag(map.Tags[i]);
+                UI::SameLine();
             }
-            UI::Text(tags);
         }
 
         UI::TableSetColumnIndex(3);
@@ -41,5 +39,6 @@ namespace IfaceRender
             UI::ShowNotification("Loading map...", ColoredString(map.GbxMapName) + "\\$z\\$s by " + map.Username);
             MX::mapToLoad = map.TrackID;
         }
+        UI::Separator();
     }
 }

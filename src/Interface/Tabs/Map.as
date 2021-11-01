@@ -105,6 +105,12 @@ class MapTab : Tab
             }
         }
 
+        for (uint i = 0; i < m_map.Tags.Length; i++) {
+            IfaceRender::MapTag(m_map.Tags[i]);
+            UI::SameLine();
+        }
+        UI::NewLine();
+
         UI::Text(Icons::Trophy + " \\$f77" + m_map.AwardCount);
         UI::Text(Icons::Hourglass + " \\$f77" + m_map.LengthName);
         if (m_map.Laps != 1) UI::Text(Icons::Refresh+ " \\$f77" + m_map.Laps);
