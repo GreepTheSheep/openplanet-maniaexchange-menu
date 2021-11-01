@@ -1,7 +1,7 @@
 class TagsListTab : MapListTab
 {
     string t_tags = "";
-    string t_selectedTab = "Select a tag here";
+    string t_selectedTab = "Select a tag";
     
     string GetLabel() override {return Icons::Tags + " Tags";}
 
