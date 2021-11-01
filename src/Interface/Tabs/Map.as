@@ -3,7 +3,8 @@ class MapTab : Tab
     Net::HttpRequest@ m_request;
     MX::MapInfo@ m_map;
     int m_mapId;
-    bool m_isLoading;
+    bool m_isLoading = false;
+    bool m_isMapOnPlayLater = false;
 
     Resources::Font@ g_fontHeader = Resources::GetFont("DroidSans-Bold.ttf", 24);
 
@@ -69,7 +70,18 @@ class MapTab : Tab
             return;
         }
 
-        int width = UI::GetWindowSize().x*0.35;
+        // Check if the map is already on the play later list
+        for (uint i = 0; i < g_PlayLaterMaps.get_Length(); i++) {
+            MX::MapInfo@ playLaterMap = g_PlayLaterMaps[i];
+            if (playLaterMap.TrackID != m_map.TrackID) {
+                m_isMapOnPlayLater = false;
+            } else {
+                m_isMapOnPlayLater = true;
+                break;
+            }
+        }
+
+        float width = UI::GetWindowSize().x*0.35;
         vec2 posTop = UI::GetCursorPos();
 
         UI::BeginChild("Summary", vec2(width,0));
@@ -113,6 +125,25 @@ class MapTab : Tab
             if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
             UI::ShowNotification("Loading map...", ColoredString(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
             MX::mapToLoad = m_map.TrackID;
+        }
+
+        if (!m_isMapOnPlayLater){
+            if (UI::GreenButton(Icons::Check + " Add to Play later")) {
+                g_PlayLaterMaps.InsertAt(0, m_map);
+                m_isMapOnPlayLater = true;
+                SavePlayLater(g_PlayLaterMaps);
+            }
+        } else {
+            if (UI::RedButton(Icons::Times + " Remove from Play later")) {
+                for (uint i = 0; i < g_PlayLaterMaps.get_Length(); i++) {
+                    MX::MapInfo@ playLaterMap = g_PlayLaterMaps[i];
+                    if (playLaterMap.TrackID == m_map.TrackID) {
+                        g_PlayLaterMaps.RemoveAt(i);
+                        m_isMapOnPlayLater = false;
+                        SavePlayLater(g_PlayLaterMaps);
+                    }
+                }
+            }
         }
 
         UI::EndChild();

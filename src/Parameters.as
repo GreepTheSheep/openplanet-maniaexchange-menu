@@ -13,3 +13,5 @@ string MXURL = "trackmania.exchange";
 #endif
 
 string nameMenu = pluginColor + Icons::Exchange + " \\$z"+ pluginName;
+array<MX::MapInfo@> g_PlayLaterMaps;
+string PlayLaterJSON = IO::FromDataFolder("ManiaExchange_PlayLater.json");

@@ -58,8 +58,6 @@ namespace MX
             for (uint i = 0; i < tagIdsSplit.get_Length(); i++)
             {
                 int tagId = Text::ParseInt(tagIdsSplit[i]);
-                //int tagIndex = m_mapTags.Find(a>a.ID == tagId);
-                //Tags.InsertLast(m_mapTags[tagIndex]);
                 for (uint j = 0; j < m_mapTags.get_Length(); j++)
                 {
                     if (m_mapTags[j].ID == tagId)
@@ -69,6 +67,43 @@ namespace MX
                     }
                 }
             }
+        }
+
+        Json::Value ToJson()
+        {
+            Json::Value json = Json::Object();
+            json["TrackID"] = TrackID;
+            json["TrackUID"] = TrackUID;
+            json["UserID"] = UserID;
+            json["Username"] = Username;
+            json["AuthorLogin"] = AuthorLogin;
+            json["UploadedAt"] = UploadedAt;
+            json["UpdatedAt"] = UpdatedAt;
+            json["Name"] = Name;
+            json["GbxMapName"] = GbxMapName;
+            json["Comments"] = Comments;
+            json["TitlePack"] = TitlePack;
+            json["Hide"] = Hide;
+            json["Unlisted"] = Unlisted;
+            json["Mood"] = Mood;
+            json["DisplayCost"] = DisplayCost;
+            json["LengthName"] = LengthName;
+            json["Laps"] = Laps;
+            json["DifficultyName"] = DifficultyName;
+            json["AuthorTime"] = AuthorTime;
+            json["TrackValue"] = TrackValue;
+            json["AwardCount"] = AwardCount;
+            json["IsMP4"] = IsMP4;
+
+            string tagsStr = "";
+            for (uint i = 0; i < Tags.get_Length(); i++)
+            {
+                tagsStr += tostring(Tags[i].ID);
+                if (i < Tags.get_Length() - 1) tagsStr += ",";
+            }
+            json["Tags"] = tagsStr;
+
+            return json;
         }
     }
 

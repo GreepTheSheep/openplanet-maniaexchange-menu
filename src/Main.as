@@ -8,31 +8,60 @@ void RenderMenu()
             return;
         }
 #endif
-		mxMenu.isOpened = !mxMenu.isOpened;
-	}
+        mxMenu.isOpened = !mxMenu.isOpened;
+    }
 }
 
 void RenderMenuMain(){
-    if(UI::BeginMenu(nameMenu)) {
-        if(UI::MenuItem(pluginColor + Icons::WindowMaximize+"\\$z Open "+shortMXName+" menu", "", mxMenu.isOpened)) {
 #if TMNEXT
-            if (!Permissions::PlayLocalMap()) {
-                vec4 color = UI::HSV(0.0, 0.5, 1.0);
-                error("You don't have permission to play local maps");
-                return;
-            }
+    if(Permissions::PlayLocalMap() && UI::BeginMenu(nameMenu)) {
+#else
+    if(UI::BeginMenu(nameMenu)) {
 #endif
+        if(UI::MenuItem(pluginColor + Icons::WindowMaximize+"\\$z Open "+shortMXName+" menu", "", mxMenu.isOpened)) {
             mxMenu.isOpened = !mxMenu.isOpened;
         }
+        
+        UI::Separator();
+        if (UI::BeginMenu(Icons::ClockO + " Play later")){
+            if (g_PlayLaterMaps.get_Length() > 0) {
+                for (uint i = 0; i < g_PlayLaterMaps.get_Length(); i++) {
+                    MX::MapInfo@ map = g_PlayLaterMaps[i];
+                    if (UI::BeginMenu((Setting_ColoredMapName ? ColoredString(map.GbxMapName) : map.Name) + " \\$z\\$sby " + map.Username)) {
+                        if (UI::MenuItem(Icons::Play + " Play map")){
+                            if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
+                            UI::ShowNotification("Loading map...", ColoredString(map.GbxMapName) + "\\$z\\$s by " + map.Username);
+                            MX::mapToLoad = map.TrackID;
+                        }
+                        if (UI::MenuItem(Icons::Kenney::InfoCircle + " Open information")){
+                            if (!mxMenu.isOpened) mxMenu.isOpened = true;
+                            mxMenu.AddTab(MapTab(map.TrackID), true);
+                        }
+                        if (UI::MenuItem("\\$f00"+Icons::TrashO + " Remove map")){
+                            g_PlayLaterMaps.RemoveAt(i);
+                            SavePlayLater(g_PlayLaterMaps);
+                        }
+                        
+                        UI::EndMenu();
+                    }
+                }
+            } else {
+                UI::TextDisabled("The list is empty!");
+                UI::Separator();
+                UI::TextDisabled("To add a map here,");
+                UI::TextDisabled("select the map in the menu");
+                UI::TextDisabled("and click on the 'Add to Play later'");
+            }
+            UI::EndMenu();
+        }
         UI::EndMenu();
-	}
+    }
 }
 
 void Main(){
     startnew(MX::GetAllMapTags);
     startnew(MX::LookForMapToLoad);
-    // Json::Value data = httpGet("https://trackmania.exchange/mapsearch2/search?api=on&format=json&mode=2");
-    // print(data["results"][0]["Name"]);
+    g_PlayLaterMaps = LoadPlayLater();
 }
 
 void RenderInterface(){
