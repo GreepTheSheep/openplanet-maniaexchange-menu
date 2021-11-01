@@ -1,23 +1,13 @@
 void RenderMenu()
 {
     if(UI::MenuItem(nameMenu, "", mxMenu.isOpened)) {
-#if TMNEXT
-        if (!Permissions::PlayLocalMap()) {
-            vec4 color = UI::HSV(0.0, 0.5, 1.0);
-            error("You don't have permission to play local maps");
-            return;
-        }
-#endif
         mxMenu.isOpened = !mxMenu.isOpened;
     }
 }
 
 void RenderMenuMain(){
-#if TMNEXT
-    if(Permissions::PlayLocalMap() && UI::BeginMenu(nameMenu)) {
-#else
+
     if(UI::BeginMenu(nameMenu)) {
-#endif
         if(UI::MenuItem(pluginColor + Icons::WindowMaximize+"\\$z Open "+shortMXName+" menu", "", mxMenu.isOpened)) {
             mxMenu.isOpened = !mxMenu.isOpened;
         }
@@ -28,7 +18,11 @@ void RenderMenuMain(){
                 for (uint i = 0; i < g_PlayLaterMaps.get_Length(); i++) {
                     MX::MapInfo@ map = g_PlayLaterMaps[i];
                     if (UI::BeginMenu((Setting_ColoredMapName ? ColoredString(map.GbxMapName) : map.Name) + " \\$z\\$sby " + map.Username)) {
+#if TMNEXT
+                        if (Permissions::PlayLocalMap() && UI::MenuItem(Icons::Play + " Play map")){
+#else
                         if (UI::MenuItem(Icons::Play + " Play map")){
+#endif
                             if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
                             UI::ShowNotification("Loading map...", ColoredString(map.GbxMapName) + "\\$z\\$s by " + map.Username);
                             MX::mapToLoad = map.TrackID;

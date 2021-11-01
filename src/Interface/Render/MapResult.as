@@ -32,7 +32,11 @@ namespace IfaceRender
 			mxMenu.AddTab(MapTab(map.TrackID), true);
 		}
         UI::SameLine();
+#if TMNEXT
+        if (Permissions::PlayLocalMap() && UI::GreenButton(Icons::Play)) {
+#else
         if (UI::GreenButton(Icons::Play)) {
+#endif        
             if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
             UI::ShowNotification("Loading map...", ColoredString(map.GbxMapName) + "\\$z\\$s by " + map.Username);
             MX::mapToLoad = map.TrackID;

@@ -121,20 +121,39 @@ class MapTab : Tab
         if (UI::Button(Icons::ExternalLink + " View on Trackmania.io")) OpenBrowserURL("https://trackmania.io/#/leaderboard/"+m_map.TrackUID);
 #endif
 
+#if TMNEXT
+        if (Permissions::PlayLocalMap() && UI::GreenButton(Icons::Play + " Play Map")) {
+#else
         if (UI::GreenButton(Icons::Play + " Play Map")) {
+#endif
             if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
             UI::ShowNotification("Loading map...", ColoredString(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
             MX::mapToLoad = m_map.TrackID;
         }
+#if TMNEXT
+        else {
+            UI::Text("\\$f00"+Icons::Times + " \\$z\\$sYou do not have permissions to play");
+            UI::Text("Consider buying at least standard access of the game.");
+        }
+#endif
 
         if (!m_isMapOnPlayLater){
+#if TMNEXT
+            if (Permissions::PlayLocalMap() && UI::GreenButton(Icons::Check + " Add to Play later")) {
+#else
             if (UI::GreenButton(Icons::Check + " Add to Play later")) {
+#endif
                 g_PlayLaterMaps.InsertAt(0, m_map);
                 m_isMapOnPlayLater = true;
                 SavePlayLater(g_PlayLaterMaps);
             }
         } else {
+#if TMNEXT
+            if (Permissions::PlayLocalMap() && UI::RedButton(Icons::Check + " Remove from Play later")) {
+#else
             if (UI::RedButton(Icons::Times + " Remove from Play later")) {
+#endif
+            
                 for (uint i = 0; i < g_PlayLaterMaps.get_Length(); i++) {
                     MX::MapInfo@ playLaterMap = g_PlayLaterMaps[i];
                     if (playLaterMap.TrackID == m_map.TrackID) {
