@@ -5,6 +5,7 @@ class MapTab : Tab
     int m_mapId;
     bool m_isLoading = false;
     bool m_isMapOnPlayLater = false;
+    bool m_isRoyalMap = false;
 
     Resources::Font@ g_fontHeader = Resources::GetFont("DroidSans-Bold.ttf", 24);
 
@@ -128,16 +129,27 @@ class MapTab : Tab
 #endif
 
 #if TMNEXT
-        if (Permissions::PlayLocalMap() && UI::GreenButton(Icons::Play + " Play Map")) {
-#else
-        if (UI::GreenButton(Icons::Play + " Play Map")) {
+        if (Permissions::PlayLocalMap()) {
+            for (uint i = 0; i < m_map.Tags.get_Length(); i++) {
+                MX::MapTag@ tag = m_map.Tags[i];
+                if (tag.ID == 37) { // Royal map
+                    m_isRoyalMap = true;
+                    break;
+                }
+            }
+
+            if (m_isRoyalMap) {
+                UI::Text("\\$f70" + Icons::ExclamationTriangle + " \\$zRoyal maps can not be played in solo");
+            } else {
 #endif
-            if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
-            UI::ShowNotification("Loading map...", ColoredString(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
-            MX::mapToLoad = m_map.TrackID;
-        }
+                if (UI::GreenButton(Icons::Play + " Play Map")) {
+                    if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
+                    UI::ShowNotification("Loading map...", ColoredString(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
+                    MX::mapToLoad = m_map.TrackID;
+                }
 #if TMNEXT
-        else {
+            }
+        } else {
             UI::Text("\\$f00"+Icons::Times + " \\$z\\$sYou do not have permissions to play");
             UI::Text("Consider buying at least standard access of the game.");
         }
@@ -145,7 +157,7 @@ class MapTab : Tab
 
         if (!m_isMapOnPlayLater){
 #if TMNEXT
-            if (Permissions::PlayLocalMap() && UI::GreenButton(Icons::Check + " Add to Play later")) {
+            if (Permissions::PlayLocalMap() && !m_isRoyalMap && UI::GreenButton(Icons::Check + " Add to Play later")) {
 #else
             if (UI::GreenButton(Icons::Check + " Add to Play later")) {
 #endif

@@ -30,8 +30,19 @@ namespace IfaceRender
 			mxMenu.AddTab(MapTab(map.TrackID), true);
 		}
         UI::SameLine();
+
 #if TMNEXT
-        if (Permissions::PlayLocalMap() && UI::GreenButton(Icons::Play)) {
+        bool isRoyal = false;
+        for (uint i = 0; i < map.Tags.get_Length(); i++) {
+            MX::MapTag@ tag = map.Tags[i];
+            if (tag.ID == 37) { // Royal map
+                isRoyal = true;
+                break;
+            }
+        }
+
+
+        if (Permissions::PlayLocalMap() && !isRoyal && UI::GreenButton(Icons::Play)) {
 #else
         if (UI::GreenButton(Icons::Play)) {
 #endif        
