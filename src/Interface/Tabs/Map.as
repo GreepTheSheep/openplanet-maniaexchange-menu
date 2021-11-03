@@ -6,6 +6,7 @@ class MapTab : Tab
     bool m_isLoading = false;
     bool m_isMapOnPlayLater = false;
     bool m_isRoyalMap = false;
+    bool m_error = false;
 
     Resources::Font@ g_fontHeader = Resources::GetFont("DroidSans-Bold.ttf", 24);
 
@@ -17,6 +18,10 @@ class MapTab : Tab
     bool CanClose() override { return !m_isLoading; }
 
     string GetLabel() override {
+        if (m_error) {
+            m_isLoading = false;
+            return "\\$f00"+Icons::Times+" \\$zError";
+        }
         if (m_map is null) {
             m_isLoading = true;
             return Icons::Map+" Loading...";
@@ -48,6 +53,7 @@ class MapTab : Tab
 
             if (json.get_Length() == 0) {
                 log("MapTab::CheckRequest: Error parsing response");
+                HandleResponseError();
                 return;
             }
             // Handle the response
@@ -60,9 +66,19 @@ class MapTab : Tab
         @m_map = MX::MapInfo(json);
     }
 
+    void HandleResponseError()
+    {
+        m_error = true;
+    }
+
     void Render() override
     {
         CheckRequest();
+
+        if (m_error) {
+            UI::Text("\\$f00" + Icons::Times + " \\$zMap not found");
+            return;
+        }
 
         if (m_map is null) {
             int HourGlassValue = Time::Stamp % 3;
