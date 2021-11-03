@@ -1,3 +1,5 @@
+string inputMapID = "";
+
 void RenderMenu()
 {
     if(UI::MenuItem(nameMenu, "", mxMenu.isOpened)) {
@@ -6,10 +8,28 @@ void RenderMenu()
 }
 
 void RenderMenuMain(){
-
     if(UI::BeginMenu(nameMenu)) {
         if(UI::MenuItem(pluginColor + Icons::WindowMaximize+"\\$z Open "+shortMXName+" menu", "", mxMenu.isOpened)) {
             mxMenu.isOpened = !mxMenu.isOpened;
+        }
+        if(UI::BeginMenu(pluginColor + Icons::ICursor+"\\$z Enter map ID")) {
+            inputMapID = UI::InputText("", inputMapID);
+            if (inputMapID != ""){
+#if TMNEXT
+                if (Permissions::PlayLocalMap() && UI::MenuItem(Icons::Play + " Play map")){
+#else
+                if (UI::MenuItem(Icons::Play + " Play map")){
+#endif
+                    if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
+                    UI::ShowNotification("Loading map...");
+                    MX::mapToLoad = Text::ParseInt(inputMapID);
+                }
+                if (UI::MenuItem(Icons::Kenney::InfoCircle + " Open information")){
+                    if (!mxMenu.isOpened) mxMenu.isOpened = true;
+                    mxMenu.AddTab(MapTab(Text::ParseInt(inputMapID)), true);
+                }
+            }
+            UI::EndMenu();
         }
         
         UI::Separator();
