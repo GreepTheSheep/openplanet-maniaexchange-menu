@@ -30,6 +30,9 @@ namespace IfaceRender
         // quote replacement: https://regex101.com/r/kuI7TO/1
         formatted = Regex::Replace(formatted, "\\[quote\\]([^\\[]*)\\[\\/quote\\]", "> $1");
 
+        // youtube replacement
+        formatted = Regex::Replace(formatted, "\\[youtube\\]([^\\[]*)\\[\\/youtube\\]", "[Youtube video]($1)");
+
         // user replacement
         formatted = Regex::Replace(formatted, "\\[user\\]([^\\[]*)\\[\\/user\\]", "( User ID: $1 )");
 
