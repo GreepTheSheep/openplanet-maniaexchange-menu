@@ -1,5 +1,5 @@
-[Setting name"colored map name"]
+[Setting name="Use colored map name" category="UI"]
 bool Setting_ColoredMapName = true;
 
-[Setting]
+[Setting name="Close Openplanet overlay when loading a map" category="UI"]
 bool Setting_CloseOverlayOnLoad = true;
