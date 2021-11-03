@@ -10,4 +10,12 @@ class LatestMapsTab : MapListTab
         MapListTab::GetRequestParams(params);
 		params.Set("mode", "2");
     }
+
+    void RenderHeader() override
+    {
+        if (UI::GreenButton(Icons::Random + " Random result")){
+            m_useRandom = true;
+            Reload();
+        }
+    }
 }

@@ -63,5 +63,12 @@ class SearchTab : MapListTab
             u_typingStart = Time::Now;
             Clear();
         }
+        if (u_search != ""){
+            UI::SameLine();
+            if (UI::GreenButton(Icons::Random + " Random result")){
+                m_useRandom = true;
+                Reload();
+            }
+        }
     }
 }

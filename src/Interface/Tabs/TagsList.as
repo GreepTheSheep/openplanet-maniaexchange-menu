@@ -29,5 +29,12 @@ class TagsListTab : MapListTab
             }
             UI::EndCombo();
         }
+        if (t_selectedTab != "Select a tag"){
+            UI::SameLine();
+            if (UI::GreenButton(Icons::Random + " Random result")){
+                m_useRandom = true;
+                Reload();
+            }
+        }
     }
 }

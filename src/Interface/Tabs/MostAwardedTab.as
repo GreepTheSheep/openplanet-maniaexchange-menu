@@ -34,5 +34,10 @@ class MostAwardedTab : MapListTab
             }
             UI::EndCombo();
         }
+        UI::SameLine();
+        if (UI::GreenButton(Icons::Random + " Random result")){
+            m_useRandom = true;
+            Reload();
+        }
     }
 }

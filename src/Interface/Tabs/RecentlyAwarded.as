@@ -10,4 +10,12 @@ class RecentlyAwardedTab : MapListTab
         MapListTab::GetRequestParams(params);
 		params.Set("mode", "3");
     }
+
+    void RenderHeader() override
+    {
+        if (UI::GreenButton(Icons::Random + " Random result")){
+            m_useRandom = true;
+            Reload();
+        }
+    }
 }

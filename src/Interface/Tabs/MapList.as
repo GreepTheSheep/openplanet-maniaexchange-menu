@@ -3,12 +3,17 @@ class MapListTab : Tab
     Net::HttpRequest@ m_request;
     array<MX::MapInfo@> maps;
     int totalItems = 0;
+    bool m_useRandom = false;
 
     void GetRequestParams(dictionary@ params)
     {
         params.Set("api", "on");
         params.Set("format", "json");
         params.Set("limit", "100");
+        if (m_useRandom) {
+            params.Set("random", "1");
+            m_useRandom = false;
+        }
     }
 
     void StartRequest()
@@ -106,6 +111,7 @@ class MapListTab : Tab
                 UI::Text("No maps found.");
                 return;
             }
+            UI::BeginChild("mapList");
             if (UI::BeginTable("List", 5)) {
                 UI::TableSetupScrollFreeze(0, 1);
                 PushTabStyle();
@@ -125,6 +131,7 @@ class MapListTab : Tab
                 }
                 UI::EndTable();
             }
+            UI::EndChild();
         }
     }
 }
