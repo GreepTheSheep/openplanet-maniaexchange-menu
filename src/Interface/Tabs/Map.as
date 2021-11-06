@@ -79,7 +79,7 @@ class MapTab : Tab
         m_error = true;
     }
 
-    void StartTMIORequest(uint fromTime = -1)
+    void StartTMIORequest(int fromTime = -1)
     {
         if (m_map is null) return;
         string url = "https://trackmania.io/api/leaderboard/map/"+m_map.TrackUID;
