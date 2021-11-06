@@ -3,6 +3,7 @@ class TagsListTab : MapListTab
     string t_tags = "";
     string t_selectedTab = "Select a tag";
     
+    bool IsVisible() override {return Setting_Tab_Tags_Visible;}
     string GetLabel() override {return Icons::Tags + " Tags";}
 
     vec4 GetColor() override { return vec4(0.0f, 0.52f, 0.52f, 1); }

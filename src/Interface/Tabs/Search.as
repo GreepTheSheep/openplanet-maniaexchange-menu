@@ -5,6 +5,7 @@ class SearchTab : MapListTab
     string t_selectedMode = "Track name";
     string t_paramMode = "trackname";
     
+    bool IsVisible() override {return Setting_Tab_Search_Visible;}
     string GetLabel() override {return Icons::Search + " Search";}
 
     vec4 GetColor() override { return vec4(0.22f, 0.61f, 0.43f, 1); }
