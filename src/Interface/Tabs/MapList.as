@@ -2,14 +2,16 @@ class MapListTab : Tab
 {
     Net::HttpRequest@ m_request;
     array<MX::MapInfo@> maps;
-    int totalItems = 0;
+    uint totalItems = 0;
     bool m_useRandom = false;
+    int m_page = 1;
 
     void GetRequestParams(dictionary@ params)
     {
         params.Set("api", "on");
         params.Set("format", "json");
         params.Set("limit", "100");
+        params.Set("page", tostring(m_page));
         if (m_useRandom) {
             params.Set("random", "1");
             m_useRandom = false;
@@ -18,8 +20,6 @@ class MapListTab : Tab
 
     void StartRequest()
     {
-        Clear();
-
         dictionary params;
         GetRequestParams(params);
 
@@ -102,7 +102,7 @@ class MapListTab : Tab
 
         RenderHeader();
 
-        if (m_request !is null) {
+        if (m_request !is null && maps.Length == 0) {
             int HourGlassValue = Time::Stamp % 3;
             string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
             UI::Text(Hourglass + " Loading...");
@@ -129,7 +129,16 @@ class MapListTab : Tab
                     IfaceRender::MapResult(map);
                     UI::PopID();
                 }
+                if (m_request !is null && totalItems > maps.get_Length()) {
+                    UI::TableNextRow();
+                    UI::TableSetColumnIndex(0);
+                    UI::Text(Icons::HourglassEnd + " Loading...");
+                }
                 UI::EndTable();
+                if (m_request is null && totalItems > maps.Length && UI::GreenButton("Load more")){
+                    m_page++;
+                    StartRequest();
+                }
             }
             UI::EndChild();
         }
