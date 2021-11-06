@@ -1,18 +1,26 @@
 class MapTab : Tab
 {
-    Net::HttpRequest@ m_request;
+    Net::HttpRequest@ m_MXrequest;
+    Net::HttpRequest@ m_TMIOrequest;
     MX::MapInfo@ m_map;
+    array<TMIO::Leaderboard@> m_leaderboard;
     int m_mapId;
     bool m_isLoading = false;
     bool m_isMapOnPlayLater = false;
     bool m_isRoyalMap = false;
     bool m_error = false;
+    bool m_TMIOrequestStart = false;
+    bool m_TMIOrequestStarted = false;
+    bool m_TMIOnextPage = false;
+    bool m_TMIOstopleaderboard = false;
+    bool m_TMIOerror = false;
+    string m_TMIOerrorMsg = "";
 
     Resources::Font@ g_fontHeader = Resources::GetFont("DroidSans-Bold.ttf", 24);
 
     MapTab(int trackId) {
         m_mapId = trackId;
-        StartRequest(m_mapId);
+        StartMXRequest(m_mapId);
     }
 
     bool CanClose() override { return !m_isLoading; }
@@ -34,46 +42,111 @@ class MapTab : Tab
         }
     }
 
-    void StartRequest(int trackId)
+    void StartMXRequest(int trackId)
     {
         string url = "https://"+MXURL+"/api/maps/get_map_info/multi/"+trackId;
-        if (IsDevMode()) log("MapTab::StartRequest: "+url);
-        @m_request = API::Get(url);
+        if (IsDevMode()) log("MapTab::StartRequest (MX): "+url);
+        @m_MXrequest = API::Get(url);
     }
 
-    void CheckRequest()
+    void CheckMXRequest()
     {
         // If there's a request, check if it has finished
-        if (m_request !is null && m_request.Finished()) {
+        if (m_MXrequest !is null && m_MXrequest.Finished()) {
             // Parse the response
-            string res = m_request.String();
-            if (IsDevMode()) log("MapTab::CheckRequest: " + res);
-            @m_request = null;
+            string res = m_MXrequest.String();
+            if (IsDevMode()) log("MapTab::CheckRequest (MX): " + res);
+            @m_MXrequest = null;
             auto json = Json::Parse(res);
 
             if (json.get_Length() == 0) {
-                log("MapTab::CheckRequest: Error parsing response");
-                HandleResponseError();
+                log("MapTab::CheckRequest (MX): Error parsing response");
+                HandleMXResponseError();
                 return;
             }
             // Handle the response
-            HandleResponse(json[0]);
+            HandleMXResponse(json[0]);
         }
     }
 
-    void HandleResponse(const Json::Value &in json)
+    void HandleMXResponse(const Json::Value &in json)
     {
         @m_map = MX::MapInfo(json);
     }
 
-    void HandleResponseError()
+    void HandleMXResponseError()
     {
         m_error = true;
     }
 
+    void StartTMIORequest(uint fromTime = -1)
+    {
+        if (m_map is null) return;
+        string url = "https://trackmania.io/api/leaderboard/map/"+m_map.TrackUID;
+        if (fromTime != -1) url += "?from=" + fromTime;
+        if (IsDevMode()) log("MapTab::StartRequest (TM.IO): "+url);
+        m_TMIOrequestStarted = true;
+        @m_TMIOrequest = API::Get(url);
+    }
+
+    void CheckTMIORequest()
+    {
+        // If there's a request, check if it has finished
+        if (m_TMIOrequest !is null && m_TMIOrequest.Finished()) {
+            // Parse the response
+            string res = m_TMIOrequest.String();
+            if (IsDevMode()) log("MapTab::CheckRequest (TM.IO): " + res);
+            @m_TMIOrequest = null;
+            auto json = Json::Parse(res);
+
+            // if error, handle it (particular case for "not found on API")
+            if (json.HasKey("error")){
+                HandleTMIOResponseError(json["error"]);
+            } else {
+                // if tops is null return no results, else handle the response
+                if (json["tops"].GetType() == Json::Type::Null) {
+                    if (IsDevMode()) log("MapTab::CheckRequest (TM.IO): No results");
+                }
+                else HandleTMIOResponse(json["tops"]);
+            }
+            m_TMIOrequestStarted = false;
+        }
+    }
+
+    void HandleTMIOResponse(const Json::Value &in json)
+    {
+        if (!m_TMIOnextPage && json.get_Length() < 15) m_TMIOstopleaderboard = true;
+        if (m_TMIOnextPage && json.get_Length() < 50) m_TMIOstopleaderboard = true;
+
+        for (uint i = 0; i < json.get_Length(); i++) {
+            auto leaderboard = TMIO::Leaderboard(json[i]);
+            m_leaderboard.InsertLast(leaderboard);
+        }
+    }
+
+    void HandleTMIOResponseError(string error)
+    {
+        m_TMIOerror = true;
+        if (error.Contains("does not exist")) {
+            m_TMIOerrorMsg = "This map is not available on Nadeo Services";
+        } else {
+            m_TMIOerrorMsg = error;
+        }
+    }
+
+    string FormatTime(int time) {
+        int hundreths = time % 1000;
+        time /= 1000;
+        int hours = time / 3600;
+        int minutes = (time / 60) % 60;
+        int seconds = time % 60;
+
+        return (hours != 0 ? Text::Format("%02d", hours) + ":" : "" ) + (minutes != 0 ? Text::Format("%02d", minutes) + ":" : "") + Text::Format("%02d", seconds) + "." + Text::Format("%03d", hundreths);
+    }
+
     void Render() override
     {
-        CheckRequest();
+        CheckMXRequest();
 
         if (m_error) {
             UI::Text("\\$f00" + Icons::Times + " \\$zMap not found");
@@ -220,15 +293,81 @@ class MapTab : Tab
             UI::EndChild();
             UI::EndTabItem();
         }
-        if(UI::BeginTabItem("Leaderboard")){
-            UI::BeginChild("MapLeaderboardChild");
-            UI::Text("Leaderboard coming soon!");
 #if TMNEXT
-            if (UI::Button(Icons::ExternalLink + " View on Trackmania.io")) OpenBrowserURL("https://trackmania.io/#/leaderboard/"+m_map.TrackUID);
-#endif
+        if(!m_isRoyalMap && UI::BeginTabItem("Leaderboard")){
+            UI::BeginChild("MapLeaderboardChild");
+
+            CheckTMIORequest();
+            if (m_TMIOrequestStart) {
+                m_TMIOrequestStart = false;
+                if (m_leaderboard.get_Length() == 0) StartTMIORequest();
+                else {
+                    int lastIndex = m_leaderboard.get_Length() - 1;
+                    StartTMIORequest(m_leaderboard[lastIndex].time);
+                }
+            }
+
+            if (m_TMIOerror){
+                UI::Text("\\$f00" + Icons::Times + "\\$z "+ m_TMIOerrorMsg);
+            } else {
+                UI::Text(Icons::Heartbeat + " The leaderboard is fetched directly from Trackmania.io (Nadeo Services)");
+                UI::SameLine();
+                if (UI::OrangeButton(Icons::Refresh)){
+                    m_leaderboard.RemoveRange(0, m_leaderboard.get_Length());
+                    if (!m_TMIOrequestStarted) m_TMIOrequestStart = true;
+                    m_TMIOstopleaderboard = false;
+                }
+
+                if (!m_TMIOstopleaderboard && m_leaderboard.get_Length() == 0) {
+                    if (!m_TMIOrequestStarted) m_TMIOrequestStart = true;
+                    int HourGlassValue = Time::Stamp % 3;
+                    string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
+                    UI::Text(Hourglass + " Loading...");
+                } else if (m_TMIOstopleaderboard && m_leaderboard.get_Length() == 0) {
+                    UI::Text("No records found for this map. Be the first!");
+                } else {
+                    if (UI::BeginTable("LeaderboardList", 3)) {
+                        UI::TableSetupScrollFreeze(0, 1);
+                        PushTabStyle();
+                        UI::TableSetupColumn("Position", UI::TableColumnFlags::WidthFixed, 40);
+                        UI::TableSetupColumn("Player", UI::TableColumnFlags::WidthStretch);
+                        UI::TableSetupColumn("Time", UI::TableColumnFlags::WidthStretch);
+                        UI::TableHeadersRow();
+                        PopTabStyle();
+                        for (uint i = 0; i < m_leaderboard.get_Length(); i++) {
+                            UI::TableNextRow();
+                            TMIO::Leaderboard@ entry = m_leaderboard[i];
+
+                            UI::TableSetColumnIndex(0);
+                            UI::Text(tostring(entry.position));
+
+                            UI::TableSetColumnIndex(1);
+                            UI::Text(entry.playerName);
+
+                            UI::TableSetColumnIndex(2);
+                            UI::Text(FormatTime(entry.time));
+                            if (i != 0){
+                                UI::SameLine();
+                                UI::Text("\\$f00(+ " + FormatTime(entry.time - m_leaderboard[0].time) + ")");
+                            }
+                        }
+                        if (!m_TMIOstopleaderboard && UI::GetScrollY() >= UI::GetScrollMaxY()){
+                            // new request
+                            UI::TableNextRow();
+                            UI::TableSetColumnIndex(1);
+                            UI::Text(Icons::HourglassEnd + " Loading...");
+                            if (!m_TMIOrequestStarted) m_TMIOrequestStart = true;
+                            m_TMIOnextPage = true;
+                        }
+                        UI::EndTable();
+                    }
+                    
+                }
+            }
             UI::EndChild();
             UI::EndTabItem();
         }
+#endif
 
         UI::EndTabBar();
 
