@@ -14,6 +14,10 @@ void RenderMenuMain(){
         }
         if(UI::BeginMenu(pluginColor + Icons::ICursor+"\\$z Enter map ID")) {
             inputMapID = UI::InputText("", inputMapID);
+            if (!Regex::Contains(inputMapID, "^[0-9]*$")) {
+                inputMapID = "";
+                UI::TextDisabled("\\$f00" + Icons::Times +" \\$zOnly numbers are allowed");
+            }
             if (inputMapID != ""){
 #if TMNEXT
                 if (Permissions::PlayLocalMap() && UI::MenuItem(Icons::Play + " Play map")){
