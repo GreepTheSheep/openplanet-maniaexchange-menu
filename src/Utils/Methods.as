@@ -2,11 +2,16 @@ bool IsDevMode(){
     return Meta::ExecutingPlugin().get_Type() == Meta::PluginType::Folder;
 }
 
+CGameCtnChallenge@ GetCurrentMap(){
+    CTrackMania@ g_app = cast<CTrackMania>(GetApp());
+    return g_app.RootMap;
+}
+
 array<MX::MapInfo@> LoadPlayLater() {
     array<MX::MapInfo@> m_maps;
     Json::Value FileData = Json::FromFile(PlayLaterJSON);
     if (FileData.GetType() == Json::Type::Null) {
-		UI::ShowNotification("\\$afa" + Icons::InfoCircle + " Thanks for installing "+pluginName+"!","No data file was detected, that means it's your first install. Welcome!", 15000);
+        UI::ShowNotification("\\$afa" + Icons::InfoCircle + " Thanks for installing "+pluginName+"!","No data file was detected, that means it's your first install. Welcome!", 15000);
         SavePlayLater(m_maps);
         return m_maps;
     } else if (FileData.GetType() != Json::Type::Array) {

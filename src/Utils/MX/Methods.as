@@ -36,4 +36,66 @@ namespace MX
         }
         app.ManiaTitleControlScriptAPI.PlayMap("https://"+MXURL+"/maps/download/"+mapId, "", "");
     }
+
+    void CheckCurrentMap()
+    {
+        while (true){
+            yield();
+            auto currentMap = GetCurrentMap();
+            if (currentMap !is null){
+                if (currentMapID < 0 && currentMapID != -1) {
+                    currentMapID = MX::GetCurrentMapMXID();
+                    if (currentMapID < 0 && currentMapID != -3) {
+                        if (IsDevMode()) log("MX ID error: " + currentMapID);
+                        sleep(30000);
+                    }
+                }
+            } else {
+                currentMapID = -4;
+            }
+        }
+    }
+
+    /* 
+    * MX ID Error codes:
+    * > 0 = MX ID
+    * -1 = Map not found
+    * -2 = Server error
+    * -3 = Loading request
+    * -4 = Not in a map
+    */
+    int GetCurrentMapMXID(){
+        auto currentMap = GetCurrentMap();
+        if (currentMap !is null) {
+            string UIDMap = currentMap.MapInfo.MapUid;
+            string url = "https://"+MXURL+"/api/maps/get_map_info/multi/" + UIDMap;
+            if (req is null){
+                if (IsDevMode()) log("LoadCurrentMap::StartRequest: " + url);
+                @req = API::Get(url);
+            }
+            
+            if (req !is null && req.Finished()) {
+                string response = req.String();
+                @req = null;
+                if (IsDevMode()) log("LoadCurrentMap::CheckResponse: " + response);
+
+                // Evaluate reqest result
+                Json::Value returnedObject = Json::Parse(response);
+                try {
+                    if (returnedObject.get_Length() > 0) {
+                        int g_MXId = returnedObject[0]["TrackID"];
+                        return g_MXId;
+                    } else {
+                        return -1;
+                    }
+                } catch {
+                    return -2;
+                }
+            } else {
+                return -3;
+            }
+        } else {
+            return -4;
+        }
+    }
 }

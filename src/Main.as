@@ -1,4 +1,5 @@
 string inputMapID = "";
+int currentMapID = -4;
 
 void RenderMenu()
 {
@@ -34,6 +35,36 @@ void RenderMenuMain(){
                 }
             }
             UI::EndMenu();
+        }
+
+        if (currentMapID > 0){
+            UI::Separator();
+            if (UI::MenuItem(Icons::Kenney::InfoCircle + " Current map information")){
+                if (!mxMenu.isOpened) mxMenu.isOpened = true;
+                mxMenu.AddTab(MapTab(currentMapID), true);
+            }
+        }
+
+        if (currentMapID == -1){
+            UI::Separator();
+            UI::TextDisabled(Icons::Times + " Current map not found on " + shortMXName);
+        }
+
+        if (currentMapID == -2){
+            UI::Separator();
+            UI::TextDisabled("Error while checking the current map on " + shortMXName);
+        }
+
+        if (currentMapID == -3){
+            UI::Separator();
+            int HourGlassValue = Time::Stamp % 3;
+            string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
+            UI::TextDisabled(Hourglass + " Loading...");
+        }
+
+        if (IsDevMode() && currentMapID == -4){
+            UI::Separator();
+            UI::TextDisabled("Not in a map.");
         }
         
         UI::Separator();
@@ -79,6 +110,7 @@ void RenderMenuMain(){
 void Main(){
     startnew(MX::GetAllMapTags);
     startnew(MX::LookForMapToLoad);
+    startnew(MX::CheckCurrentMap);
     g_PlayLaterMaps = LoadPlayLater();
 }
 
