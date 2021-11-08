@@ -14,7 +14,7 @@ namespace MX
             m_mapTags.InsertLast(MapTag(resNet[i]));
         }
 
-        if (IsDevMode()) log(m_mapTags.get_Length() + " tags loaded");
+        log(m_mapTags.get_Length() + " tags loaded");
     }
 
     void LookForMapToLoad(){

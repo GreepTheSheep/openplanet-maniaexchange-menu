@@ -30,6 +30,7 @@ array<MX::MapInfo@> LoadPlayLater() {
             MX::MapInfo@ map = MX::MapInfo(FileData[i]);
             m_maps.InsertAt(0, map);
         }
+        log(tostring(m_maps.Length) + " maps loaded from Play Later list.")
         return m_maps;
     }
 }
