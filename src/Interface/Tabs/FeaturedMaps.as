@@ -9,7 +9,7 @@ class FeaturedMapsTab : MapListTab
     void GetRequestParams(dictionary@ params)
     {
         MapListTab::GetRequestParams(params);
-		params.Set("mode", "23");
+        params.Set("mode", "23");
     }
 
     void RenderHeader() override

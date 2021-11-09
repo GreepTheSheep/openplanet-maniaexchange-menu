@@ -9,7 +9,7 @@ class RecentlyAwardedTab : MapListTab
     void GetRequestParams(dictionary@ params)
     {
         MapListTab::GetRequestParams(params);
-		params.Set("mode", "3");
+        params.Set("mode", "3");
     }
 
     void RenderHeader() override

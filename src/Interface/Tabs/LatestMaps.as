@@ -9,7 +9,7 @@ class LatestMapsTab : MapListTab
     void GetRequestParams(dictionary@ params)
     {
         MapListTab::GetRequestParams(params);
-		params.Set("mode", "2");
+        params.Set("mode", "2");
     }
 
     void RenderHeader() override

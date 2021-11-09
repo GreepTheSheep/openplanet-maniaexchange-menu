@@ -27,8 +27,8 @@ namespace IfaceRender
         UI::TableSetColumnIndex(4);
         // buttons
         if (UI::CyanButton(Icons::Kenney::InfoCircle)) {
-			mxMenu.AddTab(MapTab(map.TrackID), true);
-		}
+            mxMenu.AddTab(MapTab(map.TrackID), true);
+        }
         UI::SameLine();
 
 #if TMNEXT

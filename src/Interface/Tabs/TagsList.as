@@ -11,7 +11,7 @@ class TagsListTab : MapListTab
     void GetRequestParams(dictionary@ params)
     {
         MapListTab::GetRequestParams(params);
-		params.Set("tags", t_tags);
+        params.Set("tags", t_tags);
     }
 
     void RenderHeader() override

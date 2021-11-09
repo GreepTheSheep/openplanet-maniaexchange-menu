@@ -11,8 +11,8 @@ class MostAwardedTab : MapListTab
     void GetRequestParams(dictionary@ params)
     {
         MapListTab::GetRequestParams(params);
-		params.Set("priord", "8");
-		params.Set("mode", t_selectedMode);
+        params.Set("priord", "8");
+        params.Set("mode", t_selectedMode);
     }
 
     void RenderHeader() override

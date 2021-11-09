@@ -32,7 +32,7 @@ class MapListTab : Tab
                 params.Get(key, value);
 
                 urlParams += (i == 0 ? "?" : "&");
-				urlParams += key + "=" + Net::UrlEncode(value);
+                urlParams += key + "=" + Net::UrlEncode(value);
             }
         }
 
@@ -72,15 +72,15 @@ class MapListTab : Tab
     }
 
     void HandleResponse(const Json::Value &in json)
-	{
+    {
         MX::MapInfo@ map;
         totalItems = json["totalItemCount"];
 
-		auto items = json["results"];
-		for (uint i = 0; i < items.Length; i++) {
-			maps.InsertLast(MX::MapInfo(items[i]));
-		}
-	}
+        auto items = json["results"];
+        for (uint i = 0; i < items.Length; i++) {
+            maps.InsertLast(MX::MapInfo(items[i]));
+        }
+    }
 
     void RenderHeader(){}
 
