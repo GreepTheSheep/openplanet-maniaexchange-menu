@@ -13,7 +13,6 @@ namespace MX
         string GbxMapName;
         string Comments;
         string TitlePack;
-        bool Hide;
         bool Unlisted;
         string Mood;
         int DisplayCost;
@@ -39,7 +38,6 @@ namespace MX
             GbxMapName = json["GbxMapName"];
             Comments = json["Comments"];
             TitlePack = json["TitlePack"];
-            Hide = json["Hide"];
             Unlisted = json["Unlisted"];
             Mood = json["Mood"];
             DisplayCost = json["DisplayCost"];
@@ -83,7 +81,6 @@ namespace MX
             json["GbxMapName"] = GbxMapName;
             json["Comments"] = Comments;
             json["TitlePack"] = TitlePack;
-            json["Hide"] = Hide;
             json["Unlisted"] = Unlisted;
             json["Mood"] = Mood;
             json["DisplayCost"] = DisplayCost;
