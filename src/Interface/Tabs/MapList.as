@@ -45,7 +45,7 @@ class MapListTab : Tab
     void CheckStartRequest()
     {
         // If there's not already a request and the window is appearing, we start a new request
-        if (m_request is null && UI::IsWindowAppearing()) {
+        if (maps.get_Length() == 0 && m_request is null && UI::IsWindowAppearing()) {
             StartRequest();
         }
     }
