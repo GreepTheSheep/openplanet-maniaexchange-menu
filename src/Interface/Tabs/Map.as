@@ -15,6 +15,7 @@ class MapTab : Tab
     bool m_TMIOstopleaderboard = false;
     bool m_TMIOerror = false;
     string m_TMIOerrorMsg = "";
+    bool m_TMIONoRes = false;
 
     Resources::Font@ g_fontHeader = Resources::GetFont("DroidSans-Bold.ttf", 24);
 
@@ -106,6 +107,7 @@ class MapTab : Tab
                 // if tops is null return no results, else handle the response
                 if (json["tops"].GetType() == Json::Type::Null) {
                     if (IsDevMode()) log("MapTab::CheckRequest (TM.IO): No results");
+                    m_TMIONoRes = true;
                 }
                 else HandleTMIOResponse(json["tops"]);
             }
@@ -299,16 +301,18 @@ class MapTab : Tab
             UI::EndTabItem();
         }
 #if TMNEXT
-        if(!m_isRoyalMap && UI::BeginTabItem("Leaderboard")){
+        if(UI::BeginTabItem("Leaderboard")){
             UI::BeginChild("MapLeaderboardChild");
 
             CheckTMIORequest();
             if (m_TMIOrequestStart) {
                 m_TMIOrequestStart = false;
-                if (m_leaderboard.get_Length() == 0) StartTMIORequest();
+                if (!m_TMIONoRes && m_leaderboard.get_Length() == 0) StartTMIORequest();
                 else {
-                    int lastIndex = m_leaderboard.get_Length() - 1;
-                    StartTMIORequest(m_leaderboard[lastIndex].time);
+                    if (!m_TMIONoRes) {
+                        int lastIndex = m_leaderboard.get_Length() - 1;
+                        StartTMIORequest(m_leaderboard[lastIndex].time);
+                    }
                 }
             }
 
@@ -324,12 +328,14 @@ class MapTab : Tab
                 }
 
                 if (!m_TMIOstopleaderboard && m_leaderboard.get_Length() == 0) {
-                    if (!m_TMIOrequestStarted) m_TMIOrequestStart = true;
-                    int HourGlassValue = Time::Stamp % 3;
-                    string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-                    UI::Text(Hourglass + " Loading...");
-                } else if (m_TMIOstopleaderboard && m_leaderboard.get_Length() == 0) {
-                    UI::Text("No records found for this map. Be the first!");
+                    if (m_TMIONoRes) {
+                        UI::Text("No records found for this map. Be the first!");
+                    } else {
+                        if (!m_TMIOrequestStarted) m_TMIOrequestStart = true;
+                        int HourGlassValue = Time::Stamp % 3;
+                        string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
+                        UI::Text(Hourglass + " Loading...");
+                    }
                 } else {
                     if (UI::BeginTable("LeaderboardList", 3)) {
                         UI::TableSetupScrollFreeze(0, 1);
