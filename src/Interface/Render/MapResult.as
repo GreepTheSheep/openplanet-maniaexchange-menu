@@ -42,7 +42,7 @@ namespace IfaceRender
         }
 
 
-        if (Permissions::PlayLocalMap() && !isRoyal && UI::GreenButton(Icons::Play)) {
+        if ((Permissions::PlayLocalMap() && !isRoyal && UI::GreenButton(Icons::Play)) || (Permissions::PlayLocalMap() && isRoyal && Setting_ShowPlayOnRoyalMap && UI::OrangeButton(Icons::Play))) {
 #else
         if (UI::GreenButton(Icons::Play)) {
 #endif        

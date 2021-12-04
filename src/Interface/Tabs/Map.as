@@ -229,6 +229,11 @@ class MapTab : Tab
 
             if (m_isRoyalMap) {
                 UI::Text("\\$f70" + Icons::ExclamationTriangle + " \\$zRoyal maps can not be played in solo");
+                if (Setting_ShowPlayOnRoyalMap && UI::OrangeButton(Icons::Play + " Play Map Anyway")) {
+                    if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
+                    UI::ShowNotification("Loading map...", ColoredString(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
+                    MX::mapToLoad = m_map.TrackID;
+                }
             } else {
 #endif
                 if (UI::GreenButton(Icons::Play + " Play Map")) {
