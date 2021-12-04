@@ -4,7 +4,7 @@ bool Setting_ColoredMapName = true;
 [Setting name="Close Openplanet overlay when loading a map" category="UI"]
 bool Setting_CloseOverlayOnLoad = true;
 
-[Setting name="Show Play Button on Royal Maps" category="UI" description="Warning: this can break the game, use at your own risk"]
+[Setting name="Show Play Button on Royal Maps" category="UI" description="If you try to load Royal maps, the game will return you to the main menu."]
 bool Setting_ShowPlayOnRoyalMap = false;
 
 // Tabs
