@@ -125,6 +125,7 @@ namespace MX
         string Username;
         string Created;
         string Edited;
+        string Description;
         string Name;
         string TypeName;
         bool Unreleased;
@@ -141,6 +142,7 @@ namespace MX
             Username = json["Username"];
             Created = json["Created"];
             Edited = json["Edited"];
+            Description = json["Description"];
             Name = json["Name"];
             TypeName = json["TypeName"];
             Unreleased = json["Unreleased"];
@@ -175,6 +177,7 @@ namespace MX
             json["Username"] = Username;
             json["Created"] = Created;
             json["Edited"] = Edited;
+            json["Description"] = Description;
             json["Name"] = Name;
             json["TypeName"] = TypeName;
             json["Unreleased"] = Unreleased;

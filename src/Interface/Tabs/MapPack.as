@@ -170,37 +170,54 @@ class MapPackTab : Tab
 
         UI::Separator();
 
-        CheckMXMapListRequest();
+        UI::BeginTabBar("MapPackTabs");
 
-        if (m_mapListError) {
-            UI::Text("\\$f00" + Icons::Times + " \\$zError while getting the map list for this pack.");
-        } else {
-            if (m_maps.Length == 0) {
-                int HourGlassValue = Time::Stamp % 3;
-                string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-                UI::Text(Hourglass + " Loading...");
+        if(UI::BeginTabItem("Description")){
+            UI::BeginChild("MapPackDescriptionChild");
+            IfaceRender::MXComment(m_mapPack.Description);
+            UI::EndChild();
+            UI::EndTabItem();
+        }
+        if(UI::BeginTabItem("Maps")){
+            UI::BeginChild("MapListChild");
+
+            CheckMXMapListRequest();
+
+            if (m_mapListError) {
+                UI::Text("\\$f00" + Icons::Times + " \\$zError while getting the map list for this pack.");
             } else {
-                if (UI::BeginTable("List", 5)) {
-                    UI::TableSetupScrollFreeze(0, 1);
-                    PushTabStyle();
-                    UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
-                    UI::TableSetupColumn("Created by", UI::TableColumnFlags::WidthStretch);
-                    UI::TableSetupColumn("Style", UI::TableColumnFlags::WidthStretch);
-                    UI::TableSetupColumn(Icons::Trophy, UI::TableColumnFlags::WidthFixed, 40);
-                    UI::TableSetupColumn("Actions", UI::TableColumnFlags::WidthFixed, 80);
-                    UI::TableHeadersRow();
-                    PopTabStyle();
-                    for(uint j = 0; j < m_maps.get_Length(); j++)
-                    {
-                        UI::PushID("ResMap"+j);
-                        MX::MapInfo@ map = m_maps[j];
-                        IfaceRender::MapResult(map);
-                        UI::PopID();
+                if (m_maps.Length == 0) {
+                    int HourGlassValue = Time::Stamp % 3;
+                    string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
+                    UI::Text(Hourglass + " Loading...");
+                } else {
+                    if (UI::BeginTable("List", 5)) {
+                        UI::TableSetupScrollFreeze(0, 1);
+                        PushTabStyle();
+                        UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
+                        UI::TableSetupColumn("Created by", UI::TableColumnFlags::WidthStretch);
+                        UI::TableSetupColumn("Style", UI::TableColumnFlags::WidthStretch);
+                        UI::TableSetupColumn(Icons::Trophy, UI::TableColumnFlags::WidthFixed, 40);
+                        UI::TableSetupColumn("Actions", UI::TableColumnFlags::WidthFixed, 80);
+                        UI::TableHeadersRow();
+                        PopTabStyle();
+                        for(uint j = 0; j < m_maps.get_Length(); j++)
+                        {
+                            UI::PushID("ResMap"+j);
+                            MX::MapInfo@ map = m_maps[j];
+                            IfaceRender::MapResult(map);
+                            UI::PopID();
+                        }
+                        UI::EndTable();
                     }
-                    UI::EndTable();
                 }
             }
+            
+            UI::EndChild();
+            UI::EndTabItem();
         }
+
+        UI::EndTabBar();
 
         UI::EndChild();
     }
