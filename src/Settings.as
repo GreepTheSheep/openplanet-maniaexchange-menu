@@ -27,8 +27,5 @@ bool Setting_Tab_RecentlyAwarded_Visible = false;
 [Setting name="Search" category="Display Tabs"]
 bool Setting_Tab_Search_Visible = true;
 
-[Setting name="Latest Map Packs" category="Display Tabs"]
-bool Setting_Tab_LatestPacks_Visible = true;
-
-[Setting name="Most Downloaded Map Packs" category="Display Tabs"]
-bool Setting_Tab_MostDownloadedPacks_Visible = true;
+[Setting name="Map Packs" category="Display Tabs"]
+bool Setting_Tab_MapPacks_Visible = true;

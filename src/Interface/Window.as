@@ -12,8 +12,9 @@ class Window{
         AddTab(LatestMapsTab());
         AddTab(RecentlyAwardedTab());
         AddTab(SearchTab());
-        AddTab(LatestMapPacksTab());
-        AddTab(MostDownloadedMapPacks());
+        AddTab(MapPackListTab());
+        // AddTab(LatestMapPacksTab());
+        // AddTab(MostDownloadedMapPacks());
     }
 
     void AddTab(Tab@ tab, bool select = false){

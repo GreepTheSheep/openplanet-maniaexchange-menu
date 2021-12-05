@@ -6,12 +6,19 @@ class MapPackListTab : Tab
     bool m_useRandom = false;
     int m_page = 1;
 
+    string t_selectedFilter = "Latest";
+    string t_selectedPriord = "1";
+
+    bool IsVisible() override {return Setting_Tab_MapPacks_Visible;}
+    string GetLabel() override {return Icons::Inbox + " Map Packs";}
+
     void GetRequestParams(dictionary@ params)
     {
         params.Set("api", "on");
         params.Set("format", "json");
         params.Set("limit", "100");
         params.Set("page", tostring(m_page));
+        params.Set("priord", t_selectedPriord);
         if (m_useRandom) {
             params.Set("random", "1");
             m_useRandom = false;
@@ -82,7 +89,27 @@ class MapPackListTab : Tab
         }
     }
 
-    void RenderHeader(){}
+    void RenderHeader()
+    {
+        if (UI::BeginCombo("", t_selectedFilter)){
+            if (UI::Selectable("Latest", t_selectedFilter == "Latest")){
+                t_selectedFilter = "Latest";
+                t_selectedPriord = "1";
+                Reload();
+            }
+            if (UI::Selectable("Most downloaded", t_selectedFilter == "Most downloaded")){
+                t_selectedFilter = "Most downloaded";
+                t_selectedPriord = "13";
+                Reload();
+            }
+            UI::EndCombo();
+        }
+        UI::SameLine();
+        if (UI::GreenButton(Icons::Random + " Random result")){
+            m_useRandom = true;
+            Reload();
+        }
+    }
 
     void Clear()
     {
