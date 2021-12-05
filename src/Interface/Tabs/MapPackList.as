@@ -102,6 +102,11 @@ class MapPackListTab : Tab
                 t_selectedPriord = "13";
                 Reload();
             }
+            if (UI::Selectable("Most tracks", t_selectedFilter == "Most tracks")){
+                t_selectedFilter = "Most tracks";
+                t_selectedPriord = "6";
+                Reload();
+            }
             UI::EndCombo();
         }
         UI::SameLine();
@@ -139,12 +144,13 @@ class MapPackListTab : Tab
                 return;
             }
             UI::BeginChild("mapList");
-            if (UI::BeginTable("List", 4)) {
+            if (UI::BeginTable("List", 5)) {
                 UI::TableSetupScrollFreeze(0, 1);
                 PushTabStyle();
                 UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
                 UI::TableSetupColumn("Created by", UI::TableColumnFlags::WidthStretch);
                 UI::TableSetupColumn("Tags", UI::TableColumnFlags::WidthStretch);
+                UI::TableSetupColumn("Tracks", UI::TableColumnFlags::WidthFixed, 40);
                 UI::TableSetupColumn("Actions", UI::TableColumnFlags::WidthFixed, 40);
                 UI::TableHeadersRow();
                 PopTabStyle();

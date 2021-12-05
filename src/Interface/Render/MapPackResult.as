@@ -21,6 +21,9 @@ namespace IfaceRender
         }
 
         UI::TableSetColumnIndex(3);
+        UI::Text(tostring(mapPack.TrackCount));
+
+        UI::TableSetColumnIndex(4);
         // buttons
         if (UI::CyanButton(Icons::Kenney::InfoCircle)) {
             mxMenu.AddTab(MapPackTab(mapPack.ID), true);
