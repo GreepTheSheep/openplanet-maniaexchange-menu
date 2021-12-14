@@ -114,6 +114,7 @@ class MapPackTab : Tab
     void Render() override
     {
         CheckMXRequest();
+        CheckMXMapListRequest();
 
         if (m_error) {
             UI::Text("\\$f00" + Icons::Times + " \\$zMap Pack not found");
@@ -157,6 +158,18 @@ class MapPackTab : Tab
 
         if (UI::CyanButton(Icons::ExternalLink + " View on "+pluginName)) OpenBrowserURL("https://"+MXURL+"/mappack/view/"+m_mapPack.ID);
 
+#if TMNEXT
+        if (!m_mapListError && m_maps.Length != 0 && Permissions::PlayLocalMap() && UI::GreenButton(Icons::Check + " Add to Play later")) {
+#else
+        if (!m_mapListError && m_maps.Length != 0 && UI::GreenButton(Icons::Check + " Add to Play later")) {
+#endif
+            for (uint i = 0; i < m_maps.Length; i++) {
+                g_PlayLaterMaps.InsertAt(0, m_maps[i]);
+            }
+            SavePlayLater(g_PlayLaterMaps);
+            Dialogs::Message("\\$f00"+Icons::Check+" \\$zAdded "+m_maps.Length+" maps to the Play Later list");
+        }
+
         UI::EndChild();
 
         UI::SetCursorPos(posTop + vec2(width + 8, 0));
@@ -181,10 +194,8 @@ class MapPackTab : Tab
         if(UI::BeginTabItem("Maps")){
             UI::BeginChild("MapListChild");
 
-            CheckMXMapListRequest();
-
             if (m_mapListError) {
-                UI::Text("\\$f00" + Icons::Times + " \\$zError while getting the map list for this pack.");
+                UI::Text("\\$f00" + Icons::Times + " \\$zMap list for this pack is empty.");
             } else {
                 if (m_maps.Length == 0) {
                     int HourGlassValue = Time::Stamp % 3;

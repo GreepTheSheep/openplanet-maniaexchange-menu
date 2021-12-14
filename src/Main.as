@@ -89,6 +89,7 @@ void RenderMenuMain(){
                         if (UI::MenuItem("\\$f00"+Icons::TrashO + " Remove map")){
                             g_PlayLaterMaps.RemoveAt(i);
                             SavePlayLater(g_PlayLaterMaps);
+                            UI::ShowNotification(ColoredString(map.GbxMapName) + "\\$z\\$s by " + map.Username + " has been removed!");
                         }
                         
                         UI::EndMenu();
@@ -99,9 +100,14 @@ void RenderMenuMain(){
                 UI::Separator();
                 UI::TextDisabled("To add a map here,");
                 UI::TextDisabled("select the map in the menu");
-                UI::TextDisabled("and click on the 'Add to Play later'");
+                UI::TextDisabled("and click on 'Add to Play later'");
             }
             UI::EndMenu();
+        }
+        if (g_PlayLaterMaps.get_Length() > 0 && UI::MenuItem("\\$f00"+Icons::TrashO + " Clear list")){
+            g_PlayLaterMaps.RemoveRange(0, g_PlayLaterMaps.get_Length());
+            SavePlayLater(g_PlayLaterMaps);
+            UI::ShowNotification("Play Later list has been cleared.");
         }
         UI::EndMenu();
     }
@@ -116,4 +122,5 @@ void Main(){
 
 void RenderInterface(){
     mxMenu.Render();
+    Dialogs::RenderInterface();
 }
