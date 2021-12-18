@@ -6,15 +6,14 @@ class Window{
     Tab@ c_lastActiveTab;
 
     Window(){
+        AddTab(HomePageTab());
         AddTab(MostAwardedTab());
         AddTab(FeaturedMapsTab());
         AddTab(TagsListTab());
         AddTab(LatestMapsTab());
         AddTab(RecentlyAwardedTab());
-        AddTab(SearchTab());
         AddTab(MapPackListTab());
-        // AddTab(LatestMapPacksTab());
-        // AddTab(MostDownloadedMapPacks());
+        AddTab(SearchTab());
     }
 
     void AddTab(Tab@ tab, bool select = false){
