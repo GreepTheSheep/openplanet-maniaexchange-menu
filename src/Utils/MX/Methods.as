@@ -24,6 +24,10 @@ namespace MX
                 LoadMap(mapToLoad);
                 mapToLoad = -1;
             }
+            if (mapToDL != -1){
+                DownloadMap(mapToDL);
+                mapToDL = -1;
+            }
         }
     }
 
@@ -35,6 +39,23 @@ namespace MX
             yield(); // Wait until the ManiaTitleControlScriptAPI is ready for loading the next map
         }
         app.ManiaTitleControlScriptAPI.PlayMap("https://"+MXURL+"/maps/download/"+mapId, "", "");
+    }
+
+    void DownloadMap(int mapId)
+    {
+        string downloadedMapFolder = UserMapsFolder() + "Downloaded";
+        string mxDLFolder = downloadedMapFolder + "/ManiaExchange";
+        if (!IO::FolderExists(downloadedMapFolder)) IO::CreateFolder(downloadedMapFolder);
+        if (!IO::FolderExists(mxDLFolder)) IO::CreateFolder(mxDLFolder);
+
+        Net::HttpRequest@ netMap = API::Get("https://"+MXURL+"/maps/download/"+mapId);
+        mapDownloadInProgress = true;
+        while(!netMap.Finished()) {
+            yield();
+        }
+        mapDownloadInProgress = false;
+        netMap.SaveToFile(mxDLFolder + "/" + mapId + ".Map.Gbx");
+        log("Map downloaded to " + mxDLFolder + "/" + mapId + ".Map.Gbx");
     }
 
     void CheckCurrentMap()

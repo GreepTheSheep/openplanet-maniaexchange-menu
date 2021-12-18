@@ -120,6 +120,14 @@ void Main(){
     g_PlayLaterMaps = LoadPlayLater();
 }
 
+string UserMapsFolder(){
+    CSystemFids@ userFolder = Fids::GetUserFolder('Maps');
+    if (userFolder is null) return "<Invalid>";
+    CSystemFids@ Tree = userFolder.Trees[0];
+    CSystemFidFile@ Fid = Tree.Leaves[0];
+    return Fid.ParentFolder.ParentFolder.FullDirName;
+}
+
 void RenderInterface(){
     mxMenu.Render();
     Dialogs::RenderInterface();
