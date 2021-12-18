@@ -11,6 +11,7 @@ class MapPackListTab : Tab
 
     bool IsVisible() override {return Setting_Tab_MapPacks_Visible;}
     string GetLabel() override {return Icons::Inbox + " Map Packs";}
+    vec4 GetColor() override { return vec4(0.92f, 0.56f, 0.38f, 1); }
 
     void GetRequestParams(dictionary@ params)
     {
