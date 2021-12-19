@@ -42,27 +42,30 @@ namespace MX
                 Unlisted = json["Unlisted"];
                 Mood = json["Mood"];
                 DisplayCost = json["DisplayCost"];
-                LengthName = json["LengthName"];
+                if (json["LengthName"].GetType() != Json::Type::Null) LengthName = json["LengthName"];
                 Laps = json["Laps"];
-                DifficultyName = json["DifficultyName"];
-                AuthorTime = json["AuthorTime"];
+                if (json["DifficultyName"].GetType() != Json::Type::Null) DifficultyName = json["DifficultyName"];
+                if (json["AuthorTime"].GetType() != Json::Type::Null) AuthorTime = json["AuthorTime"];
                 TrackValue = json["TrackValue"];
                 AwardCount = json["AwardCount"];
                 IsMP4 = json["IsMP4"];
 
                 // Tags is a string of ids separated by commas
                 // gets the ids and fetches the tags from m_mapTags
-                string tagIds = json["Tags"];
-                string[] tagIdsSplit = tagIds.Split(",");
-                for (uint i = 0; i < tagIdsSplit.get_Length(); i++)
+                if (json["Tags"].GetType() != Json::Type::Null)
                 {
-                    int tagId = Text::ParseInt(tagIdsSplit[i]);
-                    for (uint j = 0; j < m_mapTags.get_Length(); j++)
+                    string tagIds = json["Tags"];
+                    string[] tagIdsSplit = tagIds.Split(",");
+                    for (uint i = 0; i < tagIdsSplit.get_Length(); i++)
                     {
-                        if (m_mapTags[j].ID == tagId)
+                        int tagId = Text::ParseInt(tagIdsSplit[i]);
+                        for (uint j = 0; j < m_mapTags.get_Length(); j++)
                         {
-                            Tags.InsertLast(m_mapTags[j]);
-                            break;
+                            if (m_mapTags[j].ID == tagId)
+                            {
+                                Tags.InsertLast(m_mapTags[j]);
+                                break;
+                            }
                         }
                     }
                 }

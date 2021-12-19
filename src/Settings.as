@@ -46,6 +46,6 @@ enum MP4mxRepos {
     Shootmania
 }
 
-// [Setting name="Repository for maps" category="ManiaPlanet 4" description="This require a reload of the plugin to take effect."]
+[Setting name="Repository for maps" category="ManiaPlanet 4" description="This require a reload of the plugin to take effect."]
 MP4mxRepos repo = MP4mxRepos::Trackmania;
 #endif
