@@ -128,7 +128,7 @@ void RenderMenuMain(){
             if (UI::MenuItem(pluginColor+Icons::Facebook + " \\$zManiaExchange on Facebook")) OpenBrowserURL("https://facebook.com/maniaexchange/");
             if (UI::MenuItem(pluginColor+Icons::Twitter + " \\$zManiaExchange on Twitter")) OpenBrowserURL("https://twitter.com/maniaexchange/");
             if (UI::MenuItem(pluginColor+Icons::YoutubePlay + " \\$zManiaExchange on YouTube")) OpenBrowserURL("https://youtube.com/maniaexchangetracks/");
-            if (UI::MenuItem(pluginColor+Icons::DiscordAlt + " \\$zManiaExchange on Discord")) OpenBrowserURL("https://discord.gg/uRwvByS");
+            if (UI::MenuItem(pluginColor+Icons::DiscordAlt + " \\$zManiaExchange on Discord")) OpenBrowserURL("https://discord.mania.exchange/");
             UI::EndMenu();
          }
         if (UI::BeginMenu("\\$f90"+Icons::CircleThin + " \\$zAdvanced")){
@@ -178,15 +178,15 @@ void Main(){
     }
 }
 
+void RenderInterface(){
+    mxMenu.Render();
+    Dialogs::RenderInterface();
+}
+
 string UserMapsFolder(){
     CSystemFids@ userFolder = Fids::GetUserFolder('Maps');
     if (userFolder is null) return "<Invalid>";
     CSystemFids@ Tree = userFolder.Trees[0];
     CSystemFidFile@ Fid = Tree.Leaves[0];
     return Fid.ParentFolder.ParentFolder.FullDirName;
-}
-
-void RenderInterface(){
-    mxMenu.Render();
-    Dialogs::RenderInterface();
 }
