@@ -17,20 +17,6 @@ namespace MX
         log(m_mapTags.get_Length() + " tags loaded");
     }
 
-    void LookForMapToLoad(){
-        while(true){
-            yield();
-            if (mapToLoad != -1){
-                LoadMap(mapToLoad);
-                mapToLoad = -1;
-            }
-            if (mapToDL != -1){
-                DownloadMap(mapToDL);
-                mapToDL = -1;
-            }
-        }
-    }
-
     void LoadMap(int mapId)
     {
         CTrackMania@ app = cast<CTrackMania>(GetApp());
@@ -56,25 +42,6 @@ namespace MX
         mapDownloadInProgress = false;
         netMap.SaveToFile(mxDLFolder + "/" + mapId + ".Map.Gbx");
         log("Map downloaded to " + mxDLFolder + "/" + mapId + ".Map.Gbx");
-    }
-
-    void CheckCurrentMap()
-    {
-        while (true){
-            yield();
-            auto currentMap = GetCurrentMap();
-            if (currentMap !is null){
-                if (currentMapID < 0 && currentMapID != -1) {
-                    currentMapID = MX::GetCurrentMapMXID();
-                    if (currentMapID < 0 && currentMapID != -3) {
-                        if (IsDevMode()) log("MX ID error: " + currentMapID);
-                        sleep(30000);
-                    }
-                }
-            } else {
-                currentMapID = -4;
-            }
-        }
     }
 
     /* 

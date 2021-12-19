@@ -143,14 +143,39 @@ void RenderMenuMain(){
 
 void Main(){
     startnew(MX::GetAllMapTags);
-    startnew(MX::LookForMapToLoad);
-    startnew(MX::CheckCurrentMap);
     g_PlayLaterMaps = LoadPlayLater();
-
 #if MP4
     if (repo == MP4mxRepos::Trackmania) MXURL = "tm.mania.exchange";
     else if (repo == MP4mxRepos::Shootmania) MXURL = "sm.mania.exchange";
 #endif
+
+    while(true){
+        yield();
+
+        // Looks for the map to load or DL
+        if (MX::mapToLoad != -1){
+            MX::LoadMap(MX::mapToLoad);
+            MX::mapToLoad = -1;
+        }
+        if (MX::mapToDL != -1){
+            MX::DownloadMap(MX::mapToDL);
+            MX::mapToDL = -1;
+        }
+
+        // Checks current played map
+        auto currentMap = GetCurrentMap();
+        if (currentMap !is null){
+            if (currentMapID < 0 && currentMapID != -1) {
+                currentMapID = MX::GetCurrentMapMXID();
+                if (currentMapID < 0 && currentMapID != -3) {
+                    if (IsDevMode()) log("MX ID error: " + currentMapID);
+                    sleep(30000);
+                }
+            }
+        } else {
+            currentMapID = -4;
+        }
+    }
 }
 
 string UserMapsFolder(){
