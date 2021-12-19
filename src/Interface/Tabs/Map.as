@@ -187,6 +187,14 @@ class MapTab : Tab
                 width,
                 thumbSize.y / (thumbSize.x / width)
             ));
+            if (UI::IsItemHovered()) {
+                UI::BeginTooltip();
+                UI::Image(img.m_texture, vec2(
+                    width*3,
+                    thumbSize.y / (thumbSize.x / (width*3))
+                ));
+                UI::EndTooltip();
+            }
         } else {
             auto thumb = Images::CachedFromURL("https://"+MXURL+"/maps/thumbnail/"+m_map.TrackID);
             if (thumb.m_texture !is null){
@@ -195,6 +203,14 @@ class MapTab : Tab
                     width,
                     thumbSize.y / (thumbSize.x / width)
                 ));
+                if (UI::IsItemHovered()) {
+                    UI::BeginTooltip();
+                    UI::Image(thumb.m_texture, vec2(
+                        width*2,
+                        thumbSize.y / (thumbSize.x / (width*2))
+                    ));
+                    UI::EndTooltip();
+                }
             }
         }
 

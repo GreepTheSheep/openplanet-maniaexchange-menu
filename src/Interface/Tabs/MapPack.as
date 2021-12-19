@@ -144,6 +144,14 @@ class MapPackTab : Tab
                 width,
                 thumbSize.y / (thumbSize.x / width)
             ));
+            if (UI::IsItemHovered()) {
+                UI::BeginTooltip();
+                UI::Image(thumb.m_texture, vec2(
+                    width*3,
+                    thumbSize.y / (thumbSize.x / (width*3))
+                ));
+                UI::EndTooltip();
+            }
         }
 
         for (uint i = 0; i < m_mapPack.Tags.Length; i++) {
