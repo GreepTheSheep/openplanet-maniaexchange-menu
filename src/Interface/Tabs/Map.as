@@ -258,7 +258,7 @@ class MapTab : Tab
                             }
                         } else {
                             UI::Text("\\$0f0" + Icons::Download + " \\$zMap downloaded");
-                            UI::TextDisabled("to " + UserMapsFolder() + "Downloaded\\ManiaExchange\\" + m_map.TrackID + ".Map.Gbx");
+                            UI::TextDisabled("to " + UserMapsFolder() + "Downloaded\\"+pluginName+"\\" + m_map.TrackID + ".Map.Gbx");
                         }
                     }
                 } else {

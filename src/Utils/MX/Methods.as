@@ -44,7 +44,7 @@ namespace MX
     void DownloadMap(int mapId)
     {
         string downloadedMapFolder = UserMapsFolder() + "Downloaded";
-        string mxDLFolder = downloadedMapFolder + "/ManiaExchange";
+        string mxDLFolder = downloadedMapFolder + "/" + pluginName;
         if (!IO::FolderExists(downloadedMapFolder)) IO::CreateFolder(downloadedMapFolder);
         if (!IO::FolderExists(mxDLFolder)) IO::CreateFolder(mxDLFolder);
 
