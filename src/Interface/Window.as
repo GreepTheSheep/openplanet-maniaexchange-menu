@@ -12,6 +12,7 @@ class Window{
         AddTab(TagsListTab());
         AddTab(LatestMapsTab());
         AddTab(RecentlyAwardedTab());
+        AddTab(TOTDTab());
         AddTab(MapPackListTab());
         AddTab(SearchTab());
     }

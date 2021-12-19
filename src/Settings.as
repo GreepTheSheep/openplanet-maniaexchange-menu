@@ -24,6 +24,9 @@ bool Setting_Tab_Latest_Visible = true;
 [Setting name="Recently Awarded" category="Display Tabs"]
 bool Setting_Tab_RecentlyAwarded_Visible = false;
 
+[Setting name="TOTDs" category="Display Tabs"]
+bool Setting_Tab_TOTD_Visible = false;
+
 [Setting name="Search" category="Display Tabs"]
 bool Setting_Tab_Search_Visible = true;
 
