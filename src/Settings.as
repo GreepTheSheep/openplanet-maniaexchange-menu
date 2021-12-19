@@ -4,8 +4,12 @@ bool Setting_ColoredMapName = true;
 [Setting name="Close Openplanet overlay when loading a map" category="UI"]
 bool Setting_CloseOverlayOnLoad = true;
 
+#if TMNEXT
 [Setting name="Show Play Button on Royal Maps" category="UI" description="If you try to load Royal maps, the game will return you to the main menu."]
 bool Setting_ShowPlayOnRoyalMap = false;
+#else
+bool Setting_ShowPlayOnRoyalMap = true;
+#endif
 
 // Tabs
 
@@ -24,7 +28,9 @@ bool Setting_Tab_Latest_Visible = true;
 [Setting name="Recently Awarded" category="Display Tabs"]
 bool Setting_Tab_RecentlyAwarded_Visible = false;
 
+#if TMNEXT
 [Setting name="TOTDs" category="Display Tabs"]
+#endif
 bool Setting_Tab_TOTD_Visible = false;
 
 [Setting name="Search" category="Display Tabs"]
