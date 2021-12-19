@@ -32,3 +32,14 @@ bool Setting_Tab_Search_Visible = true;
 
 [Setting name="Map Packs" category="Display Tabs"]
 bool Setting_Tab_MapPacks_Visible = true;
+
+
+#if MP4
+enum MP4mxRepos {
+    Trackmania,
+    Shootmania
+}
+
+[Setting name="Repository for maps" category="ManiaPlanet 4" description="This require a reload of the plugin to take effect."]
+MP4mxRepos repo = MP4mxRepos::Trackmania;
+#endif

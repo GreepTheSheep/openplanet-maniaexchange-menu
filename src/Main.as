@@ -111,6 +111,13 @@ void RenderMenuMain(){
                 Dialogs::Message("\\$0f0"+ Icons::Check +" \\$zPlay Later list has been cleared.");
             }, function(){});
         }
+        UI::Separator();
+        if (UI::BeginMenu("\\$f90"+Icons::CircleThin + " \\$zAdvanced")){
+            UI::TextDisabled("Actual Repository URL: ");
+            UI::TextDisabled(MXURL);
+            UI::Separator();
+            UI::EndMenu();
+        }
         UI::EndMenu();
     }
 }
@@ -120,6 +127,11 @@ void Main(){
     startnew(MX::LookForMapToLoad);
     startnew(MX::CheckCurrentMap);
     g_PlayLaterMaps = LoadPlayLater();
+
+#if MP4
+    if (repo == MP4mxRepos::Trackmania) MXURL = "tm.mania.exchange";
+    else if (repo == MP4mxRepos::Shootmania) MXURL = "sm.mania.exchange";
+#endif
 }
 
 string UserMapsFolder(){
