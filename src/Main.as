@@ -68,7 +68,7 @@ void RenderMenuMain(){
         }
         
         UI::Separator();
-        if (UI::BeginMenu(Icons::ClockO + " Play later")){
+        if (UI::BeginMenu(Icons::ClockO + " Play later" + (g_PlayLaterMaps.get_Length() > 0 ? " (" + g_PlayLaterMaps.get_Length() + ")" : ""))) {
             if (g_PlayLaterMaps.get_Length() > 0) {
                 for (uint i = 0; i < g_PlayLaterMaps.get_Length(); i++) {
                     MX::MapInfo@ map = g_PlayLaterMaps[i];
@@ -105,9 +105,11 @@ void RenderMenuMain(){
             UI::EndMenu();
         }
         if (g_PlayLaterMaps.get_Length() > 0 && UI::MenuItem("\\$f00"+Icons::TrashO + " Clear list")){
-            g_PlayLaterMaps.RemoveRange(0, g_PlayLaterMaps.get_Length());
-            SavePlayLater(g_PlayLaterMaps);
-            UI::ShowNotification("Play Later list has been cleared.");
+            Dialogs::Question("\\$f90" + Icons::ExclamationTriangle + " \\$zAre you sure to empty the Play later list?", function(){
+                g_PlayLaterMaps.RemoveRange(0, g_PlayLaterMaps.get_Length());
+                SavePlayLater(g_PlayLaterMaps);
+                Dialogs::Message("\\$0f0"+ Icons::Check +" \\$zPlay Later list has been cleared.");
+            }, function(){});
         }
         UI::EndMenu();
     }

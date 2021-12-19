@@ -1,9 +1,11 @@
+array<MX::MapInfo@> mapPack_maps;
+
 class MapPackTab : Tab
 {
     Net::HttpRequest@ m_MXrequest;
     Net::HttpRequest@ m_MXMapsRequest;
     MX::MapPackInfo@ m_mapPack;
-    array<MX::MapInfo@> m_maps;
+    
     int m_mapPackId;
     bool m_isLoading = false;
     bool m_error = false;
@@ -12,6 +14,7 @@ class MapPackTab : Tab
     Resources::Font@ g_fontHeader = Resources::GetFont("DroidSans-Bold.ttf", 24);
 
     MapPackTab(int packId) {
+        mapPack_maps.RemoveRange(0, mapPack_maps.get_Length());
         m_mapPackId = packId;
         StartMXRequest(m_mapPackId);
     }
@@ -102,7 +105,7 @@ class MapPackTab : Tab
     void HandleMXMapListResponse(const Json::Value &in json)
     {
         for (uint i = 0; i < json.get_Length(); i++) {
-            m_maps.InsertLast(MX::MapInfo(json[i]));
+            mapPack_maps.InsertLast(MX::MapInfo(json[i]));
         }
     }
 
@@ -159,15 +162,17 @@ class MapPackTab : Tab
         if (UI::CyanButton(Icons::ExternalLink + " View on "+pluginName)) OpenBrowserURL("https://"+MXURL+"/mappack/view/"+m_mapPack.ID);
 
 #if TMNEXT
-        if (!m_mapListError && m_maps.Length != 0 && Permissions::PlayLocalMap() && UI::GreenButton(Icons::Check + " Add to Play later")) {
+        if (!m_mapListError && mapPack_maps.Length != 0 && Permissions::PlayLocalMap() && UI::GreenButton(Icons::Check + " Add to Play later")) {
 #else
-        if (!m_mapListError && m_maps.Length != 0 && UI::GreenButton(Icons::Check + " Add to Play later")) {
+        if (!m_mapListError && mapPack_maps.Length != 0 && UI::GreenButton(Icons::Check + " Add to Play later")) {
 #endif
-            for (uint i = 0; i < m_maps.Length; i++) {
-                g_PlayLaterMaps.InsertAt(0, m_maps[i]);
-            }
-            SavePlayLater(g_PlayLaterMaps);
-            Dialogs::Message("\\$f00"+Icons::Check+" \\$zAdded "+m_maps.Length+" maps to the Play Later list");
+            Dialogs::Question("\\$f90" + Icons::ExclamationTriangle + " \\$zThis will add " + mapPack_maps.Length + " maps to the Play later list, are you sure?", function(){
+                for (uint i = 0; i < mapPack_maps.Length; i++) {
+                    g_PlayLaterMaps.InsertAt(g_PlayLaterMaps.Length, mapPack_maps[i]);
+                }
+                SavePlayLater(g_PlayLaterMaps);
+                Dialogs::Message("\\$0f0"+Icons::Check+" \\$zAdded "+mapPack_maps.Length+" maps to the Play Later list");
+            }, function(){});
         }
 
         UI::EndChild();
@@ -197,7 +202,7 @@ class MapPackTab : Tab
             if (m_mapListError) {
                 UI::Text("\\$f00" + Icons::Times + " \\$zMap list for this pack is empty.");
             } else {
-                if (m_maps.Length == 0) {
+                if (mapPack_maps.Length == 0) {
                     int HourGlassValue = Time::Stamp % 3;
                     string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
                     UI::Text(Hourglass + " Loading...");
@@ -212,10 +217,10 @@ class MapPackTab : Tab
                         UI::TableSetupColumn("Actions", UI::TableColumnFlags::WidthFixed, 80);
                         UI::TableHeadersRow();
                         PopTabStyle();
-                        for(uint j = 0; j < m_maps.get_Length(); j++)
+                        for(uint j = 0; j < mapPack_maps.get_Length(); j++)
                         {
                             UI::PushID("ResMap"+j);
-                            MX::MapInfo@ map = m_maps[j];
+                            MX::MapInfo@ map = mapPack_maps[j];
                             IfaceRender::MapResult(map);
                             UI::PopID();
                         }
