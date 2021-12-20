@@ -4,17 +4,23 @@ namespace MX
     {
         Json::Value resNet = API::GetAsync("https://"+MXURL+"/api/tags/gettags");
         
-        for (uint i = 0; i < resNet.get_Length(); i++)
-        {
-            int tagID = resNet[i]["ID"];
-            string tagName = resNet[i]["Name"];
+        try {
+            for (uint i = 0; i < resNet.get_Length(); i++)
+            {
+                int tagID = resNet[i]["ID"];
+                string tagName = resNet[i]["Name"];
 
-            if (IsDevMode()) log("Loading tag #"+tagID+" - "+tagName);
+                if (IsDevMode()) log("Loading tag #"+tagID+" - "+tagName);
 
-            m_mapTags.InsertLast(MapTag(resNet[i]));
+                m_mapTags.InsertLast(MapTag(resNet[i]));
+            }
+
+            log(m_mapTags.get_Length() + " tags loaded");
+        } catch {
+            error("Error while loading tags");
+            error(pluginName + " API is not responding, it must be down.", "");
+            APIDown = true;
         }
-
-        log(m_mapTags.get_Length() + " tags loaded");
     }
 
     void LoadMap(int mapId)

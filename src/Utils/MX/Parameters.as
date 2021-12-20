@@ -8,4 +8,6 @@ namespace MX
     int mapToDL = -1;
 
     bool mapDownloadInProgress = false;
+
+    bool APIDown = false;
 }
