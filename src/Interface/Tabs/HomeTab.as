@@ -64,6 +64,16 @@ class HomePageTab : Tab {
 #endif
         UI::Separator();
 
+        UI::BeginTabBar("HomePageTabs");
+        if(UI::BeginTabItem(Icons::Home + " Welcome!")){
+            HomePageTabRender::Home();
+            UI::EndTabItem();
+        }
+        if(UI::BeginTabItem(Icons::InfoCircle + " About")){
+            HomePageTabRender::About();
+            UI::EndTabItem();
+        }
+        UI::EndTabBar();
         UI::EndChild();
     }
 }

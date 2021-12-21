@@ -192,6 +192,12 @@ void RenderInterface(){
     Dialogs::RenderInterface();
 }
 
+string changeEnumStyle(string enumName){
+    string str = enumName.SubStr(enumName.IndexOf(":") + 1);
+    str = str.Replace("_", " ");
+    return str;
+}
+
 string UserMapsFolder(){
     CSystemFids@ userFolder = Fids::GetUserFolder('Maps');
     if (userFolder is null) return "<Invalid>";
