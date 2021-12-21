@@ -22,6 +22,7 @@ namespace MX
         int AuthorTime;
         int TrackValue;
         int AwardCount;
+        int ImageCount;
         bool IsMP4;
         array<MapTag@> Tags;
 
@@ -48,6 +49,7 @@ namespace MX
                 if (json["AuthorTime"].GetType() != Json::Type::Null) AuthorTime = json["AuthorTime"];
                 TrackValue = json["TrackValue"];
                 AwardCount = json["AwardCount"];
+                ImageCount = json["ImageCount"];
                 IsMP4 = json["IsMP4"];
 
                 // Tags is a string of ids separated by commas
@@ -99,6 +101,7 @@ namespace MX
                 json["AuthorTime"] = AuthorTime;
                 json["TrackValue"] = TrackValue;
                 json["AwardCount"] = AwardCount;
+                json["ImageCount"] = ImageCount;
                 json["IsMP4"] = IsMP4;
 
                 string tagsStr = "";

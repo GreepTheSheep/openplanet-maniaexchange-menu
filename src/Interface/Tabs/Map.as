@@ -179,23 +179,38 @@ class MapTab : Tab
 
         UI::BeginChild("Summary", vec2(width,0));
 
-        auto img = Images::CachedFromURL("https://"+MXURL+"/maps/"+m_map.TrackID+"/image/1");
+        UI::BeginTabBar("MapImages");
 
-        if (img.m_texture !is null){
-            vec2 thumbSize = img.m_texture.GetSize();
-            UI::Image(img.m_texture, vec2(
-                width,
-                thumbSize.y / (thumbSize.x / width)
-            ));
-            if (UI::IsItemHovered()) {
-                UI::BeginTooltip();
-                UI::Image(img.m_texture, vec2(
-                    width*3,
-                    thumbSize.y / (thumbSize.x / (width*3))
-                ));
-                UI::EndTooltip();
+        if (m_map.ImageCount != 0) {
+            for (uint i = 1; i < m_map.ImageCount+1; i++) {
+                if(UI::BeginTabItem(tostring(i))){
+                    auto img = Images::CachedFromURL("https://"+MXURL+"/maps/"+m_map.TrackID+"/image/"+i);
+
+                    if (img.m_texture !is null){
+                        vec2 thumbSize = img.m_texture.GetSize();
+                        UI::Image(img.m_texture, vec2(
+                            width,
+                            thumbSize.y / (thumbSize.x / width)
+                        ));
+                        if (UI::IsItemHovered()) {
+                            UI::BeginTooltip();
+                            UI::Image(img.m_texture, vec2(
+                                width*3,
+                                thumbSize.y / (thumbSize.x / (width*3))
+                            ));
+                            UI::EndTooltip();
+                        }
+                    } else {
+                        int HourGlassValue = Time::Stamp % 3;
+                        string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
+                        UI::Text(Hourglass + " Loading");
+                    }
+                    UI::EndTabItem();
+                }
             }
-        } else {
+        }
+
+        if(UI::BeginTabItem("Thumbnail")){
             auto thumb = Images::CachedFromURL("https://"+MXURL+"/maps/thumbnail/"+m_map.TrackID);
             if (thumb.m_texture !is null){
                 vec2 thumbSize = thumb.m_texture.GetSize();
@@ -211,8 +226,16 @@ class MapTab : Tab
                     ));
                     UI::EndTooltip();
                 }
+            } else {
+                int HourGlassValue = Time::Stamp % 3;
+                string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
+                UI::Text(Hourglass + " Loading");
             }
+            UI::EndTabItem();
         }
+        
+        UI::EndTabBar();
+        UI::Separator();
 
         for (uint i = 0; i < m_map.Tags.Length; i++) {
             IfaceRender::MapTag(m_map.Tags[i]);
