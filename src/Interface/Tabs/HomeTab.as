@@ -24,14 +24,6 @@ class HomePageTab : Tab {
                 width,
                 logoSize.y / (logoSize.x / width)
             ));
-            if (UI::IsItemHovered()) {
-                UI::BeginTooltip();
-                UI::Image(logo.m_texture, vec2(
-                    width*3,
-                    logoSize.y / (logoSize.x / (width*3))
-                ));
-                UI::EndTooltip();
-            }
         }
 
         UI::EndChild();
