@@ -29,6 +29,30 @@ namespace IfaceRender
         if (UI::CyanButton(Icons::Kenney::InfoCircle)) {
             mxMenu.AddTab(MapTab(map.TrackID), true);
         }
+        if (UI::IsItemHovered()) {
+            UI::BeginTooltip();
+            auto img = Images::CachedFromURL("https://"+MXURL+"/maps/"+map.TrackID+"/image/1");
+            int width = 800;
+
+            if (img.m_texture !is null){
+                vec2 thumbSize = img.m_texture.GetSize();
+                UI::Image(img.m_texture, vec2(
+                    width,
+                    thumbSize.y / (thumbSize.x / width)
+                ));
+            } else {
+                auto thumb = Images::CachedFromURL("https://"+MXURL+"/maps/thumbnail/"+map.TrackID);
+                width = 400;
+                if (thumb.m_texture !is null){
+                    vec2 thumbSize = thumb.m_texture.GetSize();
+                    UI::Image(thumb.m_texture, vec2(
+                        width,
+                        thumbSize.y / (thumbSize.x / width)
+                    ));
+                }
+            }
+            UI::EndTooltip();
+        }
         UI::SameLine();
 
 #if TMNEXT
