@@ -22,7 +22,7 @@ namespace MX
         int AuthorTime;
         int TrackValue;
         int AwardCount;
-        int ImageCount;
+        uint ImageCount;
         bool IsMP4;
         array<MapTag@> Tags;
 
