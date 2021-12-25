@@ -32,7 +32,7 @@ namespace IfaceRender
         if (UI::IsItemHovered()) {
             UI::BeginTooltip();
             auto img = Images::CachedFromURL("https://"+MXURL+"/maps/"+map.TrackID+"/image/1");
-            int width = 800;
+            int width = Draw::GetWidth() * 0.50;
 
             if (img.m_texture !is null){
                 vec2 thumbSize = img.m_texture.GetSize();
@@ -42,7 +42,7 @@ namespace IfaceRender
                 ));
             } else {
                 auto thumb = Images::CachedFromURL("https://"+MXURL+"/maps/thumbnail/"+map.TrackID);
-                width = 400;
+                width = Draw::GetWidth() * 0.30;
                 if (thumb.m_texture !is null){
                     vec2 thumbSize = thumb.m_texture.GetSize();
                     UI::Image(thumb.m_texture, vec2(

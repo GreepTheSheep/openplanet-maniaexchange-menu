@@ -147,8 +147,8 @@ class MapPackTab : Tab
             if (UI::IsItemHovered()) {
                 UI::BeginTooltip();
                 UI::Image(thumb.m_texture, vec2(
-                    width*3,
-                    thumbSize.y / (thumbSize.x / (width*3))
+                    Draw::GetWidth() * 0.6,
+                    thumbSize.y / (thumbSize.x / (Draw::GetWidth() * 0.6))
                 ));
                 UI::EndTooltip();
             }

@@ -195,8 +195,8 @@ class MapTab : Tab
                         if (UI::IsItemHovered()) {
                             UI::BeginTooltip();
                             UI::Image(img.m_texture, vec2(
-                                width*3,
-                                thumbSize.y / (thumbSize.x / (width*3))
+                                Draw::GetWidth() * 0.6,
+                                thumbSize.y / (thumbSize.x / (Draw::GetWidth() * 0.6))
                             ));
                             UI::EndTooltip();
                         }
@@ -221,8 +221,8 @@ class MapTab : Tab
                 if (UI::IsItemHovered()) {
                     UI::BeginTooltip();
                     UI::Image(thumb.m_texture, vec2(
-                        width*2,
-                        thumbSize.y / (thumbSize.x / (width*2))
+                        Draw::GetWidth() * 0.4,
+                        thumbSize.y / (thumbSize.x / (Draw::GetWidth() * 0.4))
                     ));
                     UI::EndTooltip();
                 }
