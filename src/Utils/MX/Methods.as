@@ -35,6 +35,8 @@ namespace MX
 
     void DownloadMap(int mapId)
     {
+        if (UserMapsFolder() == "<Invalid>") return;
+        
         string downloadedMapFolder = UserMapsFolder() + "Downloaded";
         string mxDLFolder = downloadedMapFolder + "/" + pluginName;
         if (!IO::FolderExists(downloadedMapFolder)) IO::CreateFolder(downloadedMapFolder);

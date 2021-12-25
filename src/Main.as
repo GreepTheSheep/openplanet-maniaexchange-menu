@@ -199,9 +199,15 @@ string changeEnumStyle(string enumName){
 }
 
 string UserMapsFolder(){
-    CSystemFids@ userFolder = Fids::GetUserFolder('Maps');
-    if (userFolder is null) return "<Invalid>";
-    CSystemFids@ Tree = userFolder.Trees[0];
-    CSystemFidFile@ Fid = Tree.Leaves[0];
-    return Fid.ParentFolder.ParentFolder.FullDirName;
+    try {
+        CSystemFids@ userFolder = Fids::GetUserFolder('Maps');
+        if (userFolder is null) return "<Invalid>";
+        CSystemFids@ Tree = userFolder.Trees[0];
+        if (Tree is null) return "<Invalid>";
+        CSystemFidFile@ Fid = Tree.Leaves[0];
+        if (Fid is null) return "<Invalid>";
+        return Fid.ParentFolder.ParentFolder.FullDirName;
+    } catch {
+        return "<Invalid>";
+    }
 }
