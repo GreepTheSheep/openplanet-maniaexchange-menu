@@ -81,11 +81,11 @@ class MapTab : Tab
         m_error = true;
     }
 
-    void StartTMIORequest(int fromTime = -1)
+    void StartTMIORequest(int offset = 0)
     {
         if (m_map is null) return;
         string url = "https://trackmania.io/api/leaderboard/map/"+m_map.TrackUID;
-        if (fromTime != -1) url += "?from=" + fromTime;
+        if (offset != -1) url += "?length=100&offset=" + offset;
         if (IsDevMode()) log("MapTab::StartRequest (TM.IO): "+url);
         m_TMIOrequestStarted = true;
         @m_TMIOrequest = API::Get(url);
@@ -370,8 +370,7 @@ class MapTab : Tab
                 if (!m_TMIONoRes && m_leaderboard.get_Length() == 0) StartTMIORequest();
                 else {
                     if (!m_TMIONoRes) {
-                        int lastIndex = m_leaderboard.get_Length() - 1;
-                        StartTMIORequest(m_leaderboard[lastIndex].time);
+                        StartTMIORequest(m_leaderboard.get_Length());
                     }
                 }
             }
