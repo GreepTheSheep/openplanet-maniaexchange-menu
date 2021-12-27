@@ -492,15 +492,14 @@ class MapTab : Tab
                                 UI::Text("\\$f00(+ " + FormatTime(entry.time - m_leaderboard[0].time) + ")");
                             }
                         }
-                        if (!m_TMIOstopleaderboard && UI::GetScrollY() >= UI::GetScrollMaxY()){
-                            // new request
-                            UI::TableNextRow();
-                            UI::TableSetColumnIndex(1);
-                            UI::Text(Icons::HourglassEnd + " Loading...");
-                            if (!m_TMIOrequestStarted) m_TMIOrequestStart = true;
+                        UI::EndTable();
+                        if (!m_TMIOrequestStarted && !m_TMIOstopleaderboard && UI::GreenButton("Load more")){
+                            m_TMIOrequestStart = true;
                             m_TMIOnextPage = true;
                         }
-                        UI::EndTable();
+                        if (m_TMIOrequestStarted && !m_TMIOstopleaderboard){
+                            UI::Text(Icons::HourglassEnd + " Loading...");
+                        }
                     }
                     
                 }
