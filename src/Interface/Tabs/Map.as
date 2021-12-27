@@ -15,7 +15,6 @@ class MapTab : Tab
     bool m_authorsError = false;
     bool m_TMIOrequestStart = false;
     bool m_TMIOrequestStarted = false;
-    bool m_TMIOnextPage = false;
     bool m_TMIOstopleaderboard = false;
     bool m_TMIOerror = false;
     string m_TMIOerrorMsg = "";
@@ -162,8 +161,7 @@ class MapTab : Tab
 
     void HandleTMIOResponse(const Json::Value &in json)
     {
-        if (!m_TMIOnextPage && json.get_Length() < 15) m_TMIOstopleaderboard = true;
-        if (m_TMIOnextPage && json.get_Length() < 50) m_TMIOstopleaderboard = true;
+        if (json.get_Length() < 100) m_TMIOstopleaderboard = true;
 
         for (uint i = 0; i < json.get_Length(); i++) {
             auto leaderboard = TMIO::Leaderboard(json[i]);
