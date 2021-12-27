@@ -1,8 +1,10 @@
 class MapTab : Tab
 {
     Net::HttpRequest@ m_MXrequest;
+    Net::HttpRequest@ m_MXAuthorsRequest;
     Net::HttpRequest@ m_TMIOrequest;
     MX::MapInfo@ m_map;
+    array<MX::MapAuthorInfo@> m_authors;
     array<TMIO::Leaderboard@> m_leaderboard;
     int m_mapId;
     bool m_isLoading = false;
@@ -10,6 +12,7 @@ class MapTab : Tab
     bool m_isMapOnPlayLater = false;
     bool m_isRoyalMap = false;
     bool m_error = false;
+    bool m_authorsError = false;
     bool m_TMIOrequestStart = false;
     bool m_TMIOrequestStarted = false;
     bool m_TMIOnextPage = false;
@@ -23,6 +26,7 @@ class MapTab : Tab
     MapTab(int trackId) {
         m_mapId = trackId;
         StartMXRequest(m_mapId);
+        StartMXAuthorsRequest(m_mapId);
     }
 
     bool CanClose() override { return !m_isLoading; }
@@ -79,6 +83,46 @@ class MapTab : Tab
     void HandleMXResponseError()
     {
         m_error = true;
+    }
+
+    void StartMXAuthorsRequest(int trackId)
+    {
+        string url = "https://"+MXURL+"/api/maps/get_authors/"+trackId;
+        if (IsDevMode()) log("MapTab::StartRequest (Authors): "+url);
+        @m_MXAuthorsRequest = API::Get(url);
+    }
+
+    void CheckMXAuthorsRequest()
+    {
+        // If there's a request, check if it has finished
+        if (m_MXAuthorsRequest !is null && m_MXAuthorsRequest.Finished()) {
+            // Parse the response
+            string res = m_MXAuthorsRequest.String();
+            if (IsDevMode()) log("MapTab::CheckRequest (Authors): " + res);
+            @m_MXAuthorsRequest = null;
+            auto json = Json::Parse(res);
+
+            if (json.get_Length() == 0) {
+                log("MapTab::CheckRequest (MX): Error parsing response");
+                HandleMXAuthorsResponseError();
+                return;
+            }
+            // Handle the response
+            HandleMXAuthorResponse(json);
+        }
+    }
+
+    void HandleMXAuthorResponse(const Json::Value &in json)
+    {
+        for (uint i = 0; i < json.get_Length(); i++) {
+            MX::MapAuthorInfo@ author = MX::MapAuthorInfo(json[i]);
+            m_authors.InsertLast(author);
+        }
+    }
+
+    void HandleMXAuthorsResponseError()
+    {
+        m_authorsError = true;
     }
 
     void StartTMIORequest(int offset = 0)
@@ -150,6 +194,7 @@ class MapTab : Tab
     void Render() override
     {
         CheckMXRequest();
+        CheckMXAuthorsRequest();
 
         if (m_error) {
             UI::Text("\\$f00" + Icons::Times + " \\$zMap not found");
@@ -348,7 +393,33 @@ class MapTab : Tab
         UI::Text(ColoredString(m_map.GbxMapName));
         UI::PopFont();
 
-        UI::TextDisabled("By " + m_map.Username);
+        if (m_authorsError) {
+            UI::TextDisabled("By " + m_map.Username);
+        } else {
+            // check if array is empty
+            if (m_authors.get_Length() > 0) {
+                UI::TextDisabled("By: ");
+                UI::SameLine();
+                for (uint i = 0; i < m_authors.get_Length(); i++) {
+                    MX::MapAuthorInfo@ author = m_authors[i];
+                    UI::TextDisabled(author.Username + (i == m_authors.get_Length() - 1 ? "" : ", "));
+                    if (UI::IsItemHovered()) {
+                        UI::BeginTooltip();
+                        if (author.Uploader) {
+                            UI::Text(Icons::CloudUpload + " Uploader");
+                            if (author.Role != "") UI::Separator();
+                        }
+                        if (author.Role != "") UI::Text(author.Role);
+                        UI::EndTooltip();
+                    }
+                    if (i < m_authors.get_Length() - 1) UI::SameLine();
+                }
+            } else {
+                int HourGlassValue = Time::Stamp % 3;
+                string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
+                UI::TextDisabled(Hourglass + " By " + m_map.Username);
+            }
+        }
 
         UI::Separator();
 
@@ -361,7 +432,7 @@ class MapTab : Tab
             UI::EndTabItem();
         }
 #if TMNEXT
-        if(UI::BeginTabItem("Leaderboard")){
+        if(UI::BeginTabItem("Online Leaderboard")){
             UI::BeginChild("MapLeaderboardChild");
 
             CheckTMIORequest();
