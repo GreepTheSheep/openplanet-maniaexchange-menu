@@ -403,7 +403,7 @@ class MapTab : Tab
                 for (uint i = 0; i < m_authors.get_Length(); i++) {
                     MX::MapAuthorInfo@ author = m_authors[i];
                     UI::TextDisabled(author.Username + (i == m_authors.get_Length() - 1 ? "" : ", "));
-                    if (UI::IsItemHovered()) {
+                    if ((author.Role != "" || author.Uploader) && UI::IsItemHovered()) {
                         UI::BeginTooltip();
                         if (author.Uploader) {
                             UI::Text(Icons::CloudUpload + " Uploader");
@@ -495,7 +495,6 @@ class MapTab : Tab
                         UI::EndTable();
                         if (!m_TMIOrequestStarted && !m_TMIOstopleaderboard && UI::GreenButton("Load more")){
                             m_TMIOrequestStart = true;
-                            m_TMIOnextPage = true;
                         }
                         if (m_TMIOrequestStarted && !m_TMIOstopleaderboard){
                             UI::Text(Icons::HourglassEnd + " Loading...");
