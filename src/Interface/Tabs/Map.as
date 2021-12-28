@@ -87,7 +87,7 @@ class MapTab : Tab
     void StartMXAuthorsRequest(int trackId)
     {
         string url = "https://"+MXURL+"/api/maps/get_authors/"+trackId;
-        if (IsDevMode()) log("MapTab::StartRequest (Authors): "+url);
+        if (IsDevMode()) log("MapTab::StartRequest (Authors): "+url, true);
         @m_MXAuthorsRequest = API::Get(url);
     }
 
@@ -97,12 +97,12 @@ class MapTab : Tab
         if (m_MXAuthorsRequest !is null && m_MXAuthorsRequest.Finished()) {
             // Parse the response
             string res = m_MXAuthorsRequest.String();
-            if (IsDevMode()) log("MapTab::CheckRequest (Authors): " + res);
+            if (IsDevMode()) log("MapTab::CheckRequest (Authors): " + res, true);
             @m_MXAuthorsRequest = null;
             auto json = Json::Parse(res);
 
             if (json.get_Length() == 0) {
-                log("MapTab::CheckRequest (MX): Error parsing response");
+                log("MapTab::CheckRequest (Authors): Error parsing response");
                 HandleMXAuthorsResponseError();
                 return;
             }
@@ -129,7 +129,7 @@ class MapTab : Tab
         if (m_map is null) return;
         string url = "https://trackmania.io/api/leaderboard/map/"+m_map.TrackUID;
         if (offset != -1) url += "?length=100&offset=" + offset;
-        if (IsDevMode()) log("MapTab::StartRequest (TM.IO): "+url);
+        if (IsDevMode()) log("MapTab::StartRequest (TM.IO): "+url, true);
         m_TMIOrequestStarted = true;
         @m_TMIOrequest = API::Get(url);
     }
@@ -140,7 +140,7 @@ class MapTab : Tab
         if (m_TMIOrequest !is null && m_TMIOrequest.Finished()) {
             // Parse the response
             string res = m_TMIOrequest.String();
-            if (IsDevMode()) log("MapTab::CheckRequest (TM.IO): " + res);
+            if (IsDevMode()) log("MapTab::CheckRequest (TM.IO): " + res, true);
             @m_TMIOrequest = null;
             auto json = Json::Parse(res);
 

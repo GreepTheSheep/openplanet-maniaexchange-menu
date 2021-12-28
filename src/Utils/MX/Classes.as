@@ -73,7 +73,7 @@ namespace MX
                 }
             } catch {
                 Name = json["Name"];
-                error("Error parsing infos for the map: "+ Name, "");
+                mxError("Error parsing infos for the map: "+ Name, true);
             }
         }
 
@@ -112,7 +112,7 @@ namespace MX
                 }
                 json["Tags"] = tagsStr;
             } catch {
-                error("Error converting map info to json for map "+Name, "");
+                mxError("Error converting map info to json for map "+Name);
             }
             return json;
         }
@@ -133,7 +133,7 @@ namespace MX
                 Role = json["Role"];
                 Uploader = json["Uploader"];
             } catch {
-                error("Error parsing author info for the map", "");
+                mxError("Error parsing author info for the map", true);
             }
         }
     }
@@ -152,7 +152,7 @@ namespace MX
                 Color = json["Color"];
             } catch {
                 Name = json["Name"];
-                error("Error parsing tag: "+Name, "");
+                mxError("Error parsing tag: "+Name);
             }
         }
     }
@@ -209,7 +209,7 @@ namespace MX
                 }
             } catch {
                 Name = json["Name"];
-                error("Error parsing infos for the map pack: "+ Name, "");
+                mxError("Error parsing infos for the map pack: "+ Name, true);
             }
         }
 
@@ -239,7 +239,7 @@ namespace MX
                 }
                 json["Tags"] = tagsStr;
             } catch {
-                error("Error converting map pack info to json for map pack "+Name, "");
+                mxError("Error converting map pack info to json for map pack "+Name, true);
             }
             return json;
         }

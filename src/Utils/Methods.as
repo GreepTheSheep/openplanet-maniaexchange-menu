@@ -15,16 +15,16 @@ array<MX::MapInfo@> LoadPlayLater() {
         SavePlayLater(m_maps);
         return m_maps;
     } else if (FileData.GetType() != Json::Type::Array) {
-        error("The data file seems to yield invalid data. If it persists, consider deleting the file " + PlayLaterJSON, "is not of the correct JSON type.");
+        mxError("The data file seems to yield invalid data. If it persists, consider deleting the file " + PlayLaterJSON, true);
         return m_maps;
     } else {
         for (uint i = 0; i < FileData.get_Length(); i++) {
             if (IsDevMode()) {
                 string mapName = FileData[i]["Name"];
-                log("Loading map #"+i+" from Play later: " + mapName);
+                log("Loading map #"+i+" from Play later: " + mapName, true);
             }
             if (FileData[i].GetType() != Json::Type::Object) {
-                error("The data file seems to yield invalid data. If it persists, consider deleting the file " + PlayLaterJSON, "is not of the correct JSON type.");
+                mxError("The data file seems to yield invalid data. If it persists, consider deleting the file " + PlayLaterJSON, true);
                 return m_maps;
             }
             MX::MapInfo@ map = MX::MapInfo(FileData[i]);

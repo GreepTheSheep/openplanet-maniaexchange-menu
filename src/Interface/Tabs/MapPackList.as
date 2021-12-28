@@ -46,7 +46,7 @@ class MapPackListTab : Tab
 
         string url = "https://"+MXURL+"/mappacksearch/search"+urlParams;
 
-        if (IsDevMode()) log("MapPackListTab::StartRequest: " + url);
+        if (IsDevMode()) log("MapPackListTab::StartRequest: " + url, true);
         @m_request = API::Get(url);
     }
 
@@ -66,7 +66,7 @@ class MapPackListTab : Tab
         if (m_request !is null && m_request.Finished()) {
             // Parse the response
             string res = m_request.String();
-            if (IsDevMode()) log("MapPackListTab::CheckRequest: " + res);
+            if (IsDevMode()) log("MapPackListTab::CheckRequest: " + res, true);
             @m_request = null;
             auto json = Json::Parse(res);
 
