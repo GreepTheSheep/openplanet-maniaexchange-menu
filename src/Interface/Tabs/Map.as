@@ -290,6 +290,20 @@ class MapTab : Tab
         UI::Text(Icons::Hourglass + " \\$f77" + m_map.LengthName);
         if (m_map.Laps != 1) UI::Text(Icons::Refresh+ " \\$f77" + m_map.Laps);
         UI::Text(Icons::LevelUp+ " \\$f77" + m_map.DifficultyName);
+        
+        UI::Text(Icons::Hashtag+ " \\$f77" + m_map.TrackID);
+        UI::SameLine();
+        UI::TextDisabled(Icons::Clipboard);
+        if (UI::IsItemHovered()) {
+            UI::BeginTooltip();
+            UI::Text("Click to copy to clipboard");
+            UI::EndTooltip();
+        }
+        if (UI::IsItemClicked()) {
+            IO::SetClipboard(tostring(m_map.TrackID));
+            UI::ShowNotification(Icons::Clipboard + " Track ID copied to clipboard");
+        }
+
         UI::Text(Icons::Calendar + " \\$f77" + m_map.UploadedAt);
         if (m_map.UploadedAt != m_map.UpdatedAt) UI::Text(Icons::Refresh + " \\$f77" + m_map.UpdatedAt);
 #if MP4
