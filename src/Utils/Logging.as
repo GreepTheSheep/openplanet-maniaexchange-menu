@@ -1,5 +1,5 @@
-void log(string msg, bool disabled = false){
-    print((disabled ? "\\$777" : "") + msg);
+void log(string msg, bool grey = false){
+    print((grey ? "\\$777" : "") + msg);
 }
 void mxError(string msg, bool showNotification = false){
     if (showNotification) {
