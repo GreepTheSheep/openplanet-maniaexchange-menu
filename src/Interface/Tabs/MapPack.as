@@ -163,6 +163,20 @@ class MapPackTab : Tab
         if (m_mapPack.Unreleased) UI::Text(Icons::Times + " \\$f77Unreleased");
         UI::Text(Icons::ThList + " \\$f77" + m_mapPack.TypeName);
         UI::Text(Icons::ListOl + " \\$f77" + m_mapPack.TrackCount);
+
+        UI::Text(Icons::Hashtag + " \\$f77" + m_mapPack.ID);
+        UI::SameLine();
+        UI::TextDisabled(Icons::Clipboard);
+        if (UI::IsItemHovered()) {
+            UI::BeginTooltip();
+            UI::Text("Click to copy to clipboard");
+            UI::EndTooltip();
+        }
+        if (UI::IsItemClicked()) {
+            IO::SetClipboard(tostring(m_mapPack.ID));
+            UI::ShowNotification(Icons::Clipboard + " Map pack ID copied to clipboard");
+        }
+
         if (m_mapPack.Request) UI::Text(Icons::HandPeaceO+ " \\$f77Open for requests!");
         UI::Text(Icons::Calendar + " \\$f77" + m_mapPack.Created);
         if (m_mapPack.Created != m_mapPack.Edited) UI::Text(Icons::Refresh + " \\$f77" + m_mapPack.Edited);
