@@ -32,7 +32,7 @@ namespace IfaceRender
         if (UI::IsItemHovered()) {
             UI::BeginTooltip();
             auto img = Images::CachedFromURL("https://"+MXURL+"/maps/"+map.TrackID+"/image/1");
-            int width = Draw::GetWidth() * 0.50;
+            float width = Draw::GetWidth() * 0.50;
 
             if (img.m_texture !is null){
                 vec2 thumbSize = img.m_texture.GetSize();
