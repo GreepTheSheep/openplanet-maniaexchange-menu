@@ -21,7 +21,7 @@ array<MX::MapInfo@> LoadPlayLater() {
         for (uint i = 0; i < FileData.get_Length(); i++) {
             if (IsDevMode()) {
                 string mapName = FileData[i]["Name"];
-                log("Loading map #"+i+" from Play later: " + mapName, true);
+                trace("Loading map #"+i+" from Play later: " + mapName);
             }
             if (FileData[i].GetType() != Json::Type::Object) {
                 mxError("The data file seems to yield invalid data. If it persists, consider deleting the file " + PlayLaterJSON, true);
@@ -30,7 +30,7 @@ array<MX::MapInfo@> LoadPlayLater() {
             MX::MapInfo@ map = MX::MapInfo(FileData[i]);
             m_maps.InsertAt(0, map);
         }
-        log(tostring(m_maps.Length) + " maps loaded from Play Later list.");
+        print(tostring(m_maps.Length) + " maps loaded from Play Later list.");
         return m_maps;
     }
 }

@@ -177,7 +177,7 @@ void Main(){
             if (!MX::APIDown && currentMapID < 0 && currentMapID != -1) {
                 currentMapID = MX::GetCurrentMapMXID();
                 if (currentMapID < 0 && currentMapID != -3) {
-                    if (IsDevMode()) log("MX ID error: " + currentMapID);
+                    if (IsDevMode()) print("MX ID error: " + currentMapID);
                     sleep(30000);
                 }
             }

@@ -40,7 +40,7 @@ class MapPackTab : Tab
     void StartMXRequest(int packId)
     {
         string url = "https://"+MXURL+"/api/mappack/get_info/"+packId;
-        if (IsDevMode()) log("MapPackTab::StartRequest (MX): "+url, true);
+        if (IsDevMode()) trace("MapPackTab::StartRequest (MX): "+url);
         @m_MXrequest = API::Get(url);
     }
 
@@ -50,12 +50,12 @@ class MapPackTab : Tab
         if (m_MXrequest !is null && m_MXrequest.Finished()) {
             // Parse the response
             string res = m_MXrequest.String();
-            if (IsDevMode()) log("MapPackTab::CheckRequest (MX): " + res, true);
+            if (IsDevMode()) trace("MapPackTab::CheckRequest (MX): " + res);
             @m_MXrequest = null;
             auto json = Json::Parse(res);
 
             if (json.get_Length() == 0) {
-                log("MapPackTab::CheckRequest (MX): Error parsing response");
+                print("MapPackTab::CheckRequest (MX): Error parsing response");
                 HandleMXResponseError();
                 return;
             }
@@ -78,7 +78,7 @@ class MapPackTab : Tab
     void StartMXMapListRequest(int packId)
     {
         string url = "https://"+MXURL+"/api/mappack/get_mappack_tracks/"+packId;
-        if (IsDevMode()) log("MapPackTab::StartRequest (Map List): "+url, true);
+        if (IsDevMode()) trace("MapPackTab::StartRequest (Map List): "+url);
         @m_MXMapsRequest = API::Get(url);
     }
 
@@ -88,12 +88,12 @@ class MapPackTab : Tab
         if (m_MXMapsRequest !is null && m_MXMapsRequest.Finished()) {
             // Parse the response
             string res = m_MXMapsRequest.String();
-            if (IsDevMode()) log("MapPackTab::CheckRequest (Map List): " + res, true);
+            if (IsDevMode()) trace("MapPackTab::CheckRequest (Map List): " + res);
             @m_MXMapsRequest = null;
             auto json = Json::Parse(res);
 
             if (json.get_Length() == 0) {
-                log("MapPackTab::CheckRequest (Map List): Error parsing response");
+                print("MapPackTab::CheckRequest (Map List): Error parsing response");
                 HandleMXMapListResponseError();
                 return;
             }

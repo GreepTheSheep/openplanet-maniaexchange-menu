@@ -10,12 +10,12 @@ namespace MX
                 int tagID = resNet[i]["ID"];
                 string tagName = resNet[i]["Name"];
 
-                if (IsDevMode()) log("Loading tag #"+tagID+" - "+tagName, true);
+                if (IsDevMode()) trace("Loading tag #"+tagID+" - "+tagName);
 
                 m_mapTags.InsertLast(MapTag(resNet[i]));
             }
 
-            log(m_mapTags.get_Length() + " tags loaded");
+            print(m_mapTags.get_Length() + " tags loaded");
         } catch {
             mxError("Error while loading tags");
             mxError(pluginName + " API is not responding, it must be down.", true);
@@ -49,7 +49,7 @@ namespace MX
         }
         mapDownloadInProgress = false;
         netMap.SaveToFile(mxDLFolder + "/" + mapId + ".Map.Gbx");
-        log("Map downloaded to " + mxDLFolder + "/" + mapId + ".Map.Gbx");
+        print("Map downloaded to " + mxDLFolder + "/" + mapId + ".Map.Gbx");
     }
 
     /* 
@@ -66,14 +66,14 @@ namespace MX
             string UIDMap = currentMap.MapInfo.MapUid;
             string url = "https://"+MXURL+"/api/maps/get_map_info/multi/" + UIDMap;
             if (req is null){
-                if (IsDevMode()) log("LoadCurrentMap::StartRequest: " + url, true);
+                if (IsDevMode()) trace("LoadCurrentMap::StartRequest: " + url);
                 @req = API::Get(url);
             }
             
             if (req !is null && req.Finished()) {
                 string response = req.String();
                 @req = null;
-                if (IsDevMode()) log("LoadCurrentMap::CheckResponse: " + response, true);
+                if (IsDevMode()) trace("LoadCurrentMap::CheckResponse: " + response);
 
                 // Evaluate reqest result
                 Json::Value returnedObject = Json::Parse(response);

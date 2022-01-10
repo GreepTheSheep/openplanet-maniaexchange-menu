@@ -38,7 +38,7 @@ class MapListTab : Tab
 
         string url = "https://"+MXURL+"/mapsearch2/search"+urlParams;
 
-        if (IsDevMode()) log("MapListTab::StartRequest: " + url, true);
+        if (IsDevMode()) trace("MapListTab::StartRequest: " + url);
         @m_request = API::Get(url);
     }
 
@@ -58,7 +58,7 @@ class MapListTab : Tab
         if (m_request !is null && m_request.Finished()) {
             // Parse the response
             string res = m_request.String();
-            if (IsDevMode()) log("MapListTab::CheckRequest: " + res, true);
+            if (IsDevMode()) trace("MapListTab::CheckRequest: " + res);
             @m_request = null;
             auto json = Json::Parse(res);
 
