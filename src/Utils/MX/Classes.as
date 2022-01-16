@@ -41,7 +41,7 @@ namespace MX
                 Name = json["Name"];
                 GbxMapName = json["GbxMapName"];
                 Comments = json["Comments"];
-                TitlePack = json["TitlePack"];
+                if (json["TitlePack"].GetType() != Json::Type::Null) TitlePack = json["TitlePack"];
                 Unlisted = json["Unlisted"];
                 Mood = json["Mood"];
                 DisplayCost = json["DisplayCost"];
