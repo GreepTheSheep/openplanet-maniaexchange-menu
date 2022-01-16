@@ -4,12 +4,8 @@ bool Setting_ColoredMapName = true;
 [Setting name="Close Openplanet overlay when loading a map" category="UI"]
 bool Setting_CloseOverlayOnLoad = true;
 
-#if TMNEXT
-[Setting name="Show Play Button on Royal Maps" category="UI" description="If you try to load Royal maps, the game will return you to the main menu."]
-bool Setting_ShowPlayOnRoyalMap = false;
-#else
-bool Setting_ShowPlayOnRoyalMap = true;
-#endif
+[Setting name="Show Play Button on all map types" category="UI" description="If you try to load other maps than supported types, the game will crash or return you to the main menu."]
+bool Setting_ShowPlayOnAllMaps = false;
 
 // Tabs
 

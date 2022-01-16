@@ -10,7 +10,6 @@ class MapTab : Tab
     bool m_isLoading = false;
     bool m_mapDownloaded = false;
     bool m_isMapOnPlayLater = false;
-    bool m_isRoyalMap = false;
     bool m_error = false;
     bool m_authorsError = false;
     bool m_TMIOrequestStart = false;
@@ -287,8 +286,12 @@ class MapTab : Tab
         UI::NewLine();
 
         UI::Text(Icons::Trophy + " \\$f77" + m_map.AwardCount);
+#if MP4
+        if (repo == MP4mxRepos::Shootmania) UI::Text(Icons::FileCodeO + " \\$f77" + m_map.MapType);
+        else
+#endif
         UI::Text(Icons::Hourglass + " \\$f77" + m_map.LengthName);
-        if (m_map.Laps != 1) UI::Text(Icons::Refresh+ " \\$f77" + m_map.Laps);
+        if (m_map.Laps >= 1) UI::Text(Icons::Refresh+ " \\$f77" + m_map.Laps);
         UI::Text(Icons::LevelUp+ " \\$f77" + m_map.DifficultyName);
         
         UI::Text(Icons::Hashtag+ " \\$f77" + m_map.TrackID);
@@ -318,59 +321,59 @@ class MapTab : Tab
 
 #if TMNEXT
         if (Permissions::PlayLocalMap()) {
-            for (uint i = 0; i < m_map.Tags.get_Length(); i++) {
-                MX::MapTag@ tag = m_map.Tags[i];
-                if (tag.ID == 37) { // Royal map
-                    m_isRoyalMap = true;
-                    break;
-                }
-            }
+#endif
 
-            if (m_isRoyalMap) {
-                UI::Text("\\$f70" + Icons::ExclamationTriangle + " \\$zRoyal maps can not be played in solo");
-                if (Setting_ShowPlayOnRoyalMap && UI::OrangeButton(Icons::Play + " Play Map Anyway")) {
+            if (supportedMapTypes.Find(m_map.MapType) == -1) {
+                UI::Text("\\$f70" + Icons::ExclamationTriangle + " \\$zThe map type is not supported for direct play\nit can crash your game or returns you to the menu");
+                if (!Setting_ShowPlayOnAllMaps && UI::IsItemHovered()) {
+                    UI::BeginTooltip();
+                    UI::Text("If you still want to play this map, check the box \"Show Play Button on all map types\" in the plugin settings");
+                    UI::EndTooltip();
+                }
+                if (Setting_ShowPlayOnAllMaps && UI::OrangeButton(Icons::Play + " Play Map Anyway")) {
                     if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
                     UI::ShowNotification("Loading map...", ColoredString(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
+                    UI::ShowNotification(Icons::ExclamationTriangle + " Warning", "The map type is not supported for direct play, it can crash your game or returns you to the menu", UI::HSV(0.11, 1.0, 1.0), 15000);
                     MX::mapToLoad = m_map.TrackID;
                 }
             } else {
-#endif
                 if (UI::GreenButton(Icons::Play + " Play Map")) {
                     if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
                     UI::ShowNotification("Loading map...", ColoredString(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
                     MX::mapToLoad = m_map.TrackID;
                 }
-                if (UserMapsFolder() != "<Invalid>") {
-                    if (MX::mapDownloadInProgress){
-                        UI::Text("\\$f70" + Icons::Download + " \\$zDownloading map...");
-                        m_isLoading = true;
-                    } else {
-                        m_isLoading = false;
-                        if (!m_mapDownloaded) {
-                            if (UI::PurpleButton(Icons::Download + " Download Map")) {
-                                UI::ShowNotification("Downloading map...", ColoredString(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
-                                MX::mapToDL = m_map.TrackID;
-                                m_mapDownloaded = true;
-                            }
-                        } else {
-                            UI::Text("\\$0f0" + Icons::Download + " \\$zMap downloaded");
-                            UI::TextDisabled("to " + UserMapsFolder() + "Downloaded\\"+pluginName+"\\" + m_map.TrackID + ".Map.Gbx");
-                        }
-                    }
-                } else {
-                    UI::Text('\\$f70' + Icons::ExclamationTriangle + " \\$zUser maps folder is invalid, impossible to save map");
-                }
-#if TMNEXT
             }
+#if TMNEXT
         } else {
             UI::Text("\\$f00"+Icons::Times + " \\$zYou do not have permissions to play");
             UI::Text("Consider buying at least standard access of the game.");
         }
 #endif
 
+        if (UserMapsFolder() != "<Invalid>") {
+            if (MX::mapDownloadInProgress){
+                UI::Text("\\$f70" + Icons::Download + " \\$zDownloading map...");
+                m_isLoading = true;
+            } else {
+                m_isLoading = false;
+                if (!m_mapDownloaded) {
+                    if (UI::PurpleButton(Icons::Download + " Download Map")) {
+                        UI::ShowNotification("Downloading map...", ColoredString(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
+                        MX::mapToDL = m_map.TrackID;
+                        m_mapDownloaded = true;
+                    }
+                } else {
+                    UI::Text("\\$0f0" + Icons::Download + " \\$zMap downloaded");
+                    UI::TextDisabled("to " + UserMapsFolder() + "Downloaded\\"+pluginName+"\\" + m_map.TrackID + ".Map.Gbx");
+                }
+            }
+        } else {
+            UI::Text('\\$f70' + Icons::ExclamationTriangle + " \\$zUser maps folder is invalid, impossible to save map");
+        }
+
         if (!m_isMapOnPlayLater){
 #if TMNEXT
-            if (Permissions::PlayLocalMap() && !m_isRoyalMap && UI::GreenButton(Icons::Check + " Add to Play later")) {
+            if (Permissions::PlayLocalMap() && UI::GreenButton(Icons::Check + " Add to Play later")) {
 #else
             if (UI::GreenButton(Icons::Check + " Add to Play later")) {
 #endif

@@ -56,23 +56,47 @@ namespace IfaceRender
         UI::SameLine();
 
 #if TMNEXT
-        bool isRoyal = false;
-        for (uint i = 0; i < map.Tags.get_Length(); i++) {
-            MX::MapTag@ tag = map.Tags[i];
-            if (tag.ID == 37) { // Royal map
-                isRoyal = true;
-                break;
-            }
-        }
-
-
-        if ((Permissions::PlayLocalMap() && !isRoyal && UI::GreenButton(Icons::Play)) || (Permissions::PlayLocalMap() && isRoyal && Setting_ShowPlayOnRoyalMap && UI::OrangeButton(Icons::Play))) {
+        if (Permissions::PlayLocalMap() && supportedMapTypes.Find(map.MapType) >= 0) {
 #else
-        if (UI::GreenButton(Icons::Play)) {
-#endif        
-            if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
-            UI::ShowNotification("Loading map...", ColoredString(map.GbxMapName) + "\\$z\\$s by " + map.Username);
-            MX::mapToLoad = map.TrackID;
+        if (supportedMapTypes.Find(map.MapType) >= 0) {
+#endif
+            if (UI::GreenButton(Icons::Play)) {
+                if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
+                UI::ShowNotification("Loading map...", ColoredString(map.GbxMapName) + "\\$z\\$s by " + map.Username);
+                MX::mapToLoad = map.TrackID;
+            }
+            
+#if TMNEXT
+        } else if (Permissions::PlayLocalMap() && supportedMapTypes.Find(map.MapType) == -1 && Setting_ShowPlayOnAllMaps) {
+#else
+        } else if (supportedMapTypes.Find(map.MapType) == -1 && Setting_ShowPlayOnAllMaps) {
+#endif
+            if (UI::OrangeButton(Icons::Play)) {
+                if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
+                UI::ShowNotification("Loading map...", ColoredString(map.GbxMapName) + "\\$z\\$s by " + map.Username);
+                UI::ShowNotification(Icons::ExclamationTriangle + " Warning", "The map type is not supported for direct play, it can crash your game or returns you to the menu", UI::HSV(0.11, 1.0, 1.0), 15000);
+                MX::mapToLoad = map.TrackID;
+            }
+            if (UI::IsItemHovered()) {
+                UI::BeginTooltip();
+                UI::Text(Icons::ExclamationTriangle + " The map type is not supported for direct play, it can crash your game or returns you to the menu");
+                UI::TextDisabled(map.MapType);
+                UI::EndTooltip();
+            }
+#if TMNEXT
+        } else if (Permissions::PlayLocalMap() && supportedMapTypes.Find(map.MapType) == -1 && !Setting_ShowPlayOnAllMaps) {
+#else
+        } else if (supportedMapTypes.Find(map.MapType) == -1 && !Setting_ShowPlayOnAllMaps) {
+#endif
+            UI::Text("\\$f90"+Icons::ExclamationTriangle);
+            if (UI::IsItemHovered()) {
+                UI::BeginTooltip();
+                UI::Text(Icons::ExclamationTriangle + " The map type is not supported for direct play, it can crash your game or returns you to the menu");
+                UI::TextDisabled(map.MapType);
+                UI::Separator();
+                UI::Text("If you still want to play this map, check the box \"Show Play Button on all map types\" in the plugin settings");
+                UI::EndTooltip();
+            }
         }
     }
 }
