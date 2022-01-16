@@ -20,6 +20,7 @@ namespace MX
         string LengthName;
         int Laps;
         string DifficultyName;
+        string VehicleName;
         int AuthorTime;
         int TrackValue;
         int AwardCount;
@@ -48,6 +49,7 @@ namespace MX
                 if (json["LengthName"].GetType() != Json::Type::Null) LengthName = json["LengthName"];
                 Laps = json["Laps"];
                 if (json["DifficultyName"].GetType() != Json::Type::Null) DifficultyName = json["DifficultyName"];
+                if (json["VehicleName"].GetType() != Json::Type::Null) VehicleName = json["VehicleName"];
                 if (json["AuthorTime"].GetType() != Json::Type::Null) AuthorTime = json["AuthorTime"];
                 TrackValue = json["TrackValue"];
                 AwardCount = json["AwardCount"];
@@ -101,6 +103,7 @@ namespace MX
                 json["LengthName"] = LengthName;
                 json["Laps"] = Laps;
                 json["DifficultyName"] = DifficultyName;
+                json["VehicleName"] = VehicleName;
                 json["AuthorTime"] = AuthorTime;
                 json["TrackValue"] = TrackValue;
                 json["AwardCount"] = AwardCount;
