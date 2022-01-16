@@ -7,7 +7,17 @@ string gameName = "MP4";
 string MXURL = "tm.mania.exchange";
 
 array<string> supportedMapTypes = {
-    "Race"
+    "Race",
+    "MeleeArena",
+    "ObstacleTitleArena",
+    "SiegeV2Arena",
+    "SpeedBallArena",
+    "RoyalArena",
+    "EliteArena",
+    "JoustArena",
+    "CTFModeArena",
+    "CTFAgeArena",
+    "BattleArena"
 };
 
 #elif TMNEXT

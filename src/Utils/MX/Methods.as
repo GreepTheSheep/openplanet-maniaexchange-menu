@@ -23,14 +23,24 @@ namespace MX
         }
     }
 
+
     void LoadMap(int mapId)
     {
+        MX::MapInfo@ map = MX::MapInfo(API::GetAsync("https://"+MXURL+"/api/maps/get_map_info/multi/"+mapId)[0]);
+
+        string Mode = "";
+        Json::Value Modes = MX::ModesFromMapType();
+
+        if (Modes.HasKey(map.MapType)) {
+            Mode = Modes[map.MapType];
+        }
+
         CTrackMania@ app = cast<CTrackMania>(GetApp());
         app.BackToMainMenu(); // If we're on a map, go back to the main menu else we'll get stuck on the current map
         while(!app.ManiaTitleControlScriptAPI.IsReady) {
             yield(); // Wait until the ManiaTitleControlScriptAPI is ready for loading the next map
         }
-        app.ManiaTitleControlScriptAPI.PlayMap("https://"+MXURL+"/maps/download/"+mapId, "", "");
+        app.ManiaTitleControlScriptAPI.PlayMap("https://"+MXURL+"/maps/download/"+mapId, Mode, "");
     }
 
     void DownloadMap(int mapId)
