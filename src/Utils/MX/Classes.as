@@ -7,6 +7,7 @@ namespace MX
         int UserID;
         string Username;
         string AuthorLogin;
+        string MapType;
         string UploadedAt;
         string UpdatedAt;
         string Name;
@@ -34,6 +35,7 @@ namespace MX
                 UserID = json["UserID"];
                 Username = json["Username"];
                 AuthorLogin = json["AuthorLogin"];
+                MapType = json["MapType"];
                 UploadedAt = json["UploadedAt"];
                 UpdatedAt = json["UpdatedAt"];
                 Name = json["Name"];
@@ -86,6 +88,7 @@ namespace MX
                 json["UserID"] = UserID;
                 json["Username"] = Username;
                 json["AuthorLogin"] = AuthorLogin;
+                json["MapType"] = MapType;
                 json["UploadedAt"] = UploadedAt;
                 json["UpdatedAt"] = UpdatedAt;
                 json["Name"] = Name;
