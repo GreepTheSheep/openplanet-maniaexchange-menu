@@ -57,9 +57,10 @@ namespace MX
         while(!netMap.Finished()) {
             yield();
         }
+        MX::MapInfo@ map = MX::MapInfo(API::GetAsync("https://"+MXURL+"/api/maps/get_map_info/multi/"+mapId)[0]);
         mapDownloadInProgress = false;
-        netMap.SaveToFile(mxDLFolder + "/" + mapId + ".Map.Gbx");
-        print("Map downloaded to " + mxDLFolder + "/" + mapId + ".Map.Gbx");
+        netMap.SaveToFile(mxDLFolder + "/" + map.TrackID + " - " + map.Name + ".Map.Gbx");
+        print("Map downloaded to " + mxDLFolder + "/" + map.TrackID + " - " + map.Name + ".Map.Gbx");
     }
 
     /* 
