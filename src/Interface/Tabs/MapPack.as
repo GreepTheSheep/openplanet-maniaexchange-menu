@@ -5,7 +5,7 @@ class MapPackTab : Tab
     Net::HttpRequest@ m_MXrequest;
     Net::HttpRequest@ m_MXMapsRequest;
     MX::MapPackInfo@ m_mapPack;
-    
+
     int m_mapPackId;
     bool m_isLoading = false;
     bool m_error = false;
@@ -136,7 +136,6 @@ class MapPackTab : Tab
 
         UI::BeginChild("Summary", vec2(width,0));
 
-        
         auto thumb = Images::CachedFromURL("https://"+MXURL+"/mappack/thumbnail/"+m_mapPack.ID);
         if (thumb.m_texture !is null){
             vec2 thumbSize = thumb.m_texture.GetSize();
@@ -250,7 +249,6 @@ class MapPackTab : Tab
                     }
                 }
             }
-            
             UI::EndChild();
             UI::EndTabItem();
         }

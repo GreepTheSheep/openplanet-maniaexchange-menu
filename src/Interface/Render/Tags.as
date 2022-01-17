@@ -26,7 +26,7 @@ namespace IfaceRender
         UI::Dummy(textSize + TAG_PADDING * 2);
         DrawTag(UI::GetItemRect(), text, color);
     }
-    
+
     void MapTag(MX::MapTag@ tag)
     {
         vec4 color = Text::ParseHexColor(tag.Color);

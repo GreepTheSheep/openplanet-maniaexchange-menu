@@ -1,6 +1,6 @@
 class FeaturedMapsTab : MapListTab
 {
-    
+
     bool IsVisible() override {return Setting_Tab_Featured_Visible;}
     string GetLabel() override {return Icons::Star + " Featured";}
 

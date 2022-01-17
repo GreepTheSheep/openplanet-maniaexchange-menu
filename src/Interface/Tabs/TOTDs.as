@@ -1,6 +1,5 @@
 class TOTDTab : MapListTab
 {
-    
     bool IsVisible() override {return Setting_Tab_TOTD_Visible;}
     string GetLabel() override {return Icons::Calendar + " Tracks of the Day";}
 

@@ -3,7 +3,7 @@ namespace MX
     void GetAllMapTags()
     {
         Json::Value resNet = API::GetAsync("https://"+MXURL+"/api/tags/gettags");
-        
+
         try {
             for (uint i = 0; i < resNet.get_Length(); i++)
             {
@@ -46,7 +46,7 @@ namespace MX
     void DownloadMap(int mapId)
     {
         if (UserMapsFolder() == "<Invalid>") return;
-        
+
         string downloadedMapFolder = UserMapsFolder() + "Downloaded";
         string mxDLFolder = downloadedMapFolder + "/" + pluginName;
         if (!IO::FolderExists(downloadedMapFolder)) IO::CreateFolder(downloadedMapFolder);
@@ -63,7 +63,7 @@ namespace MX
         print("Map downloaded to " + mxDLFolder + "/" + map.TrackID + " - " + map.Name + ".Map.Gbx");
     }
 
-    /* 
+    /*
     * MX ID Error codes:
     * > 0 = MX ID
     * -1 = Map not found
@@ -80,7 +80,7 @@ namespace MX
                 if (IsDevMode()) trace("LoadCurrentMap::StartRequest: " + url);
                 @req = API::Get(url);
             }
-            
+
             if (req !is null && req.Finished()) {
                 string response = req.String();
                 @req = null;

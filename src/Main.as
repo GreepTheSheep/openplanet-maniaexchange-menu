@@ -100,7 +100,6 @@ void RenderMenuMain(){
                             SavePlayLater(g_PlayLaterMaps);
                             UI::ShowNotification(ColoredString(map.GbxMapName) + "\\$z\\$s by " + map.Username + " has been removed!");
                         }
-                        
                         UI::EndMenu();
                     }
                 }

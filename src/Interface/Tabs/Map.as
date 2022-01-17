@@ -275,7 +275,7 @@ class MapTab : Tab
             }
             UI::EndTabItem();
         }
-        
+
         UI::EndTabBar();
         UI::Separator();
 
@@ -293,7 +293,7 @@ class MapTab : Tab
         UI::Text(Icons::Hourglass + " \\$f77" + m_map.LengthName);
         if (m_map.Laps >= 1) UI::Text(Icons::Refresh+ " \\$f77" + m_map.Laps);
         UI::Text(Icons::LevelUp+ " \\$f77" + m_map.DifficultyName);
-        
+
         UI::Text(Icons::Hashtag+ " \\$f77" + m_map.TrackID);
         UI::SameLine();
         UI::TextDisabled(Icons::Clipboard);
@@ -387,7 +387,6 @@ class MapTab : Tab
 #else
             if (UI::RedButton(Icons::Times + " Remove from Play later")) {
 #endif
-            
                 for (uint i = 0; i < g_PlayLaterMaps.get_Length(); i++) {
                     MX::MapInfo@ playLaterMap = g_PlayLaterMaps[i];
                     if (playLaterMap.TrackID == m_map.TrackID) {
@@ -515,7 +514,6 @@ class MapTab : Tab
                             UI::Text(Icons::HourglassEnd + " Loading...");
                         }
                     }
-                    
                 }
             }
             UI::EndChild();

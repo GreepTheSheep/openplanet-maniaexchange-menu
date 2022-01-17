@@ -65,7 +65,7 @@ namespace IfaceRender
                 UI::ShowNotification("Loading map...", ColoredString(map.GbxMapName) + "\\$z\\$s by " + map.Username);
                 MX::mapToLoad = map.TrackID;
             }
-            
+
 #if TMNEXT
         } else if (Permissions::PlayLocalMap() && supportedMapTypes.Find(map.MapType) == -1 && Setting_ShowPlayOnAllMaps) {
 #else

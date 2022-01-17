@@ -1,6 +1,6 @@
 class LatestMapsTab : MapListTab
 {
-    
+
     bool IsVisible() override {return Setting_Tab_Latest_Visible;}
     string GetLabel() override {return Icons::ClockO + " Latest";}
 

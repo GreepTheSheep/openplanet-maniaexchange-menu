@@ -2,7 +2,7 @@ class MostAwardedTab : MapListTab
 {
     string t_selectedDate = "This Week";
     string t_selectedMode = "4";
-    
+
     bool IsVisible() override {return Setting_Tab_MostAwarded_Visible;}
     string GetLabel() override {return Icons::Trophy + " Most Awarded Maps";}
 

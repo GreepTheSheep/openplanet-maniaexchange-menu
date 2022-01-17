@@ -4,7 +4,7 @@ class SearchTab : MapListTab
     uint64 u_typingStart;
     string t_selectedMode = "Track name";
     string t_paramMode = "trackname";
-    
+
     bool IsVisible() override {return Setting_Tab_Search_Visible;}
     string GetLabel() override {return Icons::Search + " Search";}
 

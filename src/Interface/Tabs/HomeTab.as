@@ -43,7 +43,6 @@ class HomePageTab : Tab {
 #endif
         UI::PopFont();
 #if MP4
-        
         UI::TextDisabled("Current repository: " + MXURL + "    " + Icons::InfoCircle);
         if (UI::IsItemHovered()) {
             UI::BeginTooltip();
