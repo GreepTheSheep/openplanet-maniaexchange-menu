@@ -1,6 +1,6 @@
 namespace HomePageTabRender {
     void About()
-    {                
+    {
         if (UI::Button(Icons::KeyboardO + " \\$zContact ManiaExchange")) OpenBrowserURL("https://"+MXURL+"/messaging/compose/11");
         UI::SameLine();
         if (UI::RedButton(Icons::Heart + " \\$zSupport ManiaExchange")) OpenBrowserURL("https://"+MXURL+"/support");
@@ -38,7 +38,7 @@ namespace HomePageTabRender {
         if (UI::Button(Icons::DiscordAlt + " Discord")) OpenBrowserURL("https://greep.gq/discord");
         UI::SameLine();
         if (UI::Button(Icons::Heartbeat + " Plugin Home")) OpenBrowserURL("https://openplanet.nl/files/" + Meta::ExecutingPlugin().get_SiteID());
-        
+
         UI::Separator();
         UI::Text("\\$f39" + Icons::Heartbeat);
         UI::SameLine();
