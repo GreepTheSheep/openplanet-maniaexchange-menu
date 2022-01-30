@@ -9,3 +9,5 @@ version = "1.0.2"
 
 [script]
 imports = [ "Icons.as", "Permissions.as", "Formatting.as", "Dialogs.as" ]
+
+exports = [ "src/Exports/Exports.as" ]
