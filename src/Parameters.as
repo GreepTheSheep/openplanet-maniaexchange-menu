@@ -10,6 +10,8 @@ array<string> supportedMapTypes = {
     "Race",
     "MeleeArena",
     "ObstacleTitleArena",
+    "ObstacleTitleArenaOld",
+    "ObstacleArena",
     "SiegeV2Arena",
     "SpeedBallArena",
     "RoyalArena",

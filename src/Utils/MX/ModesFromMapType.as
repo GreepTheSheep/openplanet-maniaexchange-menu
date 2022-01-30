@@ -4,6 +4,8 @@ namespace MX
         Json::Value json = Json::Object();
 
         json["ObstacleTitleArena"] = "Obstacle";
+        json["ObstacleTitleArenaOld"] = "Obstacle";
+        json["ObstacleArena"] = "Obstacle";
         json["SiegeV2Arena"] = "SiegePro";
         json["SpeedBallArena"] = "SpeedBall";
         json["RoyalArena"] = "RoyalPro";
