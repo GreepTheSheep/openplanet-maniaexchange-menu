@@ -57,11 +57,21 @@ class HomePageTab : Tab {
 
         UI::BeginTabBar("HomePageTabs");
         if(UI::BeginTabItem(Icons::Home + " Welcome!")){
+            UI::BeginChild("HomeChild");
             HomePageTabRender::Home();
+            UI::EndChild();
             UI::EndTabItem();
         }
         if(UI::BeginTabItem(Icons::InfoCircle + " About")){
+            UI::BeginChild("AboutChild");
             HomePageTabRender::About();
+            UI::EndChild();
+            UI::EndTabItem();
+        }
+        if(UI::BeginTabItem(Icons::Tags + " Changelogs")){
+            UI::BeginChild("ChangelogsChild");
+            HomePageTabRender::Changelog();
+            UI::EndChild();
             UI::EndTabItem();
         }
         UI::EndTabBar();

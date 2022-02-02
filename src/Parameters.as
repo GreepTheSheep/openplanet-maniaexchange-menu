@@ -39,4 +39,5 @@ array<string> supportedMapTypes = {
 string nameMenu = pluginColor + Icons::Exchange + " \\$z"+ pluginName;
 array<MX::MapInfo@> g_PlayLaterMaps;
 string PlayLaterJSON = IO::FromDataFolder("ManiaExchange_PlayLater.json");
-string repoURL = "https://github.com/GreepTheSheep/openplanet-maniaexchange-menu";
+string repoName = "GreepTheSheep/openplanet-maniaexchange-menu";
+string repoURL = "https://github.com/"+repoName;
