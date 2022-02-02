@@ -5,6 +5,7 @@ namespace HomePageTabRender {
         UI::SameLine();
         if (UI::RedButton(Icons::Heart + " \\$zSupport ManiaExchange")) OpenBrowserURL("https://"+MXURL+"/support");
 
+        UI::AlignTextToFramePadding();
         UI::Text("Follow the ManiaExchange network on");
         UI::SameLine();
         if (UI::Button(Icons::Facebook + " Facebook")) OpenBrowserURL("https://facebook.com/maniaexchange/");
