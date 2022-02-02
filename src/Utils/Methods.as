@@ -2,6 +2,12 @@ bool IsDevMode(){
     return Meta::ExecutingPlugin().get_Type() == Meta::PluginType::Folder;
 }
 
+bool IsInEditor(){
+    CTrackMania@ app = cast<CTrackMania>(GetApp());
+    auto editor = cast<CGameCtnEditorCommon@>(app.Editor);
+    return editor !is null && app.CurrentPlayground is null;
+}
+
 CGameCtnChallenge@ GetCurrentMap(){
     CTrackMania@ g_app = cast<CTrackMania>(GetApp());
     return g_app.RootMap;

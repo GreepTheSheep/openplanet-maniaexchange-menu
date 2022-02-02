@@ -70,39 +70,44 @@ namespace MX
     * -2 = Server error
     * -3 = Loading request
     * -4 = Not in a map
+    * -5 = In Map Editor
     */
     int GetCurrentMapMXID(){
         auto currentMap = GetCurrentMap();
-        if (currentMap !is null) {
-            string UIDMap = currentMap.MapInfo.MapUid;
-            string url = "https://"+MXURL+"/api/maps/get_map_info/multi/" + UIDMap;
-            if (req is null){
-                if (IsDevMode()) trace("LoadCurrentMap::StartRequest: " + url);
-                @req = API::Get(url);
-            }
+        if (!IsInEditor()){
+            if (currentMap !is null) {
+                string UIDMap = currentMap.MapInfo.MapUid;
+                string url = "https://"+MXURL+"/api/maps/get_map_info/multi/" + UIDMap;
+                if (req is null){
+                    if (IsDevMode()) trace("LoadCurrentMap::StartRequest: " + url);
+                    @req = API::Get(url);
+                }
 
-            if (req !is null && req.Finished()) {
-                string response = req.String();
-                @req = null;
-                if (IsDevMode()) trace("LoadCurrentMap::CheckResponse: " + response);
+                if (req !is null && req.Finished()) {
+                    string response = req.String();
+                    @req = null;
+                    if (IsDevMode()) trace("LoadCurrentMap::CheckResponse: " + response);
 
-                // Evaluate reqest result
-                Json::Value returnedObject = Json::Parse(response);
-                try {
-                    if (returnedObject.get_Length() > 0) {
-                        int g_MXId = returnedObject[0]["TrackID"];
-                        return g_MXId;
-                    } else {
-                        return -1;
+                    // Evaluate reqest result
+                    Json::Value returnedObject = Json::Parse(response);
+                    try {
+                        if (returnedObject.get_Length() > 0) {
+                            int g_MXId = returnedObject[0]["TrackID"];
+                            return g_MXId;
+                        } else {
+                            return -1;
+                        }
+                    } catch {
+                        return -2;
                     }
-                } catch {
-                    return -2;
+                } else {
+                    return -3;
                 }
             } else {
-                return -3;
+                return -4;
             }
         } else {
-            return -4;
+            return -5;
         }
     }
 }

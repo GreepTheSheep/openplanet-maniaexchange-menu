@@ -71,6 +71,11 @@ void RenderMenuMain(){
                 UI::Separator();
                 UI::TextDisabled("Not in a map.");
             }
+
+            if (IsDevMode() && currentMapID == -5){
+                UI::Separator();
+                UI::TextDisabled("In map editor.");
+            }
         } else {
             UI::TextDisabled("\\$f00" + Icons::Server + " \\$z" + shortMXName + " is down!");
             UI::TextDisabled("Consider to check your internet connection.");
@@ -172,16 +177,20 @@ void Main(){
 
         // Checks current played map
         auto currentMap = GetCurrentMap();
-        if (currentMap !is null){
-            if (!MX::APIDown && currentMapID < 0 && currentMapID != -1) {
-                currentMapID = MX::GetCurrentMapMXID();
-                if (currentMapID < 0 && currentMapID != -3) {
-                    if (IsDevMode()) print("MX ID error: " + currentMapID);
-                    sleep(30000);
+        if (!IsInEditor()){
+            if (currentMap !is null){
+                if (!MX::APIDown && currentMapID < 0 && currentMapID != -1) {
+                    currentMapID = MX::GetCurrentMapMXID();
+                    if (currentMapID < 0 && currentMapID != -3) {
+                        if (IsDevMode()) print("MX ID error: " + currentMapID);
+                        sleep(30000);
+                    }
                 }
+            } else {
+                currentMapID = -4;
             }
         } else {
-            currentMapID = -4;
+            currentMapID = -5;
         }
     }
 }
