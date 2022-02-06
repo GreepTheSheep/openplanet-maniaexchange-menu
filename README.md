@@ -21,3 +21,6 @@
 - A play later playlist, save all your maps and access them in 2 clicks anytime!
 - Possibility to download maps to your maps folder, so you can create club campaigns or rooms easily without alt-tabing
 - And many more!
+
+## Exports:
+- `ManiaExchange::ShowMapInfo(int MapID)` - Will open the tab to the corresponding map with its ID
