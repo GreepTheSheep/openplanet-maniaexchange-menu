@@ -55,10 +55,12 @@ namespace IfaceRender
         }
         UI::SameLine();
 
+        Json::Value SupportedModes = MX::ModesFromMapType();
+
 #if TMNEXT
-        if (Permissions::PlayLocalMap() && supportedMapTypes.Find(map.MapType) >= 0) {
+        if (Permissions::PlayLocalMap() && SupportedModes.HasKey(map.MapType)) {
 #else
-        if (supportedMapTypes.Find(map.MapType) >= 0) {
+        if (SupportedModes.HasKey(map.MapType)) {
 #endif
             if (UI::GreenButton(Icons::Play)) {
                 if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
@@ -67,9 +69,9 @@ namespace IfaceRender
             }
 
 #if TMNEXT
-        } else if (Permissions::PlayLocalMap() && supportedMapTypes.Find(map.MapType) == -1 && Setting_ShowPlayOnAllMaps) {
+        } else if (Permissions::PlayLocalMap() && !SupportedModes.HasKey(map.MapType) && Setting_ShowPlayOnAllMaps) {
 #else
-        } else if (supportedMapTypes.Find(map.MapType) == -1 && Setting_ShowPlayOnAllMaps) {
+        } else if (!SupportedModes.HasKey(map.MapType) && Setting_ShowPlayOnAllMaps) {
 #endif
             if (UI::OrangeButton(Icons::Play)) {
                 if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
@@ -84,9 +86,9 @@ namespace IfaceRender
                 UI::EndTooltip();
             }
 #if TMNEXT
-        } else if (Permissions::PlayLocalMap() && supportedMapTypes.Find(map.MapType) == -1 && !Setting_ShowPlayOnAllMaps) {
+        } else if (Permissions::PlayLocalMap() && !SupportedModes.HasKey(map.MapType) && !Setting_ShowPlayOnAllMaps) {
 #else
-        } else if (supportedMapTypes.Find(map.MapType) == -1 && !Setting_ShowPlayOnAllMaps) {
+        } else if (!SupportedModes.HasKey(map.MapType) && !Setting_ShowPlayOnAllMaps) {
 #endif
             UI::Text("\\$f90"+Icons::ExclamationTriangle);
             if (UI::IsItemHovered()) {

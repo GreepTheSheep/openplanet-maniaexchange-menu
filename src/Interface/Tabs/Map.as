@@ -323,7 +323,8 @@ class MapTab : Tab
         if (Permissions::PlayLocalMap()) {
 #endif
 
-            if (supportedMapTypes.Find(m_map.MapType) == -1) {
+            Json::Value SupportedModes = MX::ModesFromMapType();
+            if (!SupportedModes.HasKey(m_map.MapType)) {
                 UI::Text("\\$f70" + Icons::ExclamationTriangle + " \\$zThe map type is not supported for direct play\nit can crash your game or returns you to the menu");
                 if (!Setting_ShowPlayOnAllMaps && UI::IsItemHovered()) {
                     UI::BeginTooltip();

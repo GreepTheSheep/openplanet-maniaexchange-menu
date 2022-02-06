@@ -3,6 +3,12 @@ namespace MX
     Json::Value ModesFromMapType(){
         Json::Value json = Json::Object();
 
+        // Trackmania
+        json["Race"] = ""; // ManiaPlanet Map Type
+        json["TM_Race"] = ""; // TMNEXT Map Type
+
+        // Shootmania
+        json["MeleeArena"] = ""; // Base Shootmania Map Type
         json["ObstacleTitleArena"] = "Obstacle";
         json["ObstacleTitleArenaOld"] = "Obstacle";
         json["ObstacleArena"] = "Obstacle";
