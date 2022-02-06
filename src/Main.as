@@ -19,16 +19,17 @@ void RenderMenuMain(){
                 mxMenu.isOpened = !mxMenu.isOpened;
             }
             if(UI::BeginMenu(pluginColor + Icons::ICursor+"\\$z Enter map ID")) {
-                inputMapID = UI::InputText("", inputMapID);
+                bool pressedEnter = false;
+                inputMapID = UI::InputText("", inputMapID, pressedEnter, UI::InputTextFlags::EnterReturnsTrue | UI::InputTextFlags::CharsDecimal);
                 if (!Regex::Contains(inputMapID, "^[0-9]*$")) {
                     inputMapID = "";
                     UI::TextDisabled("\\$f00" + Icons::Times +" \\$zOnly numbers are allowed");
                 }
                 if (inputMapID != ""){
 #if TMNEXT
-                    if (Permissions::PlayLocalMap() && UI::MenuItem(Icons::Play + " Play map")){
+                    if (Permissions::PlayLocalMap() && (pressedEnter || UI::MenuItem(Icons::Play + " Play map"))){
 #else
-                    if (UI::MenuItem(Icons::Play + " Play map")){
+                    if (pressedEnter || UI::MenuItem(Icons::Play + " Play map")){
 #endif
                         if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
                         UI::ShowNotification("Loading map...");
