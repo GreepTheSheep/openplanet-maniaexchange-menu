@@ -26,41 +26,53 @@ namespace MX
 
     void LoadMap(int mapId)
     {
-        MX::MapInfo@ map = MX::MapInfo(API::GetAsync("https://"+MXURL+"/api/maps/get_map_info/multi/"+mapId)[0]);
+        try {
+            MX::MapInfo@ map = MX::MapInfo(API::GetAsync("https://"+MXURL+"/api/maps/get_map_info/multi/"+mapId)[0]);
 
-        string Mode = "";
-        Json::Value Modes = MX::ModesFromMapType();
+            string Mode = "";
+            Json::Value Modes = MX::ModesFromMapType();
 
-        if (Modes.HasKey(map.MapType)) {
-            Mode = Modes[map.MapType];
+            if (Modes.HasKey(map.MapType)) {
+                Mode = Modes[map.MapType];
+            }
+
+            CTrackMania@ app = cast<CTrackMania>(GetApp());
+            app.BackToMainMenu(); // If we're on a map, go back to the main menu else we'll get stuck on the current map
+            while(!app.ManiaTitleControlScriptAPI.IsReady) {
+                yield(); // Wait until the ManiaTitleControlScriptAPI is ready for loading the next map
+            }
+            app.ManiaTitleControlScriptAPI.PlayMap("https://"+MXURL+"/maps/download/"+mapId, Mode, "");
+        } catch {
+            mxError("Error while loading map");
+            mxError(pluginName + " API is not responding, it must be down.", true);
+            APIDown = true;
         }
-
-        CTrackMania@ app = cast<CTrackMania>(GetApp());
-        app.BackToMainMenu(); // If we're on a map, go back to the main menu else we'll get stuck on the current map
-        while(!app.ManiaTitleControlScriptAPI.IsReady) {
-            yield(); // Wait until the ManiaTitleControlScriptAPI is ready for loading the next map
-        }
-        app.ManiaTitleControlScriptAPI.PlayMap("https://"+MXURL+"/maps/download/"+mapId, Mode, "");
     }
 
     void DownloadMap(int mapId)
     {
         if (UserMapsFolder() == "<Invalid>") return;
 
-        string downloadedMapFolder = UserMapsFolder() + "Downloaded";
-        string mxDLFolder = downloadedMapFolder + "/" + pluginName;
-        if (!IO::FolderExists(downloadedMapFolder)) IO::CreateFolder(downloadedMapFolder);
-        if (!IO::FolderExists(mxDLFolder)) IO::CreateFolder(mxDLFolder);
+        try {
+            string downloadedMapFolder = UserMapsFolder() + "Downloaded";
+            string mxDLFolder = downloadedMapFolder + "/" + pluginName;
+            if (!IO::FolderExists(downloadedMapFolder)) IO::CreateFolder(downloadedMapFolder);
+            if (!IO::FolderExists(mxDLFolder)) IO::CreateFolder(mxDLFolder);
 
-        Net::HttpRequest@ netMap = API::Get("https://"+MXURL+"/maps/download/"+mapId);
-        mapDownloadInProgress = true;
-        while(!netMap.Finished()) {
-            yield();
+            Net::HttpRequest@ netMap = API::Get("https://"+MXURL+"/maps/download/"+mapId);
+            mapDownloadInProgress = true;
+            while(!netMap.Finished()) {
+                yield();
+            }
+            MX::MapInfo@ map = MX::MapInfo(API::GetAsync("https://"+MXURL+"/api/maps/get_map_info/multi/"+mapId)[0]);
+            mapDownloadInProgress = false;
+            netMap.SaveToFile(mxDLFolder + "/" + map.TrackID + " - " + map.Name + ".Map.Gbx");
+            print("Map downloaded to " + mxDLFolder + "/" + map.TrackID + " - " + map.Name + ".Map.Gbx");
+        } catch {
+            mxError("Error while downloading map");
+            mxError(pluginName + " API is not responding, it must be down.", true);
+            APIDown = true;
         }
-        MX::MapInfo@ map = MX::MapInfo(API::GetAsync("https://"+MXURL+"/api/maps/get_map_info/multi/"+mapId)[0]);
-        mapDownloadInProgress = false;
-        netMap.SaveToFile(mxDLFolder + "/" + map.TrackID + " - " + map.Name + ".Map.Gbx");
-        print("Map downloaded to " + mxDLFolder + "/" + map.TrackID + " - " + map.Name + ".Map.Gbx");
     }
 
     /*
