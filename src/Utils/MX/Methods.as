@@ -16,6 +16,7 @@ namespace MX
             }
 
             print(m_mapTags.get_Length() + " tags loaded");
+            MX::APIDown = false;
         } catch {
             mxError("Error while loading tags");
             mxError(pluginName + " API is not responding, it must be down.", true);

@@ -53,7 +53,7 @@ class MapPackListTab : Tab
     void CheckStartRequest()
     {
         // If there's not already a request and the window is appearing, we start a new request
-        if (mapPacks.get_Length() == 0 && m_request is null && UI::IsWindowAppearing()) {
+        if (!MX::APIDown && mapPacks.get_Length() == 0 && m_request is null && UI::IsWindowAppearing()) {
             StartRequest();
         }
     }
@@ -70,11 +70,19 @@ class MapPackListTab : Tab
             @m_request = null;
             auto json = Json::Parse(res);
 
+            if (json.GetType() == Json::Type::Null) {
+                mxError("Error while loading mappack list");
+                mxError(pluginName + " API is not responding, it must be down.", true);
+                MX::APIDown = true;
+                return;
+            }
+
             // Handle the response
             if (json.HasKey("error")) {
                 //HandleErrorResponse(json["error"]);
             } else {
                 HandleResponse(json);
+                MX::APIDown = false;
             }
         }
     }
@@ -140,6 +148,13 @@ class MapPackListTab : Tab
             string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
             UI::Text(Hourglass + " Loading...");
         } else {
+            if (MX::APIDown) {
+                UI::Text("API is down, please try again later.");
+                if (UI::Button("Retry")) {
+                    Reload();
+                }
+                return;
+            }
             if (mapPacks.get_Length() == 0) {
                 UI::Text("No map packs found.");
                 return;

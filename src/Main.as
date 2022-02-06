@@ -156,12 +156,12 @@ void RenderMenuMain(){
 }
 
 void Main(){
-    startnew(MX::GetAllMapTags);
-    g_PlayLaterMaps = LoadPlayLater();
 #if MP4
     if (repo == MP4mxRepos::Trackmania) MXURL = "tm.mania.exchange";
     else if (repo == MP4mxRepos::Shootmania) MXURL = "sm.mania.exchange";
 #endif
+    startnew(MX::GetAllMapTags);
+    g_PlayLaterMaps = LoadPlayLater();
 
     while(true){
         yield();
