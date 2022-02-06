@@ -135,7 +135,7 @@ void RenderMenuMain(){
             UI::Separator();
             if (UI::BeginMenu(pluginColor+Icons::KeyboardO + " \\$zContact")){
                 if (UI::MenuItem(pluginColor+Icons::KeyboardO + " \\$zContact ManiaExchange")) OpenBrowserURL("https://"+MXURL+"/messaging/compose/11");
-                if (UI::MenuItem(Icons::DiscordAlt + "Plugin's creator Discord")) OpenBrowserURL("https://greep.gq/discord");
+                if (UI::MenuItem(Icons::DiscordAlt + "Plugin creator's Discord")) OpenBrowserURL("https://greep.gq/discord");
                 UI::EndMenu();
             }
             UI::Separator();
