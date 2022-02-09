@@ -7,4 +7,4 @@ Compress-Archive @compress -Force
 
 Move-Item -Path "./ManiaExchange.zip" -Destination "./ManiaExchange.op" -Force
 
-Write-Host("✅ Done!")
+Write-Host("Done!")
