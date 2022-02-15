@@ -16,14 +16,14 @@ class TagsListTab : MapListTab
 
     void RenderHeader() override
     {
-        if (UI::BeginCombo("", t_selectedTab)){
+        if (UI::BeginCombo("##TagsCombo", t_selectedTab)){
             for (uint i = 0; i < MX::m_mapTags.get_Length(); i++)
             {
                 MX::MapTag@ tag = MX::m_mapTags[i];
                 if (UI::Selectable(tag.Name, t_selectedTab == tag.Name)){
                     if (t_selectedTab != tag.Name) {
                         t_selectedTab = tag.Name;
-                        t_tags = tostring(tag.ID);  
+                        t_tags = tostring(tag.ID);
                         Reload();
                     }
                 }

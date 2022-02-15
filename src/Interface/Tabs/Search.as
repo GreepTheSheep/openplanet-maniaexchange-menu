@@ -44,7 +44,7 @@ class SearchTab : MapListTab
     void RenderHeader() override
     {
         UI::SetNextItemWidth(120);
-        if (UI::BeginCombo("", t_selectedMode)){
+        if (UI::BeginCombo("##NamesFilter", t_selectedMode)){
             if (UI::Selectable("Track name", t_selectedMode == "Track name")){
                 t_selectedMode = "Track name";
                 t_paramMode = "trackname";

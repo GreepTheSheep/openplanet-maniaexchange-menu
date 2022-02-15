@@ -100,7 +100,7 @@ class MapPackListTab : Tab
 
     void RenderHeader()
     {
-        if (UI::BeginCombo("", t_selectedFilter)){
+        if (UI::BeginCombo("##MapPackFilter", t_selectedFilter)){
             if (UI::Selectable("Latest", t_selectedFilter == "Latest")){
                 t_selectedFilter = "Latest";
                 t_selectedPriord = "1";
