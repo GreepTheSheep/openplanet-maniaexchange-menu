@@ -490,21 +490,24 @@ class MapTab : Tab
                         UI::TableSetupColumn("Time", UI::TableColumnFlags::WidthStretch);
                         UI::TableHeadersRow();
                         PopTabStyle();
-                        for (uint i = 0; i < m_leaderboard.get_Length(); i++) {
-                            UI::TableNextRow();
-                            TMIO::Leaderboard@ entry = m_leaderboard[i];
+                        UI::ListClipper clipper(m_leaderboard.Length);
+                        while(clipper.Step()) {
+                            for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
+                                UI::TableNextRow();
+                                TMIO::Leaderboard@ entry = m_leaderboard[i];
 
-                            UI::TableSetColumnIndex(0);
-                            UI::Text(tostring(entry.position));
+                                UI::TableSetColumnIndex(0);
+                                UI::Text(tostring(entry.position));
 
-                            UI::TableSetColumnIndex(1);
-                            UI::Text(entry.playerName);
+                                UI::TableSetColumnIndex(1);
+                                UI::Text(entry.playerName);
 
-                            UI::TableSetColumnIndex(2);
-                            UI::Text(FormatTime(entry.time));
-                            if (i != 0){
-                                UI::SameLine();
-                                UI::Text("\\$f00(+ " + FormatTime(entry.time - m_leaderboard[0].time) + ")");
+                                UI::TableSetColumnIndex(2);
+                                UI::Text(FormatTime(entry.time));
+                                if (i != 0){
+                                    UI::SameLine();
+                                    UI::Text("\\$f00(+ " + FormatTime(entry.time - m_leaderboard[0].time) + ")");
+                                }
                             }
                         }
                         UI::EndTable();

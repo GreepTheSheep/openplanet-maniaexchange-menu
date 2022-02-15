@@ -170,12 +170,16 @@ class MapPackListTab : Tab
                 UI::TableSetupColumn("Actions", UI::TableColumnFlags::WidthFixed, 40);
                 UI::TableHeadersRow();
                 PopTabStyle();
-                for(uint i = 0; i < mapPacks.get_Length(); i++)
-                {
-                    UI::PushID("ResMap"+i);
-                    MX::MapPackInfo@ mapPack = mapPacks[i];
-                    IfaceRender::MapPackResult(mapPack);
-                    UI::PopID();
+
+                UI::ListClipper clipper(mapPacks.Length);
+                while(clipper.Step()) {
+                    for(int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++)
+                    {
+                        UI::PushID("ResMap"+i);
+                        MX::MapPackInfo@ mapPack = mapPacks[i];
+                        IfaceRender::MapPackResult(mapPack);
+                        UI::PopID();
+                    }
                 }
                 if (m_request !is null && totalItems > mapPacks.get_Length()) {
                     UI::TableNextRow();
