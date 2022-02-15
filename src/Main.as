@@ -20,7 +20,7 @@ void RenderMenuMain(){
             }
             if(UI::BeginMenu(pluginColor + Icons::ICursor+"\\$z Enter map ID")) {
                 bool pressedEnter = false;
-                inputMapID = UI::InputText("", inputMapID, pressedEnter, UI::InputTextFlags::EnterReturnsTrue | UI::InputTextFlags::CharsDecimal);
+                inputMapID = UI::InputText("##InputMapId", inputMapID, pressedEnter, UI::InputTextFlags::EnterReturnsTrue | UI::InputTextFlags::CharsDecimal);
                 if (!Regex::Contains(inputMapID, "^[0-9]*$")) {
                     inputMapID = "";
                     UI::TextDisabled("\\$f00" + Icons::Times +" \\$zOnly numbers are allowed");
