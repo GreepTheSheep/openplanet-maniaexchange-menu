@@ -351,25 +351,21 @@ class MapTab : Tab
         }
 #endif
 
-        if (UserMapsFolder() != "<Invalid>") {
-            if (MX::mapDownloadInProgress){
-                UI::Text("\\$f70" + Icons::Download + " \\$zDownloading map...");
-                m_isLoading = true;
-            } else {
-                m_isLoading = false;
-                if (!m_mapDownloaded) {
-                    if (UI::PurpleButton(Icons::Download + " Download Map")) {
-                        UI::ShowNotification("Downloading map...", ColoredString(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
-                        MX::mapToDL = m_map.TrackID;
-                        m_mapDownloaded = true;
-                    }
-                } else {
-                    UI::Text("\\$0f0" + Icons::Download + " \\$zMap downloaded");
-                    UI::TextDisabled("to " + UserMapsFolder() + "Downloaded\\"+pluginName+"\\" + m_map.TrackID + ".Map.Gbx");
-                }
-            }
+        if (MX::mapDownloadInProgress){
+            UI::Text("\\$f70" + Icons::Download + " \\$zDownloading map...");
+            m_isLoading = true;
         } else {
-            UI::Text('\\$f70' + Icons::ExclamationTriangle + " \\$zUser maps folder is invalid, impossible to save map");
+            m_isLoading = false;
+            if (!m_mapDownloaded) {
+                if (UI::PurpleButton(Icons::Download + " Download Map")) {
+                    UI::ShowNotification("Downloading map...", ColoredString(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
+                    MX::mapToDL = m_map.TrackID;
+                    m_mapDownloaded = true;
+                }
+            } else {
+                UI::Text("\\$0f0" + Icons::Download + " \\$zMap downloaded");
+                UI::TextDisabled("to " + "Maps\\Downloaded\\"+pluginName+"\\" + m_map.TrackID + " - " + m_map.Name + ".Map.Gbx");
+            }
         }
 
         if (!m_isMapOnPlayLater){
