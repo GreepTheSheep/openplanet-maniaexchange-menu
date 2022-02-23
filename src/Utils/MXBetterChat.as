@@ -70,7 +70,7 @@ namespace MXBetterChat
         }
         string Description()
         {
-            if (m_send) return "Tells the number of awards given on this map";
+            if (m_send) return "Tells the number of awards received on this map";
             else return "Prints the number of awards received on this map";
         }
 
@@ -121,6 +121,17 @@ namespace MXBetterChat
             {
                 BetterChat::SendChatMessage("$l[https://"+MXURL+"/maps/"+currentMapInfo.TrackID+"]\"" + currentMapInfo.Name + "\" on " + pluginName + "$l");
             }
+        }
+    }
+
+    class TellMXPlugin : BetterChat::ICommand
+    {
+        string Icon() { return "\\$acf" + Icons::Exchange; }
+        string Description() { return "Tells the " + pluginName + " plugin"; }
+
+        void Run(const string &in text)
+        {
+            BetterChat::SendChatMessage(Icons::Exchange + " I'm using the "+ pluginName +" plugin for Openplanet! You can access to your favorite maps directly from this plugin, including packs and more! $l[https://openplanet.dev/plugin/154]Get it here!$l");
         }
     }
 }
