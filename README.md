@@ -22,5 +22,23 @@
 - Possibility to download maps to your maps folder, so you can create club campaigns or rooms easily without alt-tabing
 - And many more!
 
+## Better Chat Commands:
+Those commands are available in the game chat thanks to [Better Chat](https://openplanet.dev/plugin/betterchat).
+
+`/mx` | `/maniaexchange` - Will open the tab to the current map
+
+`/mx-page` - Will open the ManiaExchange web page to the current map
+
+`/mx-tell-page` - Will send a link to the ManiaExchange web page to the current map in the chat
+
+`/mx-awards` - Will show the number of awards for the current map
+
+`/mx-tell-awards` - Will send the number of awards for the current map in the chat
+
+`/mx-tell-plugin` - Will send the ManiaExchange plugin info and download link in the chat
+
+
+`/mx-json` - Dev Mode Only: Will show the raw JSON for the current map
+
 ## Exports:
 - `ManiaExchange::ShowMapInfo(int MapID)` - Will open the tab to the corresponding map with its ID
