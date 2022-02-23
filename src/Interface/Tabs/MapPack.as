@@ -166,11 +166,7 @@ class MapPackTab : Tab
         UI::Text(Icons::Hashtag + " \\$f77" + m_mapPack.ID);
         UI::SameLine();
         UI::TextDisabled(Icons::Clipboard);
-        if (UI::IsItemHovered()) {
-            UI::BeginTooltip();
-            UI::Text("Click to copy to clipboard");
-            UI::EndTooltip();
-        }
+        UI::SetPreviousTooltip("Click to copy to clipboard");
         if (UI::IsItemClicked()) {
             IO::SetClipboard(tostring(m_mapPack.ID));
             UI::ShowNotification(Icons::Clipboard + " Map pack ID copied to clipboard");

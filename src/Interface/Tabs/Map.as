@@ -297,11 +297,7 @@ class MapTab : Tab
         UI::Text(Icons::Hashtag+ " \\$f77" + m_map.TrackID);
         UI::SameLine();
         UI::TextDisabled(Icons::Clipboard);
-        if (UI::IsItemHovered()) {
-            UI::BeginTooltip();
-            UI::Text("Click to copy to clipboard");
-            UI::EndTooltip();
-        }
+        UI::SetPreviousTooltip("Click to copy to clipboard");
         if (UI::IsItemClicked()) {
             IO::SetClipboard(tostring(m_map.TrackID));
             UI::ShowNotification(Icons::Clipboard + " Track ID copied to clipboard");
@@ -326,10 +322,8 @@ class MapTab : Tab
             Json::Value SupportedModes = MX::ModesFromMapType();
             if (!SupportedModes.HasKey(m_map.MapType)) {
                 UI::Text("\\$f70" + Icons::ExclamationTriangle + " \\$zThe map type is not supported for direct play\nit can crash your game or returns you to the menu");
-                if (!Setting_ShowPlayOnAllMaps && UI::IsItemHovered()) {
-                    UI::BeginTooltip();
-                    UI::Text("If you still want to play this map, check the box \"Show Play Button on all map types\" in the plugin settings");
-                    UI::EndTooltip();
+                if (!Setting_ShowPlayOnAllMaps) {
+                    UI::SetPreviousTooltip("If you still want to play this map, check the box \"Show Play Button on all map types\" in the plugin settings");
                 }
                 if (Setting_ShowPlayOnAllMaps && UI::OrangeButton(Icons::Play + " Play Map Anyway")) {
                     if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
