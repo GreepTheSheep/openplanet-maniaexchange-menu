@@ -46,7 +46,7 @@ void RenderMenuMain(){
 
             if (currentMapID > 0){
                 UI::Separator();
-                if (UI::MenuItem(Icons::Kenney::InfoCircle + " Current map information")){
+                if (UI::MenuItem(Icons::Kenney::InfoCircle + " " + ColoredString(currentMapInfo.GbxMapName))){
                     if (!mxMenu.isOpened) mxMenu.isOpened = true;
                     mxMenu.AddTab(MapTab(currentMapID), true);
                 }
