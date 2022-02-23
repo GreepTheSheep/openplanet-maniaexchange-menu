@@ -167,7 +167,8 @@ void Main(){
 #if DEPENDENCY_BETTERCHAT
     BetterChat::RegisterCommand("mx", MXBetterChat::OpenMapOnMXCmd());
     BetterChat::RegisterCommand("maniaexchange", MXBetterChat::OpenMapOnMXCmd());
-    BetterChat::RegisterCommand("mx-tell-page", MXBetterChat::TellMXPage());
+    BetterChat::RegisterCommand("mx-page", MXBetterChat::MXPage(false));
+    BetterChat::RegisterCommand("mx-tell-page", MXBetterChat::MXPage(true));
     BetterChat::RegisterCommand("mx-awards", MXBetterChat::MapAwards(false));
     BetterChat::RegisterCommand("mx-tell-awards", MXBetterChat::MapAwards(true));
     BetterChat::RegisterCommand("mx-tell-plugin", MXBetterChat::TellMXPlugin());
@@ -226,6 +227,7 @@ void OnDestroyed() {
     if (IsDevMode()) BetterChat::UnregisterCommand("mx-json");
     BetterChat::UnregisterCommand("mx-awards");
     BetterChat::UnregisterCommand("mx-tell-awards");
+    BetterChat::UnregisterCommand("mx-page");
     BetterChat::UnregisterCommand("mx-tell-page");
     BetterChat::UnregisterCommand("mx-tell-plugin");
 #endif

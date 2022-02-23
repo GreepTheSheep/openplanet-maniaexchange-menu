@@ -97,10 +97,22 @@ namespace MXBetterChat
         }
     }
 
-    class TellMXPage : BetterChat::ICommand
+    class MXPage : BetterChat::ICommand
     {
-        string Icon() { return "\\$acf" + Icons::Exchange; }
-        string Description() { return "Tells the " + MXURL + " page of this map"; }
+        bool m_send;
+
+        MXPage(bool send) { m_send = send; }
+
+        string Icon()
+        {
+            if (m_send) return "\\$acf" + Icons::Exchange;
+            else return pluginColor + Icons::Exchange;
+        }
+        string Description()
+        {
+            if (m_send) return "Tells the " + MXURL + " page of this map";
+            else return "Opens the " + MXURL + " page of this map";
+        }
 
         void Run(const string &in text)
         {
@@ -119,7 +131,8 @@ namespace MXBetterChat
                 }
             } else
             {
-                BetterChat::SendChatMessage("$l[https://"+MXURL+"/maps/"+currentMapInfo.TrackID+"]\"" + currentMapInfo.Name + "\" on " + pluginName + "$l");
+                if (m_send) BetterChat::SendChatMessage("$l[https://"+MXURL+"/maps/"+currentMapInfo.TrackID+"]\"" + currentMapInfo.Name + "\" on " + pluginName + "$l");
+                else OpenBrowserURL("https://"+MXURL+"/maps/"+currentMapInfo.TrackID);
             }
         }
     }
