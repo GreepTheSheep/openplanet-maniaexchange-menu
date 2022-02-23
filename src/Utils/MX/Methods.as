@@ -103,6 +103,7 @@ namespace MX
                     Json::Value returnedObject = Json::Parse(response);
                     try {
                         if (returnedObject.get_Length() > 0) {
+                            @currentMapInfo = MapInfo(returnedObject[0]);
                             int g_MXId = returnedObject[0]["TrackID"];
                             return g_MXId;
                         } else {

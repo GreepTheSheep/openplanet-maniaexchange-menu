@@ -1,5 +1,6 @@
 string inputMapID = "";
 int currentMapID = -4;
+MX::MapInfo@ currentMapInfo;
 
 void RenderMenu()
 {
@@ -163,6 +164,15 @@ void Main(){
     startnew(MX::GetAllMapTags);
     g_PlayLaterMaps = LoadPlayLater();
 
+#if DEPENDENCY_BETTERCHAT
+    BetterChat::RegisterCommand("mx", MXBetterChat::OpenMapOnMXCmd());
+    BetterChat::RegisterCommand("maniaexchange", MXBetterChat::OpenMapOnMXCmd());
+    if (IsDevMode()) BetterChat::RegisterCommand("mx-json", MXBetterChat::ShowMapInfoJson());
+    BetterChat::RegisterCommand("mx-awards", MXBetterChat::MapAwards(false));
+    BetterChat::RegisterCommand("mx-tell-awards", MXBetterChat::MapAwards(true));
+    BetterChat::RegisterCommand("mx-tell-page", MXBetterChat::TellMXPage());
+#endif
+
     while(true){
         yield();
 
@@ -205,4 +215,15 @@ string changeEnumStyle(string enumName){
     string str = enumName.SubStr(enumName.IndexOf(":") + 1);
     str = str.Replace("_", " ");
     return str;
+}
+
+void OnDestroyed() {
+#if DEPENDENCY_BETTERCHAT
+    BetterChat::UnregisterCommand("mx");
+    BetterChat::UnregisterCommand("maniaexchange");
+    if (IsDevMode()) BetterChat::UnregisterCommand("mx-json");
+    BetterChat::UnregisterCommand("mx-awards");
+    BetterChat::UnregisterCommand("mx-tell-awards");
+    BetterChat::UnregisterCommand("mx-tell-page");
+#endif
 }
