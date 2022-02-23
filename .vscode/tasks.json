@@ -6,12 +6,7 @@
         {
             "label": "Build .op file",
             "type": "shell",
-            "command": "${workspaceFolder}/build-op.ps1",
-            "options": {
-                "shell": {
-                    "executable": "powershell",
-                }
-            },
+            "command": "${workspaceFolder}/build.bat",
             "problemMatcher": [],
             "group": {
                 "kind": "build",
