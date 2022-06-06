@@ -1,7 +1,7 @@
 class HomePageTab : Tab {
-    Resources::Font@ g_fontTitle = Resources::GetFont("DroidSans-Bold.ttf", 32);
-    Resources::Font@ g_fontHeader = Resources::GetFont("DroidSans-Bold.ttf", 24);
-    Resources::Font@ g_fontHeader2 = Resources::GetFont("DroidSans-Bold.ttf", 18);
+    UI::Font@ g_fontTitle = UI::LoadFont("DroidSans-Bold.ttf", 32);
+    UI::Font@ g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24);
+    UI::Font@ g_fontHeader2 = UI::LoadFont("DroidSans-Bold.ttf", 18);
 
     string GetLabel() override { return Icons::Home; }
 

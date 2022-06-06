@@ -19,7 +19,7 @@ class MapTab : Tab
     string m_TMIOerrorMsg = "";
     bool m_TMIONoRes = false;
 
-    Resources::Font@ g_fontHeader = Resources::GetFont("DroidSans-Bold.ttf", 24);
+    UI::Font@ g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24);
 
     MapTab(int trackId) {
         m_mapId = trackId;

@@ -11,7 +11,7 @@ class MapPackTab : Tab
     bool m_error = false;
     bool m_mapListError = false;
 
-    Resources::Font@ g_fontHeader = Resources::GetFont("DroidSans-Bold.ttf", 24);
+    UI::Font@ g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24);
 
     MapPackTab(int packId) {
         mapPack_maps.RemoveRange(0, mapPack_maps.get_Length());
