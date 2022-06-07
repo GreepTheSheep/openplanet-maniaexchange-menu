@@ -50,13 +50,19 @@ namespace MX
         }
     }
 
-    void DownloadMap(int mapId)
+    void DownloadMap(int mapId, string mapPackName = "")
     {
         try {
             string downloadedMapFolder = IO::FromUserGameFolder("Maps/Downloaded");
             string mxDLFolder = downloadedMapFolder + "/" + pluginName;
             if (!IO::FolderExists(downloadedMapFolder)) IO::CreateFolder(downloadedMapFolder);
             if (!IO::FolderExists(mxDLFolder)) IO::CreateFolder(mxDLFolder);
+            if (mapPackName.Length > 0) {
+                mxDLFolder = mxDLFolder + "/Packs";
+                if (!IO::FolderExists(mxDLFolder)) IO::CreateFolder(mxDLFolder);
+                mxDLFolder = mxDLFolder + "/" + mapPackName;
+                if (!IO::FolderExists(mxDLFolder)) IO::CreateFolder(mxDLFolder);
+            }
 
             Net::HttpRequest@ netMap = API::Get("https://"+MXURL+"/maps/download/"+mapId);
             mapDownloadInProgress = true;

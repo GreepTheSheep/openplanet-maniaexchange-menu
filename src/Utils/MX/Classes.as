@@ -28,6 +28,8 @@ namespace MX
         bool IsMP4;
         array<MapTag@> Tags;
 
+        string MapPackName;
+
         MapInfo(const Json::Value &in json)
         {
             try {
@@ -121,6 +123,16 @@ namespace MX
                 mxWarn("Error converting map info to json for map "+Name);
             }
             return json;
+        }
+
+        void PlayMap()
+        {
+            MX::LoadMap(TrackID);
+        }
+
+        void DownloadMap()
+        {
+            MX::DownloadMap(TrackID, MapPackName);
         }
     }
 

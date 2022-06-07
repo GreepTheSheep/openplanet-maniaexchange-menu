@@ -10,6 +10,8 @@ class MapPackTab : Tab
     bool m_isLoading = false;
     bool m_error = false;
     bool m_mapListError = false;
+    string m_errorMessage = "";
+    bool m_mapDownloaded = false;
 
     Resources::Font@ g_fontHeader = Resources::GetFont("DroidSans-Bold.ttf", 24);
 
@@ -54,9 +56,14 @@ class MapPackTab : Tab
             @m_MXrequest = null;
             auto json = Json::Parse(res);
 
+            if (json.HasKey("Exception")) {
+                string errorMsg = json["Message"];
+                HandleMXResponseError(errorMsg);
+                return;
+            }
+
             if (json.get_Length() == 0) {
-                print("MapPackTab::CheckRequest (MX): Error parsing response");
-                HandleMXResponseError();
+                HandleMXResponseError("Empty response");
                 return;
             }
             StartMXMapListRequest(m_mapPackId);
@@ -70,9 +77,11 @@ class MapPackTab : Tab
         @m_mapPack = MX::MapPackInfo(json);
     }
 
-    void HandleMXResponseError()
+    void HandleMXResponseError(const string &in errorMessage = "")
     {
+        print("MapPackTab::CheckRequest (MX): Error parsing response");
         m_error = true;
+        m_errorMessage = errorMessage;
     }
 
     void StartMXMapListRequest(int packId)
@@ -105,7 +114,9 @@ class MapPackTab : Tab
     void HandleMXMapListResponse(const Json::Value &in json)
     {
         for (uint i = 0; i < json.get_Length(); i++) {
-            mapPack_maps.InsertLast(MX::MapInfo(json[i]));
+            MX::MapInfo@ map = MX::MapInfo(json[i]);
+            map.MapPackName = m_mapPack.Name;
+            mapPack_maps.InsertLast(map);
         }
     }
 
@@ -117,10 +128,9 @@ class MapPackTab : Tab
     void Render() override
     {
         CheckMXRequest();
-        CheckMXMapListRequest();
 
         if (m_error) {
-            UI::Text("\\$f00" + Icons::Times + " \\$zMap Pack not found");
+            UI::Text("\\$f00" + Icons::Times + " \\$z"+m_errorMessage);
             return;
         }
 
@@ -130,6 +140,8 @@ class MapPackTab : Tab
             UI::Text(Hourglass + " Loading...");
             return;
         }
+
+        CheckMXMapListRequest();
 
         float width = UI::GetWindowSize().x*0.35;
         vec2 posTop = UI::GetCursorPos();
@@ -190,6 +202,27 @@ class MapPackTab : Tab
                 SavePlayLater(g_PlayLaterMaps);
                 Dialogs::Message("\\$0f0"+Icons::Check+" \\$zAdded "+mapPack_maps.Length+" maps to the Play Later list");
             }, function(){});
+        }
+
+        if (MX::mapDownloadInProgress){
+            UI::Text("\\$f70" + Icons::Download + " \\$zDownloading maps...");
+            m_isLoading = true;
+        } else {
+            m_isLoading = false;
+            if (!m_mapDownloaded) {
+
+                if (!m_mapListError && mapPack_maps.Length != 0 && UI::PurpleButton(Icons::Download + " Download Pack")) {
+                    Dialogs::Question("\\$f90" + Icons::ExclamationTriangle + " \\$zThis will download " + mapPack_maps.Length + " maps to your Downloaded Maps folder, are you sure?", function(){
+                        for (uint i = 0; i < mapPack_maps.Length; i++) {
+                            MX::MapInfo@ map = mapPack_maps[i];
+                            UI::ShowNotification("Downloading map...", ColoredString(map.GbxMapName) + "\\$z\\$s by " + map.Username);
+                            startnew(CoroutineFunc(map.DownloadMap));
+                        }
+                    }, function(){});
+                }
+            } else {
+                UI::Text("\\$0f0" + Icons::Download + " \\$zMap pack downloaded");
+            }
         }
 
         UI::EndChild();
