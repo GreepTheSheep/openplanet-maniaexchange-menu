@@ -42,6 +42,10 @@ class HomePageTab : Tab {
         UI::TextDisabled("The content network for Trackmania - driven by the community.");
 #endif
         UI::PopFont();
+        UI::SameLine();
+        UI::TextDisabled(Icons::ExternalLink);
+        UI::SetPreviousTooltip("Click to open the website");
+        if (UI::IsItemClicked()) OpenBrowserURL("https://"+MXURL);
 #if MP4
         UI::TextDisabled("Current repository: " + MXURL + "    " + Icons::InfoCircle);
         if (UI::IsItemHovered()) {
