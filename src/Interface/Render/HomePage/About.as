@@ -23,11 +23,11 @@ namespace HomePageTabRender {
         UI::PushFont(Header);
         UI::Text("Plugin");
         UI::PopFont();
-        UI::Text("Made by \\$777" + Meta::ExecutingPlugin().get_Author());
-        UI::Text("Version \\$777" + Meta::ExecutingPlugin().get_Version());
-        UI::Text("Plugin ID \\$777" + Meta::ExecutingPlugin().get_ID());
-        UI::Text("Site ID \\$777" + Meta::ExecutingPlugin().get_SiteID());
-        UI::Text("Type \\$777" + changeEnumStyle(tostring(Meta::ExecutingPlugin().get_Type())));
+        UI::Text("Made by \\$777" + Meta::ExecutingPlugin().Author);
+        UI::Text("Version \\$777" + Meta::ExecutingPlugin().Version);
+        UI::Text("Plugin ID \\$777" + Meta::ExecutingPlugin().ID);
+        UI::Text("Site ID \\$777" + Meta::ExecutingPlugin().SiteID);
+        UI::Text("Type \\$777" + tostring(Meta::ExecutingPlugin().Type));
         if (IsDevMode()) {
             UI::SameLine();
             UI::Text("\\$777(\\$f39"+Icons::Code+" \\$777Dev mode)");

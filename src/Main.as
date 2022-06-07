@@ -179,6 +179,17 @@ void Main(){
     while(true){
         yield();
 
+// #if MP4
+//         // Check for MP4 Repo Changed
+//         if (repo == MP4mxRepos::Trackmania && !MXURL.StartsWith("tm")) {
+//             MXURL = "tm.mania.exchange";
+//             startnew(MX::GetAllMapTags);
+//         } else if (repo == MP4mxRepos::Shootmania && !MXURL.StartsWith("sm")) {
+//             MXURL = "sm.mania.exchange";
+//             startnew(MX::GetAllMapTags);
+//         }
+// #endif
+
         // Looks for the map to load or DL
         if (MX::mapToLoad != -1){
             MX::LoadMap(MX::mapToLoad);
@@ -212,12 +223,6 @@ void Main(){
 void RenderInterface(){
     mxMenu.Render();
     Dialogs::RenderInterface();
-}
-
-string changeEnumStyle(string enumName){
-    string str = enumName.SubStr(enumName.IndexOf(":") + 1);
-    str = str.Replace("_", " ");
-    return str;
 }
 
 void OnDestroyed() {
