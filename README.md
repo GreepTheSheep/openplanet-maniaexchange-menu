@@ -42,3 +42,4 @@ Those commands are available in the game chat thanks to [Better Chat](https://op
 
 ## Exports:
 - `ManiaExchange::ShowMapInfo(int MapID)` - Will open the tab to the corresponding map with its ID
+- `ManiaExchange::ShowMapPackInfo(int MapPackID)` - Will open the tab to the corresponding map pack with its ID
