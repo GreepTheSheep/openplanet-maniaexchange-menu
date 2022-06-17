@@ -37,12 +37,14 @@ namespace MX
                 Mode = Modes[map.MapType];
             }
 
-            CTrackMania@ app = cast<CTrackMania>(GetApp());
-            app.BackToMainMenu(); // If we're on a map, go back to the main menu else we'll get stuck on the current map
-            while(!app.ManiaTitleControlScriptAPI.IsReady) {
-                yield(); // Wait until the ManiaTitleControlScriptAPI is ready for loading the next map
-            }
-            app.ManiaTitleControlScriptAPI.PlayMap("https://"+MXURL+"/maps/download/"+mapId, Mode, "");
+            if (Permissions::PlayLocalMap()) {
+                CTrackMania@ app = cast<CTrackMania>(GetApp());
+                app.BackToMainMenu(); // If we're on a map, go back to the main menu else we'll get stuck on the current map
+                while(!app.ManiaTitleControlScriptAPI.IsReady) {
+                    yield(); // Wait until the ManiaTitleControlScriptAPI is ready for loading the next map
+                }
+                app.ManiaTitleControlScriptAPI.PlayMap("https://"+MXURL+"/maps/download/"+mapId, Mode, "");
+            } else mxError("You don't have permission to play custom maps.", true);
         } catch {
             mxError("Error while loading map");
             mxError(pluginName + " API is not responding, it must be down.", true);
