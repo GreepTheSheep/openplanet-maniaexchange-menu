@@ -4,6 +4,7 @@ class Window{
     array<Tab@> tabs;
     Tab@ activeTab;
     Tab@ c_lastActiveTab;
+    Tab@ m_YourProfileTab;
 
     Window(){
         AddTab(HomePageTab());
@@ -15,6 +16,10 @@ class Window{
         AddTab(TOTDTab());
         AddTab(MapPackListTab());
         AddTab(SearchTab());
+        if (Setting_Tab_YourProfile_UserID != 0) {
+            @m_YourProfileTab = UserTab(Setting_Tab_YourProfile_UserID, true);
+            AddTab(m_YourProfileTab);
+        }
     }
 
     void AddTab(Tab@ tab, bool select = false){
@@ -24,8 +29,26 @@ class Window{
         }
     }
 
+    void RemoveTab(Tab@ tab){
+        tabs.RemoveAt(tabs.FindByRef(tab));
+    }
+
     void Render(){
         if(!isOpened) return;
+
+        if (Setting_Tab_YourProfile_UserID != 0 && Setting_Tab_YourProfile_UserID != Tab_YourProfile_UserID_Old) {
+            if (m_YourProfileTab !is null) {
+               RemoveTab(m_YourProfileTab);
+            }
+            @m_YourProfileTab = UserTab(Setting_Tab_YourProfile_UserID, true);
+            AddTab(m_YourProfileTab);
+            Tab_YourProfile_UserID_Old = Setting_Tab_YourProfile_UserID;
+        }
+
+        if (Setting_Tab_YourProfile_UserID == 0 && m_YourProfileTab !is null) {
+            RemoveTab(m_YourProfileTab);
+            @m_YourProfileTab = null;
+        }
 
         UI::PushStyleColor(UI::Col::WindowBg,vec4(.1,.1,.1,1));
         UI::PushStyleVar(UI::StyleVar::WindowPadding, vec2(10, 10));
@@ -100,5 +123,3 @@ class Window{
     }
 
 }
-
-Window mxMenu;

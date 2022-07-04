@@ -1,6 +1,7 @@
 string inputMapID = "";
 int currentMapID = -4;
 MX::MapInfo@ currentMapInfo;
+Window@ mxMenu;
 
 void RenderMenu()
 {
@@ -157,6 +158,7 @@ void RenderMenuMain(){
 }
 
 void Main(){
+    @mxMenu = Window();
 #if MP4
     if (repo == MP4mxRepos::Trackmania) MXURL = "tm.mania.exchange";
     else if (repo == MP4mxRepos::Shootmania) MXURL = "sm.mania.exchange";
