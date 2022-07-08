@@ -23,7 +23,7 @@ class UserTab : Tab
 
     string GetLabel() override {
         if (m_isYourProfileTab) {
-            return Icons::User + " Your Profile";
+            return Icons::User;
         } else {
             if (m_error) {
                 return "\\$f00"+Icons::Times+" \\$zError";
@@ -105,6 +105,39 @@ class UserTab : Tab
         UI::Text(m_user.Username);
         UI::PopFont();
 
+        UI::SameLine();
+        if (m_MXUserInfoRequest is null) {
+            if (UI::Button(Icons::Refresh)) StartMXRequest();
+            UI::SetPreviousTooltip("Refresh User info");
+        } else {
+            int HourGlassValue = Time::Stamp % 3;
+            string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
+            UI::Text(Hourglass);
+            UI::SetPreviousTooltip("Loading...");
+        }
+
+        auto img = Images::CachedFromURL("https://account.mania.exchange/account/avatar/"+m_userId);
+
+        if (img.m_texture !is null){
+            vec2 thumbSize = img.m_texture.GetSize();
+            UI::Image(img.m_texture, vec2(
+                width,
+                thumbSize.y / (thumbSize.x / width)
+            ));
+            if (UI::IsItemHovered()) {
+                UI::BeginTooltip();
+                UI::Image(img.m_texture, vec2(
+                    Draw::GetWidth() * 0.3,
+                    thumbSize.y / (thumbSize.x / (Draw::GetWidth() * 0.3))
+                ));
+                UI::EndTooltip();
+            }
+        } else {
+            int HourGlassValue = Time::Stamp % 3;
+            string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
+            UI::Text(Hourglass + " Loading Avatar...");
+        }
+
         UI::Text(Icons::Map+ " \\$f77" + m_user.TrackCount);
 
         UI::Text(Icons::Hashtag+ " \\$f77" + m_user.UserID);
@@ -126,6 +159,27 @@ class UserTab : Tab
         if (UI::BeginTabItem("Description")) {
             UI::BeginChild("UserDescriptionChild");
             IfaceRender::MXComment(m_user.Comments);
+            UI::EndChild();
+            UI::EndTabItem();
+        }
+
+        if (m_user.TrackCount > 0 && UI::BeginTabItem(Icons::Map + " Created")) {
+            UI::BeginChild("UserMapsCreatedChild");
+            // TODO: Fetch Maps by user and display
+            UI::EndChild();
+            UI::EndTabItem();
+        }
+
+        if (m_user.AwardsGiven > 0 && UI::BeginTabItem(Icons::Map + " Awarded")) {
+            UI::BeginChild("UserMapsAwardedChild");
+            // TODO: Fetch Maps awarded by user and display
+            UI::EndChild();
+            UI::EndTabItem();
+        }
+
+        if (m_user.MappackCount > 0 && UI::BeginTabItem(Icons::Inbox + " Map Packs")) {
+            UI::BeginChild("UserMapPacksChild");
+            // TODO: Fetch Map packs by user and display
             UI::EndChild();
             UI::EndTabItem();
         }
