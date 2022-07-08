@@ -8,6 +8,10 @@ class Window{
 
     Window(){
         AddTab(HomePageTab());
+        if (Setting_Tab_YourProfile_UserID != 0) {
+            @m_YourProfileTab = UserTab(Setting_Tab_YourProfile_UserID, true);
+            AddTab(m_YourProfileTab);
+        }
         AddTab(MostAwardedTab());
         AddTab(FeaturedMapsTab());
         AddTab(TagsListTab());
@@ -16,14 +20,11 @@ class Window{
         AddTab(TOTDTab());
         AddTab(MapPackListTab());
         AddTab(SearchTab());
-        if (Setting_Tab_YourProfile_UserID != 0) {
-            @m_YourProfileTab = UserTab(Setting_Tab_YourProfile_UserID, true);
-            AddTab(m_YourProfileTab);
-        }
     }
 
-    void AddTab(Tab@ tab, bool select = false){
-        tabs.InsertLast(tab);
+    void AddTab(Tab@ tab, bool select = false, int index = -1){
+        if (index == -1) tabs.InsertLast(tab);
+        else tabs.InsertAt(index, tab);
         if (select) {
             @activeTab = tab;
         }
@@ -41,7 +42,7 @@ class Window{
                RemoveTab(m_YourProfileTab);
             }
             @m_YourProfileTab = UserTab(Setting_Tab_YourProfile_UserID, true);
-            AddTab(m_YourProfileTab);
+            AddTab(m_YourProfileTab, false, 1);
             Tab_YourProfile_UserID_Old = Setting_Tab_YourProfile_UserID;
         }
 
