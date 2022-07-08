@@ -9,6 +9,11 @@ bool Setting_ShowPlayOnAllMaps = false;
 
 // Tabs
 
+[Setting name="Your profile (Your user ID)" category="Display Tabs" description="Set your (or any other) User ID here to get your profile tab" min=0]
+int Setting_Tab_YourProfile_UserID = 0;
+
+int Tab_YourProfile_UserID_Old = 0;
+
 [Setting name="Most Awarded" category="Display Tabs"]
 bool Setting_Tab_MostAwarded_Visible = true;
 
@@ -34,11 +39,6 @@ bool Setting_Tab_Search_Visible = true;
 
 [Setting name="Map Packs" category="Display Tabs"]
 bool Setting_Tab_MapPacks_Visible = true;
-
-[Setting name="Your profile (Your user ID)" category="Display Tabs" description="Set your (or any other) User ID here to get your profile tab" min=0]
-int Setting_Tab_YourProfile_UserID = 0;
-
-int Tab_YourProfile_UserID_Old = 0;
 
 #if MP4
 enum MP4mxRepos {
