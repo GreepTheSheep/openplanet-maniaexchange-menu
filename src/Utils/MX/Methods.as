@@ -83,13 +83,13 @@ namespace MX
     }
 
     /*
-    * MX ID Error codes:
-    * > 0 = MX ID
-    * -1 = Map not found
-    * -2 = Server error
-    * -3 = Loading request
-    * -4 = Not in a map
-    * -5 = In Map Editor
+     * MX ID Error codes:
+     * > 0 = MX ID
+     * -1 = Map not found
+     * -2 = Server error
+     * -3 = Loading request
+     * -4 = Not in a map
+     * -5 = In Map Editor
     */
     int GetCurrentMapMXID(){
         auto currentMap = GetCurrentMap();
