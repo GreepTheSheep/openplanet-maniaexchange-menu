@@ -373,8 +373,8 @@ class UserTab : Tab
         UI::Text(Icons::Inbox+ " \\$f77" + m_user.MappackCount);
         UI::SetPreviousTooltip("Mappacks created");
 
-        UI::Text(Icons::Trophy+ " \\$f77" + m_user.AwardsGiven);
-        UI::SetPreviousTooltip("Awards given");
+        UI::Text(Icons::Trophy+ " \\$f77" + m_user.AwardsReceived);
+        UI::SetPreviousTooltip("Awards");
 
         UI::Text(Icons::Hashtag+ " \\$f77" + m_user.UserID);
         UI::SetPreviousTooltip("User ID");
