@@ -9,6 +9,8 @@ namespace IfaceRender
 
         UI::TableSetColumnIndex(1);
         UI::Text(mapPack.Username);
+        UI::SetPreviousTooltip("Click to view "+mapPack.Username+"'s profile");
+        if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(mapPack.UserID), true);
 
         UI::TableSetColumnIndex(2);
         if (mapPack.Tags.get_Length() == 0) UI::Text("No tags");
