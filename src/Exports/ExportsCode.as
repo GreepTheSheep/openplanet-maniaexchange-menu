@@ -11,4 +11,10 @@ namespace ManiaExchange
         if (!mxMenu.isOpened) mxMenu.isOpened = true;
         mxMenu.AddTab(MapPackTab(mapPackID), true);
     }
+
+    void ShowUserInfo(int userID)
+    {
+        if (!mxMenu.isOpened) mxMenu.isOpened = true;
+        mxMenu.AddTab(UserTab(userID), true);
+    }
 }
