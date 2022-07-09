@@ -364,9 +364,20 @@ class UserTab : Tab
             UI::Text(Hourglass + " Loading Avatar...");
         }
 
+        UI::Text(Icons::Calendar+ " \\$f77" + m_user.Registered);
+        UI::SetPreviousTooltip("Registered");
+
         UI::Text(Icons::Map+ " \\$f77" + m_user.TrackCount);
+        UI::SetPreviousTooltip("Tracks created");
+
+        UI::Text(Icons::Inbox+ " \\$f77" + m_user.MappackCount);
+        UI::SetPreviousTooltip("Mappacks created");
+
+        UI::Text(Icons::Trophy+ " \\$f77" + m_user.AwardsGiven);
+        UI::SetPreviousTooltip("Awards given");
 
         UI::Text(Icons::Hashtag+ " \\$f77" + m_user.UserID);
+        UI::SetPreviousTooltip("User ID");
         UI::SameLine();
         UI::TextDisabled(Icons::Clipboard);
         UI::SetPreviousTooltip("Click to copy to clipboard");
