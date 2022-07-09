@@ -397,10 +397,10 @@ class UserTab : Tab
         UI::BeginTabBar("UserTabs");
 
         if (UI::BeginTabItem("Description")) {
-            UI::BeginChild("UserDescriptionChild");
+            UI::BeginChild("UserDescriptionChild", vec2(0, UI::GetWindowSize().y * 0.6));
             IfaceRender::MXComment(m_user.Comments);
+            UI::EndChild();
             if (m_hasFeaturedMap) {
-                UI::SetCursorPos(vec2(0, UI::GetWindowSize().y - 200));
                 UI::Separator();
                 CheckMXFeaturedMapRequest();
                 UI::BeginChild("UserFeaturdMapChild");
@@ -413,9 +413,9 @@ class UserTab : Tab
                         string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
                         UI::Text(Hourglass + " Loading...");
                     } else {
-                        UI::BeginChild("UserFeaturedMapImageChild");
-                        auto featuredMapImg = Images::CachedFromURL("https://"+MXURL+"/maps/"+m_featuredMap.TrackID+"/image/1");
                         float featuredMapwidth = Draw::GetWidth() * 0.10;
+                        UI::BeginChild("UserFeaturedMapImageChild", vec2(featuredMapwidth + 20, 0));
+                        auto featuredMapImg = Images::CachedFromURL("https://"+MXURL+"/maps/"+m_featuredMap.TrackID+"/image/1");
 
                         if (featuredMapImg.m_texture !is null){
                             vec2 thumbSize = featuredMapImg.m_texture.GetSize();
@@ -433,7 +433,6 @@ class UserTab : Tab
                             }
                         } else {
                             auto featuredMapthumb = Images::CachedFromURL("https://"+MXURL+"/maps/thumbnail/"+m_featuredMap.TrackID);
-                            featuredMapwidth = Draw::GetWidth() * 0.10;
                             if (featuredMapthumb.m_texture !is null){
                                 vec2 thumbSize = featuredMapthumb.m_texture.GetSize();
                                 UI::Image(featuredMapthumb.m_texture, vec2(
@@ -455,7 +454,7 @@ class UserTab : Tab
                             }
                         }
                         UI::EndChild();
-                        UI::SetCursorPos(posTop + vec2(featuredMapwidth + 8, 20));
+                        UI::SetCursorPos(posTop + vec2(featuredMapwidth + 28, 20));
                         UI::BeginChild("UserFeaturedMapDescriptionChild");
                         UI::PushFont(g_fontHeader);
                         UI::Text(ColoredString(m_featuredMap.GbxMapName));
@@ -477,7 +476,6 @@ class UserTab : Tab
                 }
                 UI::EndChild();
             }
-            UI::EndChild();
             UI::EndTabItem();
         }
 
