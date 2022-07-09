@@ -235,6 +235,8 @@ class MapPackTab : Tab
         UI::PopFont();
 
         UI::TextDisabled("By " + m_mapPack.Username);
+        UI::SetPreviousTooltip("Click to view "+m_mapPack.Username+"'s profile");
+        if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(m_mapPack.UserID), true);
 
         UI::Separator();
 
