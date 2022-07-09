@@ -5,10 +5,8 @@ class CachedImage
 
     void DownloadFromURLAsync()
     {
-        auto req = Net::HttpRequest();
-        req.Method = Net::HttpMethod::Get;
-        req.Url = m_url;
-        req.Start();
+        trace("Loading texture: " + m_url);
+        auto req = API::Get(m_url);
         while (!req.Finished()) {
             yield();
         }
