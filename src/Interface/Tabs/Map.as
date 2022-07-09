@@ -286,15 +286,27 @@ class MapTab : Tab
         UI::NewLine();
 
         UI::Text(Icons::Trophy + " \\$f77" + m_map.AwardCount);
+        UI::SetPreviousTooltip("Awards");
 #if MP4
-        if (repo == MP4mxRepos::Shootmania) UI::Text(Icons::FileCodeO + " \\$f77" + m_map.MapType);
-        else
+        if (repo == MP4mxRepos::Shootmania) {
+            UI::Text(Icons::FileCodeO + " \\$f77" + m_map.MapType);
+            UI::SetPreviousTooltip("Map Type");
+        } else {
 #endif
         UI::Text(Icons::Hourglass + " \\$f77" + m_map.LengthName);
-        if (m_map.Laps >= 1) UI::Text(Icons::Refresh+ " \\$f77" + m_map.Laps);
+        UI::SetPreviousTooltip("Length");
+#if MP4
+        }
+#endif
+        if (m_map.Laps >= 1) {
+            UI::Text(Icons::Refresh+ " \\$f77" + m_map.Laps);
+            UI::SetPreviousTooltip("Laps");
+        }
         UI::Text(Icons::LevelUp+ " \\$f77" + m_map.DifficultyName);
+        UI::SetPreviousTooltip("Difficulty");
 
         UI::Text(Icons::Hashtag+ " \\$f77" + m_map.TrackID);
+        UI::SetPreviousTooltip("Track ID");
         UI::SameLine();
         UI::TextDisabled(Icons::Clipboard);
         UI::SetPreviousTooltip("Click to copy to clipboard");
@@ -304,12 +316,19 @@ class MapTab : Tab
         }
 
         UI::Text(Icons::Calendar + " \\$f77" + m_map.UploadedAt);
-        if (m_map.UploadedAt != m_map.UpdatedAt) UI::Text(Icons::Refresh + " \\$f77" + m_map.UpdatedAt);
+        UI::SetPreviousTooltip("Uploaded date");
+        if (m_map.UploadedAt != m_map.UpdatedAt) {
+            UI::Text(Icons::Refresh + " \\$f77" + m_map.UpdatedAt);
+            UI::SetPreviousTooltip("Updated date");
+        }
 #if MP4
         UI::Text(Icons::Inbox + " \\$f77" + m_map.TitlePack);
+        UI::SetPreviousTooltip("Title Pack");
 #endif
         UI::Text(Icons::Sun + " \\$f77" + m_map.Mood);
+        UI::SetPreviousTooltip("Mood");
         UI::Text(Icons::Money + " \\$f77" + m_map.DisplayCost);
+        UI::SetPreviousTooltip("Coppers cost");
         if (UI::CyanButton(Icons::ExternalLink + " View on "+pluginName)) OpenBrowserURL("https://"+MXURL+"/maps/"+m_map.TrackID);
 #if TMNEXT
         if (UI::Button(Icons::ExternalLink + " View on Trackmania.io")) OpenBrowserURL("https://trackmania.io/#/leaderboard/"+m_map.TrackUID);
