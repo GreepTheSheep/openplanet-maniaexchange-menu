@@ -408,15 +408,20 @@ class MapTab : Tab
                 for (uint i = 0; i < m_authors.get_Length(); i++) {
                     MX::MapAuthorInfo@ author = m_authors[i];
                     UI::TextDisabled(author.Username + (i == m_authors.get_Length() - 1 ? "" : ", "));
-                    if ((author.Role != "" || author.Uploader) && UI::IsItemHovered()) {
+                    if (UI::IsItemHovered()) {
                         UI::BeginTooltip();
                         if (author.Uploader) {
                             UI::Text(Icons::CloudUpload + " Uploader");
-                            if (author.Role != "") UI::Separator();
+                            UI::Separator();
                         }
-                        if (author.Role != "") UI::Text(author.Role);
+                        if (author.Role != "") {
+                            UI::Text(author.Role);
+                            UI::Separator();
+                        }
+                        UI::TextDisabled("Click to see "+author.Username+"'s profile");
                         UI::EndTooltip();
                     }
+                    if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(author.UserID), true);
                     if (i < m_authors.get_Length() - 1) UI::SameLine();
                 }
             } else {
