@@ -2,6 +2,8 @@ class CachedImage
 {
     string m_url;
     UI::Texture@ m_texture;
+    int m_responseCode;
+    bool m_error = false;
 
     void DownloadFromURLAsync()
     {
@@ -10,9 +12,14 @@ class CachedImage
         while (!req.Finished()) {
             yield();
         }
-        @m_texture = UI::LoadTexture(req.Buffer());
-        if (m_texture.GetSize().x == 0) {
-            @m_texture = null;
+        m_responseCode = req.ResponseCode();
+        if (m_responseCode == 200) {
+            @m_texture = UI::LoadTexture(req.Buffer());
+            if (m_texture.GetSize().x == 0) {
+                @m_texture = null;
+            }
+        } else {
+            m_error = true;
         }
     }
 }

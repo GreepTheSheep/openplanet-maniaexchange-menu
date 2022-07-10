@@ -32,9 +32,13 @@ namespace UI
                         thumbSize.y / (thumbSize.x / width)
                     ));
                 } else {
-                    int HourGlassValue = Time::Stamp % 3;
-                    string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-                    UI::Text(Hourglass + " Loading Thumbnail...");
+                    if (!img.m_error) {
+                        int HourGlassValue = Time::Stamp % 3;
+                        string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
+                        UI::Text(Hourglass + " Loading Thumbnail...");
+                    } else {
+                        UI::Text("\\$f00"+Icons::Times+" \\$zError while loading thumbnail");
+                    }
                 }
             }
             UI::EndTooltip();
@@ -55,9 +59,13 @@ namespace UI
                     thumbSize.y / (thumbSize.x / width)
                 ));
             } else {
-                int HourGlassValue = Time::Stamp % 3;
-                string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-                UI::Text(Hourglass + " Loading Thumbnail...");
+                if (!img.m_error) {
+                    int HourGlassValue = Time::Stamp % 3;
+                    string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
+                    UI::Text(Hourglass + " Loading Thumbnail...");
+                } else {
+                    UI::Text("\\$f00"+Icons::Times+" \\$zError while loading thumbnail");
+                }
             }
             UI::EndTooltip();
         }
