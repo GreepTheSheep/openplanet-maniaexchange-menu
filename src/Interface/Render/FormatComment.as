@@ -4,19 +4,19 @@ namespace IfaceRender
         string formatted = "";
 
         formatted =
-        comment.Replace("[tmx]", "Trackmania\\$075Exchange\\$z")
-            .Replace("[mx]", "Mania\\$09FExchange\\$z")
-            .Replace("[b]", "")
-            .Replace("[/b]", "")
-            .Replace("[i]", "")
-            .Replace("[/i]", "")
-            .Replace("[u]", "__")
-            .Replace("[/u]", "__")
-            .Replace("[s]", "~~")
-            .Replace("[/s]", "~~")
-            .Replace("[hr]", "")
-            .Replace("[list]", "")
-            .Replace("[/list]", "");
+            comment.Replace("[tmx]", "Trackmania\\$075Exchange\\$z")
+                .Replace("[mx]", "Mania\\$09FExchange\\$z")
+                .Replace("[b]", "")
+                .Replace("[/b]", "")
+                .Replace("[i]", "")
+                .Replace("[/i]", "")
+                .Replace("[u]", "__")
+                .Replace("[/u]", "__")
+                .Replace("[s]", "~~")
+                .Replace("[/s]", "~~")
+                .Replace("[hr]", "")
+                .Replace("[list]", "\n")
+                .Replace("[/list]", "\n");
 
         // url regex replacement: https://regex101.com/r/UcN0NN/1
         formatted = Regex::Replace(formatted, "\\[url=([^\\]]*)\\]([^\\[]*)\\[\\/url\\]", "[$2]($1)");
