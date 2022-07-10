@@ -7,6 +7,7 @@ namespace IfaceRender
         UI::TableSetColumnIndex(0);
         if (Setting_ColoredMapName) UI::Text(ColoredString(map.GbxMapName));
         else UI::Text(map.Name);
+        UI::MXMapThumbnailTooltip(map.TrackID);
         if (UI::IsItemClicked()) mxMenu.AddTab(MapTab(map.TrackID), true);
 
         UI::TableSetColumnIndex(1);
@@ -32,30 +33,7 @@ namespace IfaceRender
         if (UI::CyanButton(Icons::Kenney::InfoCircle)) {
             mxMenu.AddTab(MapTab(map.TrackID), true);
         }
-        if (UI::IsItemHovered()) {
-            UI::BeginTooltip();
-            auto img = Images::CachedFromURL("https://"+MXURL+"/maps/"+map.TrackID+"/image/1");
-            float width = Draw::GetWidth() * 0.50;
-
-            if (img.m_texture !is null){
-                vec2 thumbSize = img.m_texture.GetSize();
-                UI::Image(img.m_texture, vec2(
-                    width,
-                    thumbSize.y / (thumbSize.x / width)
-                ));
-            } else {
-                auto thumb = Images::CachedFromURL("https://"+MXURL+"/maps/thumbnail/"+map.TrackID);
-                width = Draw::GetWidth() * 0.30;
-                if (thumb.m_texture !is null){
-                    vec2 thumbSize = thumb.m_texture.GetSize();
-                    UI::Image(thumb.m_texture, vec2(
-                        width,
-                        thumbSize.y / (thumbSize.x / width)
-                    ));
-                }
-            }
-            UI::EndTooltip();
-        }
+        UI::MXMapThumbnailTooltip(map.TrackID);
         UI::SameLine();
 
         Json::Value SupportedModes = MX::ModesFromMapType();

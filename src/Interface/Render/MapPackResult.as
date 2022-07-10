@@ -6,6 +6,7 @@ namespace IfaceRender
 
         UI::TableSetColumnIndex(0);
         UI::Text(mapPack.Name);
+        UI::MXMapPackThumbnailTooltip(mapPack.ID);
         if (UI::IsItemClicked()) mxMenu.AddTab(MapPackTab(mapPack.ID), true);
 
         UI::TableSetColumnIndex(1);
@@ -31,5 +32,6 @@ namespace IfaceRender
         if (UI::CyanButton(Icons::Kenney::InfoCircle)) {
             mxMenu.AddTab(MapPackTab(mapPack.ID), true);
         }
+        UI::MXMapPackThumbnailTooltip(mapPack.ID);
     }
 }
