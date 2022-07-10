@@ -229,6 +229,7 @@ class MapPackTab : Tab
                 }
             } else {
                 UI::Text("\\$0f0" + Icons::Download + " \\$zMap pack downloaded");
+                if (UI::RoseButton(Icons::FolderOpen + " Open Containing Folder")) OpenExplorerPath(IO::FromUserGameFolder("Maps/Downloaded/"+pluginName));
             }
         }
 
