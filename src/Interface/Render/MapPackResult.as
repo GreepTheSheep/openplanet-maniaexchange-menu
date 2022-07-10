@@ -6,6 +6,7 @@ namespace IfaceRender
 
         UI::TableSetColumnIndex(0);
         UI::Text(mapPack.Name);
+        if (UI::IsItemClicked()) mxMenu.AddTab(MapPackTab(mapPack.ID), true);
 
         UI::TableSetColumnIndex(1);
         UI::Text(mapPack.Username);

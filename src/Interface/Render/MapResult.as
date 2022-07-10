@@ -7,6 +7,7 @@ namespace IfaceRender
         UI::TableSetColumnIndex(0);
         if (Setting_ColoredMapName) UI::Text(ColoredString(map.GbxMapName));
         else UI::Text(map.Name);
+        if (UI::IsItemClicked()) mxMenu.AddTab(MapTab(map.TrackID), true);
 
         UI::TableSetColumnIndex(1);
         UI::Text(map.Username);
