@@ -64,7 +64,7 @@ class Window{
             if (lastActiveTab !is null) {
                 lastActiveTab.PushTabStyle();
             }
-            UI::BeginTabBar("Tabs");
+            UI::BeginTabBar("Tabs", UI::TabBarFlags::TabListPopupButton);
 
             for(uint i = 0; i < tabs.Length; i++){
                 auto tab = tabs[i];
@@ -82,7 +82,7 @@ class Window{
 
                 if (tab.CanClose()){
                     bool open = true;
-                    bool beginTabClosable = UI::BeginTabItem(tab.GetLabel(), open, flags);
+                    bool beginTabClosable = UI::BeginTabItem(tab.GetLabel()+(tab.GetTooltip().Length > 0 ? "###"+tab.GetTooltip() : ""), open, flags);
                     if (tab.GetTooltip().Length > 0) UI::SetPreviousTooltip(tab.GetTooltip());
                     if (beginTabClosable){
                         @c_lastActiveTab = tab;
@@ -97,7 +97,7 @@ class Window{
                         tabs.RemoveAt(i--);
                     }
                 } else {
-                    bool beginTab = UI::BeginTabItem(tab.GetLabel(), flags);
+                    bool beginTab = UI::BeginTabItem(tab.GetLabel()+(tab.GetTooltip().Length > 0 ? "###"+tab.GetTooltip() : ""), flags);
                     if (tab.GetTooltip().Length > 0) UI::SetPreviousTooltip(tab.GetTooltip());
                     if (beginTab){
                         @c_lastActiveTab = tab;
