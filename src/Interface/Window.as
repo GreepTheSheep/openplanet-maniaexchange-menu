@@ -35,6 +35,7 @@ class Window{
     }
 
     void Render(){
+        isOpened = Setting_ShowMenu;
         if(!isOpened) return;
 
         if (Setting_Tab_YourProfile_UserID != 0 && Setting_Tab_YourProfile_UserID != Tab_YourProfile_UserID_Old) {

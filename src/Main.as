@@ -5,11 +5,11 @@ Window@ mxMenu;
 
 void RenderMenu()
 {
-    if(UI::MenuItem(nameMenu + (MX::APIDown ? " \\$f00"+Icons::Server : ""), "", mxMenu.isOpened)) {
+    if(UI::MenuItem(nameMenu + (MX::APIDown ? " \\$f00"+Icons::Server : ""), "", Setting_ShowMenu)) {
         if (MX::APIDown) {
             Dialogs::Message("\\$f00"+Icons::Times+" \\$zSorry, "+pluginName+" is not responding.\nReload the plugin to try again.");
         } else {
-            mxMenu.isOpened = !mxMenu.isOpened;
+            Setting_ShowMenu = !Setting_ShowMenu;
         }
     }
 }
@@ -17,8 +17,8 @@ void RenderMenu()
 void RenderMenuMain(){
     if(UI::BeginMenu(nameMenu + (MX::APIDown ? " \\$f00"+Icons::Server : ""))) {
         if (!MX::APIDown) {
-            if(UI::MenuItem(pluginColor + Icons::WindowMaximize+"\\$z Open "+shortMXName+" menu", "", mxMenu.isOpened)) {
-                mxMenu.isOpened = !mxMenu.isOpened;
+            if(UI::MenuItem(pluginColor + Icons::WindowMaximize+"\\$z Open "+shortMXName+" menu", "", Setting_ShowMenu)) {
+                Setting_ShowMenu = !Setting_ShowMenu;
             }
             if(UI::BeginMenu(pluginColor + Icons::ICursor+"\\$z Enter map ID")) {
                 bool pressedEnter = false;
@@ -38,7 +38,7 @@ void RenderMenuMain(){
                         MX::mapToLoad = Text::ParseInt(inputMapID);
                     }
                     if (UI::MenuItem(Icons::Kenney::InfoCircle + " Open information")){
-                        if (!mxMenu.isOpened) mxMenu.isOpened = true;
+                        if (!Setting_ShowMenu) Setting_ShowMenu = true;
                         mxMenu.AddTab(MapTab(Text::ParseInt(inputMapID)), true);
                     }
                 }
@@ -48,7 +48,7 @@ void RenderMenuMain(){
             if (currentMapID > 0){
                 UI::Separator();
                 if (UI::MenuItem(Icons::Kenney::InfoCircle + " " + ColoredString(currentMapInfo.GbxMapName))){
-                    if (!mxMenu.isOpened) mxMenu.isOpened = true;
+                    if (!Setting_ShowMenu) Setting_ShowMenu = true;
                     mxMenu.AddTab(MapTab(currentMapID), true);
                 }
             }
@@ -100,7 +100,7 @@ void RenderMenuMain(){
                             MX::mapToLoad = map.TrackID;
                         }
                         if (!MX::APIDown && UI::MenuItem(Icons::Kenney::InfoCircle + " Open information")){
-                            if (!mxMenu.isOpened) mxMenu.isOpened = true;
+                            if (!Setting_ShowMenu) Setting_ShowMenu = true;
                             mxMenu.AddTab(MapTab(map.TrackID), true);
                         }
                         if (UI::MenuItem("\\$f00"+Icons::TrashO + " Remove map")){
