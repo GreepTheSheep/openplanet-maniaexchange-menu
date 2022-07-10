@@ -68,6 +68,7 @@ namespace MX
 
             Net::HttpRequest@ netMap = API::Get("https://"+MXURL+"/maps/download/"+mapId);
             mapDownloadInProgress = true;
+            trace("Started downloading map "+mapId+" to "+mxDLFolder);
             while(!netMap.Finished()) {
                 yield();
             }
