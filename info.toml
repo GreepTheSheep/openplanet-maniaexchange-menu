@@ -13,3 +13,6 @@ optional_dependencies = [ "BetterChat" ]
 
 exports = [ "src/Exports/Exports.as" ]
 timeout = 0
+
+#defines = [ "FORCE_API_DOWN" ]
+# FORCE_API_DOWN : Forces the API to be "down" after loading for tags and seasons.
