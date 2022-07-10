@@ -54,6 +54,13 @@ class UserTab : Tab
         }
     }
 
+    string GetTooltip() override {
+        if (m_isYourProfileTab)
+            return "Your profile";
+        else
+            return "";
+    }
+
     vec4 GetColor() override {
         if (m_isYourProfileTab) return vec4(0.75,0,0.27,1);
         return vec4(0,0.5,1,1);

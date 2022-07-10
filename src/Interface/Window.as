@@ -57,7 +57,7 @@ class Window{
         UI::PushStyleVar(UI::StyleVar::FramePadding, vec2(10, 6));
         UI::PushStyleVar(UI::StyleVar::WindowTitleAlign, vec2(.5, .5));
         UI::SetNextWindowSize(820, 500);
-        if(UI::Begin(nameMenu + " \\$666v"+Meta::ExecutingPlugin().get_Version(), isOpened)){
+        if(UI::Begin(nameMenu + " \\$666v"+Meta::ExecutingPlugin().Version+"###ManiaExchange Menu", isOpened)){
             // Push the last active tab style so that the separator line is colored (this is drawn in BeginTabBar)
             auto lastActiveTab = c_lastActiveTab;
             if (lastActiveTab !is null) {
@@ -81,7 +81,9 @@ class Window{
 
                 if (tab.CanClose()){
                     bool open = true;
-                    if(UI::BeginTabItem(tab.GetLabel(), open, flags)){
+                    bool beginTabClosable = UI::BeginTabItem(tab.GetLabel(), open, flags);
+                    if (tab.GetTooltip().Length > 0) UI::SetPreviousTooltip(tab.GetTooltip());
+                    if (beginTabClosable){
                         @c_lastActiveTab = tab;
 
                         UI::BeginChild("Tab");
@@ -94,7 +96,9 @@ class Window{
                         tabs.RemoveAt(i--);
                     }
                 } else {
-                    if(UI::BeginTabItem(tab.GetLabel(), flags)){
+                    bool beginTab = UI::BeginTabItem(tab.GetLabel(), flags);
+                    if (tab.GetTooltip().Length > 0) UI::SetPreviousTooltip(tab.GetTooltip());
+                    if (beginTab){
                         @c_lastActiveTab = tab;
 
                         UI::BeginChild("Tab");

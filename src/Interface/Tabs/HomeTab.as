@@ -5,6 +5,8 @@ class HomePageTab : Tab {
 
     string GetLabel() override { return Icons::Home; }
 
+    string GetTooltip() override { return "Home"; }
+
     vec4 GetColor() override { return pluginColorVec; }
 
     void Render() override {
