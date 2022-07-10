@@ -173,9 +173,12 @@ class MapPackTab : Tab
 
         if (m_mapPack.Unreleased) UI::Text(Icons::Times + " \\$f77Unreleased");
         UI::Text(Icons::ThList + " \\$f77" + m_mapPack.TypeName);
+        UI::SetPreviousTooltip("MapPack Type");
         UI::Text(Icons::ListOl + " \\$f77" + m_mapPack.TrackCount);
+        UI::SetPreviousTooltip("Track Count");
 
         UI::Text(Icons::Hashtag + " \\$f77" + m_mapPack.ID);
+        UI::SetPreviousTooltip("MapPack ID");
         UI::SameLine();
         UI::TextDisabled(Icons::Clipboard);
         UI::SetPreviousTooltip("Click to copy to clipboard");
@@ -186,7 +189,11 @@ class MapPackTab : Tab
 
         if (m_mapPack.Request) UI::Text(Icons::HandPeaceO+ " \\$f77Open for requests!");
         UI::Text(Icons::Calendar + " \\$f77" + m_mapPack.Created);
-        if (m_mapPack.Created != m_mapPack.Edited) UI::Text(Icons::Refresh + " \\$f77" + m_mapPack.Edited);
+        UI::SetPreviousTooltip("Created date");
+        if (m_mapPack.Created != m_mapPack.Edited) {
+            UI::Text(Icons::Refresh + " \\$f77" + m_mapPack.Edited);
+            UI::SetPreviousTooltip("Edited date");
+        }
 
         if (UI::CyanButton(Icons::ExternalLink + " View on "+pluginName)) OpenBrowserURL("https://"+MXURL+"/mappack/view/"+m_mapPack.ID);
 
