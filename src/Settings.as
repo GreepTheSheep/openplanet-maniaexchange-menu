@@ -49,6 +49,21 @@ enum MP4mxRepos {
     Shootmania
 }
 
-[Setting name="Repository for maps" category="ManiaPlanet 4" description="This require a reload of the plugin to take effect."]
+[Setting hidden]
 MP4mxRepos repo = MP4mxRepos::Trackmania;
+
+[SettingsTab name="ManiaPlanet 4"]
+void RenderMP4RepoSelectSettings()
+{
+    if (UI::BeginCombo("Repository for maps", tostring(repo))) {
+        for (int i = 0; i < 2; i++) {
+            if (UI::Selectable(tostring(MP4mxRepos(i)), false)) {
+                repo = MP4mxRepos(i);
+                // Meta::ExecutingPlugin().Reload();
+            }
+        }
+        UI::EndCombo();
+    }
+    UI::Text("This requires a reload of the plugin to take effect.");
+}
 #endif

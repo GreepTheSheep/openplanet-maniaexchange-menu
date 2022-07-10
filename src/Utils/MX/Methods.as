@@ -2,7 +2,9 @@ namespace MX
 {
     void GetAllMapTags()
     {
-        Json::Value resNet = API::GetAsync("https://"+MXURL+"/api/tags/gettags");
+        string url = "https://"+MXURL+"/api/tags/gettags";
+        if (IsDevMode()) trace("Loading tags: " + url);
+        Json::Value resNet = API::GetAsync(url);
 
         try {
             for (uint i = 0; i < resNet.get_Length(); i++)
@@ -16,11 +18,59 @@ namespace MX
             }
 
             print(m_mapTags.get_Length() + " tags loaded");
-            MX::APIDown = false;
         } catch {
             mxError("Error while loading tags");
+        }
+    }
+
+    void GetAllLeaderboardSeasons()
+    {
+        string url = "https://"+MXURL+"/api/leaderboard/getseasons";
+        if (IsDevMode()) trace("Loading seasons: " + url);
+        Json::Value resNet = API::GetAsync(url);
+
+        try {
+            for (uint i = 0; i < resNet.Length; i++)
+            {
+                int seasonID = resNet[i]["SeasonID"];
+                string seasonName = resNet[i]["Name"];
+
+                if (IsDevMode()) trace("Loading season #"+seasonID+" - "+seasonName);
+
+                m_leaderboardSeasons.InsertLast(LeaderboardSeason(resNet[i]));
+            }
+
+            print(m_leaderboardSeasons.Length + " seasons loaded");
+        } catch {
+            mxError("Error while loading seasons");
+        }
+    }
+
+    void CheckForAPILoaded()
+    {
+        try {
+            APIRefresh = true;
+            if (m_mapTags.Length > 0) m_mapTags.RemoveRange(0, m_mapTags.Length);
+            GetAllMapTags();
+#if MP4
+            if (repo == MP4mxRepos::Trackmania) {
+#endif
+            if (m_leaderboardSeasons.Length > 0) m_leaderboardSeasons.RemoveRange(0, m_leaderboardSeasons.Length);
+            GetAllLeaderboardSeasons();
+#if MP4
+            }
+#endif
+            APIRefresh = false;
+#if FORCE_API_DOWN
+            APIDown = true;
+            mxWarn("API set to forced down", true);
+#else
+            APIDown = false;
+#endif
+        } catch {
             mxError(pluginName + " API is not responding, it must be down.", true);
             APIDown = true;
+            APIRefresh = false;
         }
     }
 

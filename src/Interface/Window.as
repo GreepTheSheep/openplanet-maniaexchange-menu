@@ -4,10 +4,12 @@ class Window{
     array<Tab@> tabs;
     Tab@ activeTab;
     Tab@ c_lastActiveTab;
+    Tab@ m_homePageTab;
     Tab@ m_YourProfileTab;
 
     Window(){
-        AddTab(HomePageTab());
+        @m_homePageTab = HomePageTab();
+        AddTab(m_homePageTab);
         if (Setting_Tab_YourProfile_UserID != 0) {
             @m_YourProfileTab = UserTab(Setting_Tab_YourProfile_UserID, true);
             AddTab(m_YourProfileTab);
@@ -58,7 +60,7 @@ class Window{
         UI::PushStyleVar(UI::StyleVar::FramePadding, vec2(10, 6));
         UI::PushStyleVar(UI::StyleVar::WindowTitleAlign, vec2(.5, .5));
         UI::SetNextWindowSize(820, 500);
-        if(UI::Begin(nameMenu + " \\$666v"+Meta::ExecutingPlugin().Version+"###ManiaExchange Menu", isOpened)){
+        if(UI::Begin(nameMenu + " \\$666v"+Meta::ExecutingPlugin().Version+"###ManiaExchange Menu", Setting_ShowMenu)){
             // Push the last active tab style so that the separator line is colored (this is drawn in BeginTabBar)
             auto lastActiveTab = c_lastActiveTab;
             if (lastActiveTab !is null) {
@@ -68,7 +70,7 @@ class Window{
 
             for(uint i = 0; i < tabs.Length; i++){
                 auto tab = tabs[i];
-                if (!tab.IsVisible()) continue;
+                if (!tab.IsVisible() || (MX::APIDown && tab !is m_homePageTab)) continue;
 
                 UI::PushID(tab);
 

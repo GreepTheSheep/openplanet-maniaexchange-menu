@@ -64,8 +64,6 @@ class MapListTab : Tab
 
             if (json.GetType() == Json::Type::Null) {
                 mxError("Error while loading maps list");
-                mxError(pluginName + " API is not responding, it must be down.", true);
-                MX::APIDown = true;
                 return;
             }
 
@@ -74,7 +72,6 @@ class MapListTab : Tab
                 //HandleErrorResponse(json["error"]);
             } else {
                 HandleResponse(json);
-                MX::APIDown = false;
             }
         }
     }

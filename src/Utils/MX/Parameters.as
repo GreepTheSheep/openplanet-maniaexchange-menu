@@ -1,6 +1,7 @@
 namespace MX
 {
     array<MapTag@> m_mapTags;
+    array<LeaderboardSeason@> m_leaderboardSeasons;
 
     Net::HttpRequest@ req;
 
@@ -10,4 +11,5 @@ namespace MX
     bool mapDownloadInProgress = false;
 
     bool APIDown = false;
+    bool APIRefresh = true;
 }

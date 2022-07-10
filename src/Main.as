@@ -15,74 +15,87 @@ void RenderMenu()
 }
 
 void RenderMenuMain(){
-    if(UI::BeginMenu(nameMenu + (MX::APIDown ? " \\$f00"+Icons::Server : ""))) {
+    if(UI::BeginMenu(nameMenu + (MX::APIDown ? " \\$f00"+Icons::Server : "") + (MX::APIRefresh ? " \\$666"+Icons::Refresh : "") + "###" + pluginName + "Menu")) {
         if (!MX::APIDown) {
-            if(UI::MenuItem(pluginColor + Icons::WindowMaximize+"\\$z Open "+shortMXName+" menu", "", Setting_ShowMenu)) {
-                Setting_ShowMenu = !Setting_ShowMenu;
-            }
-            if(UI::BeginMenu(pluginColor + Icons::ICursor+"\\$z Enter map ID")) {
-                bool pressedEnter = false;
-                inputMapID = UI::InputText("##InputMapId", inputMapID, pressedEnter, UI::InputTextFlags::EnterReturnsTrue | UI::InputTextFlags::CharsDecimal);
-                if (!Regex::Contains(inputMapID, "^[0-9]*$")) {
-                    inputMapID = "";
-                    UI::TextDisabled("\\$f00" + Icons::Times +" \\$zOnly numbers are allowed");
-                }
-                if (inputMapID != ""){
-#if TMNEXT
-                    if (Permissions::PlayLocalMap() && (pressedEnter || UI::MenuItem(Icons::Play + " Play map"))){
-#else
-                    if (pressedEnter || UI::MenuItem(Icons::Play + " Play map")){
-#endif
-                        if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
-                        UI::ShowNotification("Loading map...");
-                        MX::mapToLoad = Text::ParseInt(inputMapID);
-                    }
-                    if (UI::MenuItem(Icons::Kenney::InfoCircle + " Open information")){
-                        if (!Setting_ShowMenu) Setting_ShowMenu = true;
-                        mxMenu.AddTab(MapTab(Text::ParseInt(inputMapID)), true);
-                    }
-                }
-                UI::EndMenu();
-            }
-
-            if (currentMapID > 0){
-                UI::Separator();
-                if (UI::MenuItem(Icons::Kenney::InfoCircle + " " + ColoredString(currentMapInfo.GbxMapName))){
-                    if (!Setting_ShowMenu) Setting_ShowMenu = true;
-                    mxMenu.AddTab(MapTab(currentMapID), true);
-                }
-            }
-
-            if (currentMapID == -1){
-                UI::Separator();
-                UI::TextDisabled(Icons::Times + " Current map not found on " + shortMXName);
-            }
-
-            if (currentMapID == -2){
-                UI::Separator();
-                UI::TextDisabled("Error while checking the current map on " + shortMXName);
-            }
-
-            if (currentMapID == -3){
-                UI::Separator();
+            if (MX::APIRefresh) {
                 int HourGlassValue = Time::Stamp % 3;
                 string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-                UI::TextDisabled(Hourglass + " Loading...");
-            }
+                UI::Text(Hourglass + " Please wait...");
+            } else {
+                if(UI::MenuItem(pluginColor + Icons::WindowMaximize+"\\$z Open "+shortMXName+" menu", "", Setting_ShowMenu)) {
+                    Setting_ShowMenu = !Setting_ShowMenu;
+                }
+                if(UI::BeginMenu(pluginColor + Icons::ICursor+"\\$z Enter map ID")) {
+                    bool pressedEnter = false;
+                    inputMapID = UI::InputText("##InputMapId", inputMapID, pressedEnter, UI::InputTextFlags::EnterReturnsTrue | UI::InputTextFlags::CharsDecimal);
+                    if (!Regex::Contains(inputMapID, "^[0-9]*$")) {
+                        inputMapID = "";
+                        UI::TextDisabled("\\$f00" + Icons::Times +" \\$zOnly numbers are allowed");
+                    }
+                    if (inputMapID != ""){
+#if TMNEXT
+                        if (Permissions::PlayLocalMap() && (pressedEnter || UI::MenuItem(Icons::Play + " Play map"))){
+#else
+                        if (pressedEnter || UI::MenuItem(Icons::Play + " Play map")){
+#endif
+                            if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
+                            UI::ShowNotification("Loading map...");
+                            MX::mapToLoad = Text::ParseInt(inputMapID);
+                        }
+                        if (UI::MenuItem(Icons::Kenney::InfoCircle + " Open information")){
+                            if (!Setting_ShowMenu) Setting_ShowMenu = true;
+                            mxMenu.AddTab(MapTab(Text::ParseInt(inputMapID)), true);
+                        }
+                    }
+                    UI::EndMenu();
+                }
 
-            if (IsDevMode() && currentMapID == -4){
-                UI::Separator();
-                UI::TextDisabled("Not in a map.");
-            }
+                if (currentMapID > 0){
+                    UI::Separator();
+                    if (UI::MenuItem(Icons::Kenney::InfoCircle + " " + ColoredString(currentMapInfo.GbxMapName))){
+                        if (!Setting_ShowMenu) Setting_ShowMenu = true;
+                        mxMenu.AddTab(MapTab(currentMapID), true);
+                    }
+                }
 
-            if (IsDevMode() && currentMapID == -5){
-                UI::Separator();
-                UI::TextDisabled("In map editor.");
+                if (currentMapID == -1){
+                    UI::Separator();
+                    UI::TextDisabled(Icons::Times + " Current map not found on " + shortMXName);
+                }
+
+                if (currentMapID == -2){
+                    UI::Separator();
+                    UI::TextDisabled("Error while checking the current map on " + shortMXName);
+                }
+
+                if (currentMapID == -3){
+                    UI::Separator();
+                    int HourGlassValue = Time::Stamp % 3;
+                    string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
+                    UI::TextDisabled(Hourglass + " Loading...");
+                }
+
+                if (IsDevMode() && currentMapID == -4){
+                    UI::Separator();
+                    UI::TextDisabled("Not in a map.");
+                }
+
+                if (IsDevMode() && currentMapID == -5){
+                    UI::Separator();
+                    UI::TextDisabled("In map editor.");
+                }
             }
         } else {
             UI::TextDisabled("\\$f00" + Icons::Server + " \\$z" + shortMXName + " is down!");
             UI::TextDisabled("Consider to check your internet connection.");
-            UI::TextDisabled("Reload the plugin to try again.");
+            if (!MX::APIRefresh && UI::Button(Icons::Refresh + " Refresh")) {
+                startnew(MX::CheckForAPILoaded);
+            }
+            if (MX::APIRefresh) {
+                int HourGlassValue = Time::Stamp % 3;
+                string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
+                UI::Text(Hourglass + " Refreshing...");
+            }
         }
         UI::Separator();
         if (UI::BeginMenu(Icons::ClockO + " Play later" + (g_PlayLaterMaps.get_Length() > 0 ? " (" + g_PlayLaterMaps.get_Length() + ")" : ""))) {
@@ -151,6 +164,8 @@ void RenderMenuMain(){
             UI::TextDisabled("Actual Repository URL: ");
             UI::TextDisabled(MXURL);
             if (UI::MenuItem(pluginColor+Icons::ExternalLink + " \\$zOpen "+pluginName+" in browser")) OpenBrowserURL("https://"+MXURL);
+            UI::Separator();
+            if (!MX::APIRefresh && UI::MenuItem(Icons::Refresh + " Refresh Tags and Seasons")) startnew(MX::CheckForAPILoaded);
             UI::EndMenu();
         }
         UI::EndMenu();
@@ -163,7 +178,7 @@ void Main(){
     if (repo == MP4mxRepos::Trackmania) MXURL = "tm.mania.exchange";
     else if (repo == MP4mxRepos::Shootmania) MXURL = "sm.mania.exchange";
 #endif
-    startnew(MX::GetAllMapTags);
+    startnew(MX::CheckForAPILoaded);
     g_PlayLaterMaps = LoadPlayLater();
 
 #if DEPENDENCY_BETTERCHAT
@@ -180,17 +195,6 @@ void Main(){
 
     while(true){
         yield();
-
-// #if MP4
-//         // Check for MP4 Repo Changed
-//         if (repo == MP4mxRepos::Trackmania && !MXURL.StartsWith("tm")) {
-//             MXURL = "tm.mania.exchange";
-//             startnew(MX::GetAllMapTags);
-//         } else if (repo == MP4mxRepos::Shootmania && !MXURL.StartsWith("sm")) {
-//             MXURL = "sm.mania.exchange";
-//             startnew(MX::GetAllMapTags);
-//         }
-// #endif
 
         // Looks for the map to load or DL
         if (MX::mapToLoad != -1){

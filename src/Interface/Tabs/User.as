@@ -31,8 +31,6 @@ class UserTab : Tab
     UserTab(const int &in userId, bool yourProfile = false) {
         m_userId = userId;
         m_isYourProfileTab = yourProfile;
-
-        StartMXRequest();
     }
 
     bool CanClose() override { return !m_isYourProfileTab; }
@@ -75,6 +73,9 @@ class UserTab : Tab
 
     void CheckMXRequest()
     {
+        if (!MX::APIDown && m_user is null && m_MXUserInfoRequest is null && UI::IsWindowAppearing()) {
+            StartMXRequest();
+        }
         // If there's a request, check if it has finished
         if (m_MXUserInfoRequest !is null && m_MXUserInfoRequest.Finished()) {
             // Parse the response
@@ -169,8 +170,6 @@ class UserTab : Tab
 
             if (json.GetType() == Json::Type::Null) {
                 mxError("Error while loading maps list");
-                mxError(pluginName + " API is not responding, it must be down.", true);
-                MX::APIDown = true;
                 return;
             }
 
@@ -232,8 +231,6 @@ class UserTab : Tab
 
             if (json.GetType() == Json::Type::Null) {
                 mxError("Error while loading maps list");
-                mxError(pluginName + " API is not responding, it must be down.", true);
-                MX::APIDown = true;
                 return;
             }
 
@@ -295,8 +292,6 @@ class UserTab : Tab
 
             if (json.GetType() == Json::Type::Null) {
                 mxError("Error while loading mappack list");
-                mxError(pluginName + " API is not responding, it must be down.", true);
-                MX::APIDown = true;
                 return;
             }
 

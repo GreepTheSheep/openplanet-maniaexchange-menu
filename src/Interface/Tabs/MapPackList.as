@@ -72,8 +72,6 @@ class MapPackListTab : Tab
 
             if (json.GetType() == Json::Type::Null) {
                 mxError("Error while loading mappack list");
-                mxError(pluginName + " API is not responding, it must be down.", true);
-                MX::APIDown = true;
                 return;
             }
 
@@ -82,7 +80,6 @@ class MapPackListTab : Tab
                 //HandleErrorResponse(json["error"]);
             } else {
                 HandleResponse(json);
-                MX::APIDown = false;
             }
         }
     }
