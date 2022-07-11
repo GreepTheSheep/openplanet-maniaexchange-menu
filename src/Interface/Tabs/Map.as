@@ -352,6 +352,8 @@ class MapTab : Tab
             UI::ShowNotification(Icons::Clipboard + " Track ID copied to clipboard");
         }
 
+        UI::Text(Icons::Activitypub+ " \\$f77" + m_map.MapType);
+        UI::SetPreviousTooltip("Map Type");
         UI::Text(Icons::Calendar + " \\$f77" + m_map.UploadedAt);
         UI::SetPreviousTooltip("Uploaded date");
         if (m_map.UploadedAt != m_map.UpdatedAt) {
