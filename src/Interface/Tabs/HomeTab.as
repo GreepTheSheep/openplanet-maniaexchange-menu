@@ -53,9 +53,6 @@ class HomePageTab : Tab {
         if (UI::IsItemHovered()) {
             UI::BeginTooltip();
             UI::Text("You can change the repository on the plugin settings.");
-            UI::Text("\\$f90" + Icons::ExclamationCircle + " \\$zYou need to reload the plugin to apply the changes.");
-            UI::Separator();
-            UI::Text("To reload the plugin, Select 'Developer' then 'Reload plugin' then 'ManiaExchange'.");
             UI::EndTooltip();
         }
 #endif

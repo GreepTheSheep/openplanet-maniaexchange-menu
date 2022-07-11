@@ -59,6 +59,10 @@ void RenderMP4RepoSelectSettings()
         for (int i = 0; i < 2; i++) {
             if (UI::Selectable(tostring(MP4mxRepos(i)), false)) {
                 repo = MP4mxRepos(i);
+                if (repo == MP4mxRepos::Trackmania) MXURL = "tm.mania.exchange";
+                else if (repo == MP4mxRepos::Shootmania) MXURL = "sm.mania.exchange";
+                print("Changed repository to " + repo + " (" + MXURL + "), reloading tags...");
+                startnew(MX::CheckForAPILoaded);
 
                 for (uint i = 0; i < mxMenu.tabs.Length; i++) {
                     if (mxMenu.tabs[i] !is null) {
@@ -69,6 +73,5 @@ void RenderMP4RepoSelectSettings()
         }
         UI::EndCombo();
     }
-    UI::Text("This requires a reload of the plugin to take effect.");
 }
 #endif
