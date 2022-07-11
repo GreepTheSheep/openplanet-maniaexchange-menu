@@ -137,7 +137,8 @@ void RenderMenuMain(){
             Renderables::Add(ClarPlayLaterListWarn());
         }
         UI::Separator();
-         if (UI::BeginMenu(pluginColor+Icons::InfoCircle + " \\$zAbout")){
+        // TODO: Add in-game favorites list from TM OAuth: https://api.trackmania.com/doc
+        if (UI::BeginMenu(pluginColor+Icons::InfoCircle + " \\$zAbout")){
             if (UI::BeginMenu("\\$f00"+Icons::Heart + " \\$zSupport")){
                 if (UI::MenuItem(pluginColor+Icons::Heart + " \\$zSupport ManiaExchange")) OpenBrowserURL("https://"+MXURL+"/support");
                 if (UI::MenuItem(Icons::Heartbeat + " \\$zSupport the plugin creator")) OpenBrowserURL("https://github.com/sponsors/GreepTheSheep");
