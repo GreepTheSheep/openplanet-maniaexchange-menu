@@ -624,9 +624,11 @@ class MapTab : Tab
                                     UI::TextDisabled(Icons::ExclamationTriangle);
                                     UI::SetPreviousTooltip("The list of embedded objects is too long for this map.");
                                 } else {
-                                    if (UI::YellowButton(Icons::ExternalLink)){
-                                        OpenBrowserURL("https://item.exchange/item/view/"+object.ID);
-                                    }
+#if DEPENDENCY_ITEMEXCHANGE
+                                    if (UI::YellowButton(Icons::Exchange)) ItemExchange::ShowItemInfo(object.ID);
+#else
+                                    if (UI::YellowButton(Icons::ExternalLink)) OpenBrowserURL("https://item.exchange/item/view/"+object.ID);
+#endif
                                 }
                             } else {
                                 UI::TextDisabled(Icons::Times);

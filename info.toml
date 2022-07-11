@@ -9,7 +9,7 @@ version = "1.0.7"
 
 [script]
 imports = [ "Icons.as", "Permissions.as", "Formatting.as", "Dialogs.as" ]
-optional_dependencies = [ "BetterChat" ]
+optional_dependencies = [ "BetterChat", "ItemExchange" ]
 
 exports = [ "src/Exports/Exports.as" ]
 timeout = 0
