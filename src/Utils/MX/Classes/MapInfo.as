@@ -25,7 +25,10 @@ namespace MX
         int TrackValue;
         int AwardCount;
         uint ImageCount;
+        uint EmbeddedObjectsCount;
+        int EmbeddedItemsSize;
         bool IsMP4;
+        bool SizeWarning;
         array<MapTag@> Tags;
 
         string MapPackName;
@@ -56,7 +59,10 @@ namespace MX
                 TrackValue = json["TrackValue"];
                 AwardCount = json["AwardCount"];
                 ImageCount = json["ImageCount"];
+                if (json["EmbeddedObjectsCount"].GetType() != Json::Type::Null) EmbeddedObjectsCount = json["EmbeddedObjectsCount"];
+                if (json["EmbeddedItemsSize"].GetType() != Json::Type::Null) EmbeddedItemsSize = json["EmbeddedItemsSize"];
                 IsMP4 = json["IsMP4"];
+                SizeWarning = json["SizeWarning"];
 
                 // Tags is a string of ids separated by commas
                 // gets the ids and fetches the tags from m_mapTags

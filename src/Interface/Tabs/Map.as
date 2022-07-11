@@ -3,6 +3,7 @@ class MapTab : Tab
     Net::HttpRequest@ m_MXrequest;
     Net::HttpRequest@ m_MXAuthorsRequest;
     Net::HttpRequest@ m_TMIOrequest;
+    Net::HttpRequest@ m_MXEmbedObjRequest;
     MX::MapInfo@ m_map;
     array<MX::MapAuthorInfo@> m_authors;
     array<TMIO::Leaderboard@> m_leaderboard;
@@ -18,13 +19,15 @@ class MapTab : Tab
     bool m_TMIOerror = false;
     string m_TMIOerrorMsg = "";
     bool m_TMIONoRes = false;
+    array<MX::MapEmbeddedObject@> m_mapEmbeddedObjects;
+    bool m_mapEmbeddedObjectsError = false;
 
     UI::Font@ g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24);
 
     MapTab(int trackId) {
         m_mapId = trackId;
-        StartMXRequest(m_mapId);
-        StartMXAuthorsRequest(m_mapId);
+        StartMXRequest();
+        StartMXAuthorsRequest();
     }
 
     bool CanClose() override { return !m_isLoading; }
@@ -46,9 +49,9 @@ class MapTab : Tab
         }
     }
 
-    void StartMXRequest(int trackId)
+    void StartMXRequest()
     {
-        string url = "https://"+MXURL+"/api/maps/get_map_info/multi/"+trackId;
+        string url = "https://"+MXURL+"/api/maps/get_map_info/multi/"+m_mapId;
         if (IsDevMode()) print("MapTab::StartRequest (MX): "+url);
         @m_MXrequest = API::Get(url);
     }
@@ -83,9 +86,9 @@ class MapTab : Tab
         m_error = true;
     }
 
-    void StartMXAuthorsRequest(int trackId)
+    void StartMXAuthorsRequest()
     {
-        string url = "https://"+MXURL+"/api/maps/get_authors/"+trackId;
+        string url = "https://"+MXURL+"/api/maps/get_authors/"+m_mapId;
         if (IsDevMode()) trace("MapTab::StartRequest (Authors): "+url);
         @m_MXAuthorsRequest = API::Get(url);
     }
@@ -175,6 +178,39 @@ class MapTab : Tab
             m_TMIOerrorMsg = "This map is not available on Nadeo Services";
         } else {
             m_TMIOerrorMsg = error;
+        }
+    }
+
+    void StartMXEmbeddedRequest()
+    {
+        string url = "https://"+MXURL+"/api/maps/embeddedobjects/"+m_mapId;
+        if (IsDevMode()) trace("MapTab::StartRequest (Embedded): "+url);
+        @m_MXEmbedObjRequest = API::Get(url);
+    }
+
+    void CheckMXEmbeddedRequest()
+    {
+        if (!MX::APIDown && m_mapEmbeddedObjects.Length != m_map.EmbeddedObjectsCount && m_MXEmbedObjRequest is null && UI::IsWindowAppearing()) {
+            StartMXEmbeddedRequest();
+        }
+        // If there's a request, check if it has finished
+        if (m_MXEmbedObjRequest !is null && m_MXEmbedObjRequest.Finished()) {
+            // Parse the response
+            string res = m_MXEmbedObjRequest.String();
+            if (IsDevMode()) trace("MapTab::CheckRequest (Embedded): " + res);
+            @m_MXEmbedObjRequest = null;
+            auto json = Json::Parse(res);
+
+            if (json.Length == 0) {
+                print("MapTab::CheckRequest (Embedded): Error parsing response");
+                m_mapEmbeddedObjectsError = true;
+                return;
+            }
+            // Handle the response
+            for (uint i = 0; i < json.Length; i++) {
+                MX::MapEmbeddedObject@ object = MX::MapEmbeddedObject(json[i], i < Setting_EmbeddedObjectsLimit);
+                m_mapEmbeddedObjects.InsertLast(object);
+            }
         }
     }
 
@@ -451,6 +487,9 @@ class MapTab : Tab
             }
         }
 
+        if (m_map.SizeWarning)
+            UI::Text("\\$f70" + Icons::ExclamationTriangle + " \\$zThis map is larger than 6MB and therefore can not be played on servers.");
+
         UI::Separator();
 
         UI::BeginTabBar("MapTabs");
@@ -539,6 +578,69 @@ class MapTab : Tab
             UI::EndTabItem();
         }
 #endif
+
+        if(m_map.EmbeddedObjectsCount > 0 && UI::BeginTabItem("Embedded objects (" + m_map.EmbeddedObjectsCount + ")")){
+            UI::BeginChild("MapEmbeddedObjectsChild");
+
+            CheckMXEmbeddedRequest();
+            if (m_mapEmbeddedObjects.Length != m_map.EmbeddedObjectsCount) {
+                int HourGlassValue = Time::Stamp % 3;
+                string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
+                UI::Text(Hourglass + " Loading...");
+            } else {
+                UI::Text(m_mapEmbeddedObjects.Length + " objects found, with a total size of " + (m_map.EmbeddedItemsSize / 1024) + " KB");
+                if (UI::BeginTable("EmbeddedObjectsList", 3)) {
+                    UI::TableSetupScrollFreeze(0, 1);
+                    PushTabStyle();
+                    UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
+                    UI::TableSetupColumn("Author", UI::TableColumnFlags::WidthStretch);
+                    UI::TableSetupColumn("Action", UI::TableColumnFlags::WidthFixed, 40);
+                    UI::TableHeadersRow();
+                    PopTabStyle();
+                    UI::ListClipper clipper(m_mapEmbeddedObjects.Length);
+                    while(clipper.Step()) {
+                        for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
+                            UI::TableNextRow();
+                            MX::MapEmbeddedObject@ object = m_mapEmbeddedObjects[i];
+                            UI::PushID("EmbeddedObject" + i);
+
+                            UI::TableSetColumnIndex(0);
+                            UI::Text(object.Name);
+
+                            UI::TableSetColumnIndex(1);
+                            if (object.Username.Length == 0) UI::TextDisabled(object.ObjectAuthor);
+                            else UI::Text(object.Username);
+                            if (object.UserID > 0) {
+                                UI::SetPreviousTooltip("Click to see "+(object.Username.Length > 0 ? (object.Username+"'s") : "user")+" profile");
+                                if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(object.UserID), true);
+                            }
+
+                            UI::TableSetColumnIndex(2);
+                            if (object.ID != 0){
+                                if (object.ID == -1) {
+                                    UI::Text("\\$f00" + Icons::Times);
+                                    UI::SetPreviousTooltip("Error while fetching this object on item.exchange");
+                                } else if (object.ID == -2) {
+                                    UI::TextDisabled(Icons::ExclamationTriangle);
+                                    UI::SetPreviousTooltip("The list of embedded objects is too long for this map.");
+                                } else {
+                                    if (UI::YellowButton(Icons::ExternalLink)){
+                                        OpenBrowserURL("https://item.exchange/item/view/"+object.ID);
+                                    }
+                                }
+                            } else {
+                                UI::TextDisabled(Icons::Times);
+                                UI::SetPreviousTooltip("This object is not published on item.exchange");
+                            }
+                            UI::PopID();
+                        }
+                    }
+                    UI::EndTable();
+                }
+            }
+            UI::EndChild();
+            UI::EndTabItem();
+        }
 
         UI::EndTabBar();
 

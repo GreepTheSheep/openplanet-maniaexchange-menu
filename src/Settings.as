@@ -10,6 +10,9 @@ bool Setting_CloseOverlayOnLoad = true;
 [Setting name="Show Play Button on all map types" category="UI" description="If you try to load other maps than supported types, the game will crash or return you to the main menu."]
 bool Setting_ShowPlayOnAllMaps = false;
 
+[Setting name="Limit count for embedded objects" category="UI" min=0 max=75 description="Limit the count of embedded objects in the map info tab. A high value can make a lot of requests to the server, so it is recommended to keep this value as low as possible."]
+int Setting_EmbeddedObjectsLimit = 25;
+
 // Tabs
 
 [Setting name="Your profile (Your user ID)" category="Display Tabs" description="Set your (or any other) User ID here to get your profile tab" min=0]
