@@ -208,7 +208,7 @@ class MapTab : Tab
             }
             // Handle the response
             for (uint i = 0; i < json.Length; i++) {
-                MX::MapEmbeddedObject@ object = MX::MapEmbeddedObject(json[i], i < Setting_EmbeddedObjectsLimit);
+                MX::MapEmbeddedObject@ object = MX::MapEmbeddedObject(json[i], int(i) < Setting_EmbeddedObjectsLimit);
                 m_mapEmbeddedObjects.InsertLast(object);
             }
         }

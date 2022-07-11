@@ -202,13 +202,7 @@ class MapPackTab : Tab
 #else
         if (!m_mapListError && mapPack_maps.Length != 0 && UI::GreenButton(Icons::Check + " Add to Play later")) {
 #endif
-            Dialogs::Question("\\$f90" + Icons::ExclamationTriangle + " \\$zThis will add " + mapPack_maps.Length + " maps to the Play later list, are you sure?", function(){
-                for (uint i = 0; i < mapPack_maps.Length; i++) {
-                    g_PlayLaterMaps.InsertAt(g_PlayLaterMaps.Length, mapPack_maps[i]);
-                }
-                SavePlayLater(g_PlayLaterMaps);
-                Dialogs::Message("\\$0f0"+Icons::Check+" \\$zAdded "+mapPack_maps.Length+" maps to the Play Later list");
-            }, function(){});
+            Renderables::Add(MapPackActionWarn(MapPackActions::AddPlayLater, mapPack_maps));
         }
 
         if (MX::mapDownloadInProgress){
@@ -219,13 +213,7 @@ class MapPackTab : Tab
             if (!m_mapDownloaded) {
 
                 if (!m_mapListError && mapPack_maps.Length != 0 && UI::PurpleButton(Icons::Download + " Download Pack")) {
-                    Dialogs::Question("\\$f90" + Icons::ExclamationTriangle + " \\$zThis will download " + mapPack_maps.Length + " maps to your Downloaded Maps folder, are you sure?", function(){
-                        for (uint i = 0; i < mapPack_maps.Length; i++) {
-                            MX::MapInfo@ map = mapPack_maps[i];
-                            UI::ShowNotification("Downloading map...", ColoredString(map.GbxMapName) + "\\$z\\$s by " + map.Username);
-                            startnew(CoroutineFunc(map.DownloadMap));
-                        }
-                    }, function(){});
+                    Renderables::Add(MapPackActionWarn(MapPackActions::Download, mapPack_maps));
                 }
             } else {
                 UI::Text("\\$0f0" + Icons::Download + " \\$zMap pack downloaded");

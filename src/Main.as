@@ -7,7 +7,7 @@ void RenderMenu()
 {
     if(UI::MenuItem(nameMenu + (MX::APIDown ? " \\$f00"+Icons::Server : ""), "", Setting_ShowMenu)) {
         if (MX::APIDown) {
-            Dialogs::Message("\\$f00"+Icons::Times+" \\$zSorry, "+pluginName+" is not responding.\nReload the plugin to try again.");
+            Renderables::Add(APIDownWarning());
         } else {
             Setting_ShowMenu = !Setting_ShowMenu;
         }
@@ -134,11 +134,7 @@ void RenderMenuMain(){
             UI::EndMenu();
         }
         if (g_PlayLaterMaps.get_Length() > 0 && UI::MenuItem("\\$f00"+Icons::TrashO + " Clear list")){
-            Dialogs::Question("\\$f90" + Icons::ExclamationTriangle + " \\$zAre you sure to empty the Play later list?", function(){
-                g_PlayLaterMaps.RemoveRange(0, g_PlayLaterMaps.get_Length());
-                SavePlayLater(g_PlayLaterMaps);
-                Dialogs::Message("\\$0f0"+ Icons::Check +" \\$zPlay Later list has been cleared.");
-            }, function(){});
+            Renderables::Add(ClarPlayLaterListWarn());
         }
         UI::Separator();
          if (UI::BeginMenu(pluginColor+Icons::InfoCircle + " \\$zAbout")){
@@ -228,7 +224,10 @@ void Main(){
 
 void RenderInterface(){
     mxMenu.Render();
-    Dialogs::RenderInterface();
+}
+
+void Render(){
+    Renderables::Render();
 }
 
 void OnDestroyed() {
