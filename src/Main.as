@@ -5,7 +5,7 @@ Window@ mxMenu;
 
 void RenderMenu()
 {
-    if(UI::MenuItem(nameMenu + (MX::APIDown ? " \\$f00"+Icons::Server : ""), "", Setting_ShowMenu)) {
+    if(UI::MenuItem(nameMenu + (MX::APIDown ? " \\$f00"+Icons::Server : "")+ (MX::APIRefresh ? " \\$666"+Icons::Refresh : "") + "###" + pluginName + "Menu", "", Setting_ShowMenu)) {
         if (MX::APIDown) {
             Renderables::Add(APIDownWarning());
         } else {
