@@ -59,7 +59,12 @@ void RenderMP4RepoSelectSettings()
         for (int i = 0; i < 2; i++) {
             if (UI::Selectable(tostring(MP4mxRepos(i)), false)) {
                 repo = MP4mxRepos(i);
-                // Meta::ExecutingPlugin().Reload();
+
+                for (uint i = 0; i < mxMenu.tabs.Length; i++) {
+                    if (mxMenu.tabs[i] !is null) {
+                        mxMenu.tabs[i].Reload();
+                    }
+                }
             }
         }
         UI::EndCombo();

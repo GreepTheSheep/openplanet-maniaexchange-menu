@@ -95,7 +95,7 @@ class MapListTab : Tab
         totalItems = 0;
     }
 
-    void Reload()
+    void Reload() override
     {
         Clear();
         StartRequest();

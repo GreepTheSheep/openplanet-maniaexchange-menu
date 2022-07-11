@@ -22,5 +22,7 @@ class Tab
         UI::PopStyleColor(3);
     }
 
+    void Reload() {}
+
     void Render() {}
 }

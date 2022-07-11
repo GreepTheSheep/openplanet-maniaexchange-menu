@@ -128,7 +128,7 @@ class MapPackListTab : Tab
         totalItems = 0;
     }
 
-    void Reload()
+    void Reload() override
     {
         Clear();
         StartRequest();
