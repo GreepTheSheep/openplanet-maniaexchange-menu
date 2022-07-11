@@ -3,6 +3,7 @@ class Window{
 
     array<Tab@> tabs;
     Tab@ activeTab;
+    Tab@ selectedTab;
     Tab@ c_lastActiveTab;
     Tab@ m_homePageTab;
     Tab@ m_YourProfileTab;
@@ -90,6 +91,7 @@ class Window{
                         @c_lastActiveTab = tab;
 
                         UI::BeginChild("Tab");
+                        @selectedTab = tab;
                         tab.Render();
                         UI::EndChild();
 
@@ -105,6 +107,7 @@ class Window{
                         @c_lastActiveTab = tab;
 
                         UI::BeginChild("Tab");
+                        @selectedTab = tab;
                         tab.Render();
                         UI::EndChild();
 
