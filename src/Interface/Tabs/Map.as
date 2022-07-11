@@ -22,9 +22,10 @@ class MapTab : Tab
     array<MX::MapEmbeddedObject@> m_mapEmbeddedObjects;
     bool m_mapEmbeddedObjectsError = false;
 
-    UI::Font@ g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24);
+    UI::Font@ g_fontHeader;
 
     MapTab(int trackId) {
+        @g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24);
         m_mapId = trackId;
         StartMXRequest();
         StartMXAuthorsRequest();

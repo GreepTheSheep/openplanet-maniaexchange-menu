@@ -26,9 +26,10 @@ class UserTab : Tab
     int m_pageAwardedMaps = 1;
     int m_pageMapPacks = 1;
 
-    UI::Font@ g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24);
+    UI::Font@ g_fontHeader;
 
     UserTab(const int &in userId, bool yourProfile = false) {
+        @g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24)
         m_userId = userId;
         m_isYourProfileTab = yourProfile;
     }

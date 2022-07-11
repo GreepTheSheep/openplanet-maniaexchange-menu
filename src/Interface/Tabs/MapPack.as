@@ -13,9 +13,10 @@ class MapPackTab : Tab
     string m_errorMessage = "";
     bool m_mapDownloaded = false;
 
-    UI::Font@ g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24);
+    UI::Font@ g_fontHeader;
 
     MapPackTab(int packId) {
+        @g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24);
         mapPack_maps.RemoveRange(0, mapPack_maps.get_Length());
         m_mapPackId = packId;
         StartMXRequest(m_mapPackId);
