@@ -29,7 +29,7 @@ class UserTab : Tab
     UI::Font@ g_fontHeader;
 
     UserTab(const int &in userId, bool yourProfile = false) {
-        @g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24)
+        @g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24);
         m_userId = userId;
         m_isYourProfileTab = yourProfile;
     }
@@ -391,6 +391,14 @@ class UserTab : Tab
 
         if (UI::CyanButton(Icons::ExternalLink + " View on "+shortMXName)) OpenBrowserURL("https://"+MXURL+"/user/profile/"+m_userId);
         if (m_isYourProfileTab && UI::PurpleButton(Icons::ExternalLink + " Manage your account")) OpenBrowserURL("https://account.mania.exchange/account");
+
+        if (!m_isYourProfileTab && Setting_Tab_YourProfile_UserID == 0) {
+            UI::Separator();
+            UI::Text(Icons::InfoCircle + " Is this your profile?\nAdd your profile to easily get it from the tabs.");
+            if (UI::GreenButton(Icons::Plus + " Add to your profile")) {
+                Setting_Tab_YourProfile_UserID = m_userId;
+            }
+        }
 
         UI::EndChild();
 
