@@ -3,9 +3,13 @@ int currentMapID = -4;
 MX::MapInfo@ currentMapInfo;
 Window@ mxMenu;
 
+#if DEPENDENCY_NADEOSERVICES
+MXNadeoServices@ g_nadeoServices;
+#endif
+
 void RenderMenu()
 {
-    if(UI::MenuItem(nameMenu + (MX::APIDown ? " \\$f00"+Icons::Server : "")+ (MX::APIRefresh ? " \\$666"+Icons::Refresh : "") + "###" + pluginName + "Menu", "", Setting_ShowMenu)) {
+    if(UI::MenuItem(nameMenu + (MX::APIDown ? " \\$f00"+Icons::Server : "")+ (MX::APIRefresh ? " \\$666"+Icons::Refresh : "") + (MXNadeoServicesGlobal::APIRefresh ? " \\$850"+Icons::Refresh : "") + "###" + pluginName + "Menu", "", Setting_ShowMenu)) {
         if (MX::APIDown) {
             Renderables::Add(APIDownWarning());
         } else {
@@ -15,7 +19,7 @@ void RenderMenu()
 }
 
 void RenderMenuMain(){
-    if(UI::BeginMenu(nameMenu + (MX::APIDown ? " \\$f00"+Icons::Server : "") + (MX::APIRefresh ? " \\$666"+Icons::Refresh : "") + "###" + pluginName + "Menu")) {
+    if(UI::BeginMenu(nameMenu + (MX::APIDown ? " \\$f00"+Icons::Server : "") + (MX::APIRefresh ? " \\$666"+Icons::Refresh : "") + (MXNadeoServicesGlobal::APIRefresh ? " \\$850"+Icons::Refresh : "") + "###" + pluginName + "Menu")) {
         if (!MX::APIDown) {
             if (MX::APIRefresh) {
                 int HourGlassValue = Time::Stamp % 3;
@@ -137,7 +141,55 @@ void RenderMenuMain(){
             Renderables::Add(ClarPlayLaterListWarn());
         }
         UI::Separator();
-        // TODO: Add in-game favorites list from TM OAuth: https://api.trackmania.com/doc
+#if DEPENDENCY_NADEOSERVICES
+        // TODO: Add in-game favorites list from NadeoServices
+        if (UI::BeginMenu(pluginColor+Icons::Heart + " \\$zFavorites ("+g_nadeoServices.m_totalFavoriteMaps+")")) {
+            if (g_nadeoServices !is null && g_nadeoServices.m_favoriteMaps.Length > 0) {
+
+                // CoroutineFunc seems not working on RenderMenuMain()
+                if (UI::MenuItem("\\$850"+Icons::Refresh + " \\$zRefresh list")){
+                    startnew(MXNadeoServicesGlobal::ReloadFavoriteMapsAsync);
+                }
+                UI::Separator();
+                for (uint i = 0; i < g_nadeoServices.m_favoriteMaps.Length; i++) {
+                    MXNadeoServicesGlobal::NadeoServicesMap@ mapNadeo = g_nadeoServices.m_favoriteMaps[i];
+
+                    if (mapNadeo.MXMapInfo != null) {
+                        MX::MapInfo@ map = mapNadeo.MXMapInfo;
+                        if (UI::BeginMenu((Setting_ColoredMapName ? ColoredString(map.GbxMapName) : map.Name) + " \\$z\\$sby " + map.Username)) {
+#if TMNEXT
+                            if (Permissions::PlayLocalMap() && UI::MenuItem(Icons::Play + " Play map")){
+#else
+                            if (UI::MenuItem(Icons::Play + " Play map")){
+#endif
+                                if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
+                                UI::ShowNotification("Loading map...", ColoredString(map.GbxMapName) + "\\$z\\$s by " + map.Username);
+                                MX::mapToLoad = map.TrackID;
+                            }
+                            if (!MX::APIDown && UI::MenuItem(Icons::Kenney::InfoCircle + " Open information")){
+                                if (!Setting_ShowMenu) Setting_ShowMenu = true;
+                                mxMenu.AddTab(MapTab(map.TrackID), true);
+                            }
+                            UI::EndMenu();
+                        }
+                    } else {
+                        if (UI::BeginMenu(StripFormatCodes(mapNadeo.name) + " \\$z\\$sby " + mapNadeo.authorUsername)) {
+                            UI::TextDisabled(Icons::Times + " This map is not available on " + pluginName);
+                            UI::EndMenu();
+                        }
+                    }
+                }
+            } else {
+                UI::TextDisabled("The list is empty!");
+                UI::Separator();
+                UI::TextDisabled("To add a map here,");
+                UI::TextDisabled("select the map in the menu");
+                UI::TextDisabled("and click on 'Add to Play later'");
+            }
+            UI::EndMenu();
+        }
+        UI::Separator();
+#endif
         if (UI::BeginMenu(pluginColor+Icons::InfoCircle + " \\$zAbout")){
             if (UI::BeginMenu("\\$f00"+Icons::Heart + " \\$zSupport")){
                 if (UI::MenuItem(pluginColor+Icons::Heart + " \\$zSupport ManiaExchange")) OpenBrowserURL("https://"+MXURL+"/support");
@@ -177,6 +229,11 @@ void Main(){
 #endif
     startnew(MX::CheckForAPILoaded);
     g_PlayLaterMaps = LoadPlayLater();
+
+#if DEPENDENCY_NADEOSERVICES
+    @g_nadeoServices = MXNadeoServices();
+    startnew(CoroutineFunc(g_nadeoServices.LoadNadeoLiveServices));
+#endif
 
 #if DEPENDENCY_BETTERCHAT
     BetterChat::RegisterCommand("mx", MXBetterChat::OpenMapOnMXCmd());

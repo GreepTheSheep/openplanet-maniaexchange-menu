@@ -9,7 +9,7 @@ version = "1.0.7"
 
 [script]
 imports = [ "Icons.as", "Permissions.as", "Formatting.as" ]
-optional_dependencies = [ "BetterChat", "ItemExchange" ]
+optional_dependencies = [ "BetterChat", "ItemExchange", "NadeoServices" ]
 
 exports = [ "src/Exports/Exports.as" ]
 timeout = 0
