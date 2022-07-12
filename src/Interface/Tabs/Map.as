@@ -22,9 +22,10 @@ class MapTab : Tab
     array<MX::MapEmbeddedObject@> m_mapEmbeddedObjects;
     bool m_mapEmbeddedObjectsError = false;
 
-    UI::Font@ g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24);
+    UI::Font@ g_fontHeader;
 
     MapTab(int trackId) {
+        @g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24);
         m_mapId = trackId;
         StartMXRequest();
         StartMXAuthorsRequest();
@@ -208,7 +209,7 @@ class MapTab : Tab
             }
             // Handle the response
             for (uint i = 0; i < json.Length; i++) {
-                MX::MapEmbeddedObject@ object = MX::MapEmbeddedObject(json[i], i < Setting_EmbeddedObjectsLimit);
+                MX::MapEmbeddedObject@ object = MX::MapEmbeddedObject(json[i], int(i) < Setting_EmbeddedObjectsLimit);
                 m_mapEmbeddedObjects.InsertLast(object);
             }
         }
@@ -351,6 +352,8 @@ class MapTab : Tab
             UI::ShowNotification(Icons::Clipboard + " Track ID copied to clipboard");
         }
 
+        UI::Text(Icons::Activitypub+ " \\$f77" + m_map.MapType);
+        UI::SetPreviousTooltip("Map Type");
         UI::Text(Icons::Calendar + " \\$f77" + m_map.UploadedAt);
         UI::SetPreviousTooltip("Uploaded date");
         if (m_map.UploadedAt != m_map.UpdatedAt) {

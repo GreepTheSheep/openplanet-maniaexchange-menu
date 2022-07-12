@@ -8,7 +8,7 @@ siteid = 154
 version = "1.0.7"
 
 [script]
-imports = [ "Icons.as", "Permissions.as", "Formatting.as", "Dialogs.as" ]
+imports = [ "Icons.as", "Permissions.as", "Formatting.as" ]
 optional_dependencies = [ "BetterChat", "ItemExchange" ]
 
 exports = [ "src/Exports/Exports.as" ]
