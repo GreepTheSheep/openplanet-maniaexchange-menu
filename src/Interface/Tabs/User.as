@@ -1,6 +1,7 @@
 class UserTab : Tab
 {
     Net::HttpRequest@ m_MXUserInfoRequest;
+    Net::HttpRequest@ m_MXUserLeaderboardRequest;
     Net::HttpRequest@ m_MXUserMapsCreatedRequest;
     Net::HttpRequest@ m_MXUserMapsAwardedRequest;
     Net::HttpRequest@ m_MXUserMapPacksRequest;
@@ -21,6 +22,12 @@ class UserTab : Tab
     bool m_createdMapsError = false;
     bool m_awardedMapsError = false;
     bool m_mapPacksError = false;
+
+    MX::UserLeaderboard@ m_leaderboard;
+    string m_selectedLeaderboard = "Cumulative";
+    int m_selectedLeaderboardId = -1;
+    bool m_leaderboardError = false;
+    string m_leaderboardErrorMessage = "";
 
     int m_pageCreatedMaps = 1;
     int m_pageAwardedMaps = 1;
@@ -124,6 +131,50 @@ class UserTab : Tab
             }
             // Handle the response
             @m_featuredMap = MX::MapInfo(json[0]);
+        }
+    }
+
+    void StartMXLeaderboardRequest()
+    {
+        string url = "https://"+MXURL+"/api/leaderboard/season/"+m_selectedLeaderboardId+"/user/"+m_userId;
+
+        if (IsDevMode()) trace("UserTab::Leaderboard::StartRequest: " + url);
+        @m_MXUserLeaderboardRequest = API::Get(url);
+    }
+
+    void CheckMXLeaderboardRequest()
+    {
+        if (!MX::APIDown && m_leaderboard is null && m_MXUserLeaderboardRequest is null && UI::IsWindowAppearing()) {
+            StartMXLeaderboardRequest();
+        }
+        // If there's a request, check if it has finished
+        if (m_MXUserLeaderboardRequest !is null && m_MXUserLeaderboardRequest.Finished()) {
+            // Parse the response
+            string res = m_MXUserLeaderboardRequest.String();
+            if (IsDevMode()) trace("UserTab::Leaderboard::CheckRequest (MX): " + res);
+            @m_MXUserLeaderboardRequest = null;
+            auto json = Json::Parse(res);
+
+            if (json.GetType() == Json::Type::Null) {
+                m_leaderboardError = true;
+                m_leaderboardErrorMessage = "Error while loading user leaderboard";
+                mxError(m_leaderboardErrorMessage);
+                return;
+            }
+            if (json.GetType() == Json::Type::Array) {
+                json = json[0];
+            }
+            if (json.GetType() == Json::Type::Null) {
+                m_leaderboardError = true;
+                m_leaderboardErrorMessage = "No leaderboard data found for this season";
+                mxError(m_leaderboardErrorMessage);
+                return;
+            }
+            m_leaderboardError = false;
+            m_leaderboardErrorMessage = "";
+
+            // Handle the response
+            @m_leaderboard = MX::UserLeaderboard(json);
         }
     }
 
@@ -487,6 +538,55 @@ class UserTab : Tab
                 }
                 UI::EndChild();
             }
+            UI::EndTabItem();
+        }
+
+        if (UI::BeginTabItem(Icons::ListOl + " " + shortMXName + " Leaderboard")) {
+            UI::BeginChild("UserLeaderboardChild");
+            if (UI::BeginCombo("##Leaderboard", m_selectedLeaderboard)) {
+                if (UI::Selectable("Cumulative", m_selectedLeaderboard == "Cumulative")) {
+                    @m_leaderboard = null;
+                    m_leaderboardError = false;
+                    m_leaderboardErrorMessage = "";
+                    m_selectedLeaderboard = "Cumulative";
+                    m_selectedLeaderboardId = -1;
+                    StartMXLeaderboardRequest();
+                }
+                for (uint i = 0; i < MX::m_leaderboardSeasons.Length; i++) {
+                    if (UI::Selectable(MX::m_leaderboardSeasons[i].Name, m_selectedLeaderboard == MX::m_leaderboardSeasons[i].Name)) {
+                        @m_leaderboard = null;
+                        m_leaderboardError = false;
+                        m_leaderboardErrorMessage = "";
+                        m_selectedLeaderboard = MX::m_leaderboardSeasons[i].Name;
+                        m_selectedLeaderboardId = MX::m_leaderboardSeasons[i].SeasonID;
+                        StartMXLeaderboardRequest();
+                    }
+                }
+                UI::EndCombo();
+            }
+            CheckMXLeaderboardRequest();
+
+            if (m_leaderboard is null) {
+                if (m_leaderboardError) {
+                    UI::Text("\\$f00" + Icons::Times + " \\$z"+m_leaderboardErrorMessage);
+                } else {
+                    int HourGlassValue = Time::Stamp % 3;
+                    string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
+                    UI::Text(Hourglass + " Loading...");
+                }
+            } else {
+                UI::Text(Icons::Kenney::ButtonCircle + " Position: \\$f77"+tostring(m_leaderboard.Position));
+                UI::Text(Icons::Bolt + " Score: \\$f77"+Text::Format("%.2f", m_leaderboard.Score));
+                UI::Text("WRs: \\$f77"+tostring(m_leaderboard.WorldRecords));
+                UI::Text("Top 2s: \\$f77"+tostring(m_leaderboard.TOP2s));
+                UI::Text("Top 3s: \\$f77"+tostring(m_leaderboard.TOP3s));
+                UI::Text("Replay count: \\$f77"+tostring(m_leaderboard.ReplayCount));
+            }
+            UI::Separator();
+            UI::TextWrapped("This leaderboard is based on the replays you submit to "+ pluginName+".\n"
+                "To appear on this leaderboard, you must have at least one replay submitted.\n"
+                "You can submit replays on the map page by clicking on the \"View on "+pluginName+"\" button in a map page.");
+            UI::EndChild();
             UI::EndTabItem();
         }
 
