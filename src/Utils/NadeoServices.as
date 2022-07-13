@@ -66,14 +66,18 @@ namespace MXNadeoServicesGlobal
 
         void TryGetMXInfo()
         {
-            string url = "https://"+MXURL+"/api/maps/get_map_info/multi/"+uid;
-            if (IsDevMode()) trace("NadeoServicesMap::StartRequest (TryGetMXInfo): "+url);
-            auto json = API::GetAsync(url);
+            try {
+                string url = "https://"+MXURL+"/api/maps/get_map_info/multi/"+uid;
+                if (IsDevMode()) trace("NadeoServicesMap::StartRequest (TryGetMXInfo): "+url);
+                auto json = API::GetAsync(url);
 
-            if (json.Length > 0) {
-                @MXMapInfo = MX::MapInfo(json[0]);
-                MXId = json[0]["TrackID"];
-                trace("NadeoServices - MX Map Info found for map '" + name + "' : " + MXId);
+                if (json.Length > 0) {
+                    @MXMapInfo = MX::MapInfo(json[0]);
+                    MXId = json[0]["TrackID"];
+                    trace("NadeoServices - MX Map Info found for map '" + name + "' : " + MXId);
+                }
+            } catch {
+                mxWarn("Error parsing MX infos for map: " + name);
             }
         }
 
@@ -176,7 +180,7 @@ class MXNadeoServices
             m_favoriteMaps.InsertLast(map);
         }
 
-        while (res["mapList"].Length < m_totalFavoriteMaps) {
+        while (int(res["mapList"].Length) < m_totalFavoriteMaps) {
             offset += res["mapList"].Length;
             url = NadeoServices::BaseURL()+"/api/token/map/favorite?offset="+offset+"&length="+length+"&sort="+sort+"&order="+order;
             if (IsDevMode()) trace("NadeoServices - Loading favorite maps: " + url);
