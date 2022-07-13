@@ -102,7 +102,7 @@ void RenderMenuMain(){
             }
         }
         UI::Separator();
-        if (UI::BeginMenu(Icons::ClockO + " Play later" + (g_PlayLaterMaps.get_Length() > 0 ? " (" + g_PlayLaterMaps.get_Length() + ")" : ""))) {
+        if (UI::BeginMenu(Icons::ClockO + " Play later" + (g_PlayLaterMaps.Length > 0 ? " (" + g_PlayLaterMaps.Length + ")" : ""))) {
             if (g_PlayLaterMaps.get_Length() > 0) {
                 for (uint i = 0; i < g_PlayLaterMaps.get_Length(); i++) {
                     MX::MapInfo@ map = g_PlayLaterMaps[i];
@@ -132,7 +132,7 @@ void RenderMenuMain(){
                 UI::TextDisabled("The list is empty!");
                 UI::Separator();
                 UI::TextDisabled("To add a map here,");
-                UI::TextDisabled("select the map in the menu");
+                UI::TextDisabled("select a map in the menu");
                 UI::TextDisabled("and click on 'Add to Play later'");
             }
             UI::EndMenu();
@@ -143,14 +143,8 @@ void RenderMenuMain(){
         UI::Separator();
 #if DEPENDENCY_NADEOSERVICES
         // TODO: Add in-game favorites list from NadeoServices
-        if (UI::BeginMenu(pluginColor+Icons::Heart + " \\$zFavorites ("+g_nadeoServices.m_totalFavoriteMaps+")")) {
+        if (UI::BeginMenu(pluginColor+Icons::Heart + " \\$zFavorites"+(g_nadeoServices.m_totalFavoriteMaps > 0 ? (" ("+g_nadeoServices.m_totalFavoriteMaps+")") : ""))) {
             if (g_nadeoServices !is null && g_nadeoServices.m_favoriteMaps.Length > 0) {
-
-                // CoroutineFunc seems not working on RenderMenuMain()
-                if (UI::MenuItem("\\$850"+Icons::Refresh + " \\$zRefresh list")){
-                    startnew(MXNadeoServicesGlobal::ReloadFavoriteMapsAsync);
-                }
-                UI::Separator();
                 for (uint i = 0; i < g_nadeoServices.m_favoriteMaps.Length; i++) {
                     MXNadeoServicesGlobal::NadeoServicesMap@ mapNadeo = g_nadeoServices.m_favoriteMaps[i];
 
@@ -173,7 +167,7 @@ void RenderMenuMain(){
                             UI::EndMenu();
                         }
                     } else {
-                        if (UI::BeginMenu(StripFormatCodes(mapNadeo.name) + " \\$z\\$sby " + mapNadeo.authorUsername)) {
+                        if (UI::BeginMenu(ColoredString(mapNadeo.name) + " \\$z\\$sby " + mapNadeo.authorUsername)) {
                             UI::TextDisabled(Icons::Times + " This map is not available on " + pluginName);
                             UI::EndMenu();
                         }
@@ -183,8 +177,8 @@ void RenderMenuMain(){
                 UI::TextDisabled("The list is empty!");
                 UI::Separator();
                 UI::TextDisabled("To add a map here,");
-                UI::TextDisabled("select the map in the menu");
-                UI::TextDisabled("and click on 'Add to Play later'");
+                UI::TextDisabled("select a map in the menu");
+                UI::TextDisabled("and click on 'Add to Favorites'");
             }
             UI::EndMenu();
         }
@@ -215,6 +209,9 @@ void RenderMenuMain(){
             if (UI::MenuItem(pluginColor+Icons::ExternalLink + " \\$zOpen "+pluginName+" in browser")) OpenBrowserURL("https://"+MXURL);
             UI::Separator();
             if (!MX::APIRefresh && UI::MenuItem(Icons::Refresh + " Refresh Tags and Seasons")) startnew(MX::CheckForAPILoaded);
+#if DEPENDENCY_NADEOSERVICES
+            if (!MXNadeoServicesGlobal::APIRefresh && UI::MenuItem("\\$850"+Icons::Refresh + " \\$zRefresh favorite maps list")) startnew(MXNadeoServicesGlobal::ReloadFavoriteMapsAsync);
+#endif
             UI::EndMenu();
         }
         UI::EndMenu();
