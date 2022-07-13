@@ -164,11 +164,19 @@ void RenderMenuMain(){
                                 if (!Setting_ShowMenu) Setting_ShowMenu = true;
                                 mxMenu.AddTab(MapTab(map.TrackID), true);
                             }
+                            if (UI::MenuItem("\\$f00"+Icons::TrashO + " Remove map")){
+                                g_nadeoServices.SendRemoveMapToFavorites(mapNadeo.uid);
+                                UI::ShowNotification(ColoredString(mapNadeo.name) + " \\$z\\$sby " + mapNadeo.authorUsername + " has been removed from favorites!");
+                            }
                             UI::EndMenu();
                         }
                     } else {
-                        if (UI::BeginMenu(ColoredString(mapNadeo.name) + " \\$z\\$sby " + mapNadeo.authorUsername)) {
+                        if (UI::BeginMenu((Setting_ColoredMapName ? ColoredString(mapNadeo.name) : StripFormatCodes(mapNadeo.name)) + " \\$z\\$sby " + mapNadeo.authorUsername)) {
                             UI::TextDisabled(Icons::Times + " This map is not available on " + pluginName);
+                            if (UI::MenuItem("\\$f00"+Icons::TrashO + " Remove map")){
+                                g_nadeoServices.SendRemoveMapToFavorites(mapNadeo.uid);
+                                UI::ShowNotification(ColoredString(mapNadeo.name) + " \\$z\\$sby " + mapNadeo.authorUsername + " has been removed from favorites!");
+                            }
                             UI::EndMenu();
                         }
                     }

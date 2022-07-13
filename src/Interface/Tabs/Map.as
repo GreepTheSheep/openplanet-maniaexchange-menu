@@ -8,9 +8,11 @@ class MapTab : Tab
     array<MX::MapAuthorInfo@> m_authors;
     array<TMIO::Leaderboard@> m_leaderboard;
     int m_mapId;
+    bool m_isMapOnNadeoServices = false;
     bool m_isLoading = false;
     bool m_mapDownloaded = false;
     bool m_isMapOnPlayLater = false;
+    bool m_isMapOnFavorite = false;
     bool m_error = false;
     bool m_authorsError = false;
     bool m_TMIOrequestStart = false;
@@ -29,6 +31,9 @@ class MapTab : Tab
         m_mapId = trackId;
         StartMXRequest();
         StartMXAuthorsRequest();
+#if DEPENDENCY_NADEOSERVICES
+        startnew(CoroutineFunc(CheckIfMapExistsNadeoServices));
+#endif
     }
 
     bool CanClose() override { return !m_isLoading; }
@@ -49,6 +54,16 @@ class MapTab : Tab
             return res;
         }
     }
+
+#if DEPENDENCY_NADEOSERVICES
+    void CheckIfMapExistsNadeoServices()
+    {
+        while (m_map is null) {
+            yield();
+        }
+        m_isMapOnNadeoServices = g_nadeoServices.CheckIfMapExistsAsync(m_map.TrackUID);
+    }
+#endif
 
     void StartMXRequest()
     {
@@ -253,6 +268,19 @@ class MapTab : Tab
             }
         }
 
+#if DEPENDENCY_NADEOSERVICES
+        // Check if the map is already on the favorites list
+        for (uint i = 0; i < g_nadeoServices.m_favoriteMaps.Length; i++) {
+            MXNadeoServicesGlobal::NadeoServicesMap@ favoriteMap = g_nadeoServices.m_favoriteMaps[i];
+            if (favoriteMap.uid != m_map.TrackUID) {
+                m_isMapOnFavorite = false;
+            } else {
+                m_isMapOnFavorite = true;
+                break;
+            }
+        }
+#endif
+
         float width = UI::GetWindowSize().x*0.35;
         vec2 posTop = UI::GetCursorPos();
 
@@ -447,6 +475,30 @@ class MapTab : Tab
                 }
             }
         }
+
+#if DEPENDENCY_NADEOSERVICES
+        if (m_isMapOnNadeoServices) {
+            if (!m_isMapOnFavorite){
+#if TMNEXT
+                if (Permissions::PlayLocalMap() && UI::GreenButton(Icons::Heart + " Add to Favorites")) {
+#else
+                if (UI::GreenButton(Icons::Heart + " Add to Favorites")) {
+#endif
+                    g_nadeoServices.SendAddMapToFavorites(m_map.TrackUID);
+                }
+            } else {
+#if TMNEXT
+                if (Permissions::PlayLocalMap() && UI::RedButton(Icons::Heart + " Remove from Favorites")) {
+#else
+                if (UI::RedButton(Icons::Heart + " Remove from Favorites")) {
+#endif
+                    g_nadeoServices.SendRemoveMapToFavorites(m_map.TrackUID);
+                }
+            }
+        } else {
+            UI::TextDisabled(Icons::ExclamationTriangle + " This map is not on Nadeo Services, impossible to add it to favorites");
+        }
+#endif
 
         UI::EndChild();
 

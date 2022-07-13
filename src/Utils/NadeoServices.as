@@ -68,14 +68,7 @@ namespace MXNadeoServicesGlobal
         {
             string url = "https://"+MXURL+"/api/maps/get_map_info/multi/"+uid;
             if (IsDevMode()) trace("NadeoServicesMap::StartRequest (TryGetMXInfo): "+url);
-            Net::HttpRequest@ req = API::Get(url);
-            while (!req.Finished()) {
-                yield();
-            }
-            string res = req.String();
-            if (IsDevMode()) trace("NadeoServicesMap::CheckRequest (TryGetMXInfo): " + res);
-            @req = null;
-            auto json = Json::Parse(res);
+            auto json = API::GetAsync(url);
 
             if (json.Length > 0) {
                 @MXMapInfo = MX::MapInfo(json[0]);
@@ -122,7 +115,7 @@ class MXNadeoServices
 {
     array<MXNadeoServicesGlobal::NadeoServicesMap@> m_favoriteMaps;
     int m_totalFavoriteMaps;
-    dictionary g_cachedUsernames;
+    string m_mapUidToAction;
 
     void LoadNadeoLiveServices()
     {
@@ -204,6 +197,82 @@ class MXNadeoServices
         }
 
         print("NadeoServices - Favorite maps: loaded "+m_favoriteMaps.Length+" maps. Total: "+m_totalFavoriteMaps);
+    }
+
+    bool CheckIfMapExistsAsync(string mapUid)
+    {
+        string url = NadeoServices::BaseURL()+"/api/token/map/"+mapUid;
+        if (IsDevMode()) trace("NadeoServices - Check if map exists: " + url);
+        Net::HttpRequest@ req = NadeoServices::Get("NadeoLiveServices", url);
+        req.Start();
+        while (!req.Finished()) {
+            yield();
+        }
+        auto res = Json::Parse(req.String());
+
+        if (res.GetType() != Json::Type::Object) {
+            if (res.GetType() == Json::Type::Array && res[0].GetType() == Json::Type::String) {
+                string errorMsg = res[0];
+                if (errorMsg.Contains("notFound")) return false;
+            }
+            mxError("NadeoServices - Error checking if map exists: " + req.String());
+            return false;
+        }
+
+        try {
+            string resMapUid = res["uid"];
+            return resMapUid == mapUid;
+        } catch {
+            return false;
+        }
+    }
+
+    void SendAddMapToFavorites(string mapUid)
+    {
+        m_mapUidToAction = mapUid;
+        startnew(CoroutineFunc(AddMapToFavoritesAsync));
+    }
+
+    void SendRemoveMapToFavorites(string mapUid)
+    {
+        m_mapUidToAction = mapUid;
+        startnew(CoroutineFunc(RemoveMapFromFavoritesAsync));
+    }
+
+    void AddMapToFavoritesAsync()
+    {
+        string url = NadeoServices::BaseURL()+"/api/token/map/favorite/"+m_mapUidToAction+"/add";
+        if (IsDevMode()) trace("NadeoServices - Add map to favorites: " + url);
+        Net::HttpRequest@ req = NadeoServices::Post("NadeoLiveServices", url);
+        req.Start();
+        while (!req.Finished()) {
+            yield();
+        }
+        if (req.ResponseCode() != 200) {
+            mxError("NadeoServices - Error adding map to favorites: " + req.String());
+        } else {
+            print("NadeoServices - "+req.String()+": " + m_mapUidToAction);
+        }
+        m_mapUidToAction = "";
+        startnew(MXNadeoServicesGlobal::ReloadFavoriteMapsAsync);
+    }
+
+    void RemoveMapFromFavoritesAsync()
+    {
+        string url = NadeoServices::BaseURL()+"/api/token/map/favorite/"+m_mapUidToAction+"/remove";
+        if (IsDevMode()) trace("NadeoServices - Remove map from favorites: " + url);
+        Net::HttpRequest@ req = NadeoServices::Post("NadeoLiveServices", url);
+        req.Start();
+        while (!req.Finished()) {
+            yield();
+        }
+        if (req.ResponseCode() != 200) {
+            mxError("NadeoServices - Error removing map from favorites: " + req.String());
+        } else {
+            print("NadeoServices - "+req.String()+": " + m_mapUidToAction);
+        }
+        m_mapUidToAction = "";
+        startnew(MXNadeoServicesGlobal::ReloadFavoriteMapsAsync);
     }
 }
 #endif
