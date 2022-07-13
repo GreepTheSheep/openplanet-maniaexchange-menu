@@ -78,3 +78,59 @@ void RenderMP4RepoSelectSettings()
     }
 }
 #endif
+
+#if DEPENDENCY_NADEOSERVICES
+
+enum NadeoServicesFavoriteMapListSort {
+    Date,
+    Name
+}
+
+enum NadeoServicesFavoriteMapListSortOrder {
+    Ascending,
+    Descending
+}
+
+[Setting hidden]
+int Setting_NadeoServices_FavoriteMaps_RefreshDelay = 30;
+
+[Setting hidden]
+NadeoServicesFavoriteMapListSort Setting_NadeoServices_FavoriteMaps_Sort = NadeoServicesFavoriteMapListSort::Date;
+
+[Setting hidden]
+NadeoServicesFavoriteMapListSortOrder Setting_NadeoServices_FavoriteMaps_SortOrder = NadeoServicesFavoriteMapListSortOrder::Descending;
+
+[SettingsTab name="Favorite Maps"]
+void RenderNadeoServicesSettings()
+{
+    if (UI::Button(Icons::Refresh + " Refresh Favorite Maps")) {
+        startnew(MXNadeoServicesGlobal::ReloadFavoriteMapsAsync);
+        for (uint i = 0; i < mxMenu.tabs.Length; i++) {
+            if (mxMenu.tabs[i] !is null) {
+                mxMenu.tabs[i].Reload();
+            }
+        }
+    }
+    Setting_NadeoServices_FavoriteMaps_RefreshDelay = UI::SliderInt("Favorite Maps refresh delay (in minutes)", Setting_NadeoServices_FavoriteMaps_RefreshDelay, 10, 60);
+
+    if (UI::BeginCombo("Favorites map list Sorting", tostring(Setting_NadeoServices_FavoriteMaps_Sort))) {
+        for (int i = 0; i < 2; i++) {
+            if (UI::Selectable(tostring(NadeoServicesFavoriteMapListSort(i)), false)) {
+                Setting_NadeoServices_FavoriteMaps_Sort = NadeoServicesFavoriteMapListSort(i);
+                startnew(MXNadeoServicesGlobal::ReloadFavoriteMapsAsync);
+            }
+        }
+        UI::EndCombo();
+    }
+
+    if (UI::BeginCombo("Favorites map list Sorting Order", tostring(Setting_NadeoServices_FavoriteMaps_SortOrder))) {
+        for (int i = 0; i < 2; i++) {
+            if (UI::Selectable(tostring(NadeoServicesFavoriteMapListSortOrder(i)), false)) {
+                Setting_NadeoServices_FavoriteMaps_SortOrder = NadeoServicesFavoriteMapListSortOrder(i);
+                startnew(MXNadeoServicesGlobal::ReloadFavoriteMapsAsync);
+            }
+        }
+        UI::EndCombo();
+    }
+}
+#endif

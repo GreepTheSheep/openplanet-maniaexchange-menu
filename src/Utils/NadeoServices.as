@@ -95,9 +95,24 @@ namespace MXNadeoServicesGlobal
 
 #if DEPENDENCY_NADEOSERVICES
     void ReloadFavoriteMapsAsync() {
-        if (g_nadeoServices.m_favoriteMaps.Length > 0) g_nadeoServices.m_favoriteMaps.RemoveRange(0, g_nadeoServices.m_favoriteMaps.Length);
-        g_nadeoServices.m_totalFavoriteMaps = 0;
-        g_nadeoServices.GetFavoriteMapsAsync();
+        try {
+            MXNadeoServicesGlobal::APIRefresh = true;
+            if (g_nadeoServices.m_favoriteMaps.Length > 0) g_nadeoServices.m_favoriteMaps.RemoveRange(0, g_nadeoServices.m_favoriteMaps.Length);
+            g_nadeoServices.m_totalFavoriteMaps = 0;
+            g_nadeoServices.GetFavoriteMapsAsync();
+            MXNadeoServicesGlobal::APIRefresh = false;
+        } catch {
+            mxError("NadeoServices: Error reloading favorite maps");
+            MXNadeoServicesGlobal::APIRefresh = false;
+        }
+    }
+
+    void RefreshFavoriteMapsLoop() {
+        while (true) {
+            sleep(Setting_NadeoServices_FavoriteMaps_RefreshDelay * 60 * 1000);
+            trace('NadeoServices: Refreshing favorite maps...');
+            ReloadFavoriteMapsAsync();
+        }
     }
 #endif
 }
@@ -122,6 +137,8 @@ class MXNadeoServices
 
             MXNadeoServicesGlobal::APIRefresh = false;
             MXNadeoServicesGlobal::APIDown = false;
+
+            startnew(MXNadeoServicesGlobal::RefreshFavoriteMapsLoop);
         } catch {
             mxError("Failed to load NadeoLiveServices", IsDevMode());
             MXNadeoServicesGlobal::APIDown = true;
@@ -137,8 +154,14 @@ class MXNadeoServices
         trace("NadeoLiveServices authenticated");
     }
 
-    void GetFavoriteMapsAsync(int offset = 0, int length = 100, string sort = "date", string order = "desc")
+    void GetFavoriteMapsAsync()
     {
+        int offset = 0;
+        int length = 100;
+        string sort = "date";
+        string order = "desc";
+        if (Setting_NadeoServices_FavoriteMaps_Sort == NadeoServicesFavoriteMapListSort::Name) sort = "name";
+        if (Setting_NadeoServices_FavoriteMaps_SortOrder == NadeoServicesFavoriteMapListSortOrder::Ascending) order = "asc";
         string url = NadeoServices::BaseURL()+"/api/token/map/favorite?offset="+offset+"&length="+length+"&sort="+sort+"&order="+order;
         if (IsDevMode()) trace("NadeoServices - Loading favorite maps: " + url);
         Net::HttpRequest@ req = NadeoServices::Get("NadeoLiveServices", url);
@@ -150,12 +173,34 @@ class MXNadeoServices
 
         m_totalFavoriteMaps = res["itemCount"];
 
+        if (m_totalFavoriteMaps == 0) return;
+
         for (uint i = 0; i < res["mapList"].Length; i++) {
             string mapName = res["mapList"][i]["name"];
             string mapUid = res["mapList"][i]["uid"];
             if (IsDevMode()) trace("Loading favorite map #"+i+": " + mapName + " (" + mapUid + ")");
             MXNadeoServicesGlobal::NadeoServicesMap@ map = MXNadeoServicesGlobal::NadeoServicesMap(res["mapList"][i]);
             m_favoriteMaps.InsertLast(map);
+        }
+
+        while (res["mapList"].Length < m_totalFavoriteMaps) {
+            offset += res["mapList"].Length;
+            url = NadeoServices::BaseURL()+"/api/token/map/favorite?offset="+offset+"&length="+length+"&sort="+sort+"&order="+order;
+            if (IsDevMode()) trace("NadeoServices - Loading favorite maps: " + url);
+            @req = NadeoServices::Get("NadeoLiveServices", url);
+            req.Start();
+            while (!req.Finished()) {
+                yield();
+            }
+            res = Json::Parse(req.String());
+
+            for (uint i = 0; i < res["mapList"].Length; i++) {
+                string mapName = res["mapList"][i]["name"];
+                string mapUid = res["mapList"][i]["uid"];
+                if (IsDevMode()) trace("Loading favorite map #"+i+": " + mapName + " (" + mapUid + ")");
+                MXNadeoServicesGlobal::NadeoServicesMap@ map = MXNadeoServicesGlobal::NadeoServicesMap(res["mapList"][i]);
+                m_favoriteMaps.InsertLast(map);
+            }
         }
 
         print("NadeoServices - Favorite maps: loaded "+m_favoriteMaps.Length+" maps. Total: "+m_totalFavoriteMaps);
