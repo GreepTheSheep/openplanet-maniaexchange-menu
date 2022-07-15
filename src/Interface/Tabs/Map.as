@@ -4,9 +4,11 @@ class MapTab : Tab
     Net::HttpRequest@ m_MXAuthorsRequest;
     Net::HttpRequest@ m_TMIOrequest;
     Net::HttpRequest@ m_MXEmbedObjRequest;
+    Net::HttpRequest@ m_MXReplaysRequest;
     MX::MapInfo@ m_map;
     array<MX::MapAuthorInfo@> m_authors;
     array<TMIO::Leaderboard@> m_leaderboard;
+    array<MX::MapReplay@> m_replays;
     int m_mapId;
     bool m_isMapOnNadeoServices = false;
     bool m_isLoading = false;
@@ -23,6 +25,7 @@ class MapTab : Tab
     bool m_TMIONoRes = false;
     array<MX::MapEmbeddedObject@> m_mapEmbeddedObjects;
     bool m_mapEmbeddedObjectsError = false;
+    bool m_replaysError = false;
 
     UI::Font@ g_fontHeader;
 
@@ -115,6 +118,39 @@ class MapTab : Tab
             for (uint i = 0; i < json.Length; i++) {
                 MX::MapAuthorInfo@ author = MX::MapAuthorInfo(json[i]);
                 m_authors.InsertLast(author);
+            }
+        }
+    }
+
+    void StartMXReplaysRequest()
+    {
+        string url = "https://"+MXURL+"/api/replays/get_replays/"+m_mapId;
+        if (IsDevMode()) trace("MapTab::StartRequest (Replays): "+url);
+        @m_MXReplaysRequest = API::Get(url);
+    }
+
+    void CheckMXReplaysRequest()
+    {
+        if (!MX::APIDown && m_replays.Length != (m_map.ReplayCount > 25 ? 25:m_map.ReplayCount) && m_MXReplaysRequest is null && UI::IsWindowAppearing()) {
+            StartMXReplaysRequest();
+        }
+        // If there's a request, check if it has finished
+        if (m_MXReplaysRequest !is null && m_MXReplaysRequest.Finished()) {
+            // Parse the response
+            string res = m_MXReplaysRequest.String();
+            if (IsDevMode()) trace("MapTab::CheckRequest (Replays): " + res);
+            @m_MXReplaysRequest = null;
+            auto json = Json::Parse(res);
+
+            if (json.Length == 0) {
+                print("MapTab::CheckRequest (Replays): Error parsing response");
+                m_replaysError = true;
+                return;
+            }
+            // Handle the response
+            for (uint i = 0; i < json.Length; i++) {
+                MX::MapReplay@ replay = MX::MapReplay(json[i]);
+                m_replays.InsertLast(replay);
             }
         }
     }
@@ -531,6 +567,68 @@ class MapTab : Tab
         if(UI::BeginTabItem("Description")){
             UI::BeginChild("MapDescriptionChild");
             IfaceRender::MXComment(m_map.Comments);
+            UI::EndChild();
+            UI::EndTabItem();
+        }
+        if (m_map.ReplayCount > 0 && UI::BeginTabItem(shortMXName + " Leaderboard")) {
+            UI::BeginChild("MapMXLeaderboardChild");
+            CheckMXReplaysRequest();
+            if (UI::GreenButton(Icons::ExternalLink + " Submit")) OpenBrowserURL("https://"+MXURL+"/upload/replays/select_files/"+m_mapId);
+            if (m_MXReplaysRequest !is null && !m_MXReplaysRequest.Finished()) {
+                int HourGlassValue = Time::Stamp % 3;
+                string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
+                UI::Text(Hourglass + " Loading...");
+            } else {
+                if (m_replaysError) {
+                    UI::Text("\\$f00" + Icons::Times + "\\$z Error while loading leaderboard");
+                } else {
+                    UI::SameLine();
+                    if (UI::Button(Icons::Refresh)) {
+                        m_replays.RemoveRange(0, m_replays.Length);
+                        StartMXReplaysRequest();
+                    }
+                    if (UI::BeginTable("MXLeaderboardList", 4)) {
+                        UI::TableSetupScrollFreeze(0, 1);
+                        PushTabStyle();
+                        UI::TableSetupColumn("Position", UI::TableColumnFlags::WidthFixed, 40);
+                        UI::TableSetupColumn("Player", UI::TableColumnFlags::WidthStretch);
+                        UI::TableSetupColumn("Time", UI::TableColumnFlags::WidthStretch);
+                        UI::TableSetupColumn("Score", UI::TableColumnFlags::WidthStretch);
+                        UI::TableHeadersRow();
+                        PopTabStyle();
+                        UI::ListClipper clipper(m_replays.Length);
+                        while(clipper.Step()) {
+                            for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
+                                UI::TableNextRow();
+                                MX::MapReplay@ entry = m_replays[i];
+
+                                UI::TableSetColumnIndex(0);
+                                UI::Text(tostring(entry.Position));
+
+                                UI::TableSetColumnIndex(1);
+                                UI::Text(entry.Username);
+                                UI::SetPreviousTooltip("Click to see "+entry.Username+"'s profile");
+                                if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(entry.UserID), true);
+
+                                UI::TableSetColumnIndex(2);
+                                UI::Text(FormatTime(entry.ReplayTime));
+                                if (i != 0){
+                                    UI::SameLine();
+                                    UI::Text("\\$f00(+ " + FormatTime(entry.ReplayTime - m_replays[0].ReplayTime) + ")");
+                                }
+
+                                UI::TableSetColumnIndex(3);
+                                UI::Text(tostring(entry.ReplayPoints) + " \\$666("+tostring(entry.Percentage)+"%)");
+                                if (i != 0){
+                                    UI::SameLine();
+                                    UI::Text("\\$a66(" + (entry.ReplayPoints - m_replays[0].ReplayPoints) + ")");
+                                }
+                            }
+                        }
+                        UI::EndTable();
+                    }
+                }
+            }
             UI::EndChild();
             UI::EndTabItem();
         }

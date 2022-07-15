@@ -24,6 +24,7 @@ namespace MX
         int AuthorTime;
         int TrackValue;
         int AwardCount;
+        int ReplayCount;
         uint ImageCount;
         uint EmbeddedObjectsCount;
         int EmbeddedItemsSize;
@@ -58,6 +59,7 @@ namespace MX
                 if (json["AuthorTime"].GetType() != Json::Type::Null) AuthorTime = json["AuthorTime"];
                 TrackValue = json["TrackValue"];
                 AwardCount = json["AwardCount"];
+                ReplayCount = json["ReplayCount"];
                 ImageCount = json["ImageCount"];
                 if (json["EmbeddedObjectsCount"].GetType() != Json::Type::Null) EmbeddedObjectsCount = json["EmbeddedObjectsCount"];
                 if (json["EmbeddedItemsSize"].GetType() != Json::Type::Null) EmbeddedItemsSize = json["EmbeddedItemsSize"];
@@ -115,6 +117,7 @@ namespace MX
                 json["AuthorTime"] = AuthorTime;
                 json["TrackValue"] = TrackValue;
                 json["AwardCount"] = AwardCount;
+                json["ReplayCount"] = ReplayCount;
                 json["ImageCount"] = ImageCount;
                 json["IsMP4"] = IsMP4;
 
