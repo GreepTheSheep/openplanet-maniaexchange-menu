@@ -176,9 +176,9 @@ namespace MXNadeoServicesGlobal
                 if (i < mapUidsPart.Length - 1) mapUidsPartString += ",";
             }
 
-            string url = "https://"+MXURL+"/api/maps/get_map_info/multi/"+mapUidsPartString;
-            if (IsDevMode()) trace("NadeoServices - Loading map MX infos: " + url);
-            Net::HttpRequest@ mxReq = API::Get(url);
+            string mxUrl = "https://"+MXURL+"/api/maps/get_map_info/multi/"+mapUidsPartString;
+            if (IsDevMode()) trace("NadeoServices - Loading map MX infos: " + mxUrl);
+            Net::HttpRequest@ mxReq = API::Get(mxUrl);
             while (!mxReq.Finished()) {
                 yield();
             }

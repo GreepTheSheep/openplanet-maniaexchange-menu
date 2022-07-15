@@ -131,7 +131,7 @@ class MapTab : Tab
 
     void CheckMXReplaysRequest()
     {
-        if (!MX::APIDown && m_replays.Length != (m_map.ReplayCount > 25 ? 25:m_map.ReplayCount) && m_MXReplaysRequest is null && UI::IsWindowAppearing()) {
+        if (!MX::APIDown && int(m_replays.Length) != (m_map.ReplayCount > 25 ? 25:m_map.ReplayCount) && m_MXReplaysRequest is null && UI::IsWindowAppearing()) {
             StartMXReplaysRequest();
         }
         // If there's a request, check if it has finished
