@@ -109,6 +109,7 @@ namespace MXNadeoServicesGlobal
         while (!req.Finished()) {
             yield();
         }
+        if (IsDevMode()) trace("NadeoServices - Check favorite maps: " + req.String());
         auto res = Json::Parse(req.String());
 
         g_totalFavoriteMaps = res["itemCount"];
@@ -124,7 +125,7 @@ namespace MXNadeoServicesGlobal
         }
 
         while (int(res["mapList"].Length) < g_totalFavoriteMaps) {
-            offset += res["mapList"].Length;
+            offset += int(res["mapList"].Length);
             url = NadeoServices::BaseURL()+"/api/token/map/favorite?offset="+offset+"&length="+length+"&sort="+sort+"&order="+order;
             if (IsDevMode()) trace("NadeoServices - Loading favorite maps: " + url);
             @req = NadeoServices::Get("NadeoLiveServices", url);
@@ -132,6 +133,7 @@ namespace MXNadeoServicesGlobal
             while (!req.Finished()) {
                 yield();
             }
+            if (IsDevMode()) trace("NadeoServices - Check favorite maps: " + req.String());
             res = Json::Parse(req.String());
 
             for (uint i = 0; i < res["mapList"].Length; i++) {
@@ -143,30 +145,17 @@ namespace MXNadeoServicesGlobal
             }
         }
 
-        array<string> mapUids;
-        array<string> mapAuthorIds;
-
-        for (uint i = 0; i < g_favoriteMaps.Length; i++) {
-            mapUids.InsertLast(g_favoriteMaps[i].uid);
-            mapAuthorIds.InsertLast(g_favoriteMaps[i].author);
-        }
-
-        dictionary authorNames = NadeoServices::GetDisplayNamesAsync(mapAuthorIds);
-
-        for (uint i = 0; i < g_favoriteMaps.Length; i++) {
-            authorNames.Get(g_favoriteMaps[i].author, g_favoriteMaps[i].authorUsername);
-            if (IsDevMode()) trace("NadeoServices - Author Username for '"+g_favoriteMaps[i].author+"': " + g_favoriteMaps[i].authorUsername);
-        }
+        if (IsDevMode()) trace("NadeoServices - Checking for map on MX...");
 
         uint splitMapUids = 50;
         uint mapUidsCheckDone = 0;
 
-        while (mapUidsCheckDone < mapUids.Length) {
+        while (mapUidsCheckDone < g_favoriteMaps.Length) {
             array<string> mapUidsPart;
             uint mapUidsPartLength = 0;
             for (uint i = 0; i < splitMapUids; i++) {
-                if (mapUidsPartLength >= mapUids.Length) break;
-                mapUidsPart.InsertLast(mapUids[mapUidsPartLength]);
+                if (mapUidsPartLength >= g_favoriteMaps.Length) break;
+                mapUidsPart.InsertLast(g_favoriteMaps[mapUidsPartLength].uid);
                 mapUidsPartLength++;
             }
 
@@ -194,16 +183,32 @@ namespace MXNadeoServicesGlobal
                 if (IsDevMode()) trace("Loading map MX info "+mapUidsPart[i]);
                 string resMapUid = mxJson[i]["TrackUID"];
                 while (resMapUid != g_favoriteMaps[mapUidsCheckDone].uid) {
-                    if (IsDevMode()) mxWarn("NadeoServices - Map UID mismatch: " + resMapUid + " != " + mapUidsPart[i]);
+                    if (IsDevMode()) mxWarn("NadeoServices - Map UID mismatch: " + resMapUid + " != " + mapUidsPart[i] + "\nThe map will be ignored");
                     mapUidsCheckDone++;
                 }
-                @g_favoriteMaps[mapUidsCheckDone].MXMapInfo = MX::MapInfo(mxJson[i]);
                 g_favoriteMaps[mapUidsCheckDone].MXId = mxJson[i]["TrackID"];
+                @g_favoriteMaps[mapUidsCheckDone].MXMapInfo = MX::MapInfo(mxJson[i]);
                 mapUidsCheckDone++;
             }
         }
 
-        print("NadeoServices - Favorite maps: loaded "+g_favoriteMaps.Length+" maps. Total: "+g_totalFavoriteMaps);
+        if (IsDevMode()) trace("NadeoServices - Loading favorites map author usernames...");
+
+        for (uint i = 0; i < g_favoriteMaps.Length; i++) {
+            if (g_favoriteMaps[i].MXMapInfo !is null) {
+                if (IsDevMode()) trace("NadeoServices - Author Username for "+StripFormatCodes(g_favoriteMaps[i].name)+" Skipping because MX map info is already loaded.");
+                continue;
+            }
+
+            try {
+                g_favoriteMaps[i].authorUsername = NadeoServices::GetDisplayNameAsync(g_favoriteMaps[i].author);
+                if (IsDevMode()) trace("NadeoServices - Author Username for "+StripFormatCodes(g_favoriteMaps[i].name)+" '"+g_favoriteMaps[i].author+"': " + g_favoriteMaps[i].authorUsername);
+            } catch {
+                mxWarn("NadeoServices - Author Username for "+StripFormatCodes(g_favoriteMaps[i].name)+" '"+g_favoriteMaps[i].author+"': Failed", IsDevMode());
+            }
+        }
+
+        print("NadeoServices - Favorite maps: loaded "+g_favoriteMaps.Length+" maps." + (IsDevMode() ? (" NadeoServices total: " + g_totalFavoriteMaps + " maps.") :"");
     }
 
     void ReloadFavoriteMapsAsync() {
