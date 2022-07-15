@@ -31,9 +31,6 @@ class MapTab : Tab
         m_mapId = trackId;
         StartMXRequest();
         StartMXAuthorsRequest();
-#if DEPENDENCY_NADEOSERVICES
-        startnew(CoroutineFunc(CheckIfMapExistsNadeoServices));
-#endif
     }
 
     bool CanClose() override { return !m_isLoading; }
@@ -58,10 +55,7 @@ class MapTab : Tab
 #if DEPENDENCY_NADEOSERVICES
     void CheckIfMapExistsNadeoServices()
     {
-        while (m_map is null) {
-            yield();
-        }
-        m_isMapOnNadeoServices = g_nadeoServices.CheckIfMapExistsAsync(m_map.TrackUID);
+        m_isMapOnNadeoServices = MXNadeoServicesGlobal::CheckIfMapExistsAsync(m_map.TrackUID);
     }
 #endif
 
@@ -84,22 +78,15 @@ class MapTab : Tab
 
             if (json.get_Length() == 0) {
                 print("MapTab::CheckRequest (MX): Error parsing response");
-                HandleMXResponseError();
+                m_error = true;
                 return;
             }
             // Handle the response
-            HandleMXResponse(json[0]);
+            @m_map = MX::MapInfo(json[0]);
+#if DEPENDENCY_NADEOSERVICES
+            startnew(CoroutineFunc(CheckIfMapExistsNadeoServices));
+#endif
         }
-    }
-
-    void HandleMXResponse(const Json::Value &in json)
-    {
-        @m_map = MX::MapInfo(json);
-    }
-
-    void HandleMXResponseError()
-    {
-        m_error = true;
     }
 
     void StartMXAuthorsRequest()
@@ -121,25 +108,15 @@ class MapTab : Tab
 
             if (json.get_Length() == 0) {
                 print("MapTab::CheckRequest (Authors): Error parsing response");
-                HandleMXAuthorsResponseError();
+                m_authorsError = true;
                 return;
             }
             // Handle the response
-            HandleMXAuthorResponse(json);
+            for (uint i = 0; i < json.Length; i++) {
+                MX::MapAuthorInfo@ author = MX::MapAuthorInfo(json[i]);
+                m_authors.InsertLast(author);
+            }
         }
-    }
-
-    void HandleMXAuthorResponse(const Json::Value &in json)
-    {
-        for (uint i = 0; i < json.get_Length(); i++) {
-            MX::MapAuthorInfo@ author = MX::MapAuthorInfo(json[i]);
-            m_authors.InsertLast(author);
-        }
-    }
-
-    void HandleMXAuthorsResponseError()
-    {
-        m_authorsError = true;
     }
 
     void StartTMIORequest(int offset = 0)
@@ -270,8 +247,8 @@ class MapTab : Tab
 
 #if DEPENDENCY_NADEOSERVICES
         // Check if the map is already on the favorites list
-        for (uint i = 0; i < g_nadeoServices.m_favoriteMaps.Length; i++) {
-            MXNadeoServicesGlobal::NadeoServicesMap@ favoriteMap = g_nadeoServices.m_favoriteMaps[i];
+        for (uint i = 0; i < MXNadeoServicesGlobal::g_favoriteMaps.Length; i++) {
+            MXNadeoServicesGlobal::NadeoServicesMap@ favoriteMap = MXNadeoServicesGlobal::g_favoriteMaps[i];
             if (favoriteMap.uid != m_map.TrackUID) {
                 m_isMapOnFavorite = false;
             } else {
@@ -484,7 +461,8 @@ class MapTab : Tab
 #else
                 if (UI::GreenButton(Icons::Heart + " Add to Favorites")) {
 #endif
-                    g_nadeoServices.SendAddMapToFavorites(m_map.TrackUID);
+                    MXNadeoServicesGlobal::m_mapUidToAction = m_map.TrackUID;
+                    startnew(MXNadeoServicesGlobal::AddMapToFavoritesAsync);
                 }
             } else {
 #if TMNEXT
@@ -492,7 +470,8 @@ class MapTab : Tab
 #else
                 if (UI::RedButton(Icons::Heart + " Remove from Favorites")) {
 #endif
-                    g_nadeoServices.SendRemoveMapToFavorites(m_map.TrackUID);
+                    MXNadeoServicesGlobal::m_mapUidToAction = m_map.TrackUID;
+                    startnew(MXNadeoServicesGlobal::RemoveMapFromFavoritesAsync);
                 }
             }
         } else {

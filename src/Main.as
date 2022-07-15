@@ -3,10 +3,6 @@ int currentMapID = -4;
 MX::MapInfo@ currentMapInfo;
 Window@ mxMenu;
 
-#if DEPENDENCY_NADEOSERVICES
-MXNadeoServices@ g_nadeoServices;
-#endif
-
 void RenderMenu()
 {
     if(UI::MenuItem(nameMenu + (MX::APIDown ? " \\$f00"+Icons::Server : "")+ (MX::APIRefresh ? " \\$666"+Icons::Refresh : "") + (MXNadeoServicesGlobal::APIRefresh ? " \\$850"+Icons::Refresh : "") + "###" + pluginName + "Menu", "", Setting_ShowMenu)) {
@@ -143,12 +139,12 @@ void RenderMenuMain(){
         UI::Separator();
 #if DEPENDENCY_NADEOSERVICES
         // TODO: Add in-game favorites list from NadeoServices
-        if (UI::BeginMenu(pluginColor+Icons::Heart + " \\$zFavorites"+(g_nadeoServices.m_totalFavoriteMaps > 0 ? (" ("+g_nadeoServices.m_totalFavoriteMaps+")") : ""))) {
-            if (g_nadeoServices !is null && g_nadeoServices.m_favoriteMaps.Length > 0) {
-                for (uint i = 0; i < g_nadeoServices.m_favoriteMaps.Length; i++) {
-                    MXNadeoServicesGlobal::NadeoServicesMap@ mapNadeo = g_nadeoServices.m_favoriteMaps[i];
+        if (UI::BeginMenu(pluginColor+Icons::Heart + " \\$zFavorites"+(MXNadeoServicesGlobal::g_totalFavoriteMaps > 0 ? (" ("+MXNadeoServicesGlobal::g_totalFavoriteMaps+")") : ""))) {
+            if (MXNadeoServicesGlobal::g_favoriteMaps.Length > 0) {
+                for (uint i = 0; i < MXNadeoServicesGlobal::g_favoriteMaps.Length; i++) {
+                    MXNadeoServicesGlobal::NadeoServicesMap@ mapNadeo = MXNadeoServicesGlobal::g_favoriteMaps[i];
 
-                    if (mapNadeo.MXMapInfo != null) {
+                    if (mapNadeo.MXMapInfo !is null) {
                         MX::MapInfo@ map = mapNadeo.MXMapInfo;
                         if (UI::BeginMenu((Setting_ColoredMapName ? ColoredString(map.GbxMapName) : map.Name) + " \\$z\\$sby " + map.Username)) {
 #if TMNEXT
@@ -165,7 +161,8 @@ void RenderMenuMain(){
                                 mxMenu.AddTab(MapTab(map.TrackID), true);
                             }
                             if (UI::MenuItem("\\$f00"+Icons::TrashO + " Remove map")){
-                                g_nadeoServices.SendRemoveMapToFavorites(mapNadeo.uid);
+                                MXNadeoServicesGlobal::m_mapUidToAction = mapNadeo.uid;
+                                startnew(MXNadeoServicesGlobal::RemoveMapFromFavoritesAsync);
                                 UI::ShowNotification(ColoredString(mapNadeo.name) + " \\$z\\$sby " + mapNadeo.authorUsername + " has been removed from favorites!");
                             }
                             UI::EndMenu();
@@ -174,7 +171,8 @@ void RenderMenuMain(){
                         if (UI::BeginMenu((Setting_ColoredMapName ? ColoredString(mapNadeo.name) : StripFormatCodes(mapNadeo.name)) + " \\$z\\$sby " + mapNadeo.authorUsername)) {
                             UI::TextDisabled(Icons::Times + " This map is not available on " + pluginName);
                             if (UI::MenuItem("\\$f00"+Icons::TrashO + " Remove map")){
-                                g_nadeoServices.SendRemoveMapToFavorites(mapNadeo.uid);
+                                MXNadeoServicesGlobal::m_mapUidToAction = mapNadeo.uid;
+                                startnew(MXNadeoServicesGlobal::RemoveMapFromFavoritesAsync);
                                 UI::ShowNotification(ColoredString(mapNadeo.name) + " \\$z\\$sby " + mapNadeo.authorUsername + " has been removed from favorites!");
                             }
                             UI::EndMenu();
@@ -236,8 +234,7 @@ void Main(){
     g_PlayLaterMaps = LoadPlayLater();
 
 #if DEPENDENCY_NADEOSERVICES
-    @g_nadeoServices = MXNadeoServices();
-    startnew(CoroutineFunc(g_nadeoServices.LoadNadeoLiveServices));
+    startnew(MXNadeoServicesGlobal::LoadNadeoLiveServices);
 #endif
 
 #if DEPENDENCY_BETTERCHAT
