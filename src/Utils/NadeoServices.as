@@ -208,7 +208,7 @@ namespace MXNadeoServicesGlobal
             }
         }
 
-        print("NadeoServices - Favorite maps: loaded "+g_favoriteMaps.Length+" maps." + (IsDevMode() ? (" NadeoServices total: " + g_totalFavoriteMaps + " maps.") :"");
+        print("NadeoServices - Favorite maps: loaded "+g_favoriteMaps.Length+" maps." + (IsDevMode() ? (" NadeoServices total: " + g_totalFavoriteMaps + " maps.") :""));
     }
 
     void ReloadFavoriteMapsAsync() {
