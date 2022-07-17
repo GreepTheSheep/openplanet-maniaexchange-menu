@@ -96,6 +96,8 @@ namespace MXNadeoServicesGlobal
 
     void GetFavoriteMapsAsync()
     {
+        trace("NadeoServices - Loading Favorite tracks...");
+
         int offset = 0;
         int length = 100;
         string sort = "date";
@@ -145,7 +147,7 @@ namespace MXNadeoServicesGlobal
             }
         }
 
-        if (IsDevMode()) trace("NadeoServices - Checking for map on MX...");
+        trace("NadeoServices - Checking for map on MX...");
 
         uint splitMapUids = 50;
         uint mapUidsCheckDone = 0;
@@ -192,7 +194,7 @@ namespace MXNadeoServicesGlobal
             }
         }
 
-        if (IsDevMode()) trace("NadeoServices - Loading favorites map author usernames...");
+        trace("NadeoServices - Loading favorites map author usernames (using tm.io)...");
 
         for (uint i = 0; i < g_favoriteMaps.Length; i++) {
             if (g_favoriteMaps[i].MXMapInfo !is null) {
@@ -201,8 +203,28 @@ namespace MXNadeoServicesGlobal
             }
 
             try {
-                g_favoriteMaps[i].authorUsername = NadeoServices::GetDisplayNameAsync(g_favoriteMaps[i].author);
-                if (IsDevMode()) trace("NadeoServices - Author Username for "+StripFormatCodes(g_favoriteMaps[i].name)+" '"+g_favoriteMaps[i].author+"': " + g_favoriteMaps[i].authorUsername);
+                bool tmioError = true;
+                while (tmioError) {
+                    string tmioUrl = "https://trackmania.io/api/player/"+g_favoriteMaps[i].author;
+                    if (IsDevMode()) trace("NadeoServices - Loading map author from tm.io: " + tmioUrl);
+                    Net::HttpRequest@ tmioReq = API::Get(tmioUrl);
+                    while (!tmioReq.Finished()) {
+                        yield();
+                    }
+                    if (IsDevMode()) trace("NadeoServices - Map author from tm.io: " + tmioReq.String());
+                    auto tmioJson = Json::Parse(tmioReq.String());
+
+                    if (tmioJson.HasKey("error")) {
+                        tmioError = true;
+                        string errMsg = tmioJson["error"];
+                        mxWarn("NadeoServices - Tm.io API Error: " + errMsg + "\nRetrying in 1min...", IsDevMode());
+                        sleep(60*60*1000);
+                    } else {
+                        tmioError = false;
+                        g_favoriteMaps[i].authorUsername = tmioJson["displayname"];
+                        if (IsDevMode()) trace("NadeoServices - Author Username for "+StripFormatCodes(g_favoriteMaps[i].name)+" '"+g_favoriteMaps[i].author+"': " + g_favoriteMaps[i].authorUsername);
+                    }
+                }
             } catch {
                 mxWarn("NadeoServices - Author Username for "+StripFormatCodes(g_favoriteMaps[i].name)+" '"+g_favoriteMaps[i].author+"': Failed", IsDevMode());
             }
