@@ -149,7 +149,7 @@ namespace MXNadeoServicesGlobal
 
         trace("NadeoServices - Checking for map on MX...");
 
-        uint splitMapUids = 50;
+        uint splitMapUids = 5;
         uint mapUidsCheckDone = 0;
 
         while (mapUidsCheckDone < g_favoriteMaps.Length) {
@@ -178,6 +178,7 @@ namespace MXNadeoServicesGlobal
 
             if (mxJson.GetType() != Json::Type::Array) {
                 mxError("NadeoServices - Invalid MX map infos response", isDevMode);
+                mapUidsCheckDone += mapUidsPartLength;
                 continue;
             }
 
