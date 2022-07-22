@@ -29,13 +29,13 @@ namespace MX
         void TryGetID()
         {
             string url = "https://item.exchange/itemsearch/search?api=on&format=json&filename="+Name+"&authorlogin="+ObjectAuthor;
-            if (IsDevMode()) trace("MapEmbeddedObject::StartRequest (TryGetID): "+url);
+            if (isDevMode) trace("MapEmbeddedObject::StartRequest (TryGetID): "+url);
             Net::HttpRequest@ req = API::Get(url);
             while (!req.Finished()) {
                 yield();
             }
             string res = req.String();
-            if (IsDevMode()) trace("MapEmbeddedObject::CheckRequest (TryGetID): " + res);
+            if (isDevMode) trace("MapEmbeddedObject::CheckRequest (TryGetID): " + res);
             @req = null;
             auto json = Json::Parse(res);
 

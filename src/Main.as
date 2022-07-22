@@ -75,12 +75,12 @@ void RenderMenuMain(){
                     UI::TextDisabled(Hourglass + " Loading...");
                 }
 
-                if (IsDevMode() && currentMapID == -4){
+                if (isDevMode && currentMapID == -4){
                     UI::Separator();
                     UI::TextDisabled("Not in a map.");
                 }
 
-                if (IsDevMode() && currentMapID == -5){
+                if (isDevMode && currentMapID == -5){
                     UI::Separator();
                     UI::TextDisabled("In map editor.");
                 }
@@ -246,7 +246,7 @@ void Main(){
     BetterChat::RegisterCommand("mx-tell-awards", MXBetterChat::MapAwards(true));
     BetterChat::RegisterCommand("mx-tell-plugin", MXBetterChat::TellMXPlugin());
 
-    if (IsDevMode()) BetterChat::RegisterCommand("mx-json", MXBetterChat::ShowMapInfoJson());
+    if (isDevMode) BetterChat::RegisterCommand("mx-json", MXBetterChat::ShowMapInfoJson());
 #endif
 
     while(true){
@@ -269,7 +269,7 @@ void Main(){
                 if (!MX::APIDown && currentMapID < 0 && currentMapID != -1) {
                     currentMapID = MX::GetCurrentMapMXID();
                     if (currentMapID < 0 && currentMapID != -3) {
-                        if (IsDevMode()) print("MX ID error: " + currentMapID);
+                        if (isDevMode) print("MX ID error: " + currentMapID);
                         sleep(30000);
                     }
                 }
@@ -294,7 +294,7 @@ void OnDestroyed() {
 #if DEPENDENCY_BETTERCHAT
     BetterChat::UnregisterCommand("mx");
     BetterChat::UnregisterCommand("maniaexchange");
-    if (IsDevMode()) BetterChat::UnregisterCommand("mx-json");
+    if (isDevMode) BetterChat::UnregisterCommand("mx-json");
     BetterChat::UnregisterCommand("mx-awards");
     BetterChat::UnregisterCommand("mx-tell-awards");
     BetterChat::UnregisterCommand("mx-page");

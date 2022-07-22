@@ -65,7 +65,7 @@ class MapTab : Tab
     void StartMXRequest()
     {
         string url = "https://"+MXURL+"/api/maps/get_map_info/multi/"+m_mapId;
-        if (IsDevMode()) print("MapTab::StartRequest (MX): "+url);
+        if (isDevMode) print("MapTab::StartRequest (MX): "+url);
         @m_MXrequest = API::Get(url);
     }
 
@@ -75,7 +75,7 @@ class MapTab : Tab
         if (m_MXrequest !is null && m_MXrequest.Finished()) {
             // Parse the response
             string res = m_MXrequest.String();
-            if (IsDevMode()) print("MapTab::CheckRequest (MX): " + res);
+            if (isDevMode) print("MapTab::CheckRequest (MX): " + res);
             @m_MXrequest = null;
             auto json = Json::Parse(res);
 
@@ -95,7 +95,7 @@ class MapTab : Tab
     void StartMXAuthorsRequest()
     {
         string url = "https://"+MXURL+"/api/maps/get_authors/"+m_mapId;
-        if (IsDevMode()) trace("MapTab::StartRequest (Authors): "+url);
+        if (isDevMode) trace("MapTab::StartRequest (Authors): "+url);
         @m_MXAuthorsRequest = API::Get(url);
     }
 
@@ -105,7 +105,7 @@ class MapTab : Tab
         if (m_MXAuthorsRequest !is null && m_MXAuthorsRequest.Finished()) {
             // Parse the response
             string res = m_MXAuthorsRequest.String();
-            if (IsDevMode()) trace("MapTab::CheckRequest (Authors): " + res);
+            if (isDevMode) trace("MapTab::CheckRequest (Authors): " + res);
             @m_MXAuthorsRequest = null;
             auto json = Json::Parse(res);
 
@@ -125,7 +125,7 @@ class MapTab : Tab
     void StartMXReplaysRequest()
     {
         string url = "https://"+MXURL+"/api/replays/get_replays/"+m_mapId;
-        if (IsDevMode()) trace("MapTab::StartRequest (Replays): "+url);
+        if (isDevMode) trace("MapTab::StartRequest (Replays): "+url);
         @m_MXReplaysRequest = API::Get(url);
     }
 
@@ -138,7 +138,7 @@ class MapTab : Tab
         if (m_MXReplaysRequest !is null && m_MXReplaysRequest.Finished()) {
             // Parse the response
             string res = m_MXReplaysRequest.String();
-            if (IsDevMode()) trace("MapTab::CheckRequest (Replays): " + res);
+            if (isDevMode) trace("MapTab::CheckRequest (Replays): " + res);
             @m_MXReplaysRequest = null;
             auto json = Json::Parse(res);
 
@@ -160,7 +160,7 @@ class MapTab : Tab
         if (m_map is null) return;
         string url = "https://trackmania.io/api/leaderboard/map/"+m_map.TrackUID;
         if (offset != -1) url += "?length=100&offset=" + offset;
-        if (IsDevMode()) trace("MapTab::StartRequest (TM.IO): "+url);
+        if (isDevMode) trace("MapTab::StartRequest (TM.IO): "+url);
         m_TMIOrequestStarted = true;
         @m_TMIOrequest = API::Get(url);
     }
@@ -171,7 +171,7 @@ class MapTab : Tab
         if (m_TMIOrequest !is null && m_TMIOrequest.Finished()) {
             // Parse the response
             string res = m_TMIOrequest.String();
-            if (IsDevMode()) trace("MapTab::CheckRequest (TM.IO): " + res);
+            if (isDevMode) trace("MapTab::CheckRequest (TM.IO): " + res);
             @m_TMIOrequest = null;
             auto json = Json::Parse(res);
 
@@ -181,7 +181,7 @@ class MapTab : Tab
             } else {
                 // if tops is null return no results, else handle the response
                 if (json["tops"].GetType() == Json::Type::Null) {
-                    if (IsDevMode()) print("MapTab::CheckRequest (TM.IO): No results");
+                    if (isDevMode) print("MapTab::CheckRequest (TM.IO): No results");
                     m_TMIONoRes = true;
                 }
                 else HandleTMIOResponse(json["tops"]);
@@ -213,7 +213,7 @@ class MapTab : Tab
     void StartMXEmbeddedRequest()
     {
         string url = "https://"+MXURL+"/api/maps/embeddedobjects/"+m_mapId;
-        if (IsDevMode()) trace("MapTab::StartRequest (Embedded): "+url);
+        if (isDevMode) trace("MapTab::StartRequest (Embedded): "+url);
         @m_MXEmbedObjRequest = API::Get(url);
     }
 
@@ -226,7 +226,7 @@ class MapTab : Tab
         if (m_MXEmbedObjRequest !is null && m_MXEmbedObjRequest.Finished()) {
             // Parse the response
             string res = m_MXEmbedObjRequest.String();
-            if (IsDevMode()) trace("MapTab::CheckRequest (Embedded): " + res);
+            if (isDevMode) trace("MapTab::CheckRequest (Embedded): " + res);
             @m_MXEmbedObjRequest = null;
             auto json = Json::Parse(res);
 

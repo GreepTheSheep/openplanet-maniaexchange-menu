@@ -75,7 +75,7 @@ class UserTab : Tab
     void StartMXRequest()
     {
         string url = "https://"+MXURL+"/api/users/get_user_info/"+m_userId;
-        if (IsDevMode()) trace("UserTab::StartRequest (MX): "+url);
+        if (isDevMode) trace("UserTab::StartRequest (MX): "+url);
         @m_MXUserInfoRequest = API::Get(url);
     }
 
@@ -88,7 +88,7 @@ class UserTab : Tab
         if (m_MXUserInfoRequest !is null && m_MXUserInfoRequest.Finished()) {
             // Parse the response
             string res = m_MXUserInfoRequest.String();
-            if (IsDevMode()) trace("UserTab::CheckRequest (MX): " + res);
+            if (isDevMode) trace("UserTab::CheckRequest (MX): " + res);
             @m_MXUserInfoRequest = null;
             auto json = Json::Parse(res);
 
@@ -110,7 +110,7 @@ class UserTab : Tab
     void StartMXFeaturedMapRequest()
     {
         string url = "https://"+MXURL+"/api/maps/get_map_info/multi/"+m_user.FeaturedTrackID;
-        if (IsDevMode()) trace("UserTab::FeaturedMap::StartRequest (MX): "+url);
+        if (isDevMode) trace("UserTab::FeaturedMap::StartRequest (MX): "+url);
         @m_MXUserFeaturedMapRequest = API::Get(url);
     }
 
@@ -120,7 +120,7 @@ class UserTab : Tab
         if (m_MXUserFeaturedMapRequest !is null && m_MXUserFeaturedMapRequest.Finished()) {
             // Parse the response
             string res = m_MXUserFeaturedMapRequest.String();
-            if (IsDevMode()) trace("UserTab::FeaturedMap::CheckRequest (MX): " + res);
+            if (isDevMode) trace("UserTab::FeaturedMap::CheckRequest (MX): " + res);
             @m_MXUserFeaturedMapRequest = null;
             auto json = Json::Parse(res);
 
@@ -138,7 +138,7 @@ class UserTab : Tab
     {
         string url = "https://"+MXURL+"/api/leaderboard/season/"+m_selectedLeaderboardId+"/user/"+m_userId;
 
-        if (IsDevMode()) trace("UserTab::Leaderboard::StartRequest: " + url);
+        if (isDevMode) trace("UserTab::Leaderboard::StartRequest: " + url);
         @m_MXUserLeaderboardRequest = API::Get(url);
     }
 
@@ -151,7 +151,7 @@ class UserTab : Tab
         if (m_MXUserLeaderboardRequest !is null && m_MXUserLeaderboardRequest.Finished()) {
             // Parse the response
             string res = m_MXUserLeaderboardRequest.String();
-            if (IsDevMode()) trace("UserTab::Leaderboard::CheckRequest (MX): " + res);
+            if (isDevMode) trace("UserTab::Leaderboard::CheckRequest (MX): " + res);
             @m_MXUserLeaderboardRequest = null;
             auto json = Json::Parse(res);
 
@@ -203,7 +203,7 @@ class UserTab : Tab
 
         string url = "https://"+MXURL+"/mapsearch2/search"+urlParams;
 
-        if (IsDevMode()) trace("UserTab::CreatedMaps::StartRequest: " + url);
+        if (isDevMode) trace("UserTab::CreatedMaps::StartRequest: " + url);
         @m_MXUserMapsCreatedRequest = API::Get(url);
     }
 
@@ -216,7 +216,7 @@ class UserTab : Tab
         if (m_MXUserMapsCreatedRequest !is null && m_MXUserMapsCreatedRequest.Finished()) {
             // Parse the response
             string res = m_MXUserMapsCreatedRequest.String();
-            if (IsDevMode()) trace("UserTab::CreatedMaps::CheckRequest (MX): " + res);
+            if (isDevMode) trace("UserTab::CreatedMaps::CheckRequest (MX): " + res);
             @m_MXUserMapsCreatedRequest = null;
             auto json = Json::Parse(res);
 
@@ -264,7 +264,7 @@ class UserTab : Tab
 
         string url = "https://"+MXURL+"/mapsearch2/search"+urlParams;
 
-        if (IsDevMode()) trace("UserTab::AwardedMaps::StartRequest: " + url);
+        if (isDevMode) trace("UserTab::AwardedMaps::StartRequest: " + url);
         @m_MXUserMapsAwardedRequest = API::Get(url);
     }
 
@@ -277,7 +277,7 @@ class UserTab : Tab
         if (m_MXUserMapsAwardedRequest !is null && m_MXUserMapsAwardedRequest.Finished()) {
             // Parse the response
             string res = m_MXUserMapsAwardedRequest.String();
-            if (IsDevMode()) trace("UserTab::AwardedMaps::CheckRequest (MX): " + res);
+            if (isDevMode) trace("UserTab::AwardedMaps::CheckRequest (MX): " + res);
             @m_MXUserMapsAwardedRequest = null;
             auto json = Json::Parse(res);
 
@@ -325,7 +325,7 @@ class UserTab : Tab
 
         string url = "https://"+MXURL+"/mappacksearch/search"+urlParams;
 
-        if (IsDevMode()) trace("UserTab::MapPacks::StartRequest: " + url);
+        if (isDevMode) trace("UserTab::MapPacks::StartRequest: " + url);
         @m_MXUserMapPacksRequest = API::Get(url);
     }
 
@@ -338,7 +338,7 @@ class UserTab : Tab
         if (m_MXUserMapPacksRequest !is null && m_MXUserMapPacksRequest.Finished()) {
             // Parse the response
             string res = m_MXUserMapPacksRequest.String();
-            if (IsDevMode()) trace("UserTab::MapPacks::CheckRequest (MX): " + res);
+            if (isDevMode) trace("UserTab::MapPacks::CheckRequest (MX): " + res);
             @m_MXUserMapPacksRequest = null;
             auto json = Json::Parse(res);
 

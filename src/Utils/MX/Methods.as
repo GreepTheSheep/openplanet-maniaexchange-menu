@@ -3,7 +3,7 @@ namespace MX
     void GetAllMapTags()
     {
         string url = "https://"+MXURL+"/api/tags/gettags";
-        if (IsDevMode()) trace("Loading tags: " + url);
+        if (isDevMode) trace("Loading tags: " + url);
         Json::Value resNet = API::GetAsync(url);
 
         try {
@@ -12,7 +12,7 @@ namespace MX
                 int tagID = resNet[i]["ID"];
                 string tagName = resNet[i]["Name"];
 
-                if (IsDevMode()) trace("Loading tag #"+tagID+" - "+tagName);
+                if (isDevMode) trace("Loading tag #"+tagID+" - "+tagName);
 
                 m_mapTags.InsertLast(MapTag(resNet[i]));
             }
@@ -26,7 +26,7 @@ namespace MX
     void GetAllLeaderboardSeasons()
     {
         string url = "https://"+MXURL+"/api/leaderboard/getseasons";
-        if (IsDevMode()) trace("Loading seasons: " + url);
+        if (isDevMode) trace("Loading seasons: " + url);
         Json::Value resNet = API::GetAsync(url);
 
         try {
@@ -35,7 +35,7 @@ namespace MX
                 int seasonID = resNet[i]["SeasonID"];
                 string seasonName = resNet[i]["Name"];
 
-                if (IsDevMode()) trace("Loading season #"+seasonID+" - "+seasonName);
+                if (isDevMode) trace("Loading season #"+seasonID+" - "+seasonName);
 
                 m_leaderboardSeasons.InsertLast(LeaderboardSeason(resNet[i]));
             }
@@ -152,14 +152,14 @@ namespace MX
                 string UIDMap = currentMap.MapInfo.MapUid;
                 string url = "https://"+MXURL+"/api/maps/get_map_info/multi/" + UIDMap;
                 if (req is null){
-                    if (IsDevMode()) trace("LoadCurrentMap::StartRequest: " + url);
+                    if (isDevMode) trace("LoadCurrentMap::StartRequest: " + url);
                     @req = API::Get(url);
                 }
 
                 if (req !is null && req.Finished()) {
                     string response = req.String();
                     @req = null;
-                    if (IsDevMode()) trace("LoadCurrentMap::CheckResponse: " + response);
+                    if (isDevMode) trace("LoadCurrentMap::CheckResponse: " + response);
 
                     // Evaluate reqest result
                     Json::Value returnedObject = Json::Parse(response);

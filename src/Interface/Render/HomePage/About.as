@@ -28,7 +28,7 @@ namespace HomePageTabRender {
         UI::Text("Plugin ID \\$777" + Meta::ExecutingPlugin().ID);
         UI::Text("Site ID \\$777" + Meta::ExecutingPlugin().SiteID);
         UI::Text("Type \\$777" + tostring(Meta::ExecutingPlugin().Type));
-        if (IsDevMode()) {
+        if (isDevMode) {
             UI::SameLine();
             UI::Text("\\$777(\\$f39"+Icons::Code+" \\$777Dev mode)");
         }

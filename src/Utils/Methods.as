@@ -1,7 +1,3 @@
-bool IsDevMode(){
-    return Meta::ExecutingPlugin().get_Type() == Meta::PluginType::Folder;
-}
-
 bool IsInEditor(){
     CTrackMania@ app = cast<CTrackMania>(GetApp());
     auto editor = cast<CGameCtnEditorCommon@>(app.Editor);
@@ -25,7 +21,7 @@ array<MX::MapInfo@> LoadPlayLater() {
         return m_maps;
     } else {
         for (uint i = 0; i < FileData.get_Length(); i++) {
-            if (IsDevMode()) {
+            if (isDevMode) {
                 string mapName = FileData[i]["Name"];
                 trace("Loading map #"+i+" from Play later: " + mapName);
             }

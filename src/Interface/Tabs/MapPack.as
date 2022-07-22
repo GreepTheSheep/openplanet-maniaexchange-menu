@@ -43,7 +43,7 @@ class MapPackTab : Tab
     void StartMXRequest(int packId)
     {
         string url = "https://"+MXURL+"/api/mappack/get_info/"+packId;
-        if (IsDevMode()) trace("MapPackTab::StartRequest (MX): "+url);
+        if (isDevMode) trace("MapPackTab::StartRequest (MX): "+url);
         @m_MXrequest = API::Get(url);
     }
 
@@ -53,7 +53,7 @@ class MapPackTab : Tab
         if (m_MXrequest !is null && m_MXrequest.Finished()) {
             // Parse the response
             string res = m_MXrequest.String();
-            if (IsDevMode()) trace("MapPackTab::CheckRequest (MX): " + res);
+            if (isDevMode) trace("MapPackTab::CheckRequest (MX): " + res);
             @m_MXrequest = null;
             auto json = Json::Parse(res);
 
@@ -88,7 +88,7 @@ class MapPackTab : Tab
     void StartMXMapListRequest(int packId)
     {
         string url = "https://"+MXURL+"/api/mappack/get_mappack_tracks/"+packId;
-        if (IsDevMode()) trace("MapPackTab::StartRequest (Map List): "+url);
+        if (isDevMode) trace("MapPackTab::StartRequest (Map List): "+url);
         @m_MXMapsRequest = API::Get(url);
     }
 
@@ -98,7 +98,7 @@ class MapPackTab : Tab
         if (m_MXMapsRequest !is null && m_MXMapsRequest.Finished()) {
             // Parse the response
             string res = m_MXMapsRequest.String();
-            if (IsDevMode()) trace("MapPackTab::CheckRequest (Map List): " + res);
+            if (isDevMode) trace("MapPackTab::CheckRequest (Map List): " + res);
             @m_MXMapsRequest = null;
             auto json = Json::Parse(res);
 
