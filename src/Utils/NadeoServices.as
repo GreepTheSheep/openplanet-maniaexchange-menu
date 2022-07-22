@@ -151,10 +151,10 @@ namespace MXNadeoServicesGlobal
 
         uint splitMapUids = 5;
         uint mapUidsCheckDone = 0;
+        uint mapUidsPartLength = 0;
 
         while (mapUidsCheckDone < g_favoriteMaps.Length) {
             array<string> mapUidsPart;
-            uint mapUidsPartLength = 0;
             for (uint i = 0; i < splitMapUids; i++) {
                 if (mapUidsPartLength >= g_favoriteMaps.Length) break;
                 mapUidsPart.InsertLast(g_favoriteMaps[mapUidsPartLength].uid);
