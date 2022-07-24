@@ -153,7 +153,7 @@ void RenderMenuMain(){
                             if (UI::MenuItem(Icons::Play + " Play map")){
 #endif
                                 if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
-                                UI::ShowNotification("Loading map...", ColoredString(map.GbxMapName) + "\\$z\\$s by " + map.Username);
+                                UI::ShowNotification("Loading map...", ColoredString(map.GbxMapName) + " \\$zby " + map.Username);
                                 MX::mapToLoad = map.TrackID;
                             }
                             if (!MX::APIDown && UI::MenuItem(Icons::Kenney::InfoCircle + " Open information")){
@@ -163,17 +163,17 @@ void RenderMenuMain(){
                             if (UI::MenuItem("\\$f00"+Icons::TrashO + " Remove map")){
                                 MXNadeoServicesGlobal::m_mapUidToAction = mapNadeo.uid;
                                 startnew(MXNadeoServicesGlobal::RemoveMapFromFavoritesAsync);
-                                UI::ShowNotification(ColoredString(mapNadeo.name) + " \\$z\\$sby " + mapNadeo.authorUsername + " has been removed from favorites!");
+                                UI::ShowNotification(ColoredString(mapNadeo.name) + " \\$zby " + map.Username + " has been removed from favorites!");
                             }
                             UI::EndMenu();
                         }
                     } else {
-                        if (UI::BeginMenu((Setting_ColoredMapName ? ColoredString(mapNadeo.name) : StripFormatCodes(mapNadeo.name)) + " \\$z\\$sby " + mapNadeo.authorUsername)) {
+                        if (UI::BeginMenu((Setting_ColoredMapName ? ColoredString(mapNadeo.name) : StripFormatCodes(mapNadeo.name)) + "\\$z" + (mapNadeo.authorUsername.Length > 0 ? (" by " + mapNadeo.authorUsername) : ""))) {
                             UI::TextDisabled(Icons::Times + " This map is not available on " + pluginName);
                             if (UI::MenuItem("\\$f00"+Icons::TrashO + " Remove map")){
                                 MXNadeoServicesGlobal::m_mapUidToAction = mapNadeo.uid;
                                 startnew(MXNadeoServicesGlobal::RemoveMapFromFavoritesAsync);
-                                UI::ShowNotification(ColoredString(mapNadeo.name) + " \\$z\\$sby " + mapNadeo.authorUsername + " has been removed from favorites!");
+                                UI::ShowNotification(ColoredString(mapNadeo.name) + "\\$z" + (mapNadeo.authorUsername.Length > 0 ? (" by " + mapNadeo.authorUsername) : "") + " has been removed from favorites!");
                             }
                             UI::EndMenu();
                         }
