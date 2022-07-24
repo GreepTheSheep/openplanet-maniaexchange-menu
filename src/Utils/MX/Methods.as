@@ -19,7 +19,7 @@ namespace MX
 
             print(m_mapTags.get_Length() + " tags loaded");
         } catch {
-            mxError("Error while loading tags");
+            throw("Error while loading tags");
         }
     }
 
@@ -42,7 +42,7 @@ namespace MX
 
             print(m_leaderboardSeasons.Length + " seasons loaded");
         } catch {
-            mxError("Error while loading seasons");
+            throw("Error while loading seasons");
         }
     }
 
@@ -68,6 +68,7 @@ namespace MX
             APIDown = false;
 #endif
         } catch {
+            mxError(getExceptionInfo(), isDevMode);
             mxError(pluginName + " API is not responding, it must be down.", true);
             APIDown = true;
             APIRefresh = false;
