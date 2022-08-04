@@ -8,4 +8,13 @@ namespace ManiaExchange
 
     // Opens the menu and shows a user from its ID
     import void ShowUserInfo(int userID) from "ManiaExchange";
+
+    // The Current Map ID
+    import int GetCurrentMapID() from "ManiaExchange";
+
+    // The Current Map Info
+    import MX::MapInfo@ GetCurrentMapInfo() from "ManiaExchange";
+
+    // The Map Info by its ID
+    import MX::MapInfo@ GetMapInfoAsync(int mapID) from "ManiaExchange";
 }
