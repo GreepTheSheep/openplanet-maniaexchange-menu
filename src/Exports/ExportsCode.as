@@ -23,21 +23,21 @@ namespace ManiaExchange
         return currentMapID;
     }
 
-    MX::MapInfo@ GetCurrentMapInfo()
+    Json::Value GetCurrentMapInfo()
     {
-        return currentMapInfo;
+        return currentMapInfo.ToJson();
     }
 
-    MX::MapInfo@ GetMapInfoAsync(int mapID)
+    Json::Value GetMapInfoAsync(int mapID)
     {
         string url = "https://"+MXURL+"/api/maps/get_map_info/multi/"+mapID;
         if (isDevMode) print("Exports::GetMapInfoAsync::StartRequest : "+url);
         Json::Value mxRes = API::GetAsync(url);
         if (mxRes.Length == 0) {
             if (isDevMode) print("Exports::GetMapInfoAsync::CheckRequest : Error parsing response");
-            return null;
+            return Json::Parse("");
         }
         // Handle the response
-        return MX::MapInfo(mxRes[0]);
+        return MX::MapInfo(mxRes[0]).ToJson();
     }
 }

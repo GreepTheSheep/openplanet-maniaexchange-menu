@@ -13,8 +13,8 @@ namespace ManiaExchange
     import int GetCurrentMapID() from "ManiaExchange";
 
     // The Current Map Info
-    import MX::MapInfo@ GetCurrentMapInfo() from "ManiaExchange";
+    import Json::Value GetCurrentMapInfo() from "ManiaExchange";
 
     // The Map Info by its ID
-    import MX::MapInfo@ GetMapInfoAsync(int mapID) from "ManiaExchange";
+    import Json::Value GetMapInfoAsync(int mapID) from "ManiaExchange";
 }
