@@ -2,6 +2,8 @@ class TagsListTab : MapListTab
 {
     array<MX::MapTag@> m_selectedTags;
     string t_tags = "";
+    string t_selectedSort = "Latest";
+    string t_selectedPriord = "-1";
     bool m_tagInclusive = false;
 
     bool IsVisible() override {return Setting_Tab_Tags_Visible;}
@@ -21,6 +23,9 @@ class TagsListTab : MapListTab
         params.Set("tags", t_tags);
         if (m_tagInclusive) params.Set("tagsinc", "1");
         else params.Set("tagsinc", "0");
+        if(t_selectedPriord != "-1"){
+            params.Set("priord", t_selectedPriord);
+        }
     }
 
     void RenderHeader() override
@@ -66,6 +71,21 @@ class TagsListTab : MapListTab
         UI::SameLine();
         UI::SetCursorPos(vec2(UI::GetWindowSize().x - 40, UI::GetCursorPos().y));
         if (UI::Button(Icons::Refresh)) Reload();
+
+        if (UI::BeginCombo("##TagListFilter", t_selectedSort)){
+            if (UI::Selectable("Latest", t_selectedSort == "Latest")){
+                t_selectedSort = "Latest";
+                t_selectedPriord = "-1";
+                Reload();
+            }
+            if (UI::Selectable("Most Awarded", t_selectedSort == "Most Awarded")){
+                t_selectedSort = "Most Awarded";
+                t_selectedPriord = "8";
+                Reload();
+            }
+            UI::EndCombo();
+        }
+
         UI::Separator();
     }
 }
