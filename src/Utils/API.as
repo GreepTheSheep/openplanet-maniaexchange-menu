@@ -15,6 +15,8 @@ namespace API
         while (!req.Finished()) {
             yield();
         }
-        return Json::Parse(req.String());
+        string resStr = req.String();
+        if (isDevMode) trace("GetAsync Res: " + resStr);
+        return Json::Parse(resStr);
     }
 }
