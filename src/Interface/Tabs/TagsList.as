@@ -69,9 +69,7 @@ class TagsListTab : MapListTab
             Reload();
         }
         UI::SameLine();
-        UI::SetCursorPos(vec2(UI::GetWindowSize().x - 40, UI::GetCursorPos().y));
-        if (UI::Button(Icons::Refresh)) Reload();
-
+        UI::SetNextItemWidth(150);
         if (UI::BeginCombo("##TagListFilter", t_selectedSort)){
             if (UI::Selectable("Latest", t_selectedSort == "Latest")){
                 t_selectedSort = "Latest";
@@ -85,6 +83,9 @@ class TagsListTab : MapListTab
             }
             UI::EndCombo();
         }
+        UI::SameLine();
+        UI::SetCursorPos(vec2(UI::GetWindowSize().x - 40, UI::GetCursorPos().y));
+        if (UI::Button(Icons::Refresh)) Reload();
 
         UI::Separator();
     }
