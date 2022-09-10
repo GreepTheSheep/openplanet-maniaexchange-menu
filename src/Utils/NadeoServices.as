@@ -197,50 +197,14 @@ namespace MXNadeoServicesGlobal
 
             trace("NadeoServices - Loading favorites map author usernames...");
 
-            array<string> accountIds;
-
             for (uint i = 0; i < g_favoriteMaps.Length; i++) {
                 if (g_favoriteMaps[i].MXMapInfo !is null) {
                     if (isDevMode) trace("NadeoServices - Author Username for "+StripFormatCodes(g_favoriteMaps[i].name)+" Skipping because MX map info is already loaded.");
                     continue;
                 }
 
-                accountIds.InsertLast(g_favoriteMaps[i].author);
-            }
-
-            if (accountIds.Length == 0) {
-                if (isDevMode) trace("NadeoServices - No favorite maps to load author usernames for.");
-            } else {
-
-                string accountIdsJoined = "";
-
-                for (uint i = 0; i < accountIds.Length; i++) {
-                    accountIdsJoined += accountIds[i];
-                    if (i < accountIds.Length - 1) accountIdsJoined += ",";
-                }
-
-                string usernameUrl = "https://prod.trackmania.core.nadeo.online/accounts/displayNames/?accountIdList="+accountIdsJoined;
-                if (isDevMode) trace("NadeoServices - Loading map author usernames: " + usernameUrl);
-                @req = API::Get(usernameUrl);
-                while (!req.Finished()) {
-                    yield();
-                }
-                if (isDevMode) trace("NadeoServices - Check map author usernames: " + req.String());
-                auto usernameRes = Json::Parse(req.String());
-
-                if (usernameRes.GetType() != Json::Type::Array) {
-                    throw("NadeoServices - Invalid map author usernames response");
-                }
-
-                for (uint i = 0; i < usernameRes.Length; i++) {
-                    string accountId = usernameRes[i]["accountId"];
-                    string username = usernameRes[i]["displayName"];
-                    for (uint j = 0; j < g_favoriteMaps.Length; j++) {
-                        if (g_favoriteMaps[j].author == accountId) {
-                            g_favoriteMaps[j].authorUsername = username;
-                        }
-                    }
-                }
+                g_favoriteMaps[i].authorUsername = NadeoServices::GetDisplayNameAsync(g_favoriteMaps[i].author);
+                if (isDevMode) trace("NadeoServices - Author Username for "+StripFormatCodes(g_favoriteMaps[i].name)+" found: "+StripFormatCodes(g_favoriteMaps[i].authorUsername));
             }
 
             print("NadeoServices - Favorite maps: loaded "+g_favoriteMaps.Length+" maps." + (isDevMode ? (" NadeoServices total: " + g_totalFavoriteMaps + " maps.") :""));
