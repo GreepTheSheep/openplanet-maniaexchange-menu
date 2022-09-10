@@ -8,7 +8,6 @@ siteid = 154
 version = "1.1.4"
 
 [script]
-imports = [ "Icons.as", "Permissions.as", "Formatting.as" ]
 optional_dependencies = [ "BetterChat", "ItemExchange", "NadeoServices" ]
 
 exports = [ "src/Exports/Exports.as" ]
