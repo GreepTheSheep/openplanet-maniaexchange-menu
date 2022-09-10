@@ -17,7 +17,7 @@ class ClarPlayLaterListWarn : ModalDialog
         UI::SetCursorPos(vec2(UI::GetWindowSize().x - 85, UI::GetCursorPos().y));
         if (UI::RedButton(Icons::TrashO + " Yes")) {
             Close();
-            g_PlayLaterMaps.RemoveRange(0, g_PlayLaterMaps.get_Length());
+            g_PlayLaterMaps.RemoveRange(0, g_PlayLaterMaps.Length);
             SavePlayLater(g_PlayLaterMaps);
             UI::ShowNotification("\\$0f0"+ Icons::Check +" \\$zPlay Later list has been cleared.");
         }

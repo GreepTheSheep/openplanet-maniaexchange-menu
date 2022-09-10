@@ -38,7 +38,7 @@ namespace HomePageTabRender {
         UI::SameLine();
         if (UI::Button(Icons::DiscordAlt + " Discord")) OpenBrowserURL("https://greep.gq/discord");
         UI::SameLine();
-        if (UI::Button(Icons::Heartbeat + " Plugin Home")) OpenBrowserURL("https://openplanet.nl/files/" + Meta::ExecutingPlugin().get_SiteID());
+        if (UI::Button(Icons::Heartbeat + " Plugin Home")) OpenBrowserURL("https://openplanet.nl/files/" + Meta::ExecutingPlugin().SiteID);
 
         UI::Separator();
         UI::Text("\\$f39" + Icons::Heartbeat);

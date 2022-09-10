@@ -45,7 +45,7 @@ class MapListTab : Tab
     void CheckStartRequest()
     {
         // If there's not already a request and the window is appearing, we start a new request
-        if (!MX::APIDown && maps.get_Length() == 0 && m_request is null && UI::IsWindowAppearing()) {
+        if (!MX::APIDown && maps.Length == 0 && m_request is null && UI::IsWindowAppearing()) {
             StartRequest();
         }
     }
@@ -91,7 +91,7 @@ class MapListTab : Tab
 
     void Clear()
     {
-        maps.RemoveRange(0, maps.get_Length());
+        maps.RemoveRange(0, maps.Length);
         totalItems = 0;
     }
 
@@ -119,7 +119,7 @@ class MapListTab : Tab
                 }
                 return;
             }
-            if (maps.get_Length() == 0) {
+            if (maps.Length == 0) {
                 UI::Text("No maps found.");
                 return;
             }
@@ -145,7 +145,7 @@ class MapListTab : Tab
                         UI::PopID();
                     }
                 }
-                if (m_request !is null && totalItems > maps.get_Length()) {
+                if (m_request !is null && totalItems > maps.Length) {
                     UI::TableNextRow();
                     UI::TableSetColumnIndex(0);
                     UI::Text(Icons::HourglassEnd + " Loading...");

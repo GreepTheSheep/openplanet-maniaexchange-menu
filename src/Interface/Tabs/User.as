@@ -124,7 +124,7 @@ class UserTab : Tab
             @m_MXUserFeaturedMapRequest = null;
             auto json = Json::Parse(res);
 
-            if (json.get_Length() == 0) {
+            if (json.Length == 0) {
                 mxWarn("UserTab::FeaturedMap::CheckRequest (MX): Error parsing response");
                 m_featuredMapError = true;
                 return;
@@ -619,7 +619,7 @@ class UserTab : Tab
                             UI::PopID();
                         }
                     }
-                    if (m_MXUserMapsCreatedRequest !is null && m_mapsCreatedTotal > m_mapsCreated.get_Length()) {
+                    if (m_MXUserMapsCreatedRequest !is null && m_mapsCreatedTotal > m_mapsCreated.Length) {
                         UI::TableNextRow();
                         UI::TableSetColumnIndex(0);
                         UI::Text(Icons::HourglassEnd + " Loading...");
@@ -664,7 +664,7 @@ class UserTab : Tab
                             UI::PopID();
                         }
                     }
-                    if (m_MXUserMapsCreatedRequest !is null && m_mapsAwardsGivenTotal > m_mapsCreated.get_Length()) {
+                    if (m_MXUserMapsCreatedRequest !is null && m_mapsAwardsGivenTotal > m_mapsCreated.Length) {
                         UI::TableNextRow();
                         UI::TableSetColumnIndex(0);
                         UI::Text(Icons::HourglassEnd + " Loading...");
@@ -709,7 +709,7 @@ class UserTab : Tab
                             UI::PopID();
                         }
                     }
-                    if (m_MXUserMapPacksRequest !is null && m_mapPacksTotal > m_mapPacks.get_Length()) {
+                    if (m_MXUserMapPacksRequest !is null && m_mapPacksTotal > m_mapPacks.Length) {
                         UI::TableNextRow();
                         UI::TableSetColumnIndex(0);
                         UI::Text(Icons::HourglassEnd + " Loading...");

@@ -7,7 +7,7 @@ namespace MX
         Json::Value resNet = API::GetAsync(url);
 
         try {
-            for (uint i = 0; i < resNet.get_Length(); i++)
+            for (uint i = 0; i < resNet.Length; i++)
             {
                 int tagID = resNet[i]["ID"];
                 string tagName = resNet[i]["Name"];
@@ -17,7 +17,7 @@ namespace MX
                 m_mapTags.InsertLast(MapTag(resNet[i]));
             }
 
-            print(m_mapTags.get_Length() + " tags loaded");
+            print(m_mapTags.Length + " tags loaded");
         } catch {
             throw("Error while loading tags");
         }
@@ -165,7 +165,7 @@ namespace MX
                     // Evaluate reqest result
                     Json::Value returnedObject = Json::Parse(response);
                     try {
-                        if (returnedObject.get_Length() > 0) {
+                        if (returnedObject.Length > 0) {
                             @currentMapInfo = MapInfo(returnedObject[0]);
                             int g_MXId = returnedObject[0]["TrackID"];
                             return g_MXId;

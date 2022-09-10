@@ -53,7 +53,7 @@ class MapPackListTab : Tab
     void CheckStartRequest()
     {
         // If there's not already a request and the window is appearing, we start a new request
-        if (!MX::APIDown && mapPacks.get_Length() == 0 && m_request is null && UI::IsWindowAppearing()) {
+        if (!MX::APIDown && mapPacks.Length == 0 && m_request is null && UI::IsWindowAppearing()) {
             StartRequest();
         }
     }
@@ -124,7 +124,7 @@ class MapPackListTab : Tab
 
     void Clear()
     {
-        mapPacks.RemoveRange(0, mapPacks.get_Length());
+        mapPacks.RemoveRange(0, mapPacks.Length);
         totalItems = 0;
     }
 
@@ -152,7 +152,7 @@ class MapPackListTab : Tab
                 }
                 return;
             }
-            if (mapPacks.get_Length() == 0) {
+            if (mapPacks.Length == 0) {
                 UI::Text("No map packs found.");
                 return;
             }
@@ -178,7 +178,7 @@ class MapPackListTab : Tab
                         UI::PopID();
                     }
                 }
-                if (m_request !is null && totalItems > mapPacks.get_Length()) {
+                if (m_request !is null && totalItems > mapPacks.Length) {
                     UI::TableNextRow();
                     UI::TableSetColumnIndex(0);
                     UI::Text(Icons::HourglassEnd + " Loading...");

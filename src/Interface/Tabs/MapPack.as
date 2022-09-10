@@ -17,7 +17,7 @@ class MapPackTab : Tab
 
     MapPackTab(int packId) {
         @g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24);
-        mapPack_maps.RemoveRange(0, mapPack_maps.get_Length());
+        mapPack_maps.RemoveRange(0, mapPack_maps.Length);
         m_mapPackId = packId;
         StartMXRequest(m_mapPackId);
     }
@@ -63,7 +63,7 @@ class MapPackTab : Tab
                 return;
             }
 
-            if (json.get_Length() == 0) {
+            if (json.Length == 0) {
                 HandleMXResponseError("Empty response");
                 return;
             }
@@ -102,7 +102,7 @@ class MapPackTab : Tab
             @m_MXMapsRequest = null;
             auto json = Json::Parse(res);
 
-            if (json.get_Length() == 0) {
+            if (json.Length == 0) {
                 print("MapPackTab::CheckRequest (Map List): Error parsing response");
                 HandleMXMapListResponseError();
                 return;
@@ -114,7 +114,7 @@ class MapPackTab : Tab
 
     void HandleMXMapListResponse(const Json::Value &in json)
     {
-        for (uint i = 0; i < json.get_Length(); i++) {
+        for (uint i = 0; i < json.Length; i++) {
             MX::MapInfo@ map = MX::MapInfo(json[i]);
             map.MapPackName = m_mapPack.Name;
             mapPack_maps.InsertLast(map);

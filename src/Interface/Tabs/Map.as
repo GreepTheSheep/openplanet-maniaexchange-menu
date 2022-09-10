@@ -79,7 +79,7 @@ class MapTab : Tab
             @m_MXrequest = null;
             auto json = Json::Parse(res);
 
-            if (json.get_Length() == 0) {
+            if (json.Length == 0) {
                 print("MapTab::CheckRequest (MX): Error parsing response");
                 m_error = true;
                 return;
@@ -109,7 +109,7 @@ class MapTab : Tab
             @m_MXAuthorsRequest = null;
             auto json = Json::Parse(res);
 
-            if (json.get_Length() == 0) {
+            if (json.Length == 0) {
                 print("MapTab::CheckRequest (Authors): Error parsing response");
                 m_authorsError = true;
                 return;
@@ -192,9 +192,9 @@ class MapTab : Tab
 
     void HandleTMIOResponse(const Json::Value &in json)
     {
-        if (json.get_Length() < 100) m_TMIOstopleaderboard = true;
+        if (json.Length < 100) m_TMIOstopleaderboard = true;
 
-        for (uint i = 0; i < json.get_Length(); i++) {
+        for (uint i = 0; i < json.Length; i++) {
             auto leaderboard = TMIO::Leaderboard(json[i]);
             m_leaderboard.InsertLast(leaderboard);
         }
@@ -271,7 +271,7 @@ class MapTab : Tab
         }
 
         // Check if the map is already on the play later list
-        for (uint i = 0; i < g_PlayLaterMaps.get_Length(); i++) {
+        for (uint i = 0; i < g_PlayLaterMaps.Length; i++) {
             MX::MapInfo@ playLaterMap = g_PlayLaterMaps[i];
             if (playLaterMap.TrackID != m_map.TrackID) {
                 m_isMapOnPlayLater = false;
@@ -478,7 +478,7 @@ class MapTab : Tab
 #else
             if (UI::RedButton(Icons::Times + " Remove from Play later")) {
 #endif
-                for (uint i = 0; i < g_PlayLaterMaps.get_Length(); i++) {
+                for (uint i = 0; i < g_PlayLaterMaps.Length; i++) {
                     MX::MapInfo@ playLaterMap = g_PlayLaterMaps[i];
                     if (playLaterMap.TrackID == m_map.TrackID) {
                         g_PlayLaterMaps.RemoveAt(i);
@@ -528,12 +528,12 @@ class MapTab : Tab
             UI::TextDisabled("By " + m_map.Username);
         } else {
             // check if array is empty
-            if (m_authors.get_Length() > 0) {
+            if (m_authors.Length > 0) {
                 UI::TextDisabled("By: ");
                 UI::SameLine();
-                for (uint i = 0; i < m_authors.get_Length(); i++) {
+                for (uint i = 0; i < m_authors.Length; i++) {
                     MX::MapAuthorInfo@ author = m_authors[i];
-                    UI::TextDisabled(author.Username + (i == m_authors.get_Length() - 1 ? "" : ", "));
+                    UI::TextDisabled(author.Username + (i == m_authors.Length - 1 ? "" : ", "));
                     if (UI::IsItemHovered()) {
                         UI::BeginTooltip();
                         if (author.Uploader) {
@@ -548,7 +548,7 @@ class MapTab : Tab
                         UI::EndTooltip();
                     }
                     if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(author.UserID), true);
-                    if (i < m_authors.get_Length() - 1) UI::SameLine();
+                    if (i < m_authors.Length - 1) UI::SameLine();
                 }
             } else {
                 int HourGlassValue = Time::Stamp % 3;
@@ -639,10 +639,10 @@ class MapTab : Tab
             CheckTMIORequest();
             if (m_TMIOrequestStart) {
                 m_TMIOrequestStart = false;
-                if (!m_TMIONoRes && m_leaderboard.get_Length() == 0) StartTMIORequest();
+                if (!m_TMIONoRes && m_leaderboard.Length == 0) StartTMIORequest();
                 else {
                     if (!m_TMIONoRes) {
-                        StartTMIORequest(m_leaderboard.get_Length());
+                        StartTMIORequest(m_leaderboard.Length);
                     }
                 }
             }
@@ -653,12 +653,12 @@ class MapTab : Tab
                 UI::Text(Icons::Heartbeat + " The leaderboard is fetched directly from Trackmania.io (Nadeo Services)");
                 UI::SameLine();
                 if (UI::OrangeButton(Icons::Refresh)){
-                    m_leaderboard.RemoveRange(0, m_leaderboard.get_Length());
+                    m_leaderboard.RemoveRange(0, m_leaderboard.Length);
                     if (!m_TMIOrequestStarted) m_TMIOrequestStart = true;
                     m_TMIOstopleaderboard = false;
                 }
 
-                if (!m_TMIOstopleaderboard && m_leaderboard.get_Length() == 0) {
+                if (!m_TMIOstopleaderboard && m_leaderboard.Length == 0) {
                     if (m_TMIONoRes) {
                         UI::Text("No records found for this map. Be the first!");
                     } else {

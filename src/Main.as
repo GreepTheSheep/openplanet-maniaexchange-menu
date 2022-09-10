@@ -99,8 +99,8 @@ void RenderMenuMain(){
         }
         UI::Separator();
         if (UI::BeginMenu(Icons::ClockO + " Play later" + (g_PlayLaterMaps.Length > 0 ? " (" + g_PlayLaterMaps.Length + ")" : ""))) {
-            if (g_PlayLaterMaps.get_Length() > 0) {
-                for (uint i = 0; i < g_PlayLaterMaps.get_Length(); i++) {
+            if (g_PlayLaterMaps.Length > 0) {
+                for (uint i = 0; i < g_PlayLaterMaps.Length; i++) {
                     MX::MapInfo@ map = g_PlayLaterMaps[i];
                     if (UI::BeginMenu((Setting_ColoredMapName ? ColoredString(map.GbxMapName) : map.Name) + " \\$z\\$sby " + map.Username)) {
 #if TMNEXT
@@ -133,7 +133,7 @@ void RenderMenuMain(){
             }
             UI::EndMenu();
         }
-        if (g_PlayLaterMaps.get_Length() > 0 && UI::MenuItem("\\$f00"+Icons::TrashO + " Clear list")){
+        if (g_PlayLaterMaps.Length > 0 && UI::MenuItem("\\$f00"+Icons::TrashO + " Clear list")){
             Renderables::Add(ClarPlayLaterListWarn());
         }
         UI::Separator();

@@ -38,10 +38,10 @@ namespace MX
                 // gets the ids and fetches the tags from m_mapTags
                 string tagIds = json["TagsString"];
                 string[] tagIdsSplit = tagIds.Split(",");
-                for (uint i = 0; i < tagIdsSplit.get_Length(); i++)
+                for (uint i = 0; i < tagIdsSplit.Length; i++)
                 {
                     int tagId = Text::ParseInt(tagIdsSplit[i]);
-                    for (uint j = 0; j < m_mapTags.get_Length(); j++)
+                    for (uint j = 0; j < m_mapTags.Length; j++)
                     {
                         if (m_mapTags[j].ID == tagId)
                         {
@@ -75,10 +75,10 @@ namespace MX
                 json["TrackCount"] = TrackCount;
 
                 string tagsStr = "";
-                for (uint i = 0; i < Tags.get_Length(); i++)
+                for (uint i = 0; i < Tags.Length; i++)
                 {
                     tagsStr += tostring(Tags[i].ID);
-                    if (i < Tags.get_Length() - 1) tagsStr += ",";
+                    if (i < Tags.Length - 1) tagsStr += ",";
                 }
                 json["Tags"] = tagsStr;
             } catch {

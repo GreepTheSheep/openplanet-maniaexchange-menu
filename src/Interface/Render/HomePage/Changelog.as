@@ -20,7 +20,7 @@ namespace HomePageTabRender {
             for (uint i = 0; i < GH::Releases.Length; i++) {
                 GH::Release@ release = GH::Releases[i];
 
-                if (UI::BeginTabItem((release.name.Replace('v', '') == Meta::ExecutingPlugin().get_Version() ? "\\$090": "") + Icons::Tag + " \\$z" + release.name)) {
+                if (UI::BeginTabItem((release.name.Replace('v', '') == Meta::ExecutingPlugin().Version ? "\\$090": "") + Icons::Tag + " \\$z" + release.name)) {
                     UI::BeginChild("Changelog"+release.name);
                     UI::Markdown(IfaceRender::FormatChangelogBody(release.body));
                     UI::EndChild();

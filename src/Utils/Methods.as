@@ -20,7 +20,7 @@ array<MX::MapInfo@> LoadPlayLater() {
         mxError("The data file seems to yield invalid data. If it persists, consider deleting the file " + PlayLaterJSON, true);
         return m_maps;
     } else {
-        for (uint i = 0; i < FileData.get_Length(); i++) {
+        for (uint i = 0; i < FileData.Length; i++) {
             if (isDevMode) {
                 string mapName = FileData[i]["Name"];
                 trace("Loading map #"+i+" from Play later: " + mapName);
@@ -39,7 +39,7 @@ array<MX::MapInfo@> LoadPlayLater() {
 
 void SavePlayLater(array<MX::MapInfo@> maps) {
     Json::Value FileData = Json::Array();
-    for (uint i = 0; i < maps.get_Length(); i++) {
+    for (uint i = 0; i < maps.Length; i++) {
         FileData.Add(maps[i].ToJson());
     }
     Json::ToFile(PlayLaterJSON, FileData);
