@@ -43,3 +43,18 @@ Those commands are available in the game chat thanks to [Better Chat](https://op
 ## Exports:
 - `ManiaExchange::ShowMapInfo(int MapID)` - Will open the tab to the corresponding map with its ID
 - `ManiaExchange::ShowMapPackInfo(int MapPackID)` - Will open the tab to the corresponding map pack with its ID
+- `ManiaExchange::ShowUserInfo(int userID)` - Will open the tab to the corresponding user info with its ID
+- `ManiaExchange::GetCurrentMapID()` - Will return the current map ID, possible return values on [the table below](#getcurrentmapid-possible-return-values)
+- `ManiaExchange::GetCurrentMapInfo()` - Will return a `Json::Value` containing most informations from ManiaExchange for the current playing map
+- `ManiaExchange::GetMapInfoAsync(int MapID)` - Will return a `Json::Value` containing most informations from ManiaExchange for the map with its ID
+
+### `GetCurrentMapID()` possible return values
+
+| Return value      | Reason                         |
+|-------------------|--------------------------------|
+| >0 (Upper than 0) | The map ID                     |
+| -1                | Map not found                  |
+| -2                | Error while fetching           |
+| -3                | Fetch in progress              |
+| -4                | Not in a map (Game Main menus) |
+| -5                | In map Editor                  |
