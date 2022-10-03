@@ -250,7 +250,7 @@ class MapTab : Tab
         int minutes = (time / 60) % 60;
         int seconds = time % 60;
 
-        return (hours != 0 ? Text::Format("%02d", hours) + ":" : "" ) + (minutes != 0 ? Text::Format("%02d", minutes) + ":" : "") + Text::Format("%02d", seconds) + "." + Text::Format("%03d", hundreths);
+        return (hours != 0 ? Text::Format("%02d", hours) + ":" : "" ) + (minutes != 0 || hours != 0 ? Text::Format("%02d", minutes) + ":" : "") + Text::Format("%02d", seconds) + "." + Text::Format("%03d", hundreths);
     }
 
     void Render() override
