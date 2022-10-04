@@ -120,6 +120,9 @@ class MapPackListTab : Tab
             m_useRandom = true;
             Reload();
         }
+        UI::SameLine();
+        UI::SetCursorPos(vec2(UI::GetWindowSize().x - 40, UI::GetCursorPos().y));
+        if (UI::Button(Icons::Refresh)) Reload();
     }
 
     void Clear()

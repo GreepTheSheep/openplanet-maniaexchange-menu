@@ -10,12 +10,4 @@ class TOTDTab : MapListTab
         MapListTab::GetRequestParams(params);
         params.Set("mode", "25");
     }
-
-    void RenderHeader() override
-    {
-        if (UI::GreenButton(Icons::Random + " Random result")){
-            m_useRandom = true;
-            Reload();
-        }
-    }
 }

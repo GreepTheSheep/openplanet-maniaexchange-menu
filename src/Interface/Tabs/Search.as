@@ -65,11 +65,7 @@ class SearchTab : MapListTab
             Clear();
         }
         if (u_search != ""){
-            UI::SameLine();
-            if (UI::GreenButton(Icons::Random + " Random result")){
-                m_useRandom = true;
-                Reload();
-            }
+            MapListTab::RenderHeader();
         }
     }
 }

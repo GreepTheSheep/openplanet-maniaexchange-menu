@@ -84,8 +84,7 @@ class TagsListTab : MapListTab
             UI::EndCombo();
         }
         UI::SameLine();
-        UI::SetCursorPos(vec2(UI::GetWindowSize().x - 40, UI::GetCursorPos().y));
-        if (UI::Button(Icons::Refresh)) Reload();
+        MapListTab::RenderHeader();
 
         UI::Separator();
     }
