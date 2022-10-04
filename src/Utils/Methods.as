@@ -1,7 +1,7 @@
 bool IsInEditor(){
     CTrackMania@ app = cast<CTrackMania>(GetApp());
     auto editor = cast<CGameCtnEditorCommon@>(app.Editor);
-    return editor !is null && app.CurrentPlayground is null;
+    return editor !is null;
 }
 
 CGameCtnChallenge@ GetCurrentMap(){
