@@ -107,10 +107,15 @@ class MapTab : Tab
             string res = m_MXAuthorsRequest.String();
             if (isDevMode) trace("MapTab::CheckRequest (Authors): " + res);
             @m_MXAuthorsRequest = null;
+            if (res.Length == 0) {
+                print("MapTab::CheckRequest (Authors): Error getting response");
+                m_authorsError = true;
+                return;
+            }
             auto json = Json::Parse(res);
 
             if (json.Length == 0) {
-                print("MapTab::CheckRequest (Authors): Error parsing response");
+                print("MapTab::ParseJSON (Authors): Error parsing response");
                 m_authorsError = true;
                 return;
             }
@@ -246,7 +251,6 @@ class MapTab : Tab
     void Render() override
     {
         CheckMXRequest();
-        CheckMXAuthorsRequest();
 
         if (m_error) {
             UI::Text("\\$f00" + Icons::Times + " \\$zMap not found");
@@ -259,6 +263,8 @@ class MapTab : Tab
             UI::Text(Hourglass + " Loading...");
             return;
         }
+
+        CheckMXAuthorsRequest();
 
         // Check if the map is already on the play later list
         for (uint i = 0; i < g_PlayLaterMaps.Length; i++) {

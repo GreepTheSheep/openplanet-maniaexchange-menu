@@ -79,7 +79,12 @@ namespace MX
     void LoadMap(int mapId)
     {
         try {
-            MX::MapInfo@ map = MX::MapInfo(API::GetAsync("https://"+MXURL+"/api/maps/get_map_info/multi/"+mapId)[0]);
+            auto json = API::GetAsync("https://"+MXURL+"/api/maps/get_map_info/multi/"+mapId);
+            if (json.Length == 0) {
+                mxError("Track not found.", true);
+                return;
+            }
+            MX::MapInfo@ map = MX::MapInfo(json[0]);
 
             string Mode = "";
             Json::Value Modes = MX::ModesFromMapType();
@@ -109,6 +114,13 @@ namespace MX
     void DownloadMap(int mapId, string mapPackName = "")
     {
         try {
+            auto json = API::GetAsync("https://"+MXURL+"/api/maps/get_map_info/multi/"+mapId);
+            if (json.Length == 0) {
+                mxError("Track not found.", true);
+                return;
+            }
+            MX::MapInfo@ map = MX::MapInfo(json[0]);
+
             string downloadedMapFolder = IO::FromUserGameFolder("Maps/Downloaded");
             string mxDLFolder = downloadedMapFolder + "/" + pluginName;
             if (!IO::FolderExists(downloadedMapFolder)) IO::CreateFolder(downloadedMapFolder);
@@ -122,11 +134,10 @@ namespace MX
 
             Net::HttpRequest@ netMap = API::Get("https://"+MXURL+"/maps/download/"+mapId);
             mapDownloadInProgress = true;
-            trace("Started downloading map "+mapId+" to "+mxDLFolder);
+            trace("Started downloading map "+map.Name+" ("+mapId+") to "+mxDLFolder);
             while(!netMap.Finished()) {
                 yield();
             }
-            MX::MapInfo@ map = MX::MapInfo(API::GetAsync("https://"+MXURL+"/api/maps/get_map_info/multi/"+mapId)[0]);
             mapDownloadInProgress = false;
             netMap.SaveToFile(mxDLFolder + "/" + map.TrackID + " - " + map.Name + ".Map.Gbx");
             print("Map downloaded to " + mxDLFolder + "/" + map.TrackID + " - " + map.Name + ".Map.Gbx");
