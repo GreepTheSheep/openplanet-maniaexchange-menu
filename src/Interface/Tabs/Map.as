@@ -243,16 +243,6 @@ class MapTab : Tab
         }
     }
 
-    string FormatTime(int time) {
-        int hundreths = time % 1000;
-        time /= 1000;
-        int hours = time / 3600;
-        int minutes = (time / 60) % 60;
-        int seconds = time % 60;
-
-        return (hours != 0 ? Text::Format("%02d", hours) + ":" : "" ) + (minutes != 0 ? Text::Format("%02d", minutes) + ":" : "") + Text::Format("%02d", seconds) + "." + Text::Format("%03d", hundreths);
-    }
-
     void Render() override
     {
         CheckMXRequest();
@@ -611,10 +601,10 @@ class MapTab : Tab
                                 if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(entry.UserID), true);
 
                                 UI::TableSetColumnIndex(2);
-                                UI::Text(FormatTime(entry.ReplayTime));
+                                UI::Text(Time::Format(entry.ReplayTime));
                                 if (i != 0){
                                     UI::SameLine();
-                                    UI::Text("\\$f00(+ " + FormatTime(entry.ReplayTime - m_replays[0].ReplayTime) + ")");
+                                    UI::Text("\\$f00(+ " + Time::Format(entry.ReplayTime - m_replays[0].ReplayTime) + ")");
                                 }
 
                                 UI::TableSetColumnIndex(3);
@@ -689,10 +679,10 @@ class MapTab : Tab
                                 UI::Text(entry.playerName);
 
                                 UI::TableSetColumnIndex(2);
-                                UI::Text(FormatTime(entry.time));
+                                UI::Text(Time::Format(entry.time));
                                 if (i != 0){
                                     UI::SameLine();
-                                    UI::Text("\\$f00(+ " + FormatTime(entry.time - m_leaderboard[0].time) + ")");
+                                    UI::Text("\\$f00(+ " + Time::Format(entry.time - m_leaderboard[0].time) + ")");
                                 }
                             }
                         }
