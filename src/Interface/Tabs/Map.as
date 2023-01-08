@@ -405,6 +405,14 @@ class MapTab : Tab
         UI::SetPreviousTooltip("Mood");
         UI::Text(Icons::Money + " \\$f77" + m_map.DisplayCost);
         UI::SetPreviousTooltip("Coppers cost");
+
+        /* Inlined styles, because this is the only place where a gold button is needed */
+        UI::PushStyleColor(UI::Col::Button, UI::HSV(0.12f, 1, 0.7f));
+        UI::PushStyleColor(UI::Col::ButtonHovered, UI::HSV(0.12f, 1.1f, 0.8f));
+        UI::PushStyleColor(UI::Col::ButtonActive, UI::HSV(0.12f, 1.2f, 0.9f));
+        if (UI::Button(Icons::Trophy + " Award this map on "+shortMXName)) OpenBrowserURL("https://"+MXURL+"/maps/"+m_map.TrackID+"#award");
+        UI::PopStyleColor(3);
+
         if (UI::CyanButton(Icons::ExternalLink + " View on "+pluginName)) OpenBrowserURL("https://"+MXURL+"/maps/"+m_map.TrackID);
 #if TMNEXT
         if (UI::Button(Icons::ExternalLink + " View on Trackmania.io")) OpenBrowserURL("https://trackmania.io/#/leaderboard/"+m_map.TrackUID);
@@ -517,7 +525,7 @@ class MapTab : Tab
         UI::BeginChild("Description");
 
         UI::PushFont(g_fontHeader);
-        UI::Text(ColoredString(m_map.GbxMapName));
+        UI::TextWrapped(ColoredString(m_map.GbxMapName));
         UI::PopFont();
 
         if (m_authorsError) {
