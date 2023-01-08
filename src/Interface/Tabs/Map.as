@@ -405,6 +405,9 @@ class MapTab : Tab
         UI::SetPreviousTooltip("Mood");
         UI::Text(Icons::Money + " \\$f77" + m_map.DisplayCost);
         UI::SetPreviousTooltip("Coppers cost");
+
+        if (UI::GoldButton(Icons::Trophy + " Award this map on "+shortMXName)) OpenBrowserURL("https://"+MXURL+"/maps/"+m_map.TrackID+"#award");
+
         if (UI::CyanButton(Icons::ExternalLink + " View on "+pluginName)) OpenBrowserURL("https://"+MXURL+"/maps/"+m_map.TrackID);
 #if TMNEXT
         if (UI::Button(Icons::ExternalLink + " View on Trackmania.io")) OpenBrowserURL("https://trackmania.io/#/leaderboard/"+m_map.TrackUID);
@@ -517,7 +520,7 @@ class MapTab : Tab
         UI::BeginChild("Description");
 
         UI::PushFont(g_fontHeader);
-        UI::Text(ColoredString(m_map.GbxMapName));
+        UI::TextWrapped(ColoredString(m_map.GbxMapName));
         UI::PopFont();
 
         if (m_authorsError) {
