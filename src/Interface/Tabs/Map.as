@@ -406,12 +406,7 @@ class MapTab : Tab
         UI::Text(Icons::Money + " \\$f77" + m_map.DisplayCost);
         UI::SetPreviousTooltip("Coppers cost");
 
-        /* Inlined styles, because this is the only place where a gold button is needed */
-        UI::PushStyleColor(UI::Col::Button, UI::HSV(0.12f, 1, 0.7f));
-        UI::PushStyleColor(UI::Col::ButtonHovered, UI::HSV(0.12f, 1.1f, 0.8f));
-        UI::PushStyleColor(UI::Col::ButtonActive, UI::HSV(0.12f, 1.2f, 0.9f));
-        if (UI::Button(Icons::Trophy + " Award this map on "+shortMXName)) OpenBrowserURL("https://"+MXURL+"/maps/"+m_map.TrackID+"#award");
-        UI::PopStyleColor(3);
+        if (UI::GoldButton(Icons::Trophy + " Award this map on "+shortMXName)) OpenBrowserURL("https://"+MXURL+"/maps/"+m_map.TrackID+"#award");
 
         if (UI::CyanButton(Icons::ExternalLink + " View on "+pluginName)) OpenBrowserURL("https://"+MXURL+"/maps/"+m_map.TrackID);
 #if TMNEXT
