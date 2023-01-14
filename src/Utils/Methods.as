@@ -26,7 +26,7 @@ array<MX::MapInfo@> LoadPlayLater() {
                 m_maps.InsertAt(0, map);
             }
             SavePlayLater(m_maps);
-            IO::Delete(PlayLaterJSON_Old);
+            IO::Delete(IO::FromDataFolder("ManiaExchange_PlayLater.json"));
             print(tostring(m_maps.Length) + " maps loaded from Play Later list and migrated to PluginStorage.");
         } else {
             UI::ShowNotification("\\$afa" + Icons::InfoCircle + " Thanks for installing "+pluginName+"!","No data file was detected, that means it's your first install. Welcome!", 15000);
