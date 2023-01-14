@@ -436,7 +436,7 @@ class MapTab : Tab
                     MX::mapToLoad = m_map.TrackID;
                 }
 #if TMNEXT && DEPENDENCY_NADEOSERVICES
-                if (Permissions::CreateAndUploadMap() && IsInServer()) {
+                if (SupportedModes.HasKey(m_map.MapType) && Permissions::CreateAndUploadMap() && IsInServer()) {
                     if (UI::GreenButton(Icons::Server + " Play Map on Nadeo-hosted Room")) {
                         TMNext::AddMapToServer_MapUid = m_map.TrackUID;
                         TMNext::AddMapToServer_MapMXId = m_map.TrackID;
