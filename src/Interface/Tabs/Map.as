@@ -280,7 +280,7 @@ class MapTab : Tab
 #if DEPENDENCY_NADEOSERVICES
         // Check if the map is already on the favorites list
         for (uint i = 0; i < MXNadeoServicesGlobal::g_favoriteMaps.Length; i++) {
-            MXNadeoServicesGlobal::NadeoServicesMap@ favoriteMap = MXNadeoServicesGlobal::g_favoriteMaps[i];
+            NadeoServices::MapInfo@ favoriteMap = MXNadeoServicesGlobal::g_favoriteMaps[i];
             if (favoriteMap.uid != m_map.TrackUID) {
                 m_isMapOnFavorite = false;
             } else {
@@ -435,6 +435,15 @@ class MapTab : Tab
                     UI::ShowNotification("Loading map...", ColoredString(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
                     MX::mapToLoad = m_map.TrackID;
                 }
+#if TMNEXT && DEPENDENCY_NADEOSERVICES
+                if (Permissions::CreateAndUploadMap() && IsInServer()) {
+                    if (UI::GreenButton(Icons::Server + " Play Map on Nadeo-hosted Room")) {
+                        TMNext::AddMapToServer_MapUid = m_map.TrackUID;
+                        TMNext::AddMapToServer_MapMXId = m_map.TrackID;
+                        Renderables::Add(PlayMapOnNadeoRoomInfos());
+                    }
+                }
+#endif
             }
 #if TMNEXT
         } else {

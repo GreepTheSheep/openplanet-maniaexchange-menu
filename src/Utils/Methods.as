@@ -4,6 +4,12 @@ bool IsInEditor(){
     return editor !is null;
 }
 
+bool IsInServer(){
+    CTrackManiaNetwork@ Network = cast<CTrackManiaNetwork>(GetApp().Network);
+    CGameCtnNetServerInfo@ ServerInfo = cast<CGameCtnNetServerInfo>(Network.ServerInfo);
+    return  ServerInfo.JoinLink != "";
+}
+
 CGameCtnChallenge@ GetCurrentMap(){
     CTrackMania@ g_app = cast<CTrackMania>(GetApp());
     return g_app.RootMap;

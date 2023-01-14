@@ -2,66 +2,9 @@ namespace MXNadeoServicesGlobal
 {
     bool APIDown = false;
     bool APIRefresh = false;
-    array<NadeoServicesMap@> g_favoriteMaps;
+    array<NadeoServices::MapInfo@> g_favoriteMaps;
     int g_totalFavoriteMaps;
     string m_mapUidToAction;
-
-    class NadeoServicesMap
-    {
-        string uid;
-        string mapId;
-        string name;
-        string author;
-        string authorUsername;
-        uint authorTime;
-        uint goldTime;
-        uint silverTime;
-        uint bronzeTime;
-        int nbLaps;
-        bool valid;
-        string downloadUrl;
-        string thumbnailUrl;
-        int uploadTimestamp;
-        int updateTimestamp;
-        int fileSize;
-        bool public;
-        bool favorite;
-        bool playable;
-        string mapStyle;
-        string mapType;
-        string collectionName;
-        int MXId;
-        MX::MapInfo@ MXMapInfo;
-
-        NadeoServicesMap(const Json::Value &in json)
-        {
-            try {
-                uid = json["uid"];
-                mapId = json["mapId"];
-                name = json["name"];
-                author = json["author"];
-                authorTime = json["authorTime"];
-                goldTime = json["goldTime"];
-                silverTime = json["silverTime"];
-                bronzeTime = json["bronzeTime"];
-                nbLaps = json["nbLaps"];
-                valid = json["valid"];
-                downloadUrl = json["downloadUrl"];
-                thumbnailUrl = json["thumbnailUrl"];
-                uploadTimestamp = json["uploadTimestamp"];
-                updateTimestamp = json["updateTimestamp"];
-                if (json["fileSize"].GetType() != Json::Type::Null) fileSize = json["fileSize"];
-                public = json["public"];
-                favorite = json["favorite"];
-                playable = json["playable"];
-                mapStyle = json["mapStyle"];
-                mapType = json["mapType"];
-                collectionName = json["collectionName"];
-            } catch {
-                mxWarn("Error parsing infos for map: " + name);
-            }
-        }
-    }
 
 #if DEPENDENCY_NADEOSERVICES
     void LoadNadeoLiveServices()
@@ -122,7 +65,7 @@ namespace MXNadeoServicesGlobal
                 string mapName = res["mapList"][i]["name"];
                 string mapUid = res["mapList"][i]["uid"];
                 if (isDevMode) trace("Loading favorite map #"+i+": " + StripFormatCodes(mapName) + " (" + mapUid + ")");
-                MXNadeoServicesGlobal::NadeoServicesMap@ map = MXNadeoServicesGlobal::NadeoServicesMap(res["mapList"][i]);
+                NadeoServices::MapInfo@ map = NadeoServices::MapInfo(res["mapList"][i]);
                 g_favoriteMaps.InsertLast(map);
             }
 
@@ -142,7 +85,7 @@ namespace MXNadeoServicesGlobal
                     string mapName = res["mapList"][i]["name"];
                     string mapUid = res["mapList"][i]["uid"];
                     if (isDevMode) trace("Loading favorite map #"+i+": " + StripFormatCodes(mapName) + " (" + mapUid + ")");
-                    MXNadeoServicesGlobal::NadeoServicesMap@ map = MXNadeoServicesGlobal::NadeoServicesMap(res["mapList"][i]);
+                    NadeoServices::MapInfo@ map = NadeoServices::MapInfo(res["mapList"][i]);
                     g_favoriteMaps.InsertLast(map);
                 }
             }
