@@ -140,7 +140,7 @@ namespace MX
             }
             mapDownloadInProgress = false;
 
-            if (fileName.Length > 0) fileName = map.TrackID + " - " + map.Name;
+            if (fileName.Length == 0) fileName = map.TrackID + " - " + map.Name;
             netMap.SaveToFile(mxDLFolder + "/" + fileName + ".Map.Gbx");
             print("Map downloaded to " + mxDLFolder + "/" + fileName + ".Map.Gbx");
         } catch {
