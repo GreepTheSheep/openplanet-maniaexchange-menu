@@ -69,8 +69,11 @@ namespace MXNadeoServicesGlobal
                 g_favoriteMaps.InsertLast(map);
             }
 
-            while (int(res["mapList"].Length) < g_totalFavoriteMaps) {
-                offset += int(res["mapList"].Length);
+            // 2023-03-13: Infinite loop fixed, big ups to Nadeo devs (shoutouts to Tsurenas ^^)
+
+            offset += int(res["mapList"].Length);
+
+            while (offset < g_totalFavoriteMaps) {
                 url = NadeoServices::BaseURL()+"/api/token/map/favorite?offset="+offset+"&length="+length+"&sort="+sort+"&order="+order;
                 if (isDevMode) trace("NadeoServices - Loading favorite maps: " + url);
                 @req = NadeoServices::Get("NadeoLiveServices", url);
@@ -88,6 +91,9 @@ namespace MXNadeoServicesGlobal
                     NadeoServices::MapInfo@ map = NadeoServices::MapInfo(res["mapList"][i]);
                     g_favoriteMaps.InsertLast(map);
                 }
+
+                offset += int(res["mapList"].Length);
+                sleep(1000);
             }
 
             trace("NadeoServices - Checking for map on MX...");
@@ -136,6 +142,8 @@ namespace MXNadeoServicesGlobal
                     @g_favoriteMaps[mapUidsCheckDone].MXMapInfo = MX::MapInfo(mxJson[i]);
                     mapUidsCheckDone++;
                 }
+
+                sleep(1000);
             }
 
             trace("NadeoServices - Loading favorites map author usernames...");
