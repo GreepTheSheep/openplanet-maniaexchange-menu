@@ -139,6 +139,11 @@ namespace MX
             MX::LoadMap(TrackID);
         }
 
+        void EditMap()
+        {
+            MX::LoadMap(TrackID, true);
+        }
+
         void DownloadMap()
         {
             MX::DownloadMap(TrackID, MapPackName);

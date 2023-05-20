@@ -257,6 +257,10 @@ void Main(){
             MX::LoadMap(MX::mapToLoad);
             MX::mapToLoad = -1;
         }
+        if (MX::mapToEdit != -1){
+            MX::LoadMap(MX::mapToEdit, true);
+            MX::mapToEdit = -1;
+        }
         if (MX::mapToDL != -1){
             MX::DownloadMap(MX::mapToDL);
             MX::mapToDL = -1;

@@ -452,6 +452,21 @@ class MapTab : Tab
         }
 #endif
 
+#if TMNEXT
+        if (Permissions::OpenAdvancedMapEditor()) {
+#endif
+            if (UI::YellowButton(Icons::Wrench + " Edit Map")) {
+                if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
+                UI::ShowNotification("Loading map...", ColoredString(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
+                MX::mapToEdit = m_map.TrackID;
+            }
+#if TMNEXT
+        } else {
+            UI::Text("\\$f00"+Icons::Times + " \\$zYou do not have permissions to edit map");
+            UI::Text("Consider buying at least standard access of the game.");
+        }
+#endif
+
         if (MX::mapDownloadInProgress){
             UI::Text("\\$f70" + Icons::Download + " \\$zDownloading map...");
             m_isLoading = true;

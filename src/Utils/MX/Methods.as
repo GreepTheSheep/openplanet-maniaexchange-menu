@@ -76,7 +76,7 @@ namespace MX
     }
 
 
-    void LoadMap(int mapId)
+    void LoadMap(int mapId, bool intoEditor = false)
     {
         try {
             auto json = API::GetAsync("https://"+MXURL+"/api/maps/get_map_info/multi/"+mapId);
@@ -100,7 +100,13 @@ namespace MX
                 while(!app.ManiaTitleControlScriptAPI.IsReady) {
                     yield(); // Wait until the ManiaTitleControlScriptAPI is ready for loading the next map
                 }
-                app.ManiaTitleControlScriptAPI.PlayMap("https://"+MXURL+"/maps/download/"+mapId, Mode, "");
+                if (
+                    intoEditor
+#if TMNEXT
+                    && Permissions::OpenAdvancedMapEditor()
+#endif
+                ) app.ManiaTitleControlScriptAPI.EditMap("https://"+MXURL+"/maps/download/"+mapId, "", "");
+                else app.ManiaTitleControlScriptAPI.PlayMap("https://"+MXURL+"/maps/download/"+mapId, Mode, "");
 #if TMNEXT
             } else mxError("You don't have permission to play custom maps.", true);
 #endif
