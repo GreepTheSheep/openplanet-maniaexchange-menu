@@ -238,17 +238,14 @@ void Main(){
 #endif
 
 #if DEPENDENCY_BETTERCHAT
-    BetterChat::RegisterCommand("mx", MXBetterChat::OpenMapOnMXCmd());
-    BetterChat::RegisterCommand("maniaexchange", MXBetterChat::OpenMapOnMXCmd());
-    BetterChat::RegisterCommand("mx-page", MXBetterChat::MXPage(false));
-    BetterChat::RegisterCommand("mx-tell-page", MXBetterChat::MXPage(true));
-    BetterChat::RegisterCommand("mx-awards", MXBetterChat::MapAwards(false));
-    BetterChat::RegisterCommand("mx-tell-awards", MXBetterChat::MapAwards(true));
-    BetterChat::RegisterCommand("mx-tell-plugin", MXBetterChat::TellMXPlugin());
-
-    if (isDevMode) BetterChat::RegisterCommand("mx-json", MXBetterChat::ShowMapInfoJson());
+    startnew(BetterChatRegisterCommands);
 #endif
 
+    startnew(MapLoader);
+    startnew(MapChecker);
+}
+
+void MapLoader() {
     while(true){
         yield();
 
@@ -265,6 +262,12 @@ void Main(){
             MX::DownloadMap(MX::mapToDL);
             MX::mapToDL = -1;
         }
+    }
+}
+
+void MapChecker() {
+    while(true){
+        yield();
 
         // Checks current played map
         auto currentMap = GetCurrentMap();
@@ -285,6 +288,24 @@ void Main(){
         }
     }
 }
+
+#if DEPENDENCY_BETTERCHAT
+void BetterChatRegisterCommands() {
+    try {
+        BetterChat::RegisterCommand("mx", MXBetterChat::OpenMapOnMXCmd());
+        BetterChat::RegisterCommand("maniaexchange", MXBetterChat::OpenMapOnMXCmd());
+        BetterChat::RegisterCommand("mx-page", MXBetterChat::MXPage(false));
+        BetterChat::RegisterCommand("mx-tell-page", MXBetterChat::MXPage(true));
+        BetterChat::RegisterCommand("mx-awards", MXBetterChat::MapAwards(false));
+        BetterChat::RegisterCommand("mx-tell-awards", MXBetterChat::MapAwards(true));
+        BetterChat::RegisterCommand("mx-tell-plugin", MXBetterChat::TellMXPlugin());
+
+        if (isDevMode) BetterChat::RegisterCommand("mx-json", MXBetterChat::ShowMapInfoJson());
+    } catch {
+        mxError("Better Chat: unable to register commands: " + getExceptionInfo(), true);
+    }
+}
+#endif
 
 void RenderInterface(){
     mxMenu.Render();
