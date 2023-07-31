@@ -4,6 +4,9 @@ class MapListTab : Tab
     array<MX::MapInfo@> maps;
     uint totalItems = 0;
     bool m_useRandom = false;
+    bool m_firstLoad = true;
+    int m_selectedEnviroId = 0;
+    string m_selectedEnviroName = "Any";
     int m_page = 1;
 
     void GetRequestParams(dictionary@ params)
@@ -11,6 +14,7 @@ class MapListTab : Tab
         params.Set("api", "on");
         params.Set("format", "json");
         params.Set("limit", "100");
+        params.Set("environments", tostring(m_selectedEnviroId));
         params.Set("page", tostring(m_page));
         if (m_useRandom) {
             params.Set("random", "1");
@@ -52,6 +56,18 @@ class MapListTab : Tab
 
     void CheckRequest()
     {
+        if (m_firstLoad) {
+            m_firstLoad = false;
+#if TMNEXT
+            m_selectedEnviroName = "Stadium";
+            m_selectedEnviroId = 1;
+#else
+            if (repo == MP4mxRepos::Shootmania) {
+                m_selectedEnviroName = "Storm";
+                m_selectedEnviroId = 1;
+            }
+#endif
+        }
         CheckStartRequest();
 
         // If there's a request, check if it has finished
@@ -89,6 +105,19 @@ class MapListTab : Tab
 
     void RenderHeader()
     {
+        UI::SetNextItemWidth(150);
+        if (UI::BeginCombo("##EnviroFilter", m_selectedEnviroName)){
+            for (uint i = 0; i < MX::m_environments.Length; i++) {
+                MX::Environment@ envi = MX::m_environments[i];
+                if (UI::Selectable(envi.Name, m_selectedEnviroName == envi.Name)){
+                    m_selectedEnviroName = envi.Name;
+                    m_selectedEnviroId = envi.ID;
+                    Reload();
+                }
+            }
+            UI::EndCombo();
+        }
+        UI::SameLine();
         if (UI::GreenButton(Icons::Random + " Random result")){
             m_useRandom = true;
             Reload();
