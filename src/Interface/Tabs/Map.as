@@ -398,8 +398,12 @@ class MapTab : Tab
             UI::SetPreviousTooltip("Updated date");
         }
 #if MP4
+        UI::Text(Icons::Tree + " \\$f77" + m_map.EnvironmentName);
+        UI::SetPreviousTooltip("Environment");
         UI::Text(Icons::Inbox + " \\$f77" + m_map.TitlePack);
         UI::SetPreviousTooltip("Title Pack");
+        UI::Text(Icons::Car + " \\$f77" + m_map.VehicleName);
+        UI::SetPreviousTooltip("Vehicle");
 #endif
         UI::Text(Icons::Sun + " \\$f77" + m_map.Mood);
         UI::SetPreviousTooltip("Mood");

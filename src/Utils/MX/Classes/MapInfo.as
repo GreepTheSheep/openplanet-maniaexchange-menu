@@ -19,6 +19,7 @@ namespace MX
         int DisplayCost;
         string LengthName;
         int Laps;
+        string EnvironmentName;
         string DifficultyName;
         string VehicleName;
         int AuthorTime;
@@ -54,6 +55,7 @@ namespace MX
                 DisplayCost = json["DisplayCost"];
                 if (json["LengthName"].GetType() != Json::Type::Null) LengthName = json["LengthName"];
                 Laps = json["Laps"];
+                if (json["EnvironmentName"].GetType() != Json::Type::Null) EnvironmentName = json["EnvironmentName"];
                 if (json["DifficultyName"].GetType() != Json::Type::Null) DifficultyName = json["DifficultyName"];
                 if (json["VehicleName"].GetType() != Json::Type::Null) VehicleName = json["VehicleName"];
                 if (json["AuthorTime"].GetType() != Json::Type::Null) AuthorTime = json["AuthorTime"];
@@ -112,6 +114,7 @@ namespace MX
                 json["DisplayCost"] = DisplayCost;
                 json["LengthName"] = LengthName;
                 json["Laps"] = Laps;
+                json["EnvironmentName"] = EnvironmentName;
                 json["DifficultyName"] = DifficultyName;
                 json["VehicleName"] = VehicleName;
                 json["AuthorTime"] = AuthorTime;
