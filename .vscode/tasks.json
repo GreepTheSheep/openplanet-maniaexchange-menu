@@ -7,11 +7,31 @@
             "label": "Build .op file",
             "type": "shell",
             "command": "${workspaceFolder}/build.bat",
-            "problemMatcher": [],
+            "problemMatcher": [
+                "$Openplanet Remote Build Problem Matcher: Angelscript Compiler"
+            ],
             "group": {
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "type": "Openplanet Remote Build",
+            "pluginId": "${workspaceFolder}",
+            "openplanetPort": 30000,
+            "problemMatcher": [
+                "$Openplanet Remote Build Problem Matcher: Angelscript Compiler"
+            ],
+            "label": "Openplanet Remote Build: Load/Reload from User Folder (TMNEXT)"
+        },
+        {
+            "type": "Openplanet Remote Build",
+            "pluginId": "${workspaceFolder}",
+            "openplanetPort": 30001,
+            "problemMatcher": [
+                "$Openplanet Remote Build Problem Matcher: Angelscript Compiler"
+            ],
+            "label": "Openplanet Remote Build: Load/Reload from User Folder (MP4)"
         }
     ]
 }
