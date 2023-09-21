@@ -131,7 +131,17 @@ namespace MX
                     && Permissions::OpenAdvancedMapEditor()
 #endif
                 ) app.ManiaTitleControlScriptAPI.EditMap("https://"+MXURL+"/maps/download/"+mapId, "", "");
+#if !MP4
                 else app.ManiaTitleControlScriptAPI.PlayMap("https://"+MXURL+"/maps/download/"+mapId, Mode, "");
+#else
+                else {
+                    if (Mode == "" && repo == MP4mxRepos::Trackmania) {
+                        Mode = "SingleMap";
+                    }
+                    app.ManiaTitleControlScriptAPI.PlayMap("https://"+MXURL+"/maps/download/"+mapId, Mode, "");
+                }
+#endif
+
 #if TMNEXT
             } else mxError("You don't have permission to play custom maps.", true);
 #endif
