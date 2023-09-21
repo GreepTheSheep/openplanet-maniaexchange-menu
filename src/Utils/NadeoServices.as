@@ -185,7 +185,7 @@ namespace MXNadeoServicesGlobal
         }
     }
 
-    bool CheckIfMapExistsAsync(string mapUid)
+    bool CheckIfMapExistsAsync(const string &in mapUid)
     {
         string url = NadeoServices::BaseURL()+"/api/token/map/"+mapUid;
         if (isDevMode) trace("NadeoServices - Check if map exists: " + url);

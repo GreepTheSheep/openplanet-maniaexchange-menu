@@ -11,7 +11,7 @@ class TagsListTab : MapListTab
 
     vec4 GetColor() override { return vec4(0.0f, 0.52f, 0.52f, 1); }
 
-    void GetRequestParams(dictionary@ params)
+    void GetRequestParams(dictionary@ params) override
     {
         MapListTab::GetRequestParams(params);
         t_tags = "";

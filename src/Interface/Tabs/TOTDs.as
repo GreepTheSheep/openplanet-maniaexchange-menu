@@ -5,7 +5,7 @@ class TOTDTab : MapListTab
 
     vec4 GetColor() override { return vec4(0.04f, 0.79f, 0.88f, 1); }
 
-    void GetRequestParams(dictionary@ params)
+    void GetRequestParams(dictionary@ params) override
     {
         MapListTab::GetRequestParams(params);
         params.Set("mode", "25");

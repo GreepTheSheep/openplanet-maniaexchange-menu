@@ -1,6 +1,6 @@
 namespace IfaceRender
 {
-    void MXComment(string comment){
+    void MXComment(const string &in comment){
         string formatted = "";
 
         formatted =

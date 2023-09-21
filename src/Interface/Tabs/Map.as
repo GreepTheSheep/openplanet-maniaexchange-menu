@@ -205,7 +205,7 @@ class MapTab : Tab
         }
     }
 
-    void HandleTMIOResponseError(string error)
+    void HandleTMIOResponseError(const string &in error)
     {
         m_TMIOerror = true;
         if (error.Contains("does not exist")) {

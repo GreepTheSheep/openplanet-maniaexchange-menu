@@ -152,7 +152,7 @@ namespace MX
         }
     }
 
-    void DownloadMap(int mapId, string mapPackName = "", string fileName = "")
+    void DownloadMap(int mapId, const string &in mapPackName = "", string _fileName = "")
     {
         try {
             auto json = API::GetAsync("https://"+MXURL+"/api/maps/get_map_info/multi/"+mapId);
@@ -181,9 +181,9 @@ namespace MX
             }
             mapDownloadInProgress = false;
 
-            if (fileName.Length == 0) fileName = map.TrackID + " - " + map.Name;
-            netMap.SaveToFile(mxDLFolder + "/" + fileName + ".Map.Gbx");
-            print("Map downloaded to " + mxDLFolder + "/" + fileName + ".Map.Gbx");
+            if (_fileName.Length == 0) _fileName = map.TrackID + " - " + map.Name;
+            netMap.SaveToFile(mxDLFolder + "/" + _fileName + ".Map.Gbx");
+            print("Map downloaded to " + mxDLFolder + "/" + _fileName + ".Map.Gbx");
         } catch {
             mxError("Error while downloading map");
             mxError(pluginName + " API is not responding, it must be down.", true);

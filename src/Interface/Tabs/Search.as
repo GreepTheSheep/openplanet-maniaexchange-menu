@@ -10,7 +10,7 @@ class SearchTab : MapListTab
 
     vec4 GetColor() override { return vec4(0.22f, 0.61f, 0.43f, 1); }
 
-    void GetRequestParams(dictionary@ params)
+    void GetRequestParams(dictionary@ params) override
     {
         MapListTab::GetRequestParams(params);
         params.Set(t_paramMode, u_search);
