@@ -47,7 +47,7 @@ namespace MXNadeoServicesGlobal
             string order = "desc";
             if (Setting_NadeoServices_FavoriteMaps_Sort == NadeoServicesFavoriteMapListSort::Name) sort = "name";
             if (Setting_NadeoServices_FavoriteMaps_SortOrder == NadeoServicesFavoriteMapListSortOrder::Ascending) order = "asc";
-            string url = NadeoServices::BaseURL()+"/api/token/map/favorite?offset="+offset+"&length="+length+"&sort="+sort+"&order="+order;
+            string url = NadeoServices::BaseURLLive()+"/api/token/map/favorite?offset="+offset+"&length="+length+"&sort="+sort+"&order="+order;
             if (isDevMode) trace("NadeoServices - Loading favorite maps: " + url);
             Net::HttpRequest@ req = NadeoServices::Get("NadeoLiveServices", url);
             req.Start();
@@ -74,7 +74,7 @@ namespace MXNadeoServicesGlobal
             offset += int(res["mapList"].Length);
 
             while (offset < g_totalFavoriteMaps) {
-                url = NadeoServices::BaseURL()+"/api/token/map/favorite?offset="+offset+"&length="+length+"&sort="+sort+"&order="+order;
+                url = NadeoServices::BaseURLLive()+"/api/token/map/favorite?offset="+offset+"&length="+length+"&sort="+sort+"&order="+order;
                 if (isDevMode) trace("NadeoServices - Loading favorite maps: " + url);
                 @req = NadeoServices::Get("NadeoLiveServices", url);
                 req.Start();
@@ -187,7 +187,7 @@ namespace MXNadeoServicesGlobal
 
     bool CheckIfMapExistsAsync(const string &in mapUid)
     {
-        string url = NadeoServices::BaseURL()+"/api/token/map/"+mapUid;
+        string url = NadeoServices::BaseURLLive()+"/api/token/map/"+mapUid;
         if (isDevMode) trace("NadeoServices - Check if map exists: " + url);
         Net::HttpRequest@ req = NadeoServices::Get("NadeoLiveServices", url);
         req.Start();
@@ -215,7 +215,7 @@ namespace MXNadeoServicesGlobal
 
     void AddMapToFavoritesAsync()
     {
-        string url = NadeoServices::BaseURL()+"/api/token/map/favorite/"+m_mapUidToAction+"/add";
+        string url = NadeoServices::BaseURLLive()+"/api/token/map/favorite/"+m_mapUidToAction+"/add";
         if (isDevMode) trace("NadeoServices - Add map to favorites: " + url);
         Net::HttpRequest@ req = NadeoServices::Post("NadeoLiveServices", url);
         req.Start();
@@ -233,7 +233,7 @@ namespace MXNadeoServicesGlobal
 
     void RemoveMapFromFavoritesAsync()
     {
-        string url = NadeoServices::BaseURL()+"/api/token/map/favorite/"+m_mapUidToAction+"/remove";
+        string url = NadeoServices::BaseURLLive()+"/api/token/map/favorite/"+m_mapUidToAction+"/remove";
         if (isDevMode) trace("NadeoServices - Remove map from favorites: " + url);
         Net::HttpRequest@ req = NadeoServices::Post("NadeoLiveServices", url);
         req.Start();

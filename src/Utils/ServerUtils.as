@@ -21,7 +21,7 @@ namespace TMNext
         isCheckingRoom = true;
         roomCheckErrorCode = "";
         roomCheckError = "";
-        Net::HttpRequest@ req = NadeoServices::Get("NadeoLiveServices", NadeoServices::BaseURL()+"/api/token/club/"+AddMapToServer_ClubId+"/room/"+AddMapToServer_RoomId);
+        Net::HttpRequest@ req = NadeoServices::Get("NadeoLiveServices", NadeoServices::BaseURLLive()+"/api/token/club/"+AddMapToServer_ClubId+"/room/"+AddMapToServer_RoomId);
         req.Start();
         while (!req.Finished()) {
             yield();
@@ -102,7 +102,7 @@ namespace TMNext
             bodyJson["settings"] = bodyJsonSettings;
         }
 
-        Net::HttpRequest@ req = NadeoServices::Post("NadeoLiveServices", NadeoServices::BaseURL()+"/api/token/club/"+AddMapToServer_ClubId+"/room/"+AddMapToServer_RoomId+"/edit", Json::Write(bodyJson));
+        Net::HttpRequest@ req = NadeoServices::Post("NadeoLiveServices", NadeoServices::BaseURLLive()+"/api/token/club/"+AddMapToServer_ClubId+"/room/"+AddMapToServer_RoomId+"/edit", Json::Write(bodyJson));
         req.Start();
         while (!req.Finished()) yield();
         print("NadeoServices::UpdateRoom - "+req.String());
@@ -125,7 +125,7 @@ namespace TMNext
             bodyJson = Json::Object();
             bodyJson["settings"] = bodyJsonSettings;
 
-            @req = NadeoServices::Post("NadeoLiveServices", NadeoServices::BaseURL()+"/api/token/club/"+AddMapToServer_ClubId+"/room/"+AddMapToServer_RoomId+"/edit", Json::Write(bodyJson));
+            @req = NadeoServices::Post("NadeoLiveServices", NadeoServices::BaseURLLive()+"/api/token/club/"+AddMapToServer_ClubId+"/room/"+AddMapToServer_RoomId+"/edit", Json::Write(bodyJson));
             req.Start();
             while (!req.Finished()) yield();
             print("NadeoServices::UpdateRoom (reset S_TimeLimit to 0) - "+req.String());
