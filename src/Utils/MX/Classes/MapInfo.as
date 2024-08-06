@@ -34,6 +34,7 @@ namespace MX
         array<MapTag@> Tags;
 
         string MapPackName;
+        Json::Value@ jsonCache;
 
         MapInfo(const Json::Value &in json)
         {
@@ -87,6 +88,8 @@ namespace MX
                         }
                     }
                 }
+
+                @jsonCache = ToJson();
             } catch {
                 Name = json["Name"];
                 mxWarn("Error parsing infos for the map: "+ Name, true);
@@ -95,6 +98,11 @@ namespace MX
 
         Json::Value ToJson()
         {
+            if (jsonCache !is null) {
+                trace("JSON: Returning map " + Name + " from cache");
+                return jsonCache;
+            }
+            trace("JSON: Exporting " + Name + " to JSON and writing to the cache...");
             Json::Value json = Json::Object();
             try {
                 json["TrackID"] = TrackID;
