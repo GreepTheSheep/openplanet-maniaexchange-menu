@@ -98,11 +98,7 @@ namespace MX
 
         Json::Value ToJson()
         {
-            if (jsonCache !is null) {
-                trace("JSON: Returning map " + Name + " from cache");
-                return jsonCache;
-            }
-            trace("JSON: Exporting " + Name + " to JSON and writing to the cache...");
+            if (jsonCache !is null) return jsonCache;
             Json::Value json = Json::Object();
             try {
                 json["TrackID"] = TrackID;
