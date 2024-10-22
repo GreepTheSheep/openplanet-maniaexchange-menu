@@ -52,7 +52,8 @@ namespace MX
         m_environments.InsertLast(Environment(1, "Stadium"));
 #else
         if (repo == MP4mxRepos::Trackmania) {
-            m_environments.InsertLast(Environment(0, "Any"));
+            m_environments.InsertLast(Environment(-1, "Any"));
+            m_environments.InsertLast(Environment(0, "Custom"));
             m_environments.InsertLast(Environment(1, "Canyon"));
             m_environments.InsertLast(Environment(2, "Stadium"));
             m_environments.InsertLast(Environment(3, "Valley"));
