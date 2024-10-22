@@ -68,10 +68,10 @@ namespace NadeoServices
                 playerCount = json["playerCount"];
                 script = json["script"];
                 scalable = json["scalable"];
-                if (json["scriptSettings"]["S_TimeLimit"].GetType() != Json::Type::Null) timeLimit = json["scriptSettings"]["S_TimeLimit"]["value"];
                 joinLink = json["serverInfo"]["joinLink"];
                 currentMapUid = json["serverInfo"]["currentMapUid"];
                 starting = json["serverInfo"]["starting"];
+                if (json["scriptSettings"].HasKey("S_TimeLimit")) timeLimit = json["scriptSettings"]["S_TimeLimit"]["value"];
 
                 for (uint i = 0; i < json["maps"].Length; i++)
                     maps.InsertLast(json["maps"][i]);
