@@ -16,7 +16,7 @@ namespace MX
         int AwardsGiven;
         int CommentsReceived;
         int CommentsGiven;
-        int FavouritesCount;
+        int FavouritesReceivedCount;
         int FavouritesGivenCount;
         int VideosReceivedCount;
         int VideosSubmittedCount;
@@ -42,7 +42,7 @@ namespace MX
                 AwardsGiven = json["AwardsGiven"];
                 CommentsReceived = json["CommentsReceived"];
                 CommentsGiven = json["CommentsGiven"];
-                FavouritesCount = json["FavouritesCount"];
+                FavouritesReceivedCount = json["FavouritesReceivedCount"];
                 FavouritesGivenCount = json["FavouritesGivenCount"];
                 VideosReceivedCount = json["VideosReceivedCount"];
                 VideosSubmittedCount = json["VideosSubmittedCount"];
@@ -74,7 +74,7 @@ namespace MX
                 json["AwardsGiven"] = AwardsGiven;
                 json["CommentsReceived"] = CommentsReceived;
                 json["CommentsGiven"] = CommentsGiven;
-                json["FavouritesCount"] = FavouritesCount;
+                json["FavouritesReceivedCount"] = FavouritesReceivedCount;
                 json["FavouritesGivenCount"] = FavouritesGivenCount;
                 json["VideosReceivedCount"] = VideosReceivedCount;
                 json["VideosSubmittedCount"] = VideosSubmittedCount;
