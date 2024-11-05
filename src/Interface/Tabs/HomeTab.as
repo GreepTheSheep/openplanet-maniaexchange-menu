@@ -24,7 +24,7 @@ class HomePageTab : Tab {
 #if TMNEXT
         auto logo = Images::CachedFromURL("https://images.mania.exchange/logos/tmx/square_sm.png");
 #else
-        auto logo = Images::CachedFromURL("https://media.discordapp.net/attachments/373779861157838850/725132923795275806/mx_full.png");
+        auto logo = Images::CachedFromURL("https://images.mania.exchange/logos/mx/square_sm.png");
 #endif
         if (logo.m_texture !is null){
             vec2 logoSize = logo.m_texture.GetSize();
