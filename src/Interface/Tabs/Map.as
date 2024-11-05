@@ -501,7 +501,7 @@ class MapTab : Tab
             }
         } else {
 #if TMNEXT
-            if (Permissions::PlayLocalMap() && UI::RedButton(Icons::Check + " Remove from Play later")) {
+            if (Permissions::PlayLocalMap() && UI::RedButton(Icons::Times + " Remove from Play later")) {
 #else
             if (UI::RedButton(Icons::Times + " Remove from Play later")) {
 #endif

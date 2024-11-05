@@ -126,7 +126,10 @@ namespace MX
                 json["AwardCount"] = AwardCount;
                 json["ReplayCount"] = ReplayCount;
                 json["ImageCount"] = ImageCount;
+                json["EmbeddedObjectsCount"] = EmbeddedObjectsCount;
+                json["EmbeddedItemsSize"] = EmbeddedItemsSize;
                 json["IsMP4"] = IsMP4;
+                json["SizeWarning"] = SizeWarning;
 
                 string tagsStr = "";
                 for (uint i = 0; i < Tags.Length; i++)

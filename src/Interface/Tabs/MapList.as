@@ -5,7 +5,7 @@ class MapListTab : Tab
     uint totalItems = 0;
     bool m_useRandom = false;
     bool m_firstLoad = true;
-    int m_selectedEnviroId = 0;
+    int m_selectedEnviroId = -1;
     string m_selectedEnviroName = "Any";
     int m_page = 1;
 
@@ -14,7 +14,7 @@ class MapListTab : Tab
         params.Set("api", "on");
         params.Set("format", "json");
         params.Set("limit", "100");
-        params.Set("environments", tostring(m_selectedEnviroId));
+        if (m_selectedEnviroName != "Any") params.Set("environments", tostring(m_selectedEnviroId));
         params.Set("page", tostring(m_page));
         if (m_useRandom) {
             params.Set("random", "1");
