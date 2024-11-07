@@ -143,6 +143,7 @@ class MapPackListTab : Tab
             u_typingStart = Time::Now;
             Clear();
         }
+        UI::SetNextItemWidth(150);
         if (UI::BeginCombo("##MapPackFilter", t_selectedFilter)){
             if (UI::Selectable("Latest", t_selectedFilter == "Latest")){
                 t_selectedFilter = "Latest";

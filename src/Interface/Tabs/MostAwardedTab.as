@@ -17,6 +17,7 @@ class MostAwardedTab : MapListTab
 
     void RenderHeader() override
     {
+        UI::SetNextItemWidth(150);
         if (UI::BeginCombo("##MostAwardDateFilter", t_selectedDate)){
             if (UI::Selectable("All Time", t_selectedDate == "All Time")){
                 t_selectedDate = "All Time";
