@@ -230,6 +230,7 @@ class MapPackListTab : Tab
                 if (m_request !is null && totalItems > mapPacks.Length) {
                     UI::TableNextRow();
                     UI::TableSetColumnIndex(0);
+                    UI::AlignTextToFramePadding();
                     UI::Text(Icons::HourglassEnd + " Loading...");
                 }
                 UI::EndTable();

@@ -630,6 +630,7 @@ class MapTab : Tab
                                 MX::MapReplay@ entry = m_replays[i];
 
                                 UI::TableSetColumnIndex(0);
+                                UI::AlignTextToFramePadding();
                                 UI::Text(tostring(entry.Position));
 
                                 UI::TableSetColumnIndex(1);
@@ -710,6 +711,7 @@ class MapTab : Tab
                                 TMIO::Leaderboard@ entry = m_leaderboard[i];
 
                                 UI::TableSetColumnIndex(0);
+                                UI::AlignTextToFramePadding();
                                 UI::Text(tostring(entry.position));
 
                                 UI::TableSetColumnIndex(1);
@@ -764,6 +766,7 @@ class MapTab : Tab
                             UI::PushID("EmbeddedObject" + i);
 
                             UI::TableSetColumnIndex(0);
+                            UI::AlignTextToFramePadding();
                             UI::Text(object.Name);
 
                             UI::TableSetColumnIndex(1);

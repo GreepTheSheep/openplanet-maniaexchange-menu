@@ -5,6 +5,7 @@ namespace IfaceRender
         UI::TableNextRow();
 
         UI::TableSetColumnIndex(0);
+        UI::AlignTextToFramePadding();
         UI::Text(mapPack.Name);
         UI::MXMapPackThumbnailTooltip(mapPack.ID);
         if (UI::IsItemClicked()) mxMenu.AddTab(MapPackTab(mapPack.ID), true);

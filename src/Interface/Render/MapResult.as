@@ -5,6 +5,7 @@ namespace IfaceRender
         UI::TableNextRow();
 
         UI::TableSetColumnIndex(0);
+        UI::AlignTextToFramePadding();
         if (Setting_ColoredMapName) UI::Text(Text::OpenplanetFormatCodes(map.GbxMapName));
         else UI::Text(map.Name);
         UI::MXMapThumbnailTooltip(map.TrackID);

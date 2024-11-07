@@ -622,6 +622,7 @@ class UserTab : Tab
                     if (m_MXUserMapsCreatedRequest !is null && m_mapsCreatedTotal > m_mapsCreated.Length) {
                         UI::TableNextRow();
                         UI::TableSetColumnIndex(0);
+                        UI::AlignTextToFramePadding();
                         UI::Text(Icons::HourglassEnd + " Loading...");
                     }
                     UI::EndTable();
@@ -667,6 +668,7 @@ class UserTab : Tab
                     if (m_MXUserMapsCreatedRequest !is null && m_mapsAwardsGivenTotal > m_mapsCreated.Length) {
                         UI::TableNextRow();
                         UI::TableSetColumnIndex(0);
+                        UI::AlignTextToFramePadding();
                         UI::Text(Icons::HourglassEnd + " Loading...");
                     }
                     UI::EndTable();
@@ -712,6 +714,7 @@ class UserTab : Tab
                     if (m_MXUserMapPacksRequest !is null && m_mapPacksTotal > m_mapPacks.Length) {
                         UI::TableNextRow();
                         UI::TableSetColumnIndex(0);
+                        UI::AlignTextToFramePadding();
                         UI::Text(Icons::HourglassEnd + " Loading...");
                     }
                     UI::EndTable();
