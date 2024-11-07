@@ -519,7 +519,7 @@ class UserTab : Tab
                         UI::SetCursorPos(posTop + vec2(featuredMapwidth + 28, 20));
                         UI::BeginChild("UserFeaturedMapDescriptionChild");
                         UI::PushFont(g_fontHeader);
-                        UI::Text(ColoredString(m_featuredMap.GbxMapName));
+                        UI::Text(Text::OpenplanetFormatCodes(m_featuredMap.GbxMapName));
                         UI::PopFont();
                         if (m_featuredMap.Comments.Length > 100) {
                             IfaceRender::MXComment(m_featuredMap.Comments.SubStr(0, 100) + "...");
@@ -530,7 +530,7 @@ class UserTab : Tab
                         UI::SameLine();
                         if (UI::GreenButton(Icons::Play)) {
                             if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
-                            UI::ShowNotification("Loading map...", ColoredString(m_featuredMap.GbxMapName) + "\\$z\\$s by " + m_featuredMap.Username);
+                            UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(m_featuredMap.GbxMapName) + "\\$z\\$s by " + m_featuredMap.Username);
                             MX::mapToLoad = m_featuredMap.TrackID;
                         }
                         UI::EndChild();

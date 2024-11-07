@@ -49,7 +49,7 @@ class MapTab : Tab
         } else {
             m_isLoading = false;
             string res = Icons::Map+" ";
-            if (Setting_ColoredMapName) res += ColoredString(m_map.GbxMapName);
+            if (Setting_ColoredMapName) res += Text::OpenplanetFormatCodes(m_map.GbxMapName);
             else res += m_map.Name;
             return res;
         }
@@ -429,14 +429,14 @@ class MapTab : Tab
                 }
                 if (Setting_ShowPlayOnAllMaps && UI::OrangeButton(Icons::Play + " Play Map Anyway")) {
                     if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
-                    UI::ShowNotification("Loading map...", ColoredString(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
+                    UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
                     UI::ShowNotification(Icons::ExclamationTriangle + " Warning", "The map type is not supported for direct play, it can crash your game or returns you to the menu", UI::HSV(0.11, 1.0, 1.0), 15000);
                     MX::mapToLoad = m_map.TrackID;
                 }
             } else {
                 if (UI::GreenButton(Icons::Play + " Play Map")) {
                     if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
-                    UI::ShowNotification("Loading map...", ColoredString(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
+                    UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
                     MX::mapToLoad = m_map.TrackID;
                 }
 #if TMNEXT && DEPENDENCY_NADEOSERVICES
@@ -461,7 +461,7 @@ class MapTab : Tab
 #endif
             if (UI::YellowButton(Icons::Wrench + " Edit Map")) {
                 if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
-                UI::ShowNotification("Loading map...", ColoredString(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
+                UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
                 MX::mapToEdit = m_map.TrackID;
             }
 #if TMNEXT
@@ -478,7 +478,7 @@ class MapTab : Tab
             m_isLoading = false;
             if (!m_mapDownloaded) {
                 if (UI::PurpleButton(Icons::Download + " Download Map")) {
-                    UI::ShowNotification("Downloading map...", ColoredString(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
+                    UI::ShowNotification("Downloading map...", Text::OpenplanetFormatCodes(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
                     MX::mapToDL = m_map.TrackID;
                     m_mapDownloaded = true;
                 }
@@ -548,7 +548,7 @@ class MapTab : Tab
         UI::BeginChild("Description");
 
         UI::PushFont(g_fontHeader);
-        UI::TextWrapped(ColoredString(m_map.GbxMapName));
+        UI::TextWrapped(Text::OpenplanetFormatCodes(m_map.GbxMapName));
         UI::PopFont();
 
         if (m_authorsError) {
