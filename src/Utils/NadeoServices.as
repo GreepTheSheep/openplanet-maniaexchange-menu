@@ -213,6 +213,25 @@ namespace MXNadeoServicesGlobal
         }
     }
 
+    Json::Value@ GetMapInfoAsync(const string &in mapUid)
+    {
+        string url = NadeoServices::BaseURLLive()+"/api/token/map/"+mapUid;
+        if (isDevMode) trace("NadeoServices - Get map information: " + url);
+        Net::HttpRequest@ req = NadeoServices::Get("NadeoLiveServices", url);
+        req.Start();
+        while (!req.Finished()) {
+            yield();
+        }
+        auto res = req.Json();
+
+        if (res.GetType() != Json::Type::Object) {
+            mxError("NadeoServices - Error getting map information: " + req.String());
+            return null;
+        }
+
+        return NadeoServices::MapInfo(res).ToJson();
+    }
+
     void AddMapToFavoritesAsync()
     {
         string url = NadeoServices::BaseURLLive()+"/api/token/map/favorite/"+m_mapUidToAction+"/add";

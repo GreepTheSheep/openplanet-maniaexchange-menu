@@ -26,6 +26,7 @@ namespace NadeoServices
         string collectionName;
         int MXId;
         MX::MapInfo@ MXMapInfo;
+        Json::Value@ jsonCache;
 
         MapInfo(const Json::Value &in json)
         {
@@ -51,9 +52,45 @@ namespace NadeoServices
                 mapStyle = json["mapStyle"];
                 mapType = json["mapType"];
                 collectionName = json["collectionName"];
+
+                @jsonCache = ToJson();
             } catch {
                 mxWarn("Error parsing infos for map: " + name);
             }
+        }
+
+        Json::Value ToJson()
+        {
+            if (jsonCache !is null) return jsonCache;
+
+            Json::Value json = Json::Object();
+            try {
+                json["uid"] = uid;
+                json["mapId"] = mapId;
+                json["name"] = name;
+                json["author"] = author;
+                json["authorTime"] = authorTime;
+                json["goldTime"] = goldTime;
+                json["silverTime"] = silverTime;
+                json["bronzeTime"] = bronzeTime;
+                json["nbLaps"] = nbLaps;
+                json["valid"] = valid;
+                json["downloadUrl"] = downloadUrl;
+                json["thumbnailUrl"] = thumbnailUrl;
+                json["uploadTimestamp"] = uploadTimestamp;
+                json["updateTimestamp"] = updateTimestamp;
+                json["fileSize"] = fileSize;
+                json["public"] = public;
+                json["favorite"] = favorite;
+                json["playable"] = playable;
+                json["mapStyle"] = mapStyle;
+                json["mapType"] = mapType;
+                json["collectionName"] = collectionName;
+            } catch {
+                mxWarn("Error converting map info to json for map " + name);
+            }
+
+            return json;
         }
     }
 }

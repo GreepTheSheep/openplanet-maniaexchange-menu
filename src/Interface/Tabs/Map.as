@@ -447,11 +447,18 @@ class MapTab : Tab
                 }
 #if TMNEXT && DEPENDENCY_NADEOSERVICES
                 if (SupportedModes.HasKey(m_map.MapType) && Permissions::CreateAndUploadMap() && IsInServer()) {
+                    CTrackMania@ app = cast<CTrackMania>(GetApp());
+                    bool sameMapType = CleanMapType(app.RootMap.MapType) == m_map.MapType;
+
+                    UI::BeginDisabled(!sameMapType);
                     if (UI::GreenButton(Icons::Server + " Play Map on Nadeo-hosted Room")) {
                         TMNext::AddMapToServer_MapUid = m_map.TrackUID;
                         TMNext::AddMapToServer_MapMXId = m_map.TrackID;
+                        TMNext::AddMapToServer_MapType = m_map.MapType;
                         Renderables::Add(PlayMapOnNadeoRoomInfos());
                     }
+                    UI::EndDisabled();
+                    if (!sameMapType) UI::SetItemTooltip(Icons::Times + " Map type doesn't match the current room's game mode");
                 }
 #endif
             }
