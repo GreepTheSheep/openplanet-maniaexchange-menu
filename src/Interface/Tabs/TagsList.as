@@ -28,6 +28,15 @@ class TagsListTab : MapListTab
         }
     }
 
+    void StartRequest() override
+    {
+        if (m_selectedTags.Length == 0) {
+            return;
+        }
+
+        MapListTab::StartRequest();
+    }
+
     void RenderHeader() override
     {
         string selectedTagsNames = "";
