@@ -26,6 +26,7 @@ class MapTab : Tab
     array<MX::MapEmbeddedObject@> m_mapEmbeddedObjects;
     bool m_mapEmbeddedObjectsError = false;
     bool m_replaysError = false;
+    bool m_replaysstopleaderboard = false;
 
     UI::Font@ g_fontHeader;
 
@@ -136,7 +137,7 @@ class MapTab : Tab
 
     void CheckMXReplaysRequest()
     {
-        if (!MX::APIDown && int(m_replays.Length) != (m_map.ReplayCount > 25 ? 25:m_map.ReplayCount) && m_MXReplaysRequest is null && UI::IsWindowAppearing()) {
+        if (!MX::APIDown && !m_replaysstopleaderboard && m_MXReplaysRequest is null && UI::IsWindowAppearing()) {
             StartMXReplaysRequest();
         }
         // If there's a request, check if it has finished
@@ -152,11 +153,16 @@ class MapTab : Tab
                 m_replaysError = true;
                 return;
             }
+            if (m_replays.Length > 0) {
+                // Remove any remaining replays if there's any
+                m_replays.RemoveRange(0, m_replays.Length);
+            }
             // Handle the response
             for (uint i = 0; i < json.Length; i++) {
                 MX::MapReplay@ replay = MX::MapReplay(json[i]);
                 m_replays.InsertLast(replay);
             }
+            m_replaysstopleaderboard = true;
         }
     }
 
@@ -612,6 +618,7 @@ class MapTab : Tab
                     UI::SameLine();
                     if (UI::Button(Icons::Refresh)) {
                         m_replays.RemoveRange(0, m_replays.Length);
+                        m_replaysstopleaderboard = false;
                         StartMXReplaysRequest();
                     }
                     if (UI::BeginTable("MXLeaderboardList", 4)) {
