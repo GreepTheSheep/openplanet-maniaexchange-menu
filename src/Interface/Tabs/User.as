@@ -665,14 +665,14 @@ class UserTab : Tab
                             UI::PopID();
                         }
                     }
-                    if (m_MXUserMapsCreatedRequest !is null && m_mapsAwardsGivenTotal > m_mapsCreated.Length) {
+                    if (m_MXUserMapsCreatedRequest !is null && m_mapsAwardsGivenTotal > m_mapsAwardsGiven.Length) {
                         UI::TableNextRow();
                         UI::TableSetColumnIndex(0);
                         UI::AlignTextToFramePadding();
                         UI::Text(Icons::HourglassEnd + " Loading...");
                     }
                     UI::EndTable();
-                    if (m_MXUserMapsCreatedRequest is null && m_mapsAwardsGivenTotal > m_mapsCreated.Length && UI::GreenButton("Load more")){
+                    if (m_MXUserMapsCreatedRequest is null && m_mapsAwardsGivenTotal > m_mapsAwardsGiven.Length && UI::GreenButton("Load more")){
                         m_pageAwardedMaps++;
                         StartMXAwardedMapsRequest();
                     }
