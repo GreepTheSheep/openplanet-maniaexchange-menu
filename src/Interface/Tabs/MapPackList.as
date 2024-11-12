@@ -6,6 +6,10 @@ class MapPackListTab : Tab
     bool m_useRandom = false;
     int m_page = 1;
 
+    string u_search;
+    uint64 u_typingStart;
+    string t_selectedMode = "Mappack name";
+    string t_paramMode = "name";
     string t_selectedFilter = "Latest";
     string t_selectedPriord = "1";
 
@@ -20,6 +24,11 @@ class MapPackListTab : Tab
         params.Set("limit", "100");
         params.Set("page", tostring(m_page));
         params.Set("priord", t_selectedPriord);
+
+        if (u_search != "") {
+            params.Set(t_paramMode, u_search);
+        }
+
         if (m_useRandom) {
             params.Set("random", "1");
             m_useRandom = false;
@@ -28,6 +37,10 @@ class MapPackListTab : Tab
 
     void StartRequest()
     {
+        if (u_search.Length > 0 && u_search.Length < 2) {
+            return;
+        }
+
         dictionary params;
         GetRequestParams(params);
 
@@ -54,6 +67,15 @@ class MapPackListTab : Tab
     {
         // If there's not already a request and the window is appearing, we start a new request
         if (!MX::APIDown && mapPacks.Length == 0 && m_request is null && UI::IsWindowAppearing()) {
+            StartRequest();
+        }
+
+        if (u_typingStart == 0) {
+            return;
+        }
+
+        if (Time::Now > u_typingStart + 1000) {
+            u_typingStart = 0;
             StartRequest();
         }
     }
@@ -97,6 +119,27 @@ class MapPackListTab : Tab
 
     void RenderHeader()
     {
+        UI::SetNextItemWidth(140);
+        if (UI::BeginCombo("##NamesFilter", t_selectedMode)){
+            if (UI::Selectable("Mappack name", t_selectedMode == "Mappack name")){
+                t_selectedMode = "Mappack name";
+                t_paramMode = "name";
+                Reload();
+            }
+            if (UI::Selectable("Creator name", t_selectedMode == "Creator name")){
+                t_selectedMode = "Creator name";
+                t_paramMode = "creator";
+                Reload();
+            }
+            UI::EndCombo();
+        }
+        UI::SameLine();
+        bool changed = false;
+        u_search = UI::InputText("Search", u_search, changed);
+        if (changed) {
+            u_typingStart = Time::Now;
+            Clear();
+        }
         if (UI::BeginCombo("##MapPackFilter", t_selectedFilter)){
             if (UI::Selectable("Latest", t_selectedFilter == "Latest")){
                 t_selectedFilter = "Latest";
@@ -156,7 +199,7 @@ class MapPackListTab : Tab
                 return;
             }
             if (mapPacks.Length == 0) {
-                UI::Text("No map packs found.");
+                if (u_typingStart == 0) UI::Text("No map packs found.");
                 return;
             }
             UI::BeginChild("mapList");
