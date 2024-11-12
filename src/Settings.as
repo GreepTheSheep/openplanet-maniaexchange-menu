@@ -43,6 +43,9 @@ bool Setting_Tab_TOTD_Visible = false;
 [Setting name="Search" category="Display Tabs"]
 bool Setting_Tab_Search_Visible = true;
 
+[Setting name="Personal Lists" category="Display Tabs"]
+bool Setting_Tab_PersonalLists_Visible = true;
+
 [Setting name="Map Packs" category="Display Tabs"]
 bool Setting_Tab_MapPacks_Visible = true;
 

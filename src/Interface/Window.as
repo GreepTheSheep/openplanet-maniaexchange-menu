@@ -21,6 +21,7 @@ class Window{
         AddTab(LatestMapsTab());
         AddTab(RecentlyAwardedTab());
         AddTab(TOTDTab());
+        AddTab(PersonalListsTab());
         AddTab(MapPackListTab());
         AddTab(SearchTab());
     }
