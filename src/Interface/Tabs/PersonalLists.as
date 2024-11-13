@@ -53,9 +53,35 @@ class PersonalListsTab : MapListTab
         }
 #if DEPENDENCY_NADEOSERVICES
         if (t_selectedList == "Favorites") {
+            UI::SameLine();
+            UI::Text("| Sorting:");
+            UI::SameLine();
+            UI::BeginDisabled(MXNadeoServicesGlobal::APIRefresh);
+            UI::SetNextItemWidth(90);
+            if (UI::BeginCombo("##FavoritesSorting", tostring(Setting_NadeoServices_FavoriteMaps_Sort))) {
+                for (int i = 0; i < 2; i++) {
+                    if (UI::Selectable(tostring(NadeoServicesFavoriteMapListSort(i)), false)) {
+                        Setting_NadeoServices_FavoriteMaps_Sort = NadeoServicesFavoriteMapListSort(i);
+                        startnew(MXNadeoServicesGlobal::ReloadFavoriteMapsAsync);
+                    }
+                }
+                UI::EndCombo();
+            }
+            UI::SameLine();
+            UI::SetNextItemWidth(120);
+            if (UI::BeginCombo("##FavoritesSortingOrder", tostring(Setting_NadeoServices_FavoriteMaps_SortOrder))) {
+                for (int i = 0; i < 2; i++) {
+                    if (UI::Selectable(tostring(NadeoServicesFavoriteMapListSortOrder(i)), false)) {
+                        Setting_NadeoServices_FavoriteMaps_SortOrder = NadeoServicesFavoriteMapListSortOrder(i);
+                        startnew(MXNadeoServicesGlobal::ReloadFavoriteMapsAsync);
+                    }
+                }
+                UI::EndCombo();
+            }
+            UI::EndDisabled();
             if (MXNadeoServicesGlobal::APIRefresh) {
                 UI::SameLine();
-                UI::Text("\\$850"+Icons::Refresh + " Now refreshing favorite maps list...");
+                UI::Text("\\$850"+Icons::Refresh + " Now refreshing favorite maps list... \\$z|");
                 Reload();
             }
             UI::SameLine();
@@ -65,6 +91,17 @@ class PersonalListsTab : MapListTab
 #endif
         UI::SameLine();
         UI::SetCursorPos(vec2(UI::GetWindowSize().x - 40, UI::GetCursorPos().y));
-        if (UI::Button(Icons::Refresh)) Reload();
+#if DEPENDENCY_NADEOSERVICES
+        UI::BeginDisabled(MXNadeoServicesGlobal::APIRefresh);
+#endif
+        if (UI::Button(Icons::Refresh)) {
+#if DEPENDENCY_NADEOSERVICES
+            startnew(MXNadeoServicesGlobal::ReloadFavoriteMapsAsync);
+#endif
+            Reload();
+        }
+#if DEPENDENCY_NADEOSERVICES
+        UI::EndDisabled();
+#endif
     }
 }
