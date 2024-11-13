@@ -119,6 +119,9 @@ class MapPackListTab : Tab
 
     void RenderHeader()
     {
+        UI::AlignTextToFramePadding();
+        UI::Text("Search:");
+        UI::SameLine();
         UI::SetNextItemWidth(140);
         if (UI::BeginCombo("##NamesFilter", t_selectedMode)){
             if (UI::Selectable("Mappack name", t_selectedMode == "Mappack name")){
@@ -135,7 +138,7 @@ class MapPackListTab : Tab
         }
         UI::SameLine();
         bool changed = false;
-        u_search = UI::InputText("Search", u_search, changed);
+        u_search = UI::InputText("##MapPackSearch", u_search, changed);
         if (changed) {
             u_typingStart = Time::Now;
             Clear();

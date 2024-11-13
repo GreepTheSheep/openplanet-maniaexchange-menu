@@ -43,6 +43,9 @@ class SearchTab : MapListTab
 
     void RenderHeader() override
     {
+        UI::AlignTextToFramePadding();
+        UI::Text("Search:");
+        UI::SameLine();
         UI::SetNextItemWidth(120);
         if (UI::BeginCombo("##NamesFilter", t_selectedMode)){
             if (UI::Selectable("Track name", t_selectedMode == "Track name")){
@@ -59,7 +62,7 @@ class SearchTab : MapListTab
         }
         UI::SameLine();
         bool changed = false;
-        u_search = UI::InputText("Search", u_search, changed);
+        u_search = UI::InputText("##MapSearch", u_search, changed);
         if (changed) {
             u_typingStart = Time::Now;
             Clear();
