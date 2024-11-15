@@ -5,6 +5,7 @@ class TagsListTab : MapListTab
     string t_selectedSort = "Latest";
     string t_selectedPriord = "-1";
     bool m_tagInclusive = false;
+    bool m_refresh = false;
 
     bool IsVisible() override {return Setting_Tab_Tags_Visible;}
     string GetLabel() override {return Icons::Tags + " Tags";}
@@ -51,7 +52,7 @@ class TagsListTab : MapListTab
                 selectedTagsNames += m_selectedTags[i].Name;
             }
         }
-        if (UI::CollapsingHeader("Tags ("+selectedTagsNames+")##TagsHeader")) {
+        if (UI::CollapsingHeader("Tags ("+selectedTagsNames+")###TagsHeader")) {
             for (uint i = 0; i < MX::m_mapTags.Length; i++) {
                 MX::MapTag@ tag = MX::m_mapTags[i];
                 UI::PushID("TagBtn"+i);
@@ -60,16 +61,19 @@ class TagsListTab : MapListTab
                 if (IsSelected) {
                     if (m_selectedTags.FindByRef(tag) == -1) {
                         m_selectedTags.InsertLast(tag);
-                        Reload();
+                        m_refresh = true;
                     }
                 } else {
                     if (m_selectedTags.FindByRef(tag) != -1) {
                         m_selectedTags.RemoveAt(m_selectedTags.FindByRef(tag));
-                        Reload();
+                        m_refresh = true;
                     }
                 }
                 UI::PopID();
             }
+        } else if (m_refresh) {
+            m_refresh = false;
+            Reload();
         }
         bool selectedTagInc = UI::Checkbox("Tag inclusive search", m_tagInclusive);
         UI::SetPreviousTooltip("If checked, maps must contain all selected tags.");
