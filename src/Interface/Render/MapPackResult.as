@@ -17,7 +17,6 @@ namespace IfaceRender
 
         UI::TableSetColumnIndex(2);
         if (mapPack.Tags.Length == 0) UI::Text("No tags");
-        else if (mapPack.Tags.Length == 1) UI::Text(mapPack.Tags[0].Name);
         else{
             for (uint i = 0; i < mapPack.Tags.Length; i++) {
                 IfaceRender::MapTag(mapPack.Tags[i]);
