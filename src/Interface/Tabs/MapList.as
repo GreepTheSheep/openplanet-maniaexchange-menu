@@ -105,19 +105,21 @@ class MapListTab : Tab
 
     void RenderHeader()
     {
-        UI::SetNextItemWidth(150);
-        if (UI::BeginCombo("##EnviroFilter", m_selectedEnviroName)){
-            for (uint i = 0; i < MX::m_environments.Length; i++) {
-                MX::Environment@ envi = MX::m_environments[i];
-                if (UI::Selectable(envi.Name, m_selectedEnviroName == envi.Name)){
-                    m_selectedEnviroName = envi.Name;
-                    m_selectedEnviroId = envi.ID;
-                    Reload();
+        if (MX::m_environments.Length > 1) {
+            UI::SetNextItemWidth(150);
+            if (UI::BeginCombo("##EnviroFilter", m_selectedEnviroName)){
+                for (uint i = 0; i < MX::m_environments.Length; i++) {
+                    MX::Environment@ envi = MX::m_environments[i];
+                    if (UI::Selectable(envi.Name, m_selectedEnviroName == envi.Name)){
+                        m_selectedEnviroName = envi.Name;
+                        m_selectedEnviroId = envi.ID;
+                        Reload();
+                    }
                 }
+                UI::EndCombo();
             }
-            UI::EndCombo();
+            UI::SameLine();
         }
-        UI::SameLine();
         if (UI::GreenButton(Icons::Random + " Random result")){
             m_useRandom = true;
             Reload();
