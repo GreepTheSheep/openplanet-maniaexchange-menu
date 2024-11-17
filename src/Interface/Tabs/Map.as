@@ -627,7 +627,7 @@ class MapTab : Tab
                         m_replaysstopleaderboard = false;
                         StartMXReplaysRequest();
                     }
-                    if (UI::BeginTable("MXLeaderboardList", 4)) {
+                    if (UI::BeginTable("MXLeaderboardList", 4, UI::TableFlags::RowBg)) {
                         UI::TableSetupScrollFreeze(0, 1);
                         PushTabStyle();
                         UI::TableSetupColumn("Position", UI::TableColumnFlags::WidthFixed, 40);
@@ -709,7 +709,7 @@ class MapTab : Tab
                         UI::Text(Hourglass + " Loading...");
                     }
                 } else {
-                    if (UI::BeginTable("LeaderboardList", 3)) {
+                    if (UI::BeginTable("LeaderboardList", 3, UI::TableFlags::RowBg)) {
                         UI::TableSetupScrollFreeze(0, 1);
                         PushTabStyle();
                         UI::TableSetupColumn("Position", UI::TableColumnFlags::WidthFixed, 40);
@@ -763,7 +763,7 @@ class MapTab : Tab
                 UI::Text(Hourglass + " Loading...");
             } else {
                 UI::Text(m_mapEmbeddedObjects.Length + " objects found, with a total size of " + (m_map.EmbeddedItemsSize / 1024) + " KB");
-                if (UI::BeginTable("EmbeddedObjectsList", 3)) {
+                if (UI::BeginTable("EmbeddedObjectsList", 3, UI::TableFlags::RowBg)) {
                     UI::TableSetupScrollFreeze(0, 1);
                     PushTabStyle();
                     UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);

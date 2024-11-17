@@ -162,7 +162,7 @@ class MapListTab : Tab
                 return;
             }
             UI::BeginChild("mapList");
-            if (UI::BeginTable("List", 5)) {
+            if (UI::BeginTable("List", 5, UI::TableFlags::RowBg)) {
                 UI::TableSetupScrollFreeze(0, 1);
                 PushTabStyle();
                 UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);

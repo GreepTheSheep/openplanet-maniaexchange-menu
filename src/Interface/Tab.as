@@ -15,11 +15,13 @@ class Tab
         UI::PushStyleColor(UI::Col::Tab, color * vec4(0.5f, 0.5f, 0.5f, 0.75f));
         UI::PushStyleColor(UI::Col::TabHovered, color * vec4(1.2f, 1.2f, 1.2f, 0.85f));
         UI::PushStyleColor(UI::Col::TabActive, color);
+        UI::PushStyleColor(UI::Col::TableRowBgAlt, vec4(0.10f, 0.10f, 0.10f, 1));
+        UI::PushStyleColor(UI::Col::TableRowBg, vec4(0.13f, 0.13f, 0.13f, 1));
     }
 
     void PopTabStyle()
     {
-        UI::PopStyleColor(3);
+        UI::PopStyleColor(5);
     }
 
     void Reload() {}
