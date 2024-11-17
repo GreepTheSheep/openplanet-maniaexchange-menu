@@ -530,28 +530,27 @@ class MapTab : Tab
         }
 
 #if DEPENDENCY_NADEOSERVICES
-        if (m_isMapOnNadeoServices) {
-            if (!m_isMapOnFavorite){
+        if (!m_isMapOnFavorite){
+            UI::BeginDisabled(!m_isMapOnNadeoServices);
 #if TMNEXT
-                if (Permissions::PlayLocalMap() && UI::GreenButton(Icons::Heart + " Add to Favorites")) {
+            if (Permissions::PlayLocalMap() && UI::GreenButton(Icons::Heart + " Add to Favorites")) {
 #else
-                if (UI::GreenButton(Icons::Heart + " Add to Favorites")) {
+            if (UI::GreenButton(Icons::Heart + " Add to Favorites")) {
 #endif
-                    MXNadeoServicesGlobal::m_mapUidToAction = m_map.TrackUID;
-                    startnew(MXNadeoServicesGlobal::AddMapToFavoritesAsync);
-                }
-            } else {
-#if TMNEXT
-                if (Permissions::PlayLocalMap() && UI::RedButton(Icons::Heart + " Remove from Favorites")) {
-#else
-                if (UI::RedButton(Icons::Heart + " Remove from Favorites")) {
-#endif
-                    MXNadeoServicesGlobal::m_mapUidToAction = m_map.TrackUID;
-                    startnew(MXNadeoServicesGlobal::RemoveMapFromFavoritesAsync);
-                }
+                MXNadeoServicesGlobal::m_mapUidToAction = m_map.TrackUID;
+                startnew(MXNadeoServicesGlobal::AddMapToFavoritesAsync);
             }
+            UI::EndDisabled();
+            if (!m_isMapOnNadeoServices) UI::SetItemTooltip(Icons::ExclamationTriangle + " This map is not on Nadeo Services, impossible to add it to favorites");
         } else {
-            UI::TextDisabled(Icons::ExclamationTriangle + " This map is not on Nadeo Services, impossible to add it to favorites");
+#if TMNEXT
+            if (Permissions::PlayLocalMap() && UI::RedButton(Icons::Heart + " Remove from Favorites")) {
+#else
+            if (UI::RedButton(Icons::Heart + " Remove from Favorites")) {
+#endif
+                MXNadeoServicesGlobal::m_mapUidToAction = m_map.TrackUID;
+                startnew(MXNadeoServicesGlobal::RemoveMapFromFavoritesAsync);
+            }
         }
 #endif
 
