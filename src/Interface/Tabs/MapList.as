@@ -7,6 +7,8 @@ class MapListTab : Tab
     bool m_firstLoad = true;
     int m_selectedEnviroId = -1;
     string m_selectedEnviroName = "Any";
+    int m_selectedVehicleId = -1;
+    string m_selectedVehicleName = "Any";
     int m_page = 1;
 
     void GetRequestParams(dictionary@ params)
@@ -15,6 +17,7 @@ class MapListTab : Tab
         params.Set("format", "json");
         params.Set("limit", "100");
         if (m_selectedEnviroName != "Any") params.Set("environments", tostring(m_selectedEnviroId));
+        if (m_selectedVehicleName != "Any") params.Set("vehicles", tostring(m_selectedVehicleId));
         params.Set("page", tostring(m_page));
         if (m_useRandom) {
             params.Set("random", "1");
@@ -65,6 +68,8 @@ class MapListTab : Tab
             if (repo == MP4mxRepos::Shootmania) {
                 m_selectedEnviroName = "Storm";
                 m_selectedEnviroId = 1;
+                m_selectedVehicleName = "StormMan";
+                m_selectedVehicleId = 1;
             }
 #endif
         }
@@ -105,7 +110,11 @@ class MapListTab : Tab
 
     void RenderHeader()
     {
+        UI::AlignTextToFramePadding();
+
         if (MX::m_environments.Length > 1) {
+            UI::Text("Environment:");
+            UI::SameLine();
             UI::SetNextItemWidth(150);
             if (UI::BeginCombo("##EnviroFilter", m_selectedEnviroName)){
                 for (uint i = 0; i < MX::m_environments.Length; i++) {
@@ -113,6 +122,24 @@ class MapListTab : Tab
                     if (UI::Selectable(envi.Name, m_selectedEnviroName == envi.Name)){
                         m_selectedEnviroName = envi.Name;
                         m_selectedEnviroId = envi.ID;
+                        Reload();
+                    }
+                }
+                UI::EndCombo();
+            }
+            UI::SameLine();
+        }
+
+        if (MX::m_vehicles.Length > 1) {
+            UI::Text("Vehicle:");
+            UI::SameLine();
+            UI::SetNextItemWidth(150);
+            if (UI::BeginCombo("##VehicleFilter", m_selectedVehicleName)){
+                for (uint i = 0; i < MX::m_vehicles.Length; i++) {
+                    MX::Vehicle@ vehicle = MX::m_vehicles[i];
+                    if (UI::Selectable(vehicle.Name, m_selectedVehicleName == vehicle.Name)){
+                        m_selectedVehicleName = vehicle.Name;
+                        m_selectedVehicleId = vehicle.ID;
                         Reload();
                     }
                 }
