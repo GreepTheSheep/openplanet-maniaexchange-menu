@@ -7,8 +7,8 @@ string gameName = "MP4";
 string MXURL = "tm.mania.exchange";
 
 #elif TMNEXT
-string pluginName = "TrackmaniaExchange";
-string shortMXName = "TMX";
+string pluginName = "TrackmaniaExchange (Modern)";
+string shortMXName = "ModernTMX";
 string pluginColor = "\\$9fc";
 vec4 pluginColorVec = vec4(0.3, 0.7, 0.4, 1);
 string gameName = "TMNEXT";
