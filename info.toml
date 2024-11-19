@@ -5,7 +5,7 @@ category = "TMX"
 perms = "paid"
 siteid = 154
 
-version = "1.2.9"
+version = "1.2.9-MXAPIv2"
 
 [script]
 optional_dependencies = [ "BetterChat", "ItemExchange", "NadeoServices" ]
