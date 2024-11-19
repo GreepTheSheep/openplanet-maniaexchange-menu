@@ -12,7 +12,7 @@ string shortMXName = "ModernTMX";
 string pluginColor = "\\$9fc";
 vec4 pluginColorVec = vec4(0.3, 0.7, 0.4, 1);
 string gameName = "TMNEXT";
-string MXURL = "trackmania.exchange";
+string MXURL = "modern.trackmania.exchange";
 
 #endif
 
