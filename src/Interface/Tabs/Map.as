@@ -465,7 +465,7 @@ class MapTab : Tab
 #if TMNEXT
         } else {
             UI::Text("\\$f00"+Icons::Times + " \\$zYou do not have permissions to play");
-            UI::Text("Consider buying at least standard access of the game.");
+            UI::Text("Consider buying club access of the game.");
         }
 #endif
 
@@ -479,8 +479,8 @@ class MapTab : Tab
             }
 #if TMNEXT
         } else {
-            UI::Text("\\$f00"+Icons::Times + " \\$zYou do not have permissions to edit map");
-            UI::Text("Consider buying at least standard access of the game.");
+            UI::Text("\\$f00"+Icons::Times + " \\$zYou do not have permissions to edit maps");
+            UI::Text("Consider buying at least club access of the game.");
         }
 #endif
 

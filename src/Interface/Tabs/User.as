@@ -445,7 +445,7 @@ class UserTab : Tab
 
         if (!m_isYourProfileTab && Setting_Tab_YourProfile_UserID == 0) {
             UI::Separator();
-            UI::Text(Icons::InfoCircle + " Is this your profile?\nAdd your profile to easily get it from the tabs.");
+            UI::TextWrapped(Icons::InfoCircle + " Is this your profile?\nAdd your profile to easily get it from the tabs.");
             if (UI::GreenButton(Icons::Plus + " Add to your profile")) {
                 Setting_Tab_YourProfile_UserID = m_userId;
             }
