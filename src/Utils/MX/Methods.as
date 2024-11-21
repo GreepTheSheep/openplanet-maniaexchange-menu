@@ -17,6 +17,8 @@ namespace MX
                 m_mapTags.InsertLast(MapTag(resNet[i]));
             }
 
+            m_mapTags.Sort(function(a,b) { return a.Name < b.Name; });
+
             print(m_mapTags.Length + " tags loaded");
         } catch {
             throw("Error while loading tags");
