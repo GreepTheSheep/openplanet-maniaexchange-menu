@@ -35,8 +35,9 @@ class ModalDialog : IRenderable
         if (isOpen) {
             RenderDialog();
             UI::EndPopup();
-            UI::PopStyleVar(4);
         }
+
+        UI::PopStyleVar(4);
     }
 
     bool CanClose()
