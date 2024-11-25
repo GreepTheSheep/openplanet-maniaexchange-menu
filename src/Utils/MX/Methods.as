@@ -126,10 +126,11 @@ namespace MX
             if (m_environments.Length > 0) m_environments.RemoveRange(0, m_environments.Length);
             LoadEnvironments();
 #if MP4
-            if (repo == MP4mxRepos::Trackmania) {
-#endif
             if (m_vehicles.Length > 0) m_vehicles.RemoveRange(0, m_vehicles.Length);
             LoadVehicles();
+
+            if (repo == MP4mxRepos::Trackmania) {
+#endif
             if (m_leaderboardSeasons.Length > 0) m_leaderboardSeasons.RemoveRange(0, m_leaderboardSeasons.Length);
             GetAllLeaderboardSeasons();
 #if MP4
