@@ -52,7 +52,7 @@ void RenderMenuMain(){
 
                 if (currentMapID > 0){
                     UI::Separator();
-                    if (UI::MenuItem(Icons::Kenney::InfoCircle + " " + ColoredString(currentMapInfo.GbxMapName))){
+                    if (UI::MenuItem(Icons::Kenney::InfoCircle + " " + Text::OpenplanetFormatCodes(currentMapInfo.GbxMapName))){
                         if (!Setting_ShowMenu) Setting_ShowMenu = true;
                         mxMenu.AddTab(MapTab(currentMapID), true);
                     }
@@ -102,14 +102,14 @@ void RenderMenuMain(){
             if (g_PlayLaterMaps.Length > 0) {
                 for (uint i = 0; i < g_PlayLaterMaps.Length; i++) {
                     MX::MapInfo@ map = g_PlayLaterMaps[i];
-                    if (UI::BeginMenu((Setting_ColoredMapName ? ColoredString(map.GbxMapName) : map.Name) + " \\$z\\$sby " + map.Username)) {
+                    if (UI::BeginMenu((Setting_ColoredMapName ? Text::OpenplanetFormatCodes(map.GbxMapName) : map.Name) + " \\$z\\$sby " + map.Username)) {
 #if TMNEXT
                         if (Permissions::PlayLocalMap() && UI::MenuItem(Icons::Play + " Play map")){
 #else
                         if (UI::MenuItem(Icons::Play + " Play map")){
 #endif
                             if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
-                            UI::ShowNotification("Loading map...", ColoredString(map.GbxMapName) + "\\$z\\$s by " + map.Username);
+                            UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(map.GbxMapName) + "\\$z\\$s by " + map.Username);
                             MX::mapToLoad = map.TrackID;
                         }
                         if (!MX::APIDown && UI::MenuItem(Icons::Kenney::InfoCircle + " Open information")){
@@ -119,7 +119,7 @@ void RenderMenuMain(){
                         if (UI::MenuItem("\\$f00"+Icons::TrashO + " Remove map")){
                             g_PlayLaterMaps.RemoveAt(i);
                             SavePlayLater(g_PlayLaterMaps);
-                            UI::ShowNotification(ColoredString(map.GbxMapName) + "\\$z\\$s by " + map.Username + " has been removed!");
+                            UI::ShowNotification(Text::OpenplanetFormatCodes(map.GbxMapName) + "\\$z\\$s by " + map.Username + " has been removed!");
                         }
                         UI::EndMenu();
                     }
@@ -146,14 +146,14 @@ void RenderMenuMain(){
 
                     if (mapNadeo.MXMapInfo !is null) {
                         MX::MapInfo@ map = mapNadeo.MXMapInfo;
-                        if (UI::BeginMenu((Setting_ColoredMapName ? ColoredString(map.GbxMapName) : map.Name) + " \\$z\\$sby " + map.Username)) {
+                        if (UI::BeginMenu((Setting_ColoredMapName ? Text::OpenplanetFormatCodes(map.GbxMapName) : map.Name) + " \\$z\\$sby " + map.Username)) {
 #if TMNEXT
                             if (Permissions::PlayLocalMap() && UI::MenuItem(Icons::Play + " Play map")){
 #else
                             if (UI::MenuItem(Icons::Play + " Play map")){
 #endif
                                 if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
-                                UI::ShowNotification("Loading map...", ColoredString(map.GbxMapName) + " \\$zby " + map.Username);
+                                UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(map.GbxMapName) + " \\$zby " + map.Username);
                                 MX::mapToLoad = map.TrackID;
                             }
                             if (!MX::APIDown && UI::MenuItem(Icons::Kenney::InfoCircle + " Open information")){
@@ -163,17 +163,17 @@ void RenderMenuMain(){
                             if (UI::MenuItem("\\$f00"+Icons::TrashO + " Remove map")){
                                 MXNadeoServicesGlobal::m_mapUidToAction = mapNadeo.uid;
                                 startnew(MXNadeoServicesGlobal::RemoveMapFromFavoritesAsync);
-                                UI::ShowNotification(ColoredString(mapNadeo.name) + " \\$zby " + map.Username + " has been removed from favorites!");
+                                UI::ShowNotification(Text::OpenplanetFormatCodes(mapNadeo.name) + " \\$zby " + map.Username + " has been removed from favorites!");
                             }
                             UI::EndMenu();
                         }
                     } else {
-                        if (UI::BeginMenu((Setting_ColoredMapName ? ColoredString(mapNadeo.name) : StripFormatCodes(mapNadeo.name)) + "\\$z" + (mapNadeo.authorUsername.Length > 0 ? (" by " + mapNadeo.authorUsername) : ""))) {
+                        if (UI::BeginMenu((Setting_ColoredMapName ? Text::OpenplanetFormatCodes(mapNadeo.name) : Text::StripFormatCodes(mapNadeo.name)) + "\\$z" + (mapNadeo.authorUsername.Length > 0 ? (" by " + mapNadeo.authorUsername) : ""))) {
                             UI::TextDisabled(Icons::Times + " This map is not available on " + pluginName);
                             if (UI::MenuItem("\\$f00"+Icons::TrashO + " Remove map")){
                                 MXNadeoServicesGlobal::m_mapUidToAction = mapNadeo.uid;
                                 startnew(MXNadeoServicesGlobal::RemoveMapFromFavoritesAsync);
-                                UI::ShowNotification(ColoredString(mapNadeo.name) + "\\$z" + (mapNadeo.authorUsername.Length > 0 ? (" by " + mapNadeo.authorUsername) : "") + " has been removed from favorites!");
+                                UI::ShowNotification(Text::OpenplanetFormatCodes(mapNadeo.name) + "\\$z" + (mapNadeo.authorUsername.Length > 0 ? (" by " + mapNadeo.authorUsername) : "") + " has been removed from favorites!");
                             }
                             UI::EndMenu();
                         }

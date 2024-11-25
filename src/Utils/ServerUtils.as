@@ -14,6 +14,7 @@ namespace TMNext
 
     string AddMapToServer_MapUid = "";
     int AddMapToServer_MapMXId;
+    string AddMapToServer_MapType = "";
 
     void CheckNadeoRoomAsync() {
 #if DEPENDENCY_NADEOSERVICES && TMNEXT
@@ -69,6 +70,23 @@ namespace TMNext
             UploadMapToNadeoServices();
 
         trace("Adding map '" + AddMapToServer_MapUid + "' to Nadeo Room #"+AddMapToServer_ClubId+"-"+AddMapToServer_RoomId);
+
+        if (foundRoom.room.maps.Length > 0) {
+            const string mapUid = foundRoom.room.currentMapUid.Length > 0 ? foundRoom.room.currentMapUid : foundRoom.room.maps[0];
+            Json::Value mapInfo = MXNadeoServicesGlobal::GetMapInfoAsync(mapUid);
+
+            if (mapInfo is null) {
+                mxWarn("Couldn't find information for map UID " + mapUid, true);
+                return;
+            } else {
+                string serverMapType = CleanMapType(string(mapInfo["mapType"]));
+
+                if (serverMapType != AddMapToServer_MapType) {
+                    mxError("Map type doesn't match the room's current game mode", true);
+                    return;
+                }
+            }
+        }
 
         Json::Value bodyJson = Json::Object();
         if (AddMapToServer_PlayMapNow) {

@@ -7,6 +7,8 @@ class MapListTab : Tab
     bool m_firstLoad = true;
     int m_selectedEnviroId = -1;
     string m_selectedEnviroName = "Any";
+    int m_selectedVehicleId = -1;
+    string m_selectedVehicleName = "Any";
     int m_page = 1;
 
     void GetRequestParams(dictionary@ params)
@@ -15,6 +17,7 @@ class MapListTab : Tab
         params.Set("format", "json");
         params.Set("limit", "100");
         if (m_selectedEnviroName != "Any") params.Set("environments", tostring(m_selectedEnviroId));
+        if (m_selectedVehicleName != "Any") params.Set("vehicles", tostring(m_selectedVehicleId));
         params.Set("page", tostring(m_page));
         if (m_useRandom) {
             params.Set("random", "1");
@@ -65,6 +68,8 @@ class MapListTab : Tab
             if (repo == MP4mxRepos::Shootmania) {
                 m_selectedEnviroName = "Storm";
                 m_selectedEnviroId = 1;
+                m_selectedVehicleName = "StormMan";
+                m_selectedVehicleId = 1;
             }
 #endif
         }
@@ -105,19 +110,43 @@ class MapListTab : Tab
 
     void RenderHeader()
     {
-        UI::SetNextItemWidth(150);
-        if (UI::BeginCombo("##EnviroFilter", m_selectedEnviroName)){
-            for (uint i = 0; i < MX::m_environments.Length; i++) {
-                MX::Environment@ envi = MX::m_environments[i];
-                if (UI::Selectable(envi.Name, m_selectedEnviroName == envi.Name)){
-                    m_selectedEnviroName = envi.Name;
-                    m_selectedEnviroId = envi.ID;
-                    Reload();
+        UI::AlignTextToFramePadding();
+
+        if (MX::m_environments.Length > 1) {
+            UI::Text("Environment:");
+            UI::SameLine();
+            UI::SetNextItemWidth(150);
+            if (UI::BeginCombo("##EnviroFilter", m_selectedEnviroName)){
+                for (uint i = 0; i < MX::m_environments.Length; i++) {
+                    MX::Environment@ envi = MX::m_environments[i];
+                    if (UI::Selectable(envi.Name, m_selectedEnviroName == envi.Name)){
+                        m_selectedEnviroName = envi.Name;
+                        m_selectedEnviroId = envi.ID;
+                        Reload();
+                    }
                 }
+                UI::EndCombo();
             }
-            UI::EndCombo();
+            UI::SameLine();
         }
-        UI::SameLine();
+
+        if (MX::m_vehicles.Length > 1) {
+            UI::Text("Vehicle:");
+            UI::SameLine();
+            UI::SetNextItemWidth(150);
+            if (UI::BeginCombo("##VehicleFilter", m_selectedVehicleName)){
+                for (uint i = 0; i < MX::m_vehicles.Length; i++) {
+                    MX::Vehicle@ vehicle = MX::m_vehicles[i];
+                    if (UI::Selectable(vehicle.Name, m_selectedVehicleName == vehicle.Name)){
+                        m_selectedVehicleName = vehicle.Name;
+                        m_selectedVehicleId = vehicle.ID;
+                        Reload();
+                    }
+                }
+                UI::EndCombo();
+            }
+            UI::SameLine();
+        }
         if (UI::GreenButton(Icons::Random + " Random result")){
             m_useRandom = true;
             Reload();
@@ -162,7 +191,7 @@ class MapListTab : Tab
                 return;
             }
             UI::BeginChild("mapList");
-            if (UI::BeginTable("List", 5)) {
+            if (UI::BeginTable("List", 5, UI::TableFlags::RowBg)) {
                 UI::TableSetupScrollFreeze(0, 1);
                 PushTabStyle();
                 UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
@@ -186,6 +215,7 @@ class MapListTab : Tab
                 if (m_request !is null && totalItems > maps.Length) {
                     UI::TableNextRow();
                     UI::TableSetColumnIndex(0);
+                    UI::AlignTextToFramePadding();
                     UI::Text(Icons::HourglassEnd + " Loading...");
                 }
                 UI::EndTable();

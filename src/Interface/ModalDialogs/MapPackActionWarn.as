@@ -48,7 +48,7 @@ class MapPackActionWarn : ModalDialog
                 case MapPackActions::Download:
                     for (uint i = 0; i < mapPack_maps.Length; i++) {
                         MX::MapInfo@ map = mapPack_maps[i];
-                        UI::ShowNotification("Downloading map...", ColoredString(map.GbxMapName) + "\\$z\\$s by " + map.Username);
+                        UI::ShowNotification("Downloading map...", Text::OpenplanetFormatCodes(map.GbxMapName) + "\\$z\\$s by " + map.Username);
                         startnew(CoroutineFunc(map.DownloadMap));
                     }
                     break;

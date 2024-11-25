@@ -143,6 +143,7 @@ class MapPackListTab : Tab
             u_typingStart = Time::Now;
             Clear();
         }
+        UI::SetNextItemWidth(150);
         if (UI::BeginCombo("##MapPackFilter", t_selectedFilter)){
             if (UI::Selectable("Latest", t_selectedFilter == "Latest")){
                 t_selectedFilter = "Latest";
@@ -206,7 +207,7 @@ class MapPackListTab : Tab
                 return;
             }
             UI::BeginChild("mapList");
-            if (UI::BeginTable("List", 5)) {
+            if (UI::BeginTable("List", 5, UI::TableFlags::RowBg)) {
                 UI::TableSetupScrollFreeze(0, 1);
                 PushTabStyle();
                 UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
@@ -230,6 +231,7 @@ class MapPackListTab : Tab
                 if (m_request !is null && totalItems > mapPacks.Length) {
                     UI::TableNextRow();
                     UI::TableSetColumnIndex(0);
+                    UI::AlignTextToFramePadding();
                     UI::Text(Icons::HourglassEnd + " Loading...");
                 }
                 UI::EndTable();

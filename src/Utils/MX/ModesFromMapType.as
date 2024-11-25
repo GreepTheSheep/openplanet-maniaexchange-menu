@@ -5,7 +5,10 @@ namespace MX
 
         // Trackmania
         json["Race"] = ""; // ManiaPlanet Map Type
-        json["TM_Race"] = ""; // TMNEXT Map Type
+        json["TM_Race"] = ""; // Base TMNEXT Map Type
+        json["TM_Stunt"] = "TrackMania/TM_StuntSolo_Local";
+        json["TM_Platform"] = "TrackMania/TM_Platform_Local";
+        json["TM_Royal"] = "TrackMania/TM_RoyalTimeAttack_Local";
 
         // Shootmania
         json["MeleeArena"] = ""; // Base Shootmania Map Type
