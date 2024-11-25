@@ -445,7 +445,7 @@ class UserTab : Tab
 
         if (!m_isYourProfileTab && Setting_Tab_YourProfile_UserID == 0) {
             UI::Separator();
-            UI::Text(Icons::InfoCircle + " Is this your profile?\nAdd your profile to easily get it from the tabs.");
+            UI::TextWrapped(Icons::InfoCircle + " Is this your profile?\nAdd your profile to easily get it from the tabs.");
             if (UI::GreenButton(Icons::Plus + " Add to your profile")) {
                 Setting_Tab_YourProfile_UserID = m_userId;
             }
@@ -519,7 +519,7 @@ class UserTab : Tab
                         UI::SetCursorPos(posTop + vec2(featuredMapwidth + 28, 20));
                         UI::BeginChild("UserFeaturedMapDescriptionChild");
                         UI::PushFont(g_fontHeader);
-                        UI::Text(ColoredString(m_featuredMap.GbxMapName));
+                        UI::Text(Text::OpenplanetFormatCodes(m_featuredMap.GbxMapName));
                         UI::PopFont();
                         if (m_featuredMap.Comments.Length > 100) {
                             IfaceRender::MXComment(m_featuredMap.Comments.SubStr(0, 100) + "...");
@@ -530,7 +530,7 @@ class UserTab : Tab
                         UI::SameLine();
                         if (UI::GreenButton(Icons::Play)) {
                             if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
-                            UI::ShowNotification("Loading map...", ColoredString(m_featuredMap.GbxMapName) + "\\$z\\$s by " + m_featuredMap.Username);
+                            UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(m_featuredMap.GbxMapName) + "\\$z\\$s by " + m_featuredMap.Username);
                             MX::mapToLoad = m_featuredMap.TrackID;
                         }
                         UI::EndChild();
@@ -598,7 +598,7 @@ class UserTab : Tab
                 string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
                 UI::Text(Hourglass + " Loading...");
             } else {
-                if (UI::BeginTable("CreatedMapsList", 5)) {
+                if (UI::BeginTable("CreatedMapsList", 5, UI::TableFlags::RowBg)) {
                     UI::TableSetupScrollFreeze(0, 1);
                     PushTabStyle();
                     UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
@@ -622,6 +622,7 @@ class UserTab : Tab
                     if (m_MXUserMapsCreatedRequest !is null && m_mapsCreatedTotal > m_mapsCreated.Length) {
                         UI::TableNextRow();
                         UI::TableSetColumnIndex(0);
+                        UI::AlignTextToFramePadding();
                         UI::Text(Icons::HourglassEnd + " Loading...");
                     }
                     UI::EndTable();
@@ -643,7 +644,7 @@ class UserTab : Tab
                 string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
                 UI::Text(Hourglass + " Loading...");
             } else {
-                if (UI::BeginTable("CreatedMapsList", 5)) {
+                if (UI::BeginTable("CreatedMapsList", 5, UI::TableFlags::RowBg)) {
                     UI::TableSetupScrollFreeze(0, 1);
                     PushTabStyle();
                     UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
@@ -664,13 +665,14 @@ class UserTab : Tab
                             UI::PopID();
                         }
                     }
-                    if (m_MXUserMapsCreatedRequest !is null && m_mapsAwardsGivenTotal > m_mapsCreated.Length) {
+                    if (m_MXUserMapsCreatedRequest !is null && m_mapsAwardsGivenTotal > m_mapsAwardsGiven.Length) {
                         UI::TableNextRow();
                         UI::TableSetColumnIndex(0);
+                        UI::AlignTextToFramePadding();
                         UI::Text(Icons::HourglassEnd + " Loading...");
                     }
                     UI::EndTable();
-                    if (m_MXUserMapsCreatedRequest is null && m_mapsAwardsGivenTotal > m_mapsCreated.Length && UI::GreenButton("Load more")){
+                    if (m_MXUserMapsCreatedRequest is null && m_mapsAwardsGivenTotal > m_mapsAwardsGiven.Length && UI::GreenButton("Load more")){
                         m_pageAwardedMaps++;
                         StartMXAwardedMapsRequest();
                     }
@@ -688,7 +690,7 @@ class UserTab : Tab
                 string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
                 UI::Text(Hourglass + " Loading...");
             } else {
-                if (UI::BeginTable("UserMapPacksList", 5)) {
+                if (UI::BeginTable("UserMapPacksList", 5, UI::TableFlags::RowBg)) {
                     UI::TableSetupScrollFreeze(0, 1);
                     PushTabStyle();
                     UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
@@ -712,6 +714,7 @@ class UserTab : Tab
                     if (m_MXUserMapPacksRequest !is null && m_mapPacksTotal > m_mapPacks.Length) {
                         UI::TableNextRow();
                         UI::TableSetColumnIndex(0);
+                        UI::AlignTextToFramePadding();
                         UI::Text(Icons::HourglassEnd + " Loading...");
                     }
                     UI::EndTable();

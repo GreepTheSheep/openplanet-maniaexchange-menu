@@ -79,7 +79,7 @@ class PlayMapOnNadeoRoomInfos : ModalDialog
 
         if (TMNext::foundRoom !is null) {
             UI::Text("Room found:");
-            UI::Text("'"+TMNext::foundRoom.name+"', in club '"+StripFormatCodes(TMNext::foundRoom.clubName)+"'");
+            UI::Text("'"+TMNext::foundRoom.name+"', in club '"+Text::StripFormatCodes(TMNext::foundRoom.clubName)+"'");
 
             if (!TMNext::foundRoom.nadeo) {
                 UI::Text("\\$f20" + Icons::ExclamationTriangle + " this server is NOT hosted by Nadeo, so you can't add maps from this plugin");

@@ -5,7 +5,8 @@ namespace IfaceRender
         UI::TableNextRow();
 
         UI::TableSetColumnIndex(0);
-        if (Setting_ColoredMapName) UI::Text(ColoredString(map.GbxMapName));
+        UI::AlignTextToFramePadding();
+        if (Setting_ColoredMapName) UI::Text(Text::OpenplanetFormatCodes(map.GbxMapName));
         else UI::Text(map.Name);
         UI::MXMapThumbnailTooltip(map.TrackID);
         if (UI::IsItemClicked()) mxMenu.AddTab(MapTab(map.TrackID), true);
@@ -17,7 +18,6 @@ namespace IfaceRender
 
         UI::TableSetColumnIndex(2);
         if (map.Tags.Length == 0) UI::Text("No tags");
-        else if (map.Tags.Length == 1) UI::Text(map.Tags[0].Name);
         else{
             for (uint i = 0; i < map.Tags.Length; i++) {
                 IfaceRender::MapTag(map.Tags[i]);
@@ -45,7 +45,7 @@ namespace IfaceRender
 #endif
             if (UI::GreenButton(Icons::Play)) {
                 if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
-                UI::ShowNotification("Loading map...", ColoredString(map.GbxMapName) + "\\$z\\$s by " + map.Username);
+                UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(map.GbxMapName) + "\\$z\\$s by " + map.Username);
                 MX::mapToLoad = map.TrackID;
             }
 
@@ -56,7 +56,7 @@ namespace IfaceRender
 #endif
             if (UI::OrangeButton(Icons::Play)) {
                 if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
-                UI::ShowNotification("Loading map...", ColoredString(map.GbxMapName) + "\\$z\\$s by " + map.Username);
+                UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(map.GbxMapName) + "\\$z\\$s by " + map.Username);
                 UI::ShowNotification(Icons::ExclamationTriangle + " Warning", "The map type is not supported for direct play, it can crash your game or returns you to the menu", UI::HSV(0.11, 1.0, 1.0), 15000);
                 MX::mapToLoad = map.TrackID;
             }

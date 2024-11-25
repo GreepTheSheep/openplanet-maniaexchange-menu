@@ -28,7 +28,7 @@ namespace MX
 
         void TryGetID()
         {
-            string url = "https://item.exchange/itemsearch/search?api=on&format=json&filename="+Name+"&authorlogin="+ObjectAuthor;
+            string url = "https://item.exchange/itemsearch/search?api=on&format=json&filename=" + Net::UrlEncode(Name) + "&authorlogin=" + Net::UrlEncode(ObjectAuthor);
             if (isDevMode) trace("MapEmbeddedObject::StartRequest (TryGetID): "+url);
             Net::HttpRequest@ req = API::Get(url);
             while (!req.Finished()) {

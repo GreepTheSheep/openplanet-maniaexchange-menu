@@ -256,7 +256,7 @@ class MapPackTab : Tab
                     string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
                     UI::Text(Hourglass + " Loading...");
                 } else {
-                    if (UI::BeginTable("List", 5)) {
+                    if (UI::BeginTable("List", 5, UI::TableFlags::RowBg)) {
                         UI::TableSetupScrollFreeze(0, 1);
                         PushTabStyle();
                         UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);

@@ -15,6 +15,14 @@ CGameCtnChallenge@ GetCurrentMap(){
     return g_app.RootMap;
 }
 
+string CleanMapType(const string &in mapType) {
+    const int slashIndex = mapType.IndexOf("\\");
+
+    if (slashIndex == -1) return mapType;
+
+    return mapType.SubStr(slashIndex+1);
+}
+
 array<MX::MapInfo@> LoadPlayLater() {
     array<MX::MapInfo@> m_maps;
     Json::Value FileData = Json::FromFile(PlayLaterJSON);
