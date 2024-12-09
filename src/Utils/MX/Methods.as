@@ -169,12 +169,6 @@ namespace MX
             }
             MX::MapInfo@ map = MX::MapInfo(json[0]);
 
-            string Mode = "";
-            Json::Value Modes = MX::ModesFromMapType();
-
-            if (Modes.HasKey(map.MapType)) {
-                Mode = Modes[map.MapType];
-            }
 #if TMNEXT
             if (Permissions::PlayLocalMap()) {
 #endif
@@ -189,17 +183,27 @@ namespace MX
                     && Permissions::OpenAdvancedMapEditor()
 #endif
                 ) app.ManiaTitleControlScriptAPI.EditMap("https://"+MXURL+"/maps/download/"+mapId, "", "");
-#if !MP4
-                else app.ManiaTitleControlScriptAPI.PlayMap("https://"+MXURL+"/maps/download/"+mapId, Mode, "");
-#else
                 else {
-                    if (Mode == "" && repo == MP4mxRepos::Trackmania) {
-                        Mode = "SingleMap";
+                    string Mode = "";
+                    Json::Value Modes = MX::ModesFromMapType();
+
+                    if (Modes.HasKey(map.MapType)) {
+                        Mode = Modes[map.MapType];
                     }
-                    app.ManiaTitleControlScriptAPI.PlayMap("https://"+MXURL+"/maps/download/"+mapId, Mode, "");
-                }
+
+#if MP4
+                    if (Mode == "" && repo == MP4mxRepos::Trackmania) {
+                        Json::Value TitlePackModes = MX::ModesFromTitlePack();
+                        const string loadedTP = CurrentTitlePack();
+
+                        if (TitlePackModes.HasKey(loadedTP)) {
+                            Mode = TitlePackModes[loadedTP];
+                        }
+                    }
 #endif
 
+                    app.ManiaTitleControlScriptAPI.PlayMap("https://"+MXURL+"/maps/download/"+mapId, Mode, "");
+                }
 #if TMNEXT
             } else mxError("You don't have permission to play custom maps.", true);
 #endif
