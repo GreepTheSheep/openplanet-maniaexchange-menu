@@ -23,6 +23,19 @@ string CleanMapType(const string &in mapType) {
     return mapType.SubStr(slashIndex+1);
 }
 
+string CurrentTitlePack() {
+    CTrackMania@ app = cast<CTrackMania>(GetApp());
+    if (app.LoadedManiaTitle is null) return "";
+
+    string titleId = app.LoadedManiaTitle.TitleId;
+
+#if MP4
+    return titleId.SubStr(0, titleId.IndexOf("@"));
+#else
+    return titleId;
+#endif
+}
+
 array<MX::MapInfo@> LoadPlayLater() {
     array<MX::MapInfo@> m_maps;
     Json::Value FileData = Json::FromFile(PlayLaterJSON);
