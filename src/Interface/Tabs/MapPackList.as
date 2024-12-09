@@ -178,6 +178,7 @@ class MapPackListTab : Tab
     {
         mapPacks.RemoveRange(0, mapPacks.Length);
         totalItems = 0;
+        m_page = 1;
     }
 
     void Reload() override
