@@ -155,6 +155,13 @@ namespace MX
     void LoadMap(int mapId, bool intoEditor = false)
     {
         try {
+#if MP4
+            if (CurrentTitlePack() == "") {
+                mxError("You must select a title pack before opening a map", true);
+                return;
+            }
+#endif
+
             auto json = API::GetAsync("https://"+MXURL+"/api/maps/get_map_info/multi/"+mapId);
             if (json.Length == 0) {
                 mxError("Track not found.", true);
