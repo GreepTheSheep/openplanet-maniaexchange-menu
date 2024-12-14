@@ -153,13 +153,16 @@ class MapListTab : Tab
         }
         UI::SameLine();
         UI::SetCursorPos(vec2(UI::GetWindowSize().x - 40, UI::GetCursorPos().y));
+        UI::BeginDisabled(m_request !is null);
         if (UI::Button(Icons::Refresh)) Reload();
+        UI::EndDisabled();
     }
 
     void Clear()
     {
         maps.RemoveRange(0, maps.Length);
         totalItems = 0;
+        m_page = 1;
     }
 
     void Reload() override
