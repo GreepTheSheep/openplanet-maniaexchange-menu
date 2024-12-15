@@ -497,7 +497,9 @@ class MapTab : Tab
                 }
             } else {
                 UI::Text("\\$0f0" + Icons::Download + " \\$zMap downloaded");
-                UI::TextDisabled("to " + "Maps\\Downloaded\\"+pluginName+"\\" + m_map.TrackID + " - " + Path::SanitizeFileName(m_map.Name) + ".Map.Gbx");
+                UI::PushStyleColor(UI::Col::Text, UI::GetStyleColor(UI::Col::TextDisabled));
+                UI::TextWrapped("to " + "Maps\\Downloaded\\"+pluginName+"\\" + m_map.TrackID + " - " + Path::SanitizeFileName(m_map.Name) + ".Map.Gbx");
+                UI::PopStyleColor();
                 if (UI::RoseButton(Icons::FolderOpen + " Open Containing Folder")) OpenExplorerPath(IO::FromUserGameFolder("Maps/Downloaded/"+pluginName));
             }
         }
