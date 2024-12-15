@@ -497,7 +497,7 @@ class MapTab : Tab
                 }
             } else {
                 UI::Text("\\$0f0" + Icons::Download + " \\$zMap downloaded");
-                UI::TextDisabled("to " + "Maps\\Downloaded\\"+pluginName+"\\" + m_map.TrackID + " - " + m_map.Name + ".Map.Gbx");
+                UI::TextDisabled("to " + "Maps\\Downloaded\\"+pluginName+"\\" + m_map.TrackID + " - " + Path::SanitizeFileName(m_map.Name) + ".Map.Gbx");
                 if (UI::RoseButton(Icons::FolderOpen + " Open Containing Folder")) OpenExplorerPath(IO::FromUserGameFolder("Maps/Downloaded/"+pluginName));
             }
         }

@@ -231,7 +231,7 @@ namespace MX
             if (mapPackName.Length > 0) {
                 mxDLFolder = mxDLFolder + "/Packs";
                 if (!IO::FolderExists(mxDLFolder)) IO::CreateFolder(mxDLFolder);
-                mxDLFolder = mxDLFolder + "/" + mapPackName;
+                mxDLFolder = mxDLFolder + "/" + Path::SanitizeFileName(mapPackName);
                 if (!IO::FolderExists(mxDLFolder)) IO::CreateFolder(mxDLFolder);
             }
 
@@ -244,6 +244,7 @@ namespace MX
             mapDownloadInProgress = false;
 
             if (_fileName.Length == 0) _fileName = map.TrackID + " - " + map.Name;
+            _fileName = Path::SanitizeFileName(_fileName);
             netMap.SaveToFile(mxDLFolder + "/" + _fileName + ".Map.Gbx");
             print("Map downloaded to " + mxDLFolder + "/" + _fileName + ".Map.Gbx");
         } catch {
