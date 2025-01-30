@@ -41,7 +41,7 @@ namespace MX
                 AveragePosition = json["AveragePosition"];
                 SeasonID = json["SeasonID"];
             } catch {
-                mxWarn("Failed to parse User Leaderboard for user " + Username);
+                mxWarn("Failed to parse User Leaderboard for user " + Username + ": " + getExceptionInfo());
             }
         }
 
@@ -67,7 +67,7 @@ namespace MX
                 json["AveragePosition"] = AveragePosition;
                 json["SeasonID"] = SeasonID;
             } catch {
-                mxWarn("Failed to convert User Leaderboard to JSON for user " + Username);
+                mxWarn("Failed to convert User Leaderboard to JSON for user " + Username + ": " + getExceptionInfo());
             }
             return json;
         }

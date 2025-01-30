@@ -23,7 +23,7 @@ namespace MXNadeoServicesGlobal
 
             startnew(RefreshFavoriteMapsLoop);
         } catch {
-            mxError("Failed to load NadeoLiveServices", isDevMode);
+            mxError("Failed to load NadeoLiveServices: " + getExceptionInfo(), isDevMode);
             APIDown = true;
         }
     }
@@ -160,7 +160,7 @@ namespace MXNadeoServicesGlobal
 
             print("NadeoServices - Favorite maps: loaded "+g_favoriteMaps.Length+" maps." + (isDevMode ? (" NadeoServices total: " + g_totalFavoriteMaps + " maps.") :""));
         } catch {
-            mxError(getExceptionInfo(), isDevMode);
+            mxError("Failed to load favorite maps: " + getExceptionInfo(), isDevMode);
         }
     }
 
@@ -172,7 +172,7 @@ namespace MXNadeoServicesGlobal
             GetFavoriteMapsAsync();
             MXNadeoServicesGlobal::APIRefresh = false;
         } catch {
-            mxError("NadeoServices: Error reloading favorite maps");
+            mxError("NadeoServices: Error reloading favorite maps: " + getExceptionInfo());
             MXNadeoServicesGlobal::APIRefresh = false;
         }
     }

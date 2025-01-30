@@ -15,7 +15,7 @@ namespace MX
                 StartDate = json["StartDate"];
                 EndDate = json["EndDate"];
             } catch {
-                mxWarn("Failed to parse Leaderboard Season for season " + SeasonID);
+                mxWarn("Failed to parse Leaderboard Season for season " + SeasonID + ": " + getExceptionInfo());
             }
         }
 
@@ -28,7 +28,7 @@ namespace MX
                 json["StartDate"] = StartDate;
                 json["EndDate"] = EndDate;
             } catch {
-                mxWarn("Failed to convert Leaderboard Season to JSON for season " + SeasonID);
+                mxWarn("Failed to convert Leaderboard Season to JSON for season " + SeasonID + ": " + getExceptionInfo());
             }
             return json;
         }

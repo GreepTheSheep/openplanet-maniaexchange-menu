@@ -22,7 +22,7 @@ namespace MX
                 if (willFetchID) startnew(CoroutineFunc(TryGetID));
                 else ID = -2;
             } catch {
-                mxWarn("Error parsing embedded object info for the map", true);
+                mxWarn("Error parsing embedded object info for the map: " + getExceptionInfo(), true);
             }
         }
 

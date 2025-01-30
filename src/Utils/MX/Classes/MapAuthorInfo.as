@@ -15,7 +15,7 @@ namespace MX
                 Role = json["Role"];
                 Uploader = json["Uploader"];
             } catch {
-                mxWarn("Error parsing author info for the map", true);
+                mxWarn("Error parsing author info for the map: " + getExceptionInfo(), true);
             }
         }
     }

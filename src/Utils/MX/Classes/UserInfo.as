@@ -51,7 +51,7 @@ namespace MX
                 WorldRecords = json["WorldRecords"];
                 TOP10s = json["TOP10s"];
             } catch {
-                mxWarn("Error parsing user info for user "+Username, true);
+                mxWarn("Error parsing user info for user " + Username + ": " + getExceptionInfo(), true);
                 print(Json::Write(ToJson()));
             }
         }
@@ -83,7 +83,7 @@ namespace MX
                 json["WorldRecords"] = WorldRecords;
                 json["TOP10s"] = TOP10s;
             } catch {
-                mxWarn("Error converting user info to json for user "+Username, true);
+                mxWarn("Error converting user info to json for user " + Username + ": " + getExceptionInfo(), true);
             }
             return json;
         }

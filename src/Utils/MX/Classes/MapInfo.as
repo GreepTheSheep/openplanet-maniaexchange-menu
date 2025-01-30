@@ -92,7 +92,7 @@ namespace MX
                 @jsonCache = ToJson();
             } catch {
                 Name = json["Name"];
-                mxWarn("Error parsing infos for the map: "+ Name, true);
+                mxWarn("Error parsing infos for the map " + Name + ": " + getExceptionInfo(), true);
             }
         }
 
@@ -139,7 +139,7 @@ namespace MX
                 }
                 json["Tags"] = tagsStr;
             } catch {
-                mxWarn("Error converting map info to json for map "+Name);
+                mxWarn("Error converting map info to json for map " + Name + ": " + getExceptionInfo());
             }
             return json;
         }

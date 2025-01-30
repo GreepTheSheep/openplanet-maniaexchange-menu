@@ -21,7 +21,7 @@ namespace MX
 
             print(m_mapTags.Length + " tags loaded");
         } catch {
-            throw("Error while loading tags");
+            throw("Error while loading tags: " + getExceptionInfo());
         }
     }
 
@@ -44,7 +44,7 @@ namespace MX
 
             print(m_leaderboardSeasons.Length + " seasons loaded");
         } catch {
-            throw("Error while loading seasons");
+            throw("Error while loading seasons: " + getExceptionInfo());
         }
     }
 
@@ -208,7 +208,7 @@ namespace MX
             } else mxError("You don't have permission to play custom maps.", true);
 #endif
         } catch {
-            mxError("Error while loading map");
+            mxError("Error while loading map: " + getExceptionInfo());
             mxError(pluginName + " API is not responding, it must be down.", true);
             APIDown = true;
         }
@@ -248,7 +248,7 @@ namespace MX
             netMap.SaveToFile(mxDLFolder + "/" + _fileName + ".Map.Gbx");
             print("Map downloaded to " + mxDLFolder + "/" + _fileName + ".Map.Gbx");
         } catch {
-            mxError("Error while downloading map");
+            mxError("Error while downloading map: " + getExceptionInfo());
             mxError(pluginName + " API is not responding, it must be down.", true);
             APIDown = true;
         }
