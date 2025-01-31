@@ -7,8 +7,7 @@ class MapListTab : Tab
     bool m_firstLoad = true;
     int m_selectedEnviroId = -1;
     string m_selectedEnviroName = "Any";
-    int m_selectedVehicleId = -1;
-    string m_selectedVehicleName = "Any";
+    string m_selectedVehicle = "Any";
     int m_page = 1;
 
     void GetRequestParams(dictionary@ params)
@@ -17,7 +16,7 @@ class MapListTab : Tab
         params.Set("format", "json");
         params.Set("limit", "100");
         if (m_selectedEnviroName != "Any") params.Set("environments", tostring(m_selectedEnviroId));
-        if (m_selectedVehicleName != "Any") params.Set("vehicles", tostring(m_selectedVehicleId));
+        if (m_selectedVehicle != "Any") params.Set("vehicle", m_selectedVehicle);
         params.Set("page", tostring(m_page));
         if (m_useRandom) {
             params.Set("random", "1");
@@ -68,8 +67,7 @@ class MapListTab : Tab
             if (repo == MP4mxRepos::Shootmania) {
                 m_selectedEnviroName = "Storm";
                 m_selectedEnviroId = 1;
-                m_selectedVehicleName = "StormMan";
-                m_selectedVehicleId = 1;
+                m_selectedVehicle = "StormMan";
             }
 #endif
         }
@@ -134,12 +132,11 @@ class MapListTab : Tab
             UI::Text("Vehicle:");
             UI::SameLine();
             UI::SetNextItemWidth(150);
-            if (UI::BeginCombo("##VehicleFilter", m_selectedVehicleName)){
+            if (UI::BeginCombo("##VehicleFilter", m_selectedVehicle)){
                 for (uint i = 0; i < MX::m_vehicles.Length; i++) {
-                    MX::Vehicle@ vehicle = MX::m_vehicles[i];
-                    if (UI::Selectable(vehicle.Name, m_selectedVehicleName == vehicle.Name)){
-                        m_selectedVehicleName = vehicle.Name;
-                        m_selectedVehicleId = vehicle.ID;
+                    string vehicleName = MX::m_vehicles[i];
+                    if (UI::Selectable(vehicleName, m_selectedVehicle == vehicleName)){
+                        m_selectedVehicle = vehicleName;
                         Reload();
                     }
                 }
