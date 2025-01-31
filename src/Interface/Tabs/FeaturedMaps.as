@@ -9,6 +9,6 @@ class FeaturedMapsTab : MapListTab
     void GetRequestParams(dictionary@ params) override
     {
         MapListTab::GetRequestParams(params);
-        params.Set("mode", "23");
+        params.Set("infeatured", "1");
     }
 }

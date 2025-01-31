@@ -8,6 +8,6 @@ class TOTDTab : MapListTab
     void GetRequestParams(dictionary@ params) override
     {
         MapListTab::GetRequestParams(params);
-        params.Set("mode", "25");
+        params.Set("intotd", "1");
     }
 }

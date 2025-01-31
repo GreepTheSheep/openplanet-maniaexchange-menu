@@ -3,7 +3,7 @@ class SearchTab : MapListTab
     string u_search;
     uint64 u_typingStart;
     string t_selectedMode = "Track name";
-    string t_paramMode = "trackname";
+    string t_paramMode = "name";
 
     bool IsVisible() override {return Setting_Tab_Search_Visible;}
     string GetLabel() override {return Icons::Search + " Search";}
@@ -50,7 +50,7 @@ class SearchTab : MapListTab
         if (UI::BeginCombo("##NamesFilter", t_selectedMode)){
             if (UI::Selectable("Track name", t_selectedMode == "Track name")){
                 t_selectedMode = "Track name";
-                t_paramMode = "trackname";
+                t_paramMode = "name";
                 Reload();
             }
             if (UI::Selectable("Author name", t_selectedMode == "Author name")){

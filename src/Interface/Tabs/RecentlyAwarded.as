@@ -9,6 +9,6 @@ class RecentlyAwardedTab : MapListTab
     void GetRequestParams(dictionary@ params) override
     {
         MapListTab::GetRequestParams(params);
-        params.Set("mode", "3");
+        params.Set("order1", "40");
     }
 }
