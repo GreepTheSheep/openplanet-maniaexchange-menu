@@ -192,13 +192,13 @@ void RenderMenuMain(){
 #endif
         if (UI::BeginMenu(pluginColor+Icons::InfoCircle + " \\$zAbout")){
             if (UI::BeginMenu("\\$f00"+Icons::Heart + " \\$zSupport")){
-                if (UI::MenuItem(pluginColor+Icons::Heart + " \\$zSupport ManiaExchange")) OpenBrowserURL("https://"+MXURL+"/support");
+                if (UI::MenuItem(pluginColor+Icons::Heart + " \\$zSupport ManiaExchange")) OpenBrowserURL("https://"+MXURL+"/about?r=support");
                 if (UI::MenuItem(Icons::Heartbeat + " \\$zSupport the plugin creator")) OpenBrowserURL("https://github.com/sponsors/GreepTheSheep");
                 UI::EndMenu();
             }
             UI::Separator();
             if (UI::BeginMenu(pluginColor+Icons::KeyboardO + " \\$zContact")){
-                if (UI::MenuItem(pluginColor+Icons::KeyboardO + " \\$zContact ManiaExchange")) OpenBrowserURL("https://"+MXURL+"/messaging/compose/11");
+                if (UI::MenuItem(pluginColor+Icons::KeyboardO + " \\$zContact ManiaExchange")) OpenBrowserURL("https://"+MXURL+"/postcreate?PmTargetUserId=11");
                 if (UI::MenuItem(Icons::DiscordAlt + "Plugin creator's Discord")) OpenBrowserURL("https://greep.gq/discord");
                 UI::EndMenu();
             }

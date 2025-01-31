@@ -1,9 +1,9 @@
 namespace HomePageTabRender {
     void About()
     {
-        if (UI::Button(Icons::KeyboardO + " \\$zContact ManiaExchange")) OpenBrowserURL("https://"+MXURL+"/messaging/compose/11");
+        if (UI::Button(Icons::KeyboardO + " \\$zContact ManiaExchange")) OpenBrowserURL("https://"+MXURL+"/postcreate?PmTargetUserId=11");
         UI::SameLine();
-        if (UI::RedButton(Icons::Heart + " \\$zSupport ManiaExchange")) OpenBrowserURL("https://"+MXURL+"/support");
+        if (UI::RedButton(Icons::Heart + " \\$zSupport ManiaExchange")) OpenBrowserURL("https://"+MXURL+"/about?r=support");
 
         UI::AlignTextToFramePadding();
         UI::Text("Follow the ManiaExchange network on");
