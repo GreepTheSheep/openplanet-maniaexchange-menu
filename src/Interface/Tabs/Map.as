@@ -223,7 +223,7 @@ class MapTab : Tab
 
     void StartMXEmbeddedRequest()
     {
-        string url = "https://"+MXURL+"/api/maps/embeddedobjects/"+m_mapId;
+        string url = "https://"+MXURL+"/api/maps/objects?trackId=" + m_mapId + "&count=" + m_map.EmbeddedObjectsCount;
         if (isDevMode) trace("MapTab::StartRequest (Embedded): "+url);
         @m_MXEmbedObjRequest = API::Get(url);
     }
@@ -237,18 +237,21 @@ class MapTab : Tab
         if (m_MXEmbedObjRequest !is null && m_MXEmbedObjRequest.Finished()) {
             // Parse the response
             string res = m_MXEmbedObjRequest.String();
+            int resCode = m_MXEmbedObjRequest.ResponseCode();
             if (isDevMode) trace("MapTab::CheckRequest (Embedded): " + res);
             @m_MXEmbedObjRequest = null;
             auto json = Json::Parse(res);
 
-            if (json.Length == 0) {
+            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
                 print("MapTab::CheckRequest (Embedded): Error parsing response");
                 m_mapEmbeddedObjectsError = true;
                 return;
             }
             // Handle the response
-            for (uint i = 0; i < json.Length; i++) {
-                MX::MapEmbeddedObject@ object = MX::MapEmbeddedObject(json[i], int(i) < Setting_EmbeddedObjectsLimit);
+            Json::Value@ mapObjects = json["Results"];
+
+            for (uint i = 0; i < mapObjects.Length; i++) {
+                MX::MapEmbeddedObject@ object = MX::MapEmbeddedObject(mapObjects[i], int(i) < Setting_EmbeddedObjectsLimit);
                 m_mapEmbeddedObjects.InsertLast(object);
             }
         }
@@ -759,7 +762,7 @@ class MapTab : Tab
             UI::BeginChild("MapEmbeddedObjectsChild");
 
             CheckMXEmbeddedRequest();
-            if (m_mapEmbeddedObjects.Length != m_map.EmbeddedObjectsCount) {
+            if (m_mapEmbeddedObjects.Length == 0) {
                 int HourGlassValue = Time::Stamp % 3;
                 string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
                 UI::Text(Hourglass + " Loading...");
@@ -787,9 +790,9 @@ class MapTab : Tab
                             UI::TableSetColumnIndex(1);
                             if (object.Username.Length == 0) UI::TextDisabled(object.ObjectAuthor);
                             else UI::Text(object.Username);
-                            if (object.UserID > 0) {
+                            if (object.UserId > 0) {
                                 UI::SetPreviousTooltip("Click to see "+(object.Username.Length > 0 ? (object.Username+"'s") : "user")+" profile");
-                                if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(object.UserID), true);
+                                if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(object.UserId), true);
                             }
 
                             UI::TableSetColumnIndex(2);
