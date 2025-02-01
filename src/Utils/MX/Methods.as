@@ -161,7 +161,7 @@ namespace MX
 #if TMNEXT
                     && Permissions::OpenAdvancedMapEditor()
 #endif
-                ) app.ManiaTitleControlScriptAPI.EditMap("https://"+MXURL+"/maps/download/"+mapId, "", "");
+                ) app.ManiaTitleControlScriptAPI.EditMap("https://"+MXURL+"/mapgbx/"+mapId, "", "");
                 else {
                     string Mode = "";
                     Json::Value Modes = MX::ModesFromMapType();
@@ -181,7 +181,7 @@ namespace MX
                     }
 #endif
 
-                    app.ManiaTitleControlScriptAPI.PlayMap("https://"+MXURL+"/maps/download/"+mapId, Mode, "");
+                    app.ManiaTitleControlScriptAPI.PlayMap("https://"+MXURL+"/mapgbx/"+mapId, Mode, "");
                 }
 #if TMNEXT
             } else mxError("You don't have permission to play custom maps.", true);
@@ -214,7 +214,7 @@ namespace MX
                 if (!IO::FolderExists(mxDLFolder)) IO::CreateFolder(mxDLFolder);
             }
 
-            Net::HttpRequest@ netMap = API::Get("https://"+MXURL+"/maps/download/"+mapId);
+            Net::HttpRequest@ netMap = API::Get("https://"+MXURL+"/mapgbx/"+mapId);
             mapDownloadInProgress = true;
             trace("Started downloading map "+map.Name+" ("+mapId+") to "+mxDLFolder);
             while(!netMap.Finished()) {
