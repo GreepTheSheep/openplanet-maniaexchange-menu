@@ -14,7 +14,7 @@ class UserTab : Tab
     array<MX::MapInfo@> m_mapsAwardsGiven;
     bool m_moreItemsAwardsGiven = false;
     array<MX::MapPackInfo@> m_mapPacks;
-    uint m_mapPacksTotal = 0;
+    bool m_moreItemsMapPacks = false;
     MX::MapInfo@ m_featuredMap;
     bool m_hasFeaturedMap = false;
     bool m_error = false;
@@ -31,7 +31,7 @@ class UserTab : Tab
 
     int m_lastIdCreatedMaps = 0;
     int m_lastIdAwardedMaps = 0;
-    int m_pageMapPacks = 1;
+    int m_lastIdMapPacks = 0;
 
     UI::Font@ g_fontHeader;
 
@@ -299,28 +299,19 @@ class UserTab : Tab
     void StartMXMapPacksRequest()
     {
         dictionary params;
-        params.Set("api", "on");
-        params.Set("format", "json");
-        params.Set("limit", "100");
-        params.Set("page", tostring(m_pageMapPacks));
-        params.Set("mode", "1");
-        params.Set("userid", tostring(m_userId));
-        params.Set("priord", "1");
+        params.Set("fields", MX::mapPackFields);
+        params.Set("count", "100");
 
-        string urlParams = "";
-        if (!params.IsEmpty()) {
-            auto keys = params.GetKeys();
-            for (uint i = 0; i < keys.Length; i++) {
-                string key = keys[i];
-                string value;
-                params.Get(key, value);
-
-                urlParams += (i == 0 ? "?" : "&");
-                urlParams += key + "=" + Net::UrlEncode(value);
-            }
+        if (m_moreItemsMapPacks && m_lastIdMapPacks != 0) {
+            params.Set("after", tostring(m_lastIdMapPacks));
         }
 
-        string url = "https://"+MXURL+"/mappacksearch/search"+urlParams;
+        params.Set("owneruserid", tostring(m_userId));
+        params.Set("order1", "3");
+
+        string urlParams = MX::DictToApiParams(params);
+
+        string url = "https://"+MXURL+"/api/mappacks" + urlParams;
 
         if (isDevMode) trace("UserTab::MapPacks::StartRequest: " + url);
         @m_MXUserMapPacksRequest = API::Get(url);
@@ -335,23 +326,28 @@ class UserTab : Tab
         if (m_MXUserMapPacksRequest !is null && m_MXUserMapPacksRequest.Finished()) {
             // Parse the response
             string res = m_MXUserMapPacksRequest.String();
+            int resCode = m_MXUserMapPacksRequest.ResponseCode();
             if (isDevMode) trace("UserTab::MapPacks::CheckRequest (MX): " + res);
             @m_MXUserMapPacksRequest = null;
             auto json = Json::Parse(res);
 
-            if (json.GetType() == Json::Type::Null) {
+            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
                 mxError("Error while loading mappack list");
                 return;
             }
 
             // Handle the response
-            if (json.HasKey("error")) {
+            if (json.HasKey("title")) {
                 m_mapPacksError = true;
             } else {
-                m_mapPacksTotal = json["totalItemCount"];
-                auto items = json["results"];
+                m_moreItemsMapPacks = json["More"];
+                auto items = json["Results"];
                 for (uint i = 0; i < items.Length; i++) {
                     m_mapPacks.InsertLast(MX::MapPackInfo(items[i]));
+
+                    if (m_moreItemsMapPacks && i == items.Length - 1) {
+                        m_lastIdMapPacks = items[i]["MappackId"];
+                    }
                 }
             }
         }
@@ -701,15 +697,14 @@ class UserTab : Tab
                             UI::PopID();
                         }
                     }
-                    if (m_MXUserMapPacksRequest !is null && m_mapPacksTotal > m_mapPacks.Length) {
+                    if (m_MXUserMapPacksRequest !is null && m_moreItemsMapPacks) {
                         UI::TableNextRow();
                         UI::TableSetColumnIndex(0);
                         UI::AlignTextToFramePadding();
                         UI::Text(Icons::HourglassEnd + " Loading...");
                     }
                     UI::EndTable();
-                    if (m_MXUserMapPacksRequest is null && m_mapPacksTotal > m_mapPacks.Length && UI::GreenButton("Load more")){
-                        m_pageMapPacks++;
+                    if (m_MXUserMapPacksRequest is null && m_moreItemsMapPacks && UI::GreenButton("Load more")){
                         StartMXMapPacksRequest();
                     }
                 }
