@@ -11,7 +11,7 @@ namespace UI
 
     void MXMapThumbnailTooltip(const int &in mapId, float resize = 0.5)
     {
-        if (UI::IsItemHovered()) {
+        if (UI::IsItemHovered(UI::HoveredFlags::DelayShort | UI::HoveredFlags::NoSharedDelay)) {
             UI::BeginTooltip();
             auto img = Images::CachedFromURL("https://"+MXURL+"/mapimage/"+mapId+"/1?hq=true");
             float width = Draw::GetWidth() * resize;
@@ -41,7 +41,7 @@ namespace UI
 
     void MXMapPackThumbnailTooltip(const int &in mapPackID, float resize = 0.5)
     {
-        if (UI::IsItemHovered()) {
+        if (UI::IsItemHovered(UI::HoveredFlags::DelayShort | UI::HoveredFlags::NoSharedDelay)) {
             UI::BeginTooltip();
             auto img = Images::CachedFromURL("https://"+MXURL+"/mappackthumb/"+mapPackID);
             float width = Draw::GetWidth() * resize;
