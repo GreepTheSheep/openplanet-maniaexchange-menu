@@ -97,7 +97,7 @@ class MapTab : Tab
 
     void StartMXReplaysRequest()
     {
-        string url = "https://"+MXURL+"/api/replays/get_replays/"+m_mapId;
+        string url = "https://"+MXURL+"/api/replays?best=1&mapId=" + m_mapId;
         if (isDevMode) trace("MapTab::StartRequest (Replays): "+url);
         @m_MXReplaysRequest = API::Get(url);
     }
@@ -111,11 +111,12 @@ class MapTab : Tab
         if (m_MXReplaysRequest !is null && m_MXReplaysRequest.Finished()) {
             // Parse the response
             string res = m_MXReplaysRequest.String();
+            int resCode = m_MXReplaysRequest.ResponseCode();
             if (isDevMode) trace("MapTab::CheckRequest (Replays): " + res);
             @m_MXReplaysRequest = null;
             auto json = Json::Parse(res);
 
-            if (json.Length == 0) {
+            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
                 print("MapTab::CheckRequest (Replays): Error parsing response");
                 m_replaysError = true;
                 return;
@@ -124,9 +125,12 @@ class MapTab : Tab
                 // Remove any remaining replays if there's any
                 m_replays.RemoveRange(0, m_replays.Length);
             }
+
             // Handle the response
-            for (uint i = 0; i < json.Length; i++) {
-                MX::MapReplay@ replay = MX::MapReplay(json[i]);
+            Json::Value@ mapReplays = json["Results"];
+
+            for (uint i = 0; i < mapReplays.Length; i++) {
+                MX::MapReplay@ replay = MX::MapReplay(mapReplays[i]);
                 m_replays.InsertLast(replay);
             }
             m_replaysstopleaderboard = true;
@@ -587,7 +591,7 @@ class MapTab : Tab
         if (m_map.ReplayCount > 0 && UI::BeginTabItem(shortMXName + " Leaderboard")) {
             UI::BeginChild("MapMXLeaderboardChild");
             CheckMXReplaysRequest();
-            if (UI::GreenButton(Icons::ExternalLink + " Submit")) OpenBrowserURL("https://"+MXURL+"/upload/replays/select_files/"+m_mapId);
+            if (UI::GreenButton(Icons::ExternalLink + " Submit")) OpenBrowserURL("https://"+MXURL+"/replayupload/"+m_mapId);
             if (m_MXReplaysRequest !is null && !m_MXReplaysRequest.Finished()) {
                 int HourGlassValue = Time::Stamp % 3;
                 string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
@@ -619,12 +623,21 @@ class MapTab : Tab
 
                                 UI::TableSetColumnIndex(0);
                                 UI::AlignTextToFramePadding();
-                                UI::Text(tostring(entry.Position));
+                                if (entry.IsValid) {
+                                    if (m_replays[0].Position == 0) { // TODO remove once Position is fixed
+                                        UI::Text(tostring(entry.Position + 1));
+                                    } else {
+                                        UI::Text(tostring(entry.Position));
+                                    }
+                                } else {
+                                    UI::Text("\\$f00" + Icons::Exclamation);
+                                    UI::SetPreviousTooltip("Replay was driven on a different version of the map");
+                                }
 
                                 UI::TableSetColumnIndex(1);
                                 UI::Text(entry.Username);
                                 UI::SetPreviousTooltip("Click to see "+entry.Username+"'s profile");
-                                if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(entry.UserID), true);
+                                if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(entry.UserId), true);
 
                                 UI::TableSetColumnIndex(2);
                                 UI::Text(Time::Format(entry.ReplayTime));
@@ -634,10 +647,15 @@ class MapTab : Tab
                                 }
 
                                 UI::TableSetColumnIndex(3);
-                                UI::Text(tostring(entry.ReplayPoints) + " \\$666("+tostring(entry.Percentage)+"%)");
-                                if (i != 0){
-                                    UI::SameLine();
-                                    UI::Text("\\$a66(" + (entry.ReplayPoints - m_replays[0].ReplayPoints) + ")");
+
+                                if (m_replays[0].Score == 0) {
+                                    UI::Text("−");
+                                } else {
+                                    UI::Text(tostring(entry.Score) + " \\$666("+tostring(entry.Percentage)+"%)"); // TODO missing percentage
+                                    if (i != 0) {
+                                        UI::SameLine();
+                                        UI::Text("\\$a66(" + (entry.Score - m_replays[0].Score) + ")");
+                                    }
                                 }
                             }
                         }
