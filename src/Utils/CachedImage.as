@@ -17,8 +17,25 @@ class CachedImage
         m_responseCode = req.ResponseCode();
         if (m_responseCode == 200) {
             if (req.Buffer().ReadString(4) == "RIFF") {
-                m_unsupportedFormat = true;
-                m_error = true;
+                // WEBP is not supported by Openplanet
+                auto webpReq = Net::HttpPost("https://map-monitor.xk.io/tmx/convert_webp", m_url);
+
+                while (!webpReq.Finished()) {
+                    yield();
+                }
+
+                if (webpReq.ResponseCode() == 200) {
+                    @m_texture = UI::LoadTexture(webpReq.Buffer());
+
+                    if (m_texture.GetSize().x == 0) {
+                        @m_texture = null;
+                        m_error = true;
+                    }
+                } else {
+                    print("WEBP conversion failed. Error " + webpReq.ResponseCode());
+                    m_unsupportedFormat = true;
+                    m_error = true;
+                }
             } else {
                 req.Buffer().Seek(0);
                 @m_texture = UI::LoadTexture(req.Buffer());
