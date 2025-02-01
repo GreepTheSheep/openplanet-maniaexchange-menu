@@ -2,7 +2,7 @@ namespace MX
 {
     array<MapTag@> m_mapTags;
     array<LeaderboardSeason@> m_leaderboardSeasons;
-    array<Environment@> m_environments;
+    array<MapEnvironment@> m_environments;
     array<string> m_vehicles;
 
     Net::HttpRequest@ req;

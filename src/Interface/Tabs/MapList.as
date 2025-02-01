@@ -110,7 +110,7 @@ class MapListTab : Tab
             UI::SetNextItemWidth(150);
             if (UI::BeginCombo("##EnviroFilter", m_selectedEnviroName)){
                 for (uint i = 0; i < MX::m_environments.Length; i++) {
-                    MX::Environment@ envi = MX::m_environments[i];
+                    MX::MapEnvironment@ envi = MX::m_environments[i];
                     if (UI::Selectable(envi.Name, m_selectedEnviroName == envi.Name)){
                         m_selectedEnviroName = envi.Name;
                         m_selectedEnviroId = envi.ID;

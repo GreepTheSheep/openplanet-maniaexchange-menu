@@ -76,23 +76,23 @@ namespace MX
     void LoadEnvironments()
     {
 #if TMNEXT
-        m_environments.InsertLast(Environment(1, "Stadium"));
+        m_environments.InsertLast(MapEnvironment(1, "Stadium"));
 #else
         if (repo == MP4mxRepos::Trackmania) {
-            m_environments.InsertLast(Environment(-1, "Any"));
-            m_environments.InsertLast(Environment(0, "Custom"));
-            m_environments.InsertLast(Environment(1, "Canyon"));
-            m_environments.InsertLast(Environment(2, "Stadium"));
-            m_environments.InsertLast(Environment(3, "Valley"));
-            m_environments.InsertLast(Environment(4, "Lagoon"));
-            m_environments.InsertLast(Environment(5, "Desert / TMOne Speed"));
-            m_environments.InsertLast(Environment(6, "Snow / TMOne Alpine"));
-            // m_environments.InsertLast(Environment(7, "Rally (not available)"));
-            // m_environments.InsertLast(Environment(8, "Coast (not available)"));
-            m_environments.InsertLast(Environment(9, "Bay / TMOne Bay"));
-            m_environments.InsertLast(Environment(10, "Island / TM²U Island"));
+            m_environments.InsertLast(MapEnvironment(-1, "Any"));
+            m_environments.InsertLast(MapEnvironment(0, "Custom"));
+            m_environments.InsertLast(MapEnvironment(1, "Canyon"));
+            m_environments.InsertLast(MapEnvironment(2, "Stadium"));
+            m_environments.InsertLast(MapEnvironment(3, "Valley"));
+            m_environments.InsertLast(MapEnvironment(4, "Lagoon"));
+            m_environments.InsertLast(MapEnvironment(5, "Desert / TMOne Speed"));
+            m_environments.InsertLast(MapEnvironment(6, "Snow / TMOne Alpine"));
+            // m_environments.InsertLast(MapEnvironment(7, "Rally (not available)"));
+            // m_environments.InsertLast(MapEnvironment(8, "Coast (not available)"));
+            m_environments.InsertLast(MapEnvironment(9, "Bay / TMOne Bay"));
+            m_environments.InsertLast(MapEnvironment(10, "Island / TM²U Island"));
         } else {
-            m_environments.InsertLast(Environment(1, "Storm"));
+            m_environments.InsertLast(MapEnvironment(1, "Storm"));
         }
 #endif
     }

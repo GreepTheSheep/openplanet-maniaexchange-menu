@@ -1,11 +1,11 @@
 namespace MX
 {
-    class Environment
+    class MapEnvironment
     {
         int ID;
         string Name;
 
-        Environment(const int &in id, const string &in name)
+        MapEnvironment(const int &in id, const string &in name)
         {
             if (isDevMode) trace("Loading Environment #"+id+" - "+name);
             ID = id;
