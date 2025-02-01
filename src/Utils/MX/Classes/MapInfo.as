@@ -2,35 +2,34 @@ namespace MX
 {
     class MapInfo
     {
-        int TrackID;
-        string TrackUID;
-        int UserID;
+        int MapId;
+        string MapUid;
+        string Name;
+        string OnlineMapId;
+        int UserId;
         string Username;
-        string AuthorLogin;
         string MapType;
         string UploadedAt;
         string UpdatedAt;
-        string Name;
         string GbxMapName;
-        string Comments;
+        string AuthorComments;
         string TitlePack;
-        bool Unlisted;
         string Mood;
         int DisplayCost;
-        string LengthName;
         int Laps;
-        string EnvironmentName;
-        string DifficultyName;
+        int Environment;
+        int Difficulty;
         string VehicleName;
+        int Length;
         int AuthorTime;
         int TrackValue;
         int AwardCount;
         int ReplayCount;
-        uint ImageCount;
         uint EmbeddedObjectsCount;
         int EmbeddedItemsSize;
-        bool IsMP4;
-        bool SizeWarning;
+        bool ServerSizeExceeded;
+        array<MapImage@> Images;
+        array<MapAuthorInfo@> Authors;
         array<MapTag@> Tags;
 
         string MapPackName;
@@ -39,49 +38,73 @@ namespace MX
         MapInfo(const Json::Value &in json)
         {
             try {
-                TrackID = json["TrackID"];
-                TrackUID = json["TrackUID"];
-                UserID = json["UserID"];
-                Username = json["Username"];
-                AuthorLogin = json["AuthorLogin"];
+                MapId = json["MapId"];
+                MapUid = json["MapUid"];
+                Name = json["Name"];
+                if (json["OnlineMapId"].GetType() != Json::Type::Null) OnlineMapId = json["OnlineMapId"];
                 MapType = json["MapType"];
                 UploadedAt = json["UploadedAt"];
-                UpdatedAt = json["UpdatedAt"];
-                Name = json["Name"];
-                GbxMapName = json["GbxMapName"];
-                Comments = json["Comments"];
-                if (json["TitlePack"].GetType() != Json::Type::Null) TitlePack = json["TitlePack"];
-                Unlisted = json["Unlisted"];
+                if (json["GbxMapName"].GetType() != Json::Type::Null) GbxMapName = json["GbxMapName"];
+                if (json["AuthorComments"].GetType() != Json::Type::Null) AuthorComments = json["AuthorComments"];
+                TitlePack = json["TitlePack"];
                 Mood = json["Mood"];
                 DisplayCost = json["DisplayCost"];
-                if (json["LengthName"].GetType() != Json::Type::Null) LengthName = json["LengthName"];
                 Laps = json["Laps"];
-                if (json["EnvironmentName"].GetType() != Json::Type::Null) EnvironmentName = json["EnvironmentName"];
-                if (json["DifficultyName"].GetType() != Json::Type::Null) DifficultyName = json["DifficultyName"];
-                if (json["VehicleName"].GetType() != Json::Type::Null) VehicleName = json["VehicleName"];
-                if (json["AuthorTime"].GetType() != Json::Type::Null) AuthorTime = json["AuthorTime"];
+                Environment = json["Environment"];
+                Difficulty = json["Difficulty"];
+                VehicleName = json["VehicleName"];
                 TrackValue = json["TrackValue"];
                 AwardCount = json["AwardCount"];
                 ReplayCount = json["ReplayCount"];
-                ImageCount = json["ImageCount"];
-                if (json["EmbeddedObjectsCount"].GetType() != Json::Type::Null) EmbeddedObjectsCount = json["EmbeddedObjectsCount"];
-                if (json["EmbeddedItemsSize"].GetType() != Json::Type::Null) EmbeddedItemsSize = json["EmbeddedItemsSize"];
-                IsMP4 = json["IsMP4"];
-                SizeWarning = json["SizeWarning"];
+                EmbeddedObjectsCount = json["EmbeddedObjectsCount"];
+                EmbeddedItemsSize = json["EmbeddedItemsSize"];
+                ServerSizeExceeded = json["ServerSizeExceeded"];
+    
+                if (json["UpdatedAt"].GetType() != Json::Type::Null) {
+                    UpdatedAt = json["UpdatedAt"];
+                } else {
+                    UpdatedAt = json["UploadedAt"];
+                }
 
-                // Tags is a string of ids separated by commas
-                // gets the ids and fetches the tags from m_mapTags
-                if (json["Tags"].GetType() != Json::Type::Null)
-                {
-                    string tagIds = json["Tags"];
-                    string[] tagIdsSplit = tagIds.Split(",");
-                    for (uint i = 0; i < tagIdsSplit.Length; i++)
-                    {
-                        int tagId = Text::ParseInt(tagIdsSplit[i]);
-                        for (uint j = 0; j < m_mapTags.Length; j++)
-                        {
-                            if (m_mapTags[j].ID == tagId)
-                            {
+                if (json["Images"].GetType() != Json::Type::Null) {
+                    const Json::Value@ imagesObject = json["Images"];
+
+                    for (uint i = 0; i < imagesObject.Length; i++) {
+                        Images.InsertLast(MapImage(imagesObject[i]));
+                    }
+                }
+
+                if (json["Uploader"].GetType() != Json::Type::Null) {
+                    UserId = json["Uploader"]["UserId"];
+                    Username = json["Uploader"]["Name"];
+                }
+
+                if (json["Medals"].GetType() != Json::Type::Null) {
+                    AuthorTime = json["Medals"]["Author"];
+                }
+
+                if (json["Length"].GetType() != Json::Type::Null) {
+                    Length = json["Length"];
+                } else {
+                    Length = AuthorTime;
+                }
+
+                if (json["Authors"].GetType() != Json::Type::Null) {
+                    const Json::Value@ authorsObjects = json["Authors"];
+
+                    for (uint i = 0; i < authorsObjects.Length; i++) {
+                        bool IsUploader = string(authorsObjects[i]["User"]["Name"]) == string(json["Uploader"]["Name"]);
+                        Authors.InsertLast(MapAuthorInfo(authorsObjects[i], IsUploader)); // TODO test
+                    }
+                }
+
+                // Tags is an array of tag objects
+                if (json["Tags"].GetType() != Json::Type::Null) {
+                    const Json::Value@ tagObjects = json["Tags"];
+
+                    for (uint i = 0; i < tagObjects.Length; i++) {
+                        for (uint j = 0; j < m_mapTags.Length; j++) {
+                            if (m_mapTags[j].ID == tagObjects[i]["TagId"]) {
                                 Tags.InsertLast(m_mapTags[j]);
                                 break;
                             }
@@ -101,43 +124,65 @@ namespace MX
             if (jsonCache !is null) return jsonCache;
             Json::Value json = Json::Object();
             try {
-                json["TrackID"] = TrackID;
-                json["TrackUID"] = TrackUID;
-                json["UserID"] = UserID;
-                json["Username"] = Username;
-                json["AuthorLogin"] = AuthorLogin;
+                json["MapId"] = MapId;
+                json["MapUid"] = MapUid;
+                json["Name"] = Name;
+                json["OnlineMapId"] = OnlineMapId;
                 json["MapType"] = MapType;
                 json["UploadedAt"] = UploadedAt;
                 json["UpdatedAt"] = UpdatedAt;
-                json["Name"] = Name;
                 json["GbxMapName"] = GbxMapName;
-                json["Comments"] = Comments;
+                json["AuthorComments"] = AuthorComments;
                 json["TitlePack"] = TitlePack;
-                json["Unlisted"] = Unlisted;
                 json["Mood"] = Mood;
                 json["DisplayCost"] = DisplayCost;
-                json["LengthName"] = LengthName;
                 json["Laps"] = Laps;
-                json["EnvironmentName"] = EnvironmentName;
-                json["DifficultyName"] = DifficultyName;
+                json["Environment"] = Environment;
+                json["Difficulty"] = Difficulty;
+                json["Length"] = Length;
                 json["VehicleName"] = VehicleName;
-                json["AuthorTime"] = AuthorTime;
                 json["TrackValue"] = TrackValue;
                 json["AwardCount"] = AwardCount;
                 json["ReplayCount"] = ReplayCount;
-                json["ImageCount"] = ImageCount;
                 json["EmbeddedObjectsCount"] = EmbeddedObjectsCount;
                 json["EmbeddedItemsSize"] = EmbeddedItemsSize;
-                json["IsMP4"] = IsMP4;
-                json["SizeWarning"] = SizeWarning;
+                json["ServerSizeExceeded"] = ServerSizeExceeded;
 
-                string tagsStr = "";
-                for (uint i = 0; i < Tags.Length; i++)
-                {
-                    tagsStr += tostring(Tags[i].ID);
-                    if (i < Tags.Length - 1) tagsStr += ",";
+                Json::Value uploaderObject = Json::Object();
+                uploaderObject["UserId"] = UserId;
+                uploaderObject["Name"] = Username;
+
+                json["Uploader"] = uploaderObject;
+
+                Json::Value medalsObject = Json::Object();
+                medalsObject["Author"] = AuthorTime;
+
+                json["Medals"] = medalsObject;
+
+                Json::Value imagesArray = Json::Array();
+                for (uint i = 0; i < Images.Length; i++) {
+                    imagesArray.Add(Images[i].ToJson());
                 }
-                json["Tags"] = tagsStr;
+
+                json["Images"] = imagesArray;
+
+                Json::Value authorsArray = Json::Array();
+                for (uint i = 0; i < Authors.Length; i++) {
+                    authorsArray.Add(Authors[i].ToJson());
+                }
+
+                json["Authors"] = authorsArray;
+
+                Json::Value tagArray = Json::Array();
+                for (uint i = 0; i < Tags.Length; i++) {
+                    tagArray.Add(Tags[i].ToJson());
+                }
+
+                json["Tags"] = tagArray;
+
+                // Legacy
+                json["TrackID"] = MapId;
+                json["TrackUID"] = MapUid;
             } catch {
                 mxWarn("Error converting map info to json for map " + Name + ": " + getExceptionInfo());
             }
@@ -146,17 +191,30 @@ namespace MX
 
         void PlayMap()
         {
-            MX::LoadMap(TrackID);
+            MX::LoadMap(MapId);
         }
 
         void EditMap()
         {
-            MX::LoadMap(TrackID, true);
+            MX::LoadMap(MapId, true);
         }
 
         void DownloadMap()
         {
-            MX::DownloadMap(TrackID, MapPackName);
+            MX::DownloadMap(MapId, MapPackName);
+        }
+
+        string get_DifficultyName() {
+            return tostring(Difficulties(Difficulty));
+        }
+
+        string get_EnvironmentName() {
+            for (uint i =  0; i < m_environments.Length; i++) {
+                if (m_environments[i].ID == Environment) {
+                    return m_environments[i].Name;
+                }
+            }
+            return "Unknown";
         }
     }
 }

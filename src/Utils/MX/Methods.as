@@ -222,7 +222,7 @@ namespace MX
             }
             mapDownloadInProgress = false;
 
-            if (_fileName.Length == 0) _fileName = map.TrackID + " - " + map.Name;
+            if (_fileName.Length == 0) _fileName = map.MapId + " - " + map.Name;
             _fileName = Path::SanitizeFileName(_fileName);
             netMap.SaveToFile(mxDLFolder + "/" + _fileName + ".Map.Gbx");
             print("Map downloaded to " + mxDLFolder + "/" + _fileName + ".Map.Gbx");

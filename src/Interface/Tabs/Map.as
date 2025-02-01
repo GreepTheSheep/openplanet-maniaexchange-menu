@@ -59,7 +59,7 @@ class MapTab : Tab
 #if DEPENDENCY_NADEOSERVICES
     void CheckIfMapExistsNadeoServices()
     {
-        m_isMapOnNadeoServices = MXNadeoServicesGlobal::CheckIfMapExistsAsync(m_map.TrackUID);
+        m_isMapOnNadeoServices = MXNadeoServicesGlobal::CheckIfMapExistsAsync(m_map.MapUid);
     }
 #endif
 
@@ -169,7 +169,7 @@ class MapTab : Tab
     void StartTMIORequest(int offset = 0)
     {
         if (m_map is null) return;
-        string url = "https://trackmania.io/api/leaderboard/map/"+m_map.TrackUID;
+        string url = "https://trackmania.io/api/leaderboard/map/"+m_map.MapUid;
         if (offset != -1) url += "?length=100&offset=" + offset;
         if (isDevMode) trace("MapTab::StartRequest (TM.IO): "+url);
         m_TMIOrequestStarted = true;
@@ -278,7 +278,7 @@ class MapTab : Tab
         // Check if the map is already on the play later list
         for (uint i = 0; i < g_PlayLaterMaps.Length; i++) {
             MX::MapInfo@ playLaterMap = g_PlayLaterMaps[i];
-            if (playLaterMap.TrackID != m_map.TrackID) {
+            if (playLaterMap.MapId != m_map.MapId) {
                 m_isMapOnPlayLater = false;
             } else {
                 m_isMapOnPlayLater = true;
@@ -290,7 +290,7 @@ class MapTab : Tab
         // Check if the map is already on the favorites list
         for (uint i = 0; i < MXNadeoServicesGlobal::g_favoriteMaps.Length; i++) {
             NadeoServices::MapInfo@ favoriteMap = MXNadeoServicesGlobal::g_favoriteMaps[i];
-            if (favoriteMap.uid != m_map.TrackUID) {
+            if (favoriteMap.uid != m_map.MapUid) {
                 m_isMapOnFavorite = false;
             } else {
                 m_isMapOnFavorite = true;
@@ -309,7 +309,7 @@ class MapTab : Tab
         if (m_map.ImageCount != 0) {
             for (uint i = 1; i < m_map.ImageCount+1; i++) {
                 if(UI::BeginTabItem(tostring(i))){
-                    auto img = Images::CachedFromURL("https://"+MXURL+"/maps/"+m_map.TrackID+"/image/"+i);
+                    auto img = Images::CachedFromURL("https://"+MXURL+"/maps/"+m_map.MapId+"/image/"+i);
 
                     if (img.m_texture !is null){
                         vec2 thumbSize = img.m_texture.GetSize();
@@ -336,7 +336,7 @@ class MapTab : Tab
         }
 
         if(UI::BeginTabItem("Thumbnail")){
-            auto thumb = Images::CachedFromURL("https://"+MXURL+"/maps/thumbnail/"+m_map.TrackID);
+            auto thumb = Images::CachedFromURL("https://"+MXURL+"/mapthumb/"+m_map.MapId);
             if (thumb.m_texture !is null){
                 vec2 thumbSize = thumb.m_texture.GetSize();
                 UI::Image(thumb.m_texture, vec2(
@@ -376,7 +376,7 @@ class MapTab : Tab
             UI::SetPreviousTooltip("Map Type");
         } else {
 #endif
-        UI::Text(Icons::Hourglass + " \\$f77" + m_map.LengthName);
+        UI::Text(Icons::Hourglass + " \\$f77" + Time::Format(m_map.Length));
         UI::SetPreviousTooltip("Length");
 #if MP4
         }
@@ -388,13 +388,13 @@ class MapTab : Tab
         UI::Text(Icons::LevelUp+ " \\$f77" + m_map.DifficultyName);
         UI::SetPreviousTooltip("Difficulty");
 
-        UI::Text(Icons::Hashtag+ " \\$f77" + m_map.TrackID);
+        UI::Text(Icons::Hashtag+ " \\$f77" + m_map.MapId);
         UI::SetPreviousTooltip("Track ID");
         UI::SameLine();
         UI::TextDisabled(Icons::Clipboard);
         UI::SetPreviousTooltip("Click to copy to clipboard");
         if (UI::IsItemClicked()) {
-            IO::SetClipboard(tostring(m_map.TrackID));
+            IO::SetClipboard(tostring(m_map.MapId));
             UI::ShowNotification(Icons::Clipboard + " Track ID copied to clipboard");
         }
 
@@ -421,9 +421,9 @@ class MapTab : Tab
 
         if (UI::GoldButton(Icons::Trophy + " Award this map on "+shortMXName)) OpenBrowserURL("https://"+MXURL+"/maps/"+m_map.TrackID+"#award");
 
-        if (UI::CyanButton(Icons::ExternalLink + " View on "+pluginName)) OpenBrowserURL("https://"+MXURL+"/maps/"+m_map.TrackID);
+        if (UI::CyanButton(Icons::ExternalLink + " View on "+pluginName)) OpenBrowserURL("https://"+MXURL+"/mapshow/"+m_map.MapId);
 #if TMNEXT
-        if (UI::Button(Icons::ExternalLink + " View on Trackmania.io")) OpenBrowserURL("https://trackmania.io/#/leaderboard/"+m_map.TrackUID);
+        if (UI::Button(Icons::ExternalLink + " View on Trackmania.io")) OpenBrowserURL("https://trackmania.io/#/leaderboard/"+m_map.MapUid);
 #endif
 
 #if TMNEXT
@@ -440,13 +440,13 @@ class MapTab : Tab
                     if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
                     UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
                     UI::ShowNotification(Icons::ExclamationTriangle + " Warning", "The map type is not supported for direct play, it can crash your game or returns you to the menu", UI::HSV(0.11, 1.0, 1.0), 15000);
-                    MX::mapToLoad = m_map.TrackID;
+                    MX::mapToLoad = m_map.MapId;
                 }
             } else {
                 if (UI::GreenButton(Icons::Play + " Play Map")) {
                     if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
                     UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
-                    MX::mapToLoad = m_map.TrackID;
+                    MX::mapToLoad = m_map.MapId;
                 }
 #if TMNEXT && DEPENDENCY_NADEOSERVICES
                 if (SupportedModes.HasKey(m_map.MapType) && Permissions::CreateAndUploadMap() && IsInServer()) {
@@ -455,8 +455,8 @@ class MapTab : Tab
 
                     UI::BeginDisabled(!sameMapType);
                     if (UI::GreenButton(Icons::Server + " Play Map on Nadeo-hosted Room")) {
-                        TMNext::AddMapToServer_MapUid = m_map.TrackUID;
-                        TMNext::AddMapToServer_MapMXId = m_map.TrackID;
+                        TMNext::AddMapToServer_MapUid = m_map.MapUid;
+                        TMNext::AddMapToServer_MapMXId = m_map.MapId;
                         TMNext::AddMapToServer_MapType = m_map.MapType;
                         Renderables::Add(PlayMapOnNadeoRoomInfos());
                     }
@@ -478,7 +478,7 @@ class MapTab : Tab
             if (UI::YellowButton(Icons::Wrench + " Edit Map")) {
                 if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
                 UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
-                MX::mapToEdit = m_map.TrackID;
+                MX::mapToEdit = m_map.MapId;
             }
 #if TMNEXT
         } else {
@@ -495,13 +495,13 @@ class MapTab : Tab
             if (!m_mapDownloaded) {
                 if (UI::PurpleButton(Icons::Download + " Download Map")) {
                     UI::ShowNotification("Downloading map...", Text::OpenplanetFormatCodes(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
-                    MX::mapToDL = m_map.TrackID;
+                    MX::mapToDL = m_map.MapId;
                     m_mapDownloaded = true;
                 }
             } else {
                 UI::Text("\\$0f0" + Icons::Download + " \\$zMap downloaded");
                 UI::PushStyleColor(UI::Col::Text, UI::GetStyleColor(UI::Col::TextDisabled));
-                UI::TextWrapped("to " + "Maps\\Downloaded\\"+pluginName+"\\" + m_map.TrackID + " - " + Path::SanitizeFileName(m_map.Name) + ".Map.Gbx");
+                UI::TextWrapped("to " + "Maps\\Downloaded\\"+pluginName+"\\" + m_map.MapId + " - " + Path::SanitizeFileName(m_map.Name) + ".Map.Gbx");
                 UI::PopStyleColor();
                 if (UI::RoseButton(Icons::FolderOpen + " Open Containing Folder")) OpenExplorerPath(IO::FromUserGameFolder("Maps/Downloaded/"+pluginName));
             }
@@ -525,7 +525,7 @@ class MapTab : Tab
 #endif
                 for (uint i = 0; i < g_PlayLaterMaps.Length; i++) {
                     MX::MapInfo@ playLaterMap = g_PlayLaterMaps[i];
-                    if (playLaterMap.TrackID == m_map.TrackID) {
+                    if (playLaterMap.MapId == m_map.MapId) {
                         g_PlayLaterMaps.RemoveAt(i);
                         m_isMapOnPlayLater = false;
                         SavePlayLater(g_PlayLaterMaps);
@@ -542,7 +542,7 @@ class MapTab : Tab
 #else
             if (UI::GreenButton(Icons::Heart + " Add to Favorites")) {
 #endif
-                MXNadeoServicesGlobal::m_mapUidToAction = m_map.TrackUID;
+                MXNadeoServicesGlobal::m_mapUidToAction = m_map.MapUid;
                 startnew(MXNadeoServicesGlobal::AddMapToFavoritesAsync);
             }
             UI::EndDisabled();
@@ -553,7 +553,7 @@ class MapTab : Tab
 #else
             if (UI::RedButton(Icons::Heart + " Remove from Favorites")) {
 #endif
-                MXNadeoServicesGlobal::m_mapUidToAction = m_map.TrackUID;
+                MXNadeoServicesGlobal::m_mapUidToAction = m_map.MapUid;
                 startnew(MXNadeoServicesGlobal::RemoveMapFromFavoritesAsync);
             }
         }
@@ -568,40 +568,33 @@ class MapTab : Tab
         UI::TextWrapped(Text::OpenplanetFormatCodes(m_map.GbxMapName));
         UI::PopFont();
 
-        if (m_authorsError) {
-            UI::TextDisabled("By " + m_map.Username);
-        } else {
-            // check if array is empty
-            if (m_authors.Length > 0) {
-                UI::TextDisabled("By: ");
-                UI::SameLine();
-                for (uint i = 0; i < m_authors.Length; i++) {
-                    MX::MapAuthorInfo@ author = m_authors[i];
-                    UI::TextDisabled(author.Username + (i == m_authors.Length - 1 ? "" : ", "));
-                    if (UI::IsItemHovered()) {
-                        UI::BeginTooltip();
-                        if (author.Uploader) {
-                            UI::Text(Icons::CloudUpload + " Uploader");
-                            UI::Separator();
-                        }
-                        if (author.Role != "") {
-                            UI::Text(author.Role);
-                            UI::Separator();
-                        }
-                        UI::TextDisabled("Click to see "+author.Username+"'s profile");
-                        UI::EndTooltip();
+        if (m_map.Authors.Length > 0) {
+            UI::TextDisabled("By: ");
+            UI::SameLine();
+            for (uint i = 0; i < m_map.Authors.Length; i++) {
+                MX::MapAuthorInfo@ author = m_map.Authors[i];
+                UI::TextDisabled(author.Name + (i == m_map.Authors.Length - 1 ? "" : ", "));
+                if (UI::IsItemHovered()) {
+                    UI::BeginTooltip();
+                    if (author.Uploader) {
+                        UI::Text(Icons::CloudUpload + " Uploader");
+                        UI::Separator();
                     }
-                    if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(author.UserID), true);
-                    if (i < m_authors.Length - 1) UI::SameLine();
+                    if (author.Role != "") {
+                        UI::Text(author.Role);
+                        UI::Separator();
+                    }
+                    UI::TextDisabled("Click to see " + author.Name + "'s profile");
+                    UI::EndTooltip();
                 }
-            } else {
-                int HourGlassValue = Time::Stamp % 3;
-                string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-                UI::TextDisabled(Hourglass + " By " + m_map.Username);
+                if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(author.UserId), true);
+                if (i < m_map.Authors.Length - 1) UI::SameLine();
             }
+        } else {
+            UI::TextDisabled("By " + m_map.Username);
         }
 
-        if (m_map.SizeWarning)
+        if (m_map.ServerSizeExceeded)
             UI::Text("\\$f70" + Icons::ExclamationTriangle + " \\$zThis map is larger than 6MB and therefore can not be played on servers.");
 
         UI::Separator();
@@ -610,7 +603,7 @@ class MapTab : Tab
 
         if(UI::BeginTabItem("Description")){
             UI::BeginChild("MapDescriptionChild");
-            IfaceRender::MXComment(m_map.Comments);
+            IfaceRender::MXComment(m_map.AuthorComments);
             UI::EndChild();
             UI::EndTabItem();
         }

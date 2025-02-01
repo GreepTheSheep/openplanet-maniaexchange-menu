@@ -110,11 +110,11 @@ void RenderMenuMain(){
 #endif
                             if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
                             UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(map.GbxMapName) + "\\$z\\$s by " + map.Username);
-                            MX::mapToLoad = map.TrackID;
+                            MX::mapToLoad = map.MapId;
                         }
                         if (!MX::APIDown && UI::MenuItem(Icons::Kenney::InfoCircle + " Open information")){
                             if (!Setting_ShowMenu) Setting_ShowMenu = true;
-                            mxMenu.AddTab(MapTab(map.TrackID), true);
+                            mxMenu.AddTab(MapTab(map.MapId), true);
                         }
                         if (UI::MenuItem("\\$f00"+Icons::TrashO + " Remove map")){
                             g_PlayLaterMaps.RemoveAt(i);
@@ -154,11 +154,11 @@ void RenderMenuMain(){
 #endif
                                 if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
                                 UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(map.GbxMapName) + " \\$zby " + map.Username);
-                                MX::mapToLoad = map.TrackID;
+                                MX::mapToLoad = map.MapId;
                             }
                             if (!MX::APIDown && UI::MenuItem(Icons::Kenney::InfoCircle + " Open information")){
                                 if (!Setting_ShowMenu) Setting_ShowMenu = true;
-                                mxMenu.AddTab(MapTab(map.TrackID), true);
+                                mxMenu.AddTab(MapTab(map.MapId), true);
                             }
                             if (UI::MenuItem("\\$f00"+Icons::TrashO + " Remove map")){
                                 MXNadeoServicesGlobal::m_mapUidToAction = mapNadeo.uid;

@@ -477,7 +477,7 @@ class UserTab : Tab
                     } else {
                         float featuredMapwidth = Draw::GetWidth() * 0.10;
                         UI::BeginChild("UserFeaturedMapImageChild", vec2(featuredMapwidth + 20, 0));
-                        auto featuredMapImg = Images::CachedFromURL("https://"+MXURL+"/maps/"+m_featuredMap.TrackID+"/image/1");
+                        auto featuredMapImg = Images::CachedFromURL("https://"+MXURL+"/maps/"+m_featuredMap.MapId+"/image/1");
 
                         if (featuredMapImg.m_texture !is null){
                             vec2 thumbSize = featuredMapImg.m_texture.GetSize();
@@ -494,7 +494,7 @@ class UserTab : Tab
                                 UI::EndTooltip();
                             }
                         } else {
-                            auto featuredMapthumb = Images::CachedFromURL("https://"+MXURL+"/maps/thumbnail/"+m_featuredMap.TrackID);
+                            auto featuredMapthumb = Images::CachedFromURL("https://"+MXURL+"/maps/thumbnail/"+m_featuredMap.MapId);
                             if (featuredMapthumb.m_texture !is null){
                                 vec2 thumbSize = featuredMapthumb.m_texture.GetSize();
                                 UI::Image(featuredMapthumb.m_texture, vec2(
@@ -521,17 +521,17 @@ class UserTab : Tab
                         UI::PushFont(g_fontHeader);
                         UI::Text(Text::OpenplanetFormatCodes(m_featuredMap.GbxMapName));
                         UI::PopFont();
-                        if (m_featuredMap.Comments.Length > 100) {
-                            IfaceRender::MXComment(m_featuredMap.Comments.SubStr(0, 100) + "...");
+                        if (m_featuredMap.AuthorComments.Length > 100) {
+                            IfaceRender::MXComment(m_featuredMap.AuthorComments.SubStr(0, 100) + "...");
                         } else {
-                            IfaceRender::MXComment(m_featuredMap.Comments);
+                            IfaceRender::MXComment(m_featuredMap.AuthorComments);
                         }
-                        if (UI::Button(Icons::InfoCircle)) mxMenu.AddTab(MapTab(m_featuredMap.TrackID), true);
+                        if (UI::Button(Icons::InfoCircle)) mxMenu.AddTab(MapTab(m_featuredMap.MapId), true);
                         UI::SameLine();
                         if (UI::GreenButton(Icons::Play)) {
                             if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
                             UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(m_featuredMap.GbxMapName) + "\\$z\\$s by " + m_featuredMap.Username);
-                            MX::mapToLoad = m_featuredMap.TrackID;
+                            MX::mapToLoad = m_featuredMap.MapId;
                         }
                         UI::EndChild();
                     }

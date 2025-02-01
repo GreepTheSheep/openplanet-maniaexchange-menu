@@ -8,13 +8,13 @@ namespace IfaceRender
         UI::AlignTextToFramePadding();
         if (Setting_ColoredMapName) UI::Text(Text::OpenplanetFormatCodes(map.GbxMapName));
         else UI::Text(map.Name);
-        UI::MXMapThumbnailTooltip(map.TrackID);
-        if (UI::IsItemClicked()) mxMenu.AddTab(MapTab(map.TrackID), true);
+        UI::MXMapThumbnailTooltip(map.MapId);
+        if (UI::IsItemClicked()) mxMenu.AddTab(MapTab(map.MapId), true);
 
         UI::TableSetColumnIndex(1);
         UI::Text(map.Username);
         UI::SetPreviousTooltip("Click to view "+map.Username+"'s profile");
-        if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(map.UserID), true);
+        if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(map.UserId), true);
 
         UI::TableSetColumnIndex(2);
         if (map.Tags.Length == 0) UI::Text("No tags");
@@ -31,9 +31,9 @@ namespace IfaceRender
         UI::TableSetColumnIndex(4);
         // buttons
         if (UI::CyanButton(Icons::Kenney::InfoCircle)) {
-            mxMenu.AddTab(MapTab(map.TrackID), true);
+            mxMenu.AddTab(MapTab(map.MapId), true);
         }
-        UI::MXMapThumbnailTooltip(map.TrackID);
+        UI::MXMapThumbnailTooltip(map.MapId);
         UI::SameLine();
 
         Json::Value SupportedModes = MX::ModesFromMapType();
@@ -46,7 +46,7 @@ namespace IfaceRender
             if (UI::GreenButton(Icons::Play)) {
                 if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
                 UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(map.GbxMapName) + "\\$z\\$s by " + map.Username);
-                MX::mapToLoad = map.TrackID;
+                MX::mapToLoad = map.MapId;
             }
 
 #if TMNEXT
@@ -58,7 +58,7 @@ namespace IfaceRender
                 if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
                 UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(map.GbxMapName) + "\\$z\\$s by " + map.Username);
                 UI::ShowNotification(Icons::ExclamationTriangle + " Warning", "The map type is not supported for direct play, it can crash your game or returns you to the menu", UI::HSV(0.11, 1.0, 1.0), 15000);
-                MX::mapToLoad = map.TrackID;
+                MX::mapToLoad = map.MapId;
             }
             if (UI::IsItemHovered()) {
                 UI::BeginTooltip();
