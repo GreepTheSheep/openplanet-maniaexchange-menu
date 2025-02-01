@@ -1,12 +1,10 @@
 class MapTab : Tab
 {
     Net::HttpRequest@ m_MXrequest;
-    Net::HttpRequest@ m_MXAuthorsRequest;
     Net::HttpRequest@ m_TMIOrequest;
     Net::HttpRequest@ m_MXEmbedObjRequest;
     Net::HttpRequest@ m_MXReplaysRequest;
     MX::MapInfo@ m_map;
-    array<MX::MapAuthorInfo@> m_authors;
     array<TMIO::Leaderboard@> m_leaderboard;
     array<MX::MapReplay@> m_replays;
     int m_mapId;
@@ -16,7 +14,6 @@ class MapTab : Tab
     bool m_isMapOnPlayLater = false;
     bool m_isMapOnFavorite = false;
     bool m_error = false;
-    bool m_authorsError = false;
     bool m_TMIOrequestStart = false;
     bool m_TMIOrequestStarted = false;
     bool m_TMIOstopleaderboard = false;
@@ -34,7 +31,6 @@ class MapTab : Tab
         @g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24);
         m_mapId = trackId;
         StartMXRequest();
-        StartMXAuthorsRequest();
     }
 
     bool CanClose() override { return !m_isLoading; }
@@ -96,41 +92,6 @@ class MapTab : Tab
 #if DEPENDENCY_NADEOSERVICES
             startnew(CoroutineFunc(CheckIfMapExistsNadeoServices));
 #endif
-        }
-    }
-
-    void StartMXAuthorsRequest()
-    {
-        string url = "https://"+MXURL+"/api/maps/get_authors/"+m_mapId;
-        if (isDevMode) trace("MapTab::StartRequest (Authors): "+url);
-        @m_MXAuthorsRequest = API::Get(url);
-    }
-
-    void CheckMXAuthorsRequest()
-    {
-        // If there's a request, check if it has finished
-        if (m_MXAuthorsRequest !is null && m_MXAuthorsRequest.Finished()) {
-            // Parse the response
-            string res = m_MXAuthorsRequest.String();
-            if (isDevMode) trace("MapTab::CheckRequest (Authors): " + res);
-            @m_MXAuthorsRequest = null;
-            if (res.Length == 0) {
-                print("MapTab::CheckRequest (Authors): Error getting response");
-                m_authorsError = true;
-                return;
-            }
-            auto json = Json::Parse(res);
-
-            if (json.Length == 0) {
-                print("MapTab::ParseJSON (Authors): Error parsing response");
-                m_authorsError = true;
-                return;
-            }
-            // Handle the response
-            for (uint i = 0; i < json.Length; i++) {
-                MX::MapAuthorInfo@ author = MX::MapAuthorInfo(json[i]);
-                m_authors.InsertLast(author);
-            }
         }
     }
 
@@ -278,8 +239,6 @@ class MapTab : Tab
             UI::Text(Hourglass + " Loading...");
             return;
         }
-
-        CheckMXAuthorsRequest();
 
         // Check if the map is already on the play later list
         for (uint i = 0; i < g_PlayLaterMaps.Length; i++) {
