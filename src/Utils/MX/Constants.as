@@ -1,5 +1,7 @@
 namespace MX
 {
+    const uint maxMapsRequest = 40;
+
     enum Difficulties {
         Beginner,
         Intermediate,
