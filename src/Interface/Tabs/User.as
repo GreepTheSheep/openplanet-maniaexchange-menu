@@ -54,7 +54,7 @@ class UserTab : Tab
                 return Icons::User + " Loading...";
             else {
                 string res = Icons::User+" ";
-                res += m_user.Username;
+                res += m_user.Name;
                 return res;
             }
         }
@@ -74,7 +74,12 @@ class UserTab : Tab
 
     void StartMXRequest()
     {
-        string url = "https://"+MXURL+"/api/users/get_user_info/"+m_userId;
+        dictionary params;
+        params.Set("fields", MX::userFields);
+        params.Set("id", tostring(m_userId));
+        string userUrlParams = MX::DictToApiParams(params);
+
+        string url = "https://"+MXURL+"/api/users" + userUrlParams;
         if (isDevMode) trace("UserTab::StartRequest (MX): "+url);
         @m_MXUserInfoRequest = API::Get(url);
     }
@@ -88,17 +93,18 @@ class UserTab : Tab
         if (m_MXUserInfoRequest !is null && m_MXUserInfoRequest.Finished()) {
             // Parse the response
             string res = m_MXUserInfoRequest.String();
+            int resCode = m_MXUserInfoRequest.ResponseCode();
             if (isDevMode) trace("UserTab::CheckRequest (MX): " + res);
             @m_MXUserInfoRequest = null;
             auto json = Json::Parse(res);
 
-            if (json.GetType() != Json::Type::Object) {
+            if (resCode >400 || json.GetType() != Json::Type::Object || !json.HasKey("Results") || json["Results"].Length == 0) {
                 mxWarn("UserTab::CheckRequest (MX): Error parsing response");
                 m_error = true;
                 return;
             }
             // Handle the response
-            @m_user = MX::UserInfo(json);
+            @m_user = MX::UserInfo(json["Results"][0]);
 
             if (m_user.FeaturedTrackID != 0) {
                 m_hasFeaturedMap = true;
@@ -140,7 +146,7 @@ class UserTab : Tab
         }
     }
 
-    void StartMXLeaderboardRequest()
+    void StartMXLeaderboardRequest() // TODO doesn't exist yet
     {
         string url = "https://"+MXURL+"/api/leaderboard/season/"+m_selectedLeaderboardId+"/user/"+m_userId;
 
@@ -148,7 +154,7 @@ class UserTab : Tab
         @m_MXUserLeaderboardRequest = API::Get(url);
     }
 
-    void CheckMXLeaderboardRequest()
+    void CheckMXLeaderboardRequest() // TODO change once leaderboards are released on 2.0
     {
         if (!MX::APIDown && m_leaderboard is null && m_MXUserLeaderboardRequest is null && UI::IsWindowAppearing()) {
             StartMXLeaderboardRequest();
@@ -157,11 +163,12 @@ class UserTab : Tab
         if (m_MXUserLeaderboardRequest !is null && m_MXUserLeaderboardRequest.Finished()) {
             // Parse the response
             string res = m_MXUserLeaderboardRequest.String();
+            int resCode = m_MXUserLeaderboardRequest.ResponseCode();
             if (isDevMode) trace("UserTab::Leaderboard::CheckRequest (MX): " + res);
             @m_MXUserLeaderboardRequest = null;
             auto json = Json::Parse(res);
 
-            if (json.GetType() == Json::Type::Null) {
+            if (resCode >= 400 || json.GetType() == Json::Type::Null) {
                 m_leaderboardError = true;
                 m_leaderboardErrorMessage = "Error while loading user leaderboard";
                 mxError(m_leaderboardErrorMessage);
@@ -375,7 +382,7 @@ class UserTab : Tab
         UI::BeginChild("Summary", vec2(width,0));
 
         UI::PushFont(g_fontHeader);
-        UI::Text(m_user.Username);
+        UI::Text(m_user.Name);
         UI::PopFont();
 
         UI::SameLine();
@@ -417,29 +424,29 @@ class UserTab : Tab
             UI::Text(Icons::Times+" \\$zError while loading avatar");
         }
 
-        UI::Text(Icons::Calendar+ " \\$f77" + m_user.Registered);
+        UI::Text(Icons::Calendar+ " \\$f77" + m_user.RegisteredAt);
         UI::SetPreviousTooltip("Registered");
 
-        UI::Text(Icons::Map+ " \\$f77" + m_user.TrackCount);
+        UI::Text(Icons::Map+ " \\$f77" + m_user.MapCount);
         UI::SetPreviousTooltip("Tracks created");
 
         UI::Text(Icons::Inbox+ " \\$f77" + m_user.MappackCount);
         UI::SetPreviousTooltip("Mappacks created");
 
-        UI::Text(Icons::Trophy+ " \\$f77" + m_user.AwardsReceived);
+        UI::Text(Icons::Trophy+ " \\$f77" + m_user.AwardsReceivedCount);
         UI::SetPreviousTooltip("Awards");
 
-        UI::Text(Icons::Hashtag+ " \\$f77" + m_user.UserID);
+        UI::Text(Icons::Hashtag+ " \\$f77" + m_user.UserId);
         UI::SetPreviousTooltip("User ID");
         UI::SameLine();
         UI::TextDisabled(Icons::Clipboard);
         UI::SetPreviousTooltip("Click to copy to clipboard");
         if (UI::IsItemClicked()) {
-            IO::SetClipboard(tostring(m_user.UserID));
+            IO::SetClipboard(tostring(m_user.UserId));
             UI::ShowNotification(Icons::Clipboard + " User ID copied to clipboard");
         }
 
-        if (UI::CyanButton(Icons::ExternalLink + " View on "+shortMXName)) OpenBrowserURL("https://"+MXURL+"/user/profile/"+m_userId);
+        if (UI::CyanButton(Icons::ExternalLink + " View on "+shortMXName)) OpenBrowserURL("https://"+MXURL+"/usershow/"+m_userId);
         if (m_isYourProfileTab && UI::PurpleButton(Icons::ExternalLink + " Manage your account")) OpenBrowserURL("https://account.mania.exchange/account");
 
         if (!m_isYourProfileTab && Setting_Tab_YourProfile_UserID == 0) {
@@ -459,7 +466,7 @@ class UserTab : Tab
 
         if (UI::BeginTabItem("Description")) {
             UI::BeginChild("UserDescriptionChild", vec2(0, UI::GetWindowSize().y * 0.6));
-            IfaceRender::MXComment(m_user.Comments);
+            IfaceRender::MXComment(m_user.Bio);
             UI::EndChild();
             if (m_hasFeaturedMap) {
                 UI::Separator();
@@ -529,6 +536,8 @@ class UserTab : Tab
             UI::EndTabItem();
         }
 
+        // TODO not ready yet
+        UI::BeginDisabled();
         if (UI::BeginTabItem(Icons::ListOl + " " + shortMXName + " Leaderboard")) {
             UI::BeginChild("UserLeaderboardChild");
             if (UI::BeginCombo("##Leaderboard", m_selectedLeaderboard)) {
@@ -577,8 +586,10 @@ class UserTab : Tab
             UI::EndChild();
             UI::EndTabItem();
         }
+        UI::EndDisabled();
+        UI::SetItemTooltip("\\$f00" + Icons::Times + "\\$z User leaderboards are not available yet");
 
-        if (m_user.TrackCount > 0 && UI::BeginTabItem(Icons::Map + " Created")) {
+        if (m_user.MapCount > 0 && UI::BeginTabItem(Icons::Map + " Created")) {
             UI::BeginChild("UserMapsCreatedChild");
             CheckMXCreatedMapsRequest();
             if (m_MXUserMapsCreatedRequest !is null && m_mapsCreated.Length == 0) {

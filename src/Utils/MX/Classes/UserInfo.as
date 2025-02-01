@@ -2,56 +2,46 @@ namespace MX
 {
     class UserInfo
     {
-        int UserID;
-        string Username;
-        string PlayerLogin;
-        string UplayLogin;
-        string Comments;
-        bool IsDuo;
-        string Registered;
-        int TrackCount;
+        int UserId;
+        string Name;
+        string IngameLogin;
+        string Bio;
+        string RegisteredAt;
+        int MapCount;
         int MappackCount;
         int ReplayCount;
-        int AwardsReceived;
-        int AwardsGiven;
-        int CommentsReceived;
-        int CommentsGiven;
-        int FavouritesReceivedCount;
-        int FavouritesGivenCount;
+        int AwardsReceivedCount;
+        int AwardsGivenCount;
+        int CommentsReceivedCount;
+        int CommentsGivenCount;
+        int FavoritesReceivedCount;
         int VideosReceivedCount;
-        int VideosSubmittedCount;
+        int VideosPostedCount;
         int VideosCreatedCount;
         int FeaturedTrackID;
-        int WorldRecords;
-        int TOP10s;
 
         UserInfo(const Json::Value &in json)
         {
             try {
-                UserID = json["UserID"];
-                Username = json["Username"];
-                if (json["PlayerLogin"].GetType() != Json::Type::Null) PlayerLogin = json["PlayerLogin"];
-                if (json["UplayLogin"].GetType() != Json::Type::Null) UplayLogin = json["UplayLogin"];
-                if (json["Comments"].GetType() != Json::Type::Null) Comments = json["Comments"];
-                IsDuo = json["IsDuo"];
-                Registered = json["Registered"];
-                TrackCount = json["TrackCount"];
+                UserId = json["UserId"];
+                Name = json["Name"];
+                if (json["IngameLogin"].GetType() != Json::Type::Null) IngameLogin = json["IngameLogin"];
+                if (json["Bio"].GetType() != Json::Type::Null) Bio = json["Bio"];
+                RegisteredAt = json["RegisteredAt"];
+                MapCount = json["MapCount"];
                 MappackCount = json["MappackCount"];
                 ReplayCount = json["ReplayCount"];
-                AwardsReceived = json["AwardsReceived"];
-                AwardsGiven = json["AwardsGiven"];
-                CommentsReceived = json["CommentsReceived"];
-                CommentsGiven = json["CommentsGiven"];
-                FavouritesReceivedCount = json["FavouritesReceivedCount"];
-                FavouritesGivenCount = json["FavouritesGivenCount"];
+                AwardsReceivedCount = json["AwardsReceivedCount"];
+                AwardsGivenCount = json["AwardsGivenCount"];
+                CommentsReceivedCount = json["CommentsReceivedCount"];
+                CommentsGivenCount = json["CommentsGivenCount"];
+                FavoritesReceivedCount = json["FavoritesReceivedCount"];
                 VideosReceivedCount = json["VideosReceivedCount"];
-                VideosSubmittedCount = json["VideosSubmittedCount"];
+                VideosPostedCount = json["VideosPostedCount"];
                 VideosCreatedCount = json["VideosCreatedCount"];
-                FeaturedTrackID = json["FeaturedTrackID"];
-                WorldRecords = json["WorldRecords"];
-                TOP10s = json["TOP10s"];
+                // FeaturedTrackID = json["FeaturedTrackID"]; // TODO missing
             } catch {
-                mxWarn("Error parsing user info for user " + Username + ": " + getExceptionInfo(), true);
+                mxWarn("Error parsing user info for user " + Name + ": " + getExceptionInfo(), true);
                 print(Json::Write(ToJson()));
             }
         }
@@ -60,30 +50,25 @@ namespace MX
         {
             Json::Value json = Json::Object();
             try {
-                json["UserID"] = UserID;
-                json["Username"] = Username;
-                json["PlayerLogin"] = PlayerLogin;
-                json["UplayLogin"] = UplayLogin;
-                json["Comments"] = Comments;
-                json["IsDuo"] = IsDuo;
-                json["Registered"] = Registered;
-                json["TrackCount"] = TrackCount;
+                json["UserId"] = UserId;
+                json["Name"] = Name;
+                json["IngameLogin"] = IngameLogin;
+                json["Bio"] = Bio;
+                json["RegisteredAt"] = RegisteredAt;
+                json["MapCount"] = MapCount;
                 json["MappackCount"] = MappackCount;
                 json["ReplayCount"] = ReplayCount;
-                json["AwardsReceived"] = AwardsReceived;
-                json["AwardsGiven"] = AwardsGiven;
-                json["CommentsReceived"] = CommentsReceived;
-                json["CommentsGiven"] = CommentsGiven;
-                json["FavouritesReceivedCount"] = FavouritesReceivedCount;
-                json["FavouritesGivenCount"] = FavouritesGivenCount;
+                json["AwardsReceivedCount"] = AwardsReceivedCount;
+                json["AwardsGivenCount"] = AwardsGivenCount;
+                json["CommentsReceivedCount"] = CommentsReceivedCount;
+                json["CommentsGivenCount"] = CommentsGivenCount;
+                json["FavoritesReceivedCount"] = FavoritesReceivedCount;
                 json["VideosReceivedCount"] = VideosReceivedCount;
-                json["VideosSubmittedCount"] = VideosSubmittedCount;
+                json["VideosPostedCount"] = VideosPostedCount;
                 json["VideosCreatedCount"] = VideosCreatedCount;
-                json["FeaturedTrackID"] = FeaturedTrackID;
-                json["WorldRecords"] = WorldRecords;
-                json["TOP10s"] = TOP10s;
+                // json["FeaturedTrackID"] = FeaturedTrackID; // TODO missing
             } catch {
-                mxWarn("Error converting user info to json for user " + Username + ": " + getExceptionInfo(), true);
+                mxWarn("Error converting user info to json for user " + Name + ": " + getExceptionInfo(), true);
             }
             return json;
         }
