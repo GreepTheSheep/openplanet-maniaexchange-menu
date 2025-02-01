@@ -412,10 +412,16 @@ class UserTab : Tab
                 ));
                 UI::EndTooltip();
             }
-        } else {
+        } else if (!img.m_error) {
             int HourGlassValue = Time::Stamp % 3;
             string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
             UI::Text(Hourglass + " Loading Avatar...");
+        } else if (img.m_unsupportedFormat) {
+            UI::Text(Icons::FileImageO + " \\$zUnsupported file format WEBP");
+        } else if (img.m_notFound) {
+            UI::Text("\\$fc0"+Icons::ExclamationTriangle+" \\$Avatar not found");
+        } else {
+            UI::Text(Icons::Times+" \\$zError while loading avatar");
         }
 
         UI::Text(Icons::Calendar+ " \\$f77" + m_user.Registered);
@@ -477,7 +483,7 @@ class UserTab : Tab
                     } else {
                         float featuredMapwidth = Draw::GetWidth() * 0.10;
                         UI::BeginChild("UserFeaturedMapImageChild", vec2(featuredMapwidth + 20, 0));
-                        auto featuredMapImg = Images::CachedFromURL("https://"+MXURL+"/maps/"+m_featuredMap.MapId+"/image/1");
+                        auto featuredMapImg = Images::CachedFromURL("https://"+MXURL+"/mapimage/"+m_featuredMap.MapId+"/1");
 
                         if (featuredMapImg.m_texture !is null){
                             vec2 thumbSize = featuredMapImg.m_texture.GetSize();
@@ -493,27 +499,16 @@ class UserTab : Tab
                                 ));
                                 UI::EndTooltip();
                             }
+                        } else if (!featuredMapImg.m_error) {
+                            int HourGlassValue = Time::Stamp % 3;
+                            string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
+                            UI::Text(Hourglass + " Loading thumbnail...");
+                        } else if (featuredMapImg.m_unsupportedFormat) {
+                            UI::Text(Icons::FileImageO + " \\$zUnsupported file format WEBP");
+                        } else if (featuredMapImg.m_notFound) {
+                            UI::Text("\\$fc0"+Icons::ExclamationTriangle+" \\$Thumbnail not found");
                         } else {
-                            auto featuredMapthumb = Images::CachedFromURL("https://"+MXURL+"/maps/thumbnail/"+m_featuredMap.MapId);
-                            if (featuredMapthumb.m_texture !is null){
-                                vec2 thumbSize = featuredMapthumb.m_texture.GetSize();
-                                UI::Image(featuredMapthumb.m_texture, vec2(
-                                    featuredMapwidth,
-                                    thumbSize.y / (thumbSize.x / featuredMapwidth)
-                                ));
-                                if (UI::IsItemHovered()) {
-                                    UI::BeginTooltip();
-                                    UI::Image(featuredMapthumb.m_texture, vec2(
-                                        Draw::GetWidth() * 0.3,
-                                        thumbSize.y / (thumbSize.x / (Draw::GetWidth() * 0.3))
-                                    ));
-                                    UI::EndTooltip();
-                                }
-                            } else {
-                                int HourGlassValue = Time::Stamp % 3;
-                                string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-                                UI::Text(Hourglass + " Loading thumbnail...");
-                            }
+                            UI::Text(Icons::Times+" \\$zError while loading thumbnail");
                         }
                         UI::EndChild();
                         UI::SetCursorPos(posTop + vec2(featuredMapwidth + 28, 20));
