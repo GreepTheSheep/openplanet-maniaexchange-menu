@@ -94,7 +94,7 @@ namespace MX
 
                     for (uint i = 0; i < authorsObjects.Length; i++) {
                         bool IsUploader = string(authorsObjects[i]["User"]["Name"]) == string(json["Uploader"]["Name"]);
-                        Authors.InsertLast(MapAuthorInfo(authorsObjects[i], IsUploader)); // TODO test
+                        Authors.InsertLast(MapAuthorInfo(authorsObjects[i], IsUploader));
                     }
                 }
 

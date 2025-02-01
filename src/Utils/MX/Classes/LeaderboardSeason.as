@@ -1,6 +1,6 @@
 namespace MX
 {
-    class LeaderboardSeason
+    class LeaderboardSeason // TODO update to v2 once it's added
     {
         int SeasonID;
         string Name;

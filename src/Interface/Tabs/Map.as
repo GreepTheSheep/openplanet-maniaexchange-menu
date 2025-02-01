@@ -400,7 +400,8 @@ class MapTab : Tab
         UI::Text(Icons::Money + " \\$f77" + m_map.DisplayCost);
         UI::SetPreviousTooltip("Coppers cost");
 
-        if (UI::GoldButton(Icons::Trophy + " Award this map on "+shortMXName)) OpenBrowserURL("https://"+MXURL+"/maps/"+m_map.TrackID+"#award");
+        // TODO doesn't work with v2 anymore
+        // if (UI::GoldButton(Icons::Trophy + " Award this map on "+shortMXName)) OpenBrowserURL("https://"+MXURL+"/mapshow/"+m_map.MapId+"#award");
 
         if (UI::CyanButton(Icons::ExternalLink + " View on "+pluginName)) OpenBrowserURL("https://"+MXURL+"/mapshow/"+m_map.MapId);
 #if TMNEXT
@@ -576,7 +577,11 @@ class MapTab : Tab
         }
 
         if (m_map.ServerSizeExceeded)
-            UI::Text("\\$f70" + Icons::ExclamationTriangle + " \\$zThis map is larger than 6MB and therefore can not be played on servers.");
+#if MP4
+            UI::Text("\\$f70" + Icons::ExclamationTriangle + " \\$zThis map is larger than 4MB and therefore can not be played on servers.");
+#else
+            UI::Text("\\$f70" + Icons::ExclamationTriangle + " \\$zThis map is larger than 7MB and therefore can not be played on servers.");
+#endif
 
         UI::Separator();
 

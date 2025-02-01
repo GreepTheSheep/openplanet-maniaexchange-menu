@@ -50,6 +50,7 @@ namespace MX
         }
     }
 
+    // TODO change to v2 once the endpoint is added
     void GetAllLeaderboardSeasons()
     {
         string url = "https://"+MXURL+"/api/leaderboard/getseasons";
