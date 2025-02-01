@@ -2,7 +2,7 @@ namespace MX
 {
     void GetAllMapTags()
     {
-        string url = "https://"+MXURL+"/api/tags/gettags";
+        string url = "https://"+MXURL+"/api/meta/tags";
         if (isDevMode) trace("Loading tags: " + url);
         Json::Value resNet = API::GetAsync(url);
 
