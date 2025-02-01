@@ -19,7 +19,7 @@ class MapPackTab : Tab
         @g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24);
         mapPack_maps.RemoveRange(0, mapPack_maps.Length);
         m_mapPackId = packId;
-        StartMXRequest(m_mapPackId);
+        StartMXRequest();
     }
 
     bool CanClose() override { return !m_isLoading; }
@@ -40,9 +40,19 @@ class MapPackTab : Tab
         }
     }
 
-    void StartMXRequest(int packId)
+    void GetRequestParams(dictionary@ params)
     {
-        string url = "https://"+MXURL+"/api/mappack/get_info/"+packId;
+        params.Set("fields", MX::mapPackFields);
+        params.Set("id", tostring(m_mapPackId));
+    }
+
+    void StartMXRequest()
+    {
+        dictionary params;
+        GetRequestParams(params);
+        string urlParams = MX::DictToApiParams(params);
+
+        string url = "https://"+MXURL+"/api/mappacks" + urlParams;
         if (isDevMode) trace("MapPackTab::StartRequest (MX): "+url);
         @m_MXrequest = API::Get(url);
     }
@@ -53,23 +63,24 @@ class MapPackTab : Tab
         if (m_MXrequest !is null && m_MXrequest.Finished()) {
             // Parse the response
             string res = m_MXrequest.String();
+            int resCode = m_MXrequest.ResponseCode();
             if (isDevMode) trace("MapPackTab::CheckRequest (MX): " + res);
             @m_MXrequest = null;
             auto json = Json::Parse(res);
 
-            if (json.HasKey("Exception")) {
-                string errorMsg = json["Message"];
+            if (resCode >= 400) {
+                string errorMsg = json.Get("title", "Unknown error");
                 HandleMXResponseError(errorMsg);
                 return;
             }
 
-            if (json.Length == 0) {
+            if (json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
                 HandleMXResponseError("Empty response");
                 return;
             }
-            StartMXMapListRequest(m_mapPackId);
+            StartMXMapListRequest();
             // Handle the response
-            HandleMXResponse(json);
+            HandleMXResponse(json["Results"][0]);
         }
     }
 
@@ -85,9 +96,14 @@ class MapPackTab : Tab
         m_errorMessage = errorMessage;
     }
 
-    void StartMXMapListRequest(int packId)
+    void StartMXMapListRequest()
     {
-        string url = "https://"+MXURL+"/api/mappack/get_mappack_tracks/"+packId;
+        dictionary mapParams;
+        mapParams.Set("fields", MX::mapFields);
+        mapParams.Set("mappackid", tostring(m_mapPackId));
+        string mapUrlParams = MX::DictToApiParams(mapParams);
+
+        string url = "https://"+MXURL+"/api/maps" + mapUrlParams;
         if (isDevMode) trace("MapPackTab::StartRequest (Map List): "+url);
         @m_MXMapsRequest = API::Get(url);
     }
@@ -98,17 +114,18 @@ class MapPackTab : Tab
         if (m_MXMapsRequest !is null && m_MXMapsRequest.Finished()) {
             // Parse the response
             string res = m_MXMapsRequest.String();
+            int resCode = m_MXMapsRequest.ResponseCode();
             if (isDevMode) trace("MapPackTab::CheckRequest (Map List): " + res);
             @m_MXMapsRequest = null;
             auto json = Json::Parse(res);
 
-            if (json.Length == 0) {
+            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
                 print("MapPackTab::CheckRequest (Map List): Error parsing response");
                 HandleMXMapListResponseError();
                 return;
             }
             // Handle the response
-            HandleMXMapListResponse(json);
+            HandleMXMapListResponse(json["Results"]);
         }
     }
 
