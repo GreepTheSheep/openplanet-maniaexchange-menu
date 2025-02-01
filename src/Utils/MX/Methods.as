@@ -281,4 +281,21 @@ namespace MX
             return -5;
         }
     }
+
+    string DictToApiParams(dictionary params) {
+        string urlParams = "";
+        if (!params.IsEmpty()) {
+            auto keys = params.GetKeys();
+            for (uint i = 0; i < keys.Length; i++) {
+                string key = keys[i];
+                string value;
+                params.Get(key, value);
+
+                urlParams += (i == 0 ? "?" : "&");
+                urlParams += key + "=" + Net::UrlEncode(value);
+            }
+        }
+
+        return urlParams;
+    }
 }
