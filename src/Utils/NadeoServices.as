@@ -98,25 +98,21 @@ namespace MXNadeoServicesGlobal
 
             trace("NadeoServices - Checking for map on MX...");
 
-            uint splitMapUids = 5;
             uint mapUidsCheckDone = 0;
             uint mapUidsPartLength = 0;
 
             while (mapUidsCheckDone < g_favoriteMaps.Length) {
                 array<string> mapUidsPart;
-                for (uint i = 0; i < splitMapUids; i++) {
+                for (uint i = 0; i < MX::maxMapsRequest; i++) {
                     if (mapUidsPartLength >= g_favoriteMaps.Length) break;
                     mapUidsPart.InsertLast(g_favoriteMaps[mapUidsPartLength].uid);
                     mapUidsPartLength++;
                 }
 
-                string mapUidsPartString = "";
-                for (uint i = 0; i < mapUidsPart.Length; i++) {
-                    mapUidsPartString += mapUidsPart[i];
-                    if (i < mapUidsPart.Length - 1) mapUidsPartString += ",";
-                }
+                string mapUidsPartString = string::Join(mapUidsPart, ",");
 
-                string mxUrl = "https://"+MXURL+"/api/maps?fields=" + MX::mapFields + "&uid=" +mapUidsPartString;
+                // we do + 10 in case multiple maps have the same UID, which can happen
+                string mxUrl = "https://"+MXURL+"/api/maps?fields=" + MX::mapFields + "&count=" + (MX::maxMapsRequest + 10) + "&uid=" +mapUidsPartString;
                 if (isDevMode) trace("NadeoServices - Loading map MX infos: " + mxUrl);
                 Net::HttpRequest@ mxReq = API::Get(mxUrl);
                 while (!mxReq.Finished()) {
@@ -128,23 +124,34 @@ namespace MXNadeoServicesGlobal
 
                 if (resCode >= 400 || mxJson.GetType() == Json::Type::Null || !mxJson.HasKey("Results")) {
                     throw("NadeoServices - Invalid MX map infos response");
-                    mapUidsCheckDone += mapUidsPartLength;
+                    mapUidsCheckDone += mapUidsPart.Length;
                     continue;
                 }
 
                 Json::Value mapResults = mxJson["Results"];
+                array<string> foundUids;
+
                 for (uint i = 0; i < mapResults.Length; i++) {
                     if (isDevMode) trace("Loading map MX info "+mapUidsPart[i]);
-                    string resMapUid = mxJson[i]["MapUid"];
-                    while (resMapUid != g_favoriteMaps[mapUidsCheckDone].uid) {
-                        if (isDevMode) mxWarn("NadeoServices - Map UID mismatch: " + resMapUid + " != " + mapUidsPart[i] + "\nThe map will be ignored");
-                        mapUidsCheckDone++;
+                    string resMapUid = mapResults[i]["MapUid"];
+                    foundUids.InsertLast(resMapUid);
+
+                    for (uint u = 0; u < g_favoriteMaps.Length; u++) {
+                        if (resMapUid == g_favoriteMaps[u].uid) {
+                            g_favoriteMaps[u].MXId = mapResults[i]["MapId"];
+                            @g_favoriteMaps[u].MXMapInfo = MX::MapInfo(mapResults[i]);
+                            break;
+                        }
                     }
-                    g_favoriteMaps[mapUidsCheckDone].MXId = mxJson[i]["MapId"];
-                    @g_favoriteMaps[mapUidsCheckDone].MXMapInfo = MX::MapInfo(mxJson[i]);
-                    mapUidsCheckDone++;
                 }
 
+                for (uint f = 0; f < mapUidsPart.Length; f++) {
+                    if (foundUids.Find(mapUidsPart[f]) == -1) {
+                        mxWarn("NadeoServices - Failed to find map with UID " + mapUidsPart[f] + " on MX. The map will be ignored");
+                    }
+                }
+
+                mapUidsCheckDone += mapUidsPart.Length;
                 sleep(1000);
             }
 
