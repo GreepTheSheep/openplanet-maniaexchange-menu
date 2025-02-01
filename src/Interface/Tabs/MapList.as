@@ -2,25 +2,31 @@ class MapListTab : Tab
 {
     Net::HttpRequest@ m_request;
     array<MX::MapInfo@> maps;
-    uint totalItems = 0;
+    bool moreItems = false;
     bool m_useRandom = false;
     bool m_firstLoad = true;
     int m_selectedEnviroId = -1;
     string m_selectedEnviroName = "Any";
     string m_selectedVehicle = "Any";
-    int m_page = 1;
+    int lastId = 0;
 
     void GetRequestParams(dictionary@ params)
     {
-        params.Set("api", "on");
-        params.Set("format", "json");
-        params.Set("limit", "100");
-        if (m_selectedEnviroName != "Any") params.Set("environments", tostring(m_selectedEnviroId));
+        params.Set("fields", MX::mapFields);
+
+        if (moreItems && lastId != 0) {
+            params.Set("after", tostring(lastId));
+        }
+
+        if (m_selectedEnviroName != "Any") params.Set("environment", tostring(m_selectedEnviroId));
         if (m_selectedVehicle != "Any") params.Set("vehicle", m_selectedVehicle);
-        params.Set("page", tostring(m_page));
+
         if (m_useRandom) {
             params.Set("random", "1");
+            params.Set("count", "1");
             m_useRandom = false;
+        } else {
+            params.Set("count", "100");
         }
     }
 
@@ -28,21 +34,9 @@ class MapListTab : Tab
     {
         dictionary params;
         GetRequestParams(params);
+        string urlParams = MX::DictToApiParams(params);
 
-        string urlParams = "";
-        if (!params.IsEmpty()) {
-            auto keys = params.GetKeys();
-            for (uint i = 0; i < keys.Length; i++) {
-                string key = keys[i];
-                string value;
-                params.Get(key, value);
-
-                urlParams += (i == 0 ? "?" : "&");
-                urlParams += key + "=" + Net::UrlEncode(value);
-            }
-        }
-
-        string url = "https://"+MXURL+"/mapsearch2/search"+urlParams;
+        string url = "https://"+MXURL+"/api/maps" + urlParams;
 
         if (isDevMode) trace("MapListTab::StartRequest: " + url);
         @m_request = API::Get(url);
@@ -77,18 +71,14 @@ class MapListTab : Tab
         if (m_request !is null && m_request.Finished()) {
             // Parse the response
             string res = m_request.String();
+            int resCode = m_request.ResponseCode();
             if (isDevMode) trace("MapListTab::CheckRequest: " + res);
             @m_request = null;
             auto json = Json::Parse(res);
 
-            if (json.GetType() == Json::Type::Null) {
+            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
                 mxError("Error while loading maps list");
                 return;
-            }
-
-            // Handle the response
-            if (json.HasKey("error")) {
-                //HandleErrorResponse(json["error"]);
             } else {
                 HandleResponse(json);
             }
@@ -98,11 +88,15 @@ class MapListTab : Tab
     void HandleResponse(const Json::Value &in json)
     {
         MX::MapInfo@ map;
-        totalItems = json["totalItemCount"];
+        moreItems = json["More"];
 
-        auto items = json["results"];
+        auto items = json["Results"];
         for (uint i = 0; i < items.Length; i++) {
             maps.InsertLast(MX::MapInfo(items[i]));
+
+            if (moreItems && i == items.Length - 1) {
+                lastId = items[i]["MapId"];
+            }
         }
     }
 
@@ -158,8 +152,8 @@ class MapListTab : Tab
     void Clear()
     {
         maps.RemoveRange(0, maps.Length);
-        totalItems = 0;
-        m_page = 1;
+        lastId = 0;
+        moreItems = false;
     }
 
     void Reload() override
@@ -212,15 +206,14 @@ class MapListTab : Tab
                         UI::PopID();
                     }
                 }
-                if (m_request !is null && totalItems > maps.Length) {
+                if (m_request !is null && moreItems) {
                     UI::TableNextRow();
                     UI::TableSetColumnIndex(0);
                     UI::AlignTextToFramePadding();
                     UI::Text(Icons::HourglassEnd + " Loading...");
                 }
                 UI::EndTable();
-                if (m_request is null && totalItems > maps.Length && UI::GreenButton("Load more")){
-                    m_page++;
+                if (m_request is null && moreItems && UI::GreenButton("Load more")){
                     StartRequest();
                 }
             }

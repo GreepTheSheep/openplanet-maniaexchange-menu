@@ -65,7 +65,12 @@ class MapTab : Tab
 
     void StartMXRequest()
     {
-        string url = "https://"+MXURL+"/api/maps/get_map_info/multi/"+m_mapId;
+        dictionary params;
+        params.Set("fields", MX::mapFields);
+        params.Set("id", tostring(m_mapId));
+        string urlParams = MX::DictToApiParams(params);
+
+        string url = "https://"+MXURL+"/api/maps" + urlParams;
         if (isDevMode) print("MapTab::StartRequest (MX): "+url);
         @m_MXrequest = API::Get(url);
     }
@@ -76,17 +81,18 @@ class MapTab : Tab
         if (m_MXrequest !is null && m_MXrequest.Finished()) {
             // Parse the response
             string res = m_MXrequest.String();
+            int resCode = m_MXrequest.ResponseCode();
             if (isDevMode) print("MapTab::CheckRequest (MX): " + res);
             @m_MXrequest = null;
             auto json = Json::Parse(res);
 
-            if (json.Length == 0) {
+            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
                 print("MapTab::CheckRequest (MX): Error parsing response");
                 m_error = true;
                 return;
             }
             // Handle the response
-            @m_map = MX::MapInfo(json[0]);
+            @m_map = MX::MapInfo(json["Results"][0]);
 #if DEPENDENCY_NADEOSERVICES
             startnew(CoroutineFunc(CheckIfMapExistsNadeoServices));
 #endif

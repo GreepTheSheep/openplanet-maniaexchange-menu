@@ -141,12 +141,12 @@ namespace MX
             }
 #endif
 
-            auto json = API::GetAsync("https://"+MXURL+"/api/maps/get_map_info/multi/"+mapId);
-            if (json.Length == 0) {
+            auto json = API::GetAsync("https://"+MXURL+"/api/maps?fields=" + mapFields + "&id=" +mapId);
+            if (json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
                 mxError("Track not found.", true);
                 return;
             }
-            MX::MapInfo@ map = MX::MapInfo(json[0]);
+            MX::MapInfo@ map = MX::MapInfo(json["Results"][0]);
 
 #if TMNEXT
             if (Permissions::PlayLocalMap()) {
@@ -196,12 +196,12 @@ namespace MX
     void DownloadMap(int mapId, const string &in mapPackName = "", string _fileName = "")
     {
         try {
-            auto json = API::GetAsync("https://"+MXURL+"/api/maps/get_map_info/multi/"+mapId);
-            if (json.Length == 0) {
+            auto json = API::GetAsync("https://"+MXURL+"/api/maps?fields=" + mapFields + "&id=" +mapId);
+            if (json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
                 mxError("Track not found.", true);
                 return;
             }
-            MX::MapInfo@ map = MX::MapInfo(json[0]);
+            MX::MapInfo@ map = MX::MapInfo(json["Results"][0]);
 
             string downloadedMapFolder = IO::FromUserGameFolder("Maps/Downloaded");
             string mxDLFolder = downloadedMapFolder + "/" + pluginName;
@@ -247,7 +247,7 @@ namespace MX
         if (!IsInEditor()){
             if (currentMap !is null) {
                 string UIDMap = currentMap.MapInfo.MapUid;
-                string url = "https://"+MXURL+"/api/maps/get_map_info/multi/" + UIDMap;
+                string url = "https://"+MXURL+"/api/maps?fields=" + mapFields + "&uid=" + UIDMap;
                 if (req is null){
                     if (isDevMode) trace("LoadCurrentMap::StartRequest: " + url);
                     @req = API::Get(url);
@@ -261,9 +261,9 @@ namespace MX
                     // Evaluate reqest result
                     Json::Value returnedObject = Json::Parse(response);
                     try {
-                        if (returnedObject.Length > 0) {
-                            @currentMapInfo = MapInfo(returnedObject[0]);
-                            int g_MXId = returnedObject[0]["TrackID"];
+                        if (returnedObject["Results"].Length > 0) {
+                            @currentMapInfo = MapInfo(returnedObject["Results"][0]);
+                            int g_MXId = returnedObject["Results"][0]["MapId"];
                             return g_MXId;
                         } else {
                             return -1;

@@ -10,9 +10,9 @@ class UserTab : Tab
     bool m_isYourProfileTab;
     MX::UserInfo@ m_user;
     array<MX::MapInfo@> m_mapsCreated;
-    uint m_mapsCreatedTotal = 0;
+    bool m_moreItemsCreatedMaps = false;
     array<MX::MapInfo@> m_mapsAwardsGiven;
-    uint m_mapsAwardsGivenTotal = 0;
+    bool m_moreItemsAwardsGiven = false;
     array<MX::MapPackInfo@> m_mapPacks;
     uint m_mapPacksTotal = 0;
     MX::MapInfo@ m_featuredMap;
@@ -29,8 +29,8 @@ class UserTab : Tab
     bool m_leaderboardError = false;
     string m_leaderboardErrorMessage = "";
 
-    int m_pageCreatedMaps = 1;
-    int m_pageAwardedMaps = 1;
+    int m_lastIdCreatedMaps = 0;
+    int m_lastIdAwardedMaps = 0;
     int m_pageMapPacks = 1;
 
     UI::Font@ g_fontHeader;
@@ -109,7 +109,12 @@ class UserTab : Tab
 
     void StartMXFeaturedMapRequest()
     {
-        string url = "https://"+MXURL+"/api/maps/get_map_info/multi/"+m_user.FeaturedTrackID;
+        dictionary params;
+        params.Set("fields", MX::mapFields);
+        params.Set("id", tostring(m_user.FeaturedTrackID));
+        string mapUrlParams = MX::DictToApiParams(params);
+
+        string url = "https://"+MXURL+"/api/maps" + mapUrlParams;
         if (isDevMode) trace("UserTab::FeaturedMap::StartRequest (MX): "+url);
         @m_MXUserFeaturedMapRequest = API::Get(url);
     }
@@ -120,17 +125,18 @@ class UserTab : Tab
         if (m_MXUserFeaturedMapRequest !is null && m_MXUserFeaturedMapRequest.Finished()) {
             // Parse the response
             string res = m_MXUserFeaturedMapRequest.String();
+            int resCode = m_MXUserFeaturedMapRequest.ResponseCode();
             if (isDevMode) trace("UserTab::FeaturedMap::CheckRequest (MX): " + res);
             @m_MXUserFeaturedMapRequest = null;
             auto json = Json::Parse(res);
 
-            if (json.Length == 0) {
+            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
                 mxWarn("UserTab::FeaturedMap::CheckRequest (MX): Error parsing response");
                 m_featuredMapError = true;
                 return;
             }
             // Handle the response
-            @m_featuredMap = MX::MapInfo(json[0]);
+            @m_featuredMap = MX::MapInfo(json["Results"][0]);
         }
     }
 
@@ -181,27 +187,17 @@ class UserTab : Tab
     void StartMXCreatedMapsRequest()
     {
         dictionary params;
-        params.Set("api", "on");
-        params.Set("format", "json");
-        params.Set("limit", "100");
-        params.Set("page", tostring(m_pageCreatedMaps));
-        params.Set("mode", "1");
-        params.Set("authorid", tostring(m_userId));
+        params.Set("fields", MX::mapFields);
+        params.Set("count", "100");
+        params.Set("authoruserid", tostring(m_userId));
 
-        string urlParams = "";
-        if (!params.IsEmpty()) {
-            auto keys = params.GetKeys();
-            for (uint i = 0; i < keys.Length; i++) {
-                string key = keys[i];
-                string value;
-                params.Get(key, value);
-
-                urlParams += (i == 0 ? "?" : "&");
-                urlParams += key + "=" + Net::UrlEncode(value);
-            }
+        if (m_moreItemsCreatedMaps && m_lastIdCreatedMaps != 0) {
+            params.Set("after", tostring(m_lastIdCreatedMaps));
         }
 
-        string url = "https://"+MXURL+"/mapsearch2/search"+urlParams;
+        string urlParams = MX::DictToApiParams(params);
+
+        string url = "https://"+MXURL+"/api/maps" + urlParams;
 
         if (isDevMode) trace("UserTab::CreatedMaps::StartRequest: " + url);
         @m_MXUserMapsCreatedRequest = API::Get(url);
@@ -216,23 +212,28 @@ class UserTab : Tab
         if (m_MXUserMapsCreatedRequest !is null && m_MXUserMapsCreatedRequest.Finished()) {
             // Parse the response
             string res = m_MXUserMapsCreatedRequest.String();
+            int resCode = m_MXUserMapsCreatedRequest.ResponseCode();
             if (isDevMode) trace("UserTab::CreatedMaps::CheckRequest (MX): " + res);
             @m_MXUserMapsCreatedRequest = null;
             auto json = Json::Parse(res);
 
-            if (json.GetType() == Json::Type::Null) {
+            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
                 mxError("Error while loading maps list");
                 return;
             }
 
             // Handle the response
-            if (json.HasKey("error")) {
+            if (json.HasKey("title")) {
                 m_createdMapsError = true;
             } else {
-                m_mapsCreatedTotal = json["totalItemCount"];
-                auto items = json["results"];
+                m_moreItemsCreatedMaps = json["More"];
+                auto items = json["Results"];
                 for (uint i = 0; i < items.Length; i++) {
                     m_mapsCreated.InsertLast(MX::MapInfo(items[i]));
+
+                    if (m_moreItemsCreatedMaps && i == items.Length - 1) {
+                        m_lastIdCreatedMaps = items[i]["MapId"];
+                    }
                 }
             }
         }
@@ -241,28 +242,19 @@ class UserTab : Tab
     void StartMXAwardedMapsRequest()
     {
         dictionary params;
-        params.Set("api", "on");
-        params.Set("format", "json");
-        params.Set("limit", "100");
-        params.Set("page", tostring(m_pageAwardedMaps));
-        params.Set("mode", "8");
-        params.Set("authorid", tostring(m_userId));
-        params.Set("priord", "20");
+        params.Set("fields", MX::mapFields);
+        params.Set("count", "100");
 
-        string urlParams = "";
-        if (!params.IsEmpty()) {
-            auto keys = params.GetKeys();
-            for (uint i = 0; i < keys.Length; i++) {
-                string key = keys[i];
-                string value;
-                params.Get(key, value);
-
-                urlParams += (i == 0 ? "?" : "&");
-                urlParams += key + "=" + Net::UrlEncode(value);
-            }
+        if (m_moreItemsAwardsGiven && m_lastIdAwardedMaps != 0) {
+            params.Set("after", tostring(m_lastIdAwardedMaps));
         }
 
-        string url = "https://"+MXURL+"/mapsearch2/search"+urlParams;
+        params.Set("awardedby", m_user.Name);
+        params.Set("order1", "24");
+
+        string urlParams = MX::DictToApiParams(params);
+
+        string url = "https://"+MXURL+"/api/maps" + urlParams;
 
         if (isDevMode) trace("UserTab::AwardedMaps::StartRequest: " + url);
         @m_MXUserMapsAwardedRequest = API::Get(url);
@@ -277,23 +269,28 @@ class UserTab : Tab
         if (m_MXUserMapsAwardedRequest !is null && m_MXUserMapsAwardedRequest.Finished()) {
             // Parse the response
             string res = m_MXUserMapsAwardedRequest.String();
+            int resCode = m_MXUserMapsAwardedRequest.ResponseCode();
             if (isDevMode) trace("UserTab::AwardedMaps::CheckRequest (MX): " + res);
             @m_MXUserMapsAwardedRequest = null;
             auto json = Json::Parse(res);
 
-            if (json.GetType() == Json::Type::Null) {
+            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
                 mxError("Error while loading maps list");
                 return;
             }
 
             // Handle the response
-            if (json.HasKey("error")) {
+            if (json.HasKey("title")) {
                 m_awardedMapsError = true;
             } else {
-                m_mapsAwardsGivenTotal = json["totalItemCount"];
-                auto items = json["results"];
+                m_moreItemsAwardsGiven = json["More"];
+                auto items = json["Results"];
                 for (uint i = 0; i < items.Length; i++) {
                     m_mapsAwardsGiven.InsertLast(MX::MapInfo(items[i]));
+
+                    if (m_moreItemsAwardsGiven && i == items.Length - 1) {
+                        m_lastIdAwardedMaps = items[i]["MapId"];
+                    }
                 }
             }
         }
@@ -614,15 +611,14 @@ class UserTab : Tab
                             UI::PopID();
                         }
                     }
-                    if (m_MXUserMapsCreatedRequest !is null && m_mapsCreatedTotal > m_mapsCreated.Length) {
+                    if (m_MXUserMapsCreatedRequest !is null && m_moreItemsCreatedMaps) {
                         UI::TableNextRow();
                         UI::TableSetColumnIndex(0);
                         UI::AlignTextToFramePadding();
                         UI::Text(Icons::HourglassEnd + " Loading...");
                     }
                     UI::EndTable();
-                    if (m_MXUserMapsCreatedRequest is null && m_mapsCreatedTotal > m_mapsCreated.Length && UI::GreenButton("Load more")){
-                        m_pageCreatedMaps++;
+                    if (m_MXUserMapsCreatedRequest is null && m_moreItemsCreatedMaps && UI::GreenButton("Load more")){
                         StartMXCreatedMapsRequest();
                     }
                 }
@@ -631,7 +627,7 @@ class UserTab : Tab
             UI::EndTabItem();
         }
 
-        if (m_user.AwardsGiven > 0 && UI::BeginTabItem(Icons::Trophy + " Awarded")) {
+        if (m_user.AwardsGivenCount > 0 && UI::BeginTabItem(Icons::Trophy + " Awarded")) {
             UI::BeginChild("UserMapsAwardedChild");
             CheckMXAwardedMapsRequest();
             if (m_MXUserMapsAwardedRequest !is null && m_mapsAwardsGiven.Length == 0) {
@@ -660,15 +656,14 @@ class UserTab : Tab
                             UI::PopID();
                         }
                     }
-                    if (m_MXUserMapsCreatedRequest !is null && m_mapsAwardsGivenTotal > m_mapsAwardsGiven.Length) {
+                    if (m_MXUserMapsCreatedRequest !is null && m_moreItemsAwardsGiven) {
                         UI::TableNextRow();
                         UI::TableSetColumnIndex(0);
                         UI::AlignTextToFramePadding();
                         UI::Text(Icons::HourglassEnd + " Loading...");
                     }
                     UI::EndTable();
-                    if (m_MXUserMapsCreatedRequest is null && m_mapsAwardsGivenTotal > m_mapsAwardsGiven.Length && UI::GreenButton("Load more")){
-                        m_pageAwardedMaps++;
+                    if (m_MXUserMapsCreatedRequest is null && m_moreItemsAwardsGiven && UI::GreenButton("Load more")){
                         StartMXAwardedMapsRequest();
                     }
                 }

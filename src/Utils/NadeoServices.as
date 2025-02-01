@@ -116,7 +116,7 @@ namespace MXNadeoServicesGlobal
                     if (i < mapUidsPart.Length - 1) mapUidsPartString += ",";
                 }
 
-                string mxUrl = "https://"+MXURL+"/api/maps/get_map_info/multi/"+mapUidsPartString;
+                string mxUrl = "https://"+MXURL+"/api/maps?fields=" + MX::mapFields + "&uid=" +mapUidsPartString;
                 if (isDevMode) trace("NadeoServices - Loading map MX infos: " + mxUrl);
                 Net::HttpRequest@ mxReq = API::Get(mxUrl);
                 while (!mxReq.Finished()) {
@@ -124,21 +124,23 @@ namespace MXNadeoServicesGlobal
                 }
                 if (isDevMode) trace("NadeoServices - Map MX infos: " + mxReq.String());
                 auto mxJson = Json::Parse(mxReq.String());
+                int resCode = mxReq.ResponseCode();
 
-                if (mxJson.GetType() != Json::Type::Array) {
+                if (resCode >= 400 || mxJson.GetType() == Json::Type::Null || !mxJson.HasKey("Results")) {
                     throw("NadeoServices - Invalid MX map infos response");
                     mapUidsCheckDone += mapUidsPartLength;
                     continue;
                 }
 
-                for (uint i = 0; i < mxJson.Length; i++) {
+                Json::Value mapResults = mxJson["Results"];
+                for (uint i = 0; i < mapResults.Length; i++) {
                     if (isDevMode) trace("Loading map MX info "+mapUidsPart[i]);
-                    string resMapUid = mxJson[i]["TrackUID"];
+                    string resMapUid = mxJson[i]["MapUid"];
                     while (resMapUid != g_favoriteMaps[mapUidsCheckDone].uid) {
                         if (isDevMode) mxWarn("NadeoServices - Map UID mismatch: " + resMapUid + " != " + mapUidsPart[i] + "\nThe map will be ignored");
                         mapUidsCheckDone++;
                     }
-                    g_favoriteMaps[mapUidsCheckDone].MXId = mxJson[i]["TrackID"];
+                    g_favoriteMaps[mapUidsCheckDone].MXId = mxJson[i]["MapId"];
                     @g_favoriteMaps[mapUidsCheckDone].MXMapInfo = MX::MapInfo(mxJson[i]);
                     mapUidsCheckDone++;
                 }
