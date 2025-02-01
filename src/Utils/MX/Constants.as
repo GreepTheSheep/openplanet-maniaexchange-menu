@@ -1,5 +1,12 @@
 namespace MX
 {
+    enum MappackTypes {
+        Standard,
+        Campaign,
+        Competition,
+        Contest
+    };
+
     const array<string> mapPackFieldsArray = {
         "MappackId", 
         "Owner.Name", 

@@ -149,7 +149,7 @@ class MapPackTab : Tab
 
         UI::BeginChild("Summary", vec2(width,0));
 
-        auto thumb = Images::CachedFromURL("https://"+MXURL+"/mappack/thumbnail/"+m_mapPack.ID);
+        auto thumb = Images::CachedFromURL("https://"+MXURL+"/mappackthumb/"+m_mapPack.MappackId);
         if (thumb.m_texture !is null){
             vec2 thumbSize = thumb.m_texture.GetSize();
             UI::Image(thumb.m_texture, vec2(
@@ -172,31 +172,31 @@ class MapPackTab : Tab
         }
         UI::NewLine();
 
-        if (m_mapPack.Unreleased) UI::Text(Icons::Times + " \\$f77Unreleased");
+        if (!m_mapPack.IsPublic) UI::Text(Icons::Times + " \\$f77Unreleased");
         UI::Text(Icons::ThList + " \\$f77" + m_mapPack.TypeName);
         UI::SetPreviousTooltip("MapPack Type");
-        UI::Text(Icons::ListOl + " \\$f77" + m_mapPack.TrackCount);
+        UI::Text(Icons::ListOl + " \\$f77" + m_mapPack.MapCount);
         UI::SetPreviousTooltip("Track Count");
 
-        UI::Text(Icons::Hashtag + " \\$f77" + m_mapPack.ID);
+        UI::Text(Icons::Hashtag + " \\$f77" + m_mapPack.MappackId);
         UI::SetPreviousTooltip("MapPack ID");
         UI::SameLine();
         UI::TextDisabled(Icons::Clipboard);
         UI::SetPreviousTooltip("Click to copy to clipboard");
         if (UI::IsItemClicked()) {
-            IO::SetClipboard(tostring(m_mapPack.ID));
+            IO::SetClipboard(tostring(m_mapPack.MappackId));
             UI::ShowNotification(Icons::Clipboard + " Map pack ID copied to clipboard");
         }
 
-        if (m_mapPack.Request) UI::Text(Icons::HandPeaceO+ " \\$f77Open for requests!");
-        UI::Text(Icons::Calendar + " \\$f77" + m_mapPack.Created);
+        if (m_mapPack.IsRequest) UI::Text(Icons::HandPeaceO+ " \\$f77Open for requests!");
+        UI::Text(Icons::Calendar + " \\$f77" + m_mapPack.CreatedAt);
         UI::SetPreviousTooltip("Created date");
-        if (m_mapPack.Created != m_mapPack.Edited) {
-            UI::Text(Icons::Refresh + " \\$f77" + m_mapPack.Edited);
+        if (m_mapPack.CreatedAt != m_mapPack.UpdatedAt) {
+            UI::Text(Icons::Refresh + " \\$f77" + m_mapPack.UpdatedAt);
             UI::SetPreviousTooltip("Edited date");
         }
 
-        if (UI::CyanButton(Icons::ExternalLink + " View on "+pluginName)) OpenBrowserURL("https://"+MXURL+"/mappack/view/"+m_mapPack.ID);
+        if (UI::CyanButton(Icons::ExternalLink + " View on "+pluginName)) OpenBrowserURL("https://"+MXURL+"/mappackshow/"+m_mapPack.MappackId);
 
 #if TMNEXT
         if (!m_mapListError && mapPack_maps.Length != 0 && Permissions::PlayLocalMap() && UI::GreenButton(Icons::Check + " Add to Play later")) {
@@ -212,7 +212,6 @@ class MapPackTab : Tab
         } else {
             m_isLoading = false;
             if (!m_mapDownloaded) {
-
                 if (!m_mapListError && mapPack_maps.Length != 0 && UI::PurpleButton(Icons::Download + " Download Pack")) {
                     Renderables::Add(MapPackActionWarn(MapPackActions::Download, mapPack_maps));
                 }
@@ -233,7 +232,7 @@ class MapPackTab : Tab
 
         UI::TextDisabled("By " + m_mapPack.Username);
         UI::SetPreviousTooltip("Click to view "+m_mapPack.Username+"'s profile");
-        if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(m_mapPack.UserID), true);
+        if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(m_mapPack.UserId), true);
 
         UI::Separator();
 
