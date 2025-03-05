@@ -55,7 +55,7 @@ namespace NadeoServices
 
                 @jsonCache = ToJson();
             } catch {
-                mxWarn("Error parsing infos for map: " + name);
+                mxWarn("Error parsing infos for map " + name + ": " + getExceptionInfo());
             }
         }
 
@@ -87,7 +87,7 @@ namespace NadeoServices
                 json["mapType"] = mapType;
                 json["collectionName"] = collectionName;
             } catch {
-                mxWarn("Error converting map info to json for map " + name);
+                mxWarn("Error converting map info to json for map " + name + ": " + getExceptionInfo());
             }
 
             return json;

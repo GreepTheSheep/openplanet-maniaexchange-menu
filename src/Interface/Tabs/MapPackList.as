@@ -2,16 +2,16 @@ class MapPackListTab : Tab
 {
     Net::HttpRequest@ m_request;
     array<MX::MapPackInfo@> mapPacks;
-    uint totalItems = 0;
+    bool moreItems = false;
     bool m_useRandom = false;
-    int m_page = 1;
+    int lastId = 0;
 
     string u_search;
     uint64 u_typingStart;
     string t_selectedMode = "Mappack name";
     string t_paramMode = "name";
     string t_selectedFilter = "Latest";
-    string t_selectedPriord = "1";
+    string t_selectedPriord = "0";
 
     bool IsVisible() override {return Setting_Tab_MapPacks_Visible;}
     string GetLabel() override {return Icons::Inbox + " Map Packs";}
@@ -19,11 +19,12 @@ class MapPackListTab : Tab
 
     void GetRequestParams(dictionary@ params)
     {
-        params.Set("api", "on");
-        params.Set("format", "json");
-        params.Set("limit", "100");
-        params.Set("page", tostring(m_page));
-        params.Set("priord", t_selectedPriord);
+        params.Set("fields", MX::mapPackFields);
+        params.Set("order1", t_selectedPriord);
+
+        if (moreItems && lastId != 0) {
+            params.Set("after", tostring(lastId));
+        }
 
         if (u_search != "") {
             params.Set(t_paramMode, u_search);
@@ -31,7 +32,10 @@ class MapPackListTab : Tab
 
         if (m_useRandom) {
             params.Set("random", "1");
+            params.Set("count", "1");
             m_useRandom = false;
+        } else {
+            params.Set("count", "100");
         }
     }
 
@@ -43,21 +47,9 @@ class MapPackListTab : Tab
 
         dictionary params;
         GetRequestParams(params);
+        string urlParams = MX::DictToApiParams(params);
 
-        string urlParams = "";
-        if (!params.IsEmpty()) {
-            auto keys = params.GetKeys();
-            for (uint i = 0; i < keys.Length; i++) {
-                string key = keys[i];
-                string value;
-                params.Get(key, value);
-
-                urlParams += (i == 0 ? "?" : "&");
-                urlParams += key + "=" + Net::UrlEncode(value);
-            }
-        }
-
-        string url = "https://"+MXURL+"/mappacksearch/search"+urlParams;
+        string url = "https://"+MXURL+"/api/mappacks" + urlParams;
 
         if (isDevMode) trace("MapPackListTab::StartRequest: " + url);
         @m_request = API::Get(url);
@@ -88,18 +80,14 @@ class MapPackListTab : Tab
         if (m_request !is null && m_request.Finished()) {
             // Parse the response
             string res = m_request.String();
+            int resCode = m_request.ResponseCode();
             if (isDevMode) trace("MapPackListTab::CheckRequest: " + res);
             @m_request = null;
             auto json = Json::Parse(res);
 
-            if (json.GetType() == Json::Type::Null) {
+            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
                 mxError("Error while loading mappack list");
                 return;
-            }
-
-            // Handle the response
-            if (json.HasKey("error")) {
-                //HandleErrorResponse(json["error"]);
             } else {
                 HandleResponse(json);
             }
@@ -109,11 +97,15 @@ class MapPackListTab : Tab
     void HandleResponse(const Json::Value &in json)
     {
         MX::MapPackInfo@ mapPack;
-        totalItems = json["totalItemCount"];
+        moreItems = json["More"];
 
-        auto items = json["results"];
+        auto items = json["Results"];
         for (uint i = 0; i < items.Length; i++) {
             mapPacks.InsertLast(MX::MapPackInfo(items[i]));
+
+            if (moreItems && i == items.Length - 1) {
+                lastId = items[i]["MappackId"];
+            }
         }
     }
 
@@ -131,7 +123,7 @@ class MapPackListTab : Tab
             }
             if (UI::Selectable("Creator name", t_selectedMode == "Creator name")){
                 t_selectedMode = "Creator name";
-                t_paramMode = "creator";
+                t_paramMode = "owner";
                 Reload();
             }
             UI::EndCombo();
@@ -147,17 +139,17 @@ class MapPackListTab : Tab
         if (UI::BeginCombo("##MapPackFilter", t_selectedFilter)){
             if (UI::Selectable("Latest", t_selectedFilter == "Latest")){
                 t_selectedFilter = "Latest";
-                t_selectedPriord = "1";
+                t_selectedPriord = "0";
                 Reload();
             }
             if (UI::Selectable("Most downloaded", t_selectedFilter == "Most downloaded")){
                 t_selectedFilter = "Most downloaded";
-                t_selectedPriord = "13";
+                t_selectedPriord = "12";
                 Reload();
             }
             if (UI::Selectable("Most tracks", t_selectedFilter == "Most tracks")){
                 t_selectedFilter = "Most tracks";
-                t_selectedPriord = "6";
+                t_selectedPriord = "14";
                 Reload();
             }
             UI::EndCombo();
@@ -177,8 +169,8 @@ class MapPackListTab : Tab
     void Clear()
     {
         mapPacks.RemoveRange(0, mapPacks.Length);
-        totalItems = 0;
-        m_page = 1;
+        moreItems = false;
+        lastId = 0;
     }
 
     void Reload() override
@@ -231,15 +223,14 @@ class MapPackListTab : Tab
                         UI::PopID();
                     }
                 }
-                if (m_request !is null && totalItems > mapPacks.Length) {
+                if (m_request !is null && moreItems) {
                     UI::TableNextRow();
                     UI::TableSetColumnIndex(0);
                     UI::AlignTextToFramePadding();
                     UI::Text(Icons::HourglassEnd + " Loading...");
                 }
                 UI::EndTable();
-                if (m_request is null && totalItems > mapPacks.Length && UI::GreenButton("Load more")){
-                    m_page++;
+                if (m_request is null && moreItems && UI::GreenButton("Load more")){
                     StartRequest();
                 }
             }

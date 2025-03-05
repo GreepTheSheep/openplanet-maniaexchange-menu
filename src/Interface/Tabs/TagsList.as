@@ -3,7 +3,7 @@ class TagsListTab : MapListTab
     array<MX::MapTag@> m_selectedTags;
     string t_tags = "";
     string t_selectedSort = "Latest";
-    string t_selectedPriord = "-1";
+    string t_selectedOrder = "-1";
     bool m_tagInclusive = false;
     bool m_refresh = false;
 
@@ -21,11 +21,10 @@ class TagsListTab : MapListTab
             if (i > 0) t_tags += ",";
             t_tags += tostring(m_selectedTags[i].ID);
         }
-        params.Set("tags", t_tags);
-        if (m_tagInclusive) params.Set("tagsinc", "1");
-        else params.Set("tagsinc", "0");
-        if(t_selectedPriord != "-1"){
-            params.Set("priord", t_selectedPriord);
+        params.Set("tag", t_tags);
+        if (m_tagInclusive) params.Set("taginclusive", "true");
+        if (t_selectedOrder != "-1") {
+            params.Set("order1", t_selectedOrder);
         }
     }
 
@@ -86,12 +85,12 @@ class TagsListTab : MapListTab
         if (UI::BeginCombo("##TagListFilter", t_selectedSort)){
             if (UI::Selectable("Latest", t_selectedSort == "Latest")){
                 t_selectedSort = "Latest";
-                t_selectedPriord = "-1";
+                t_selectedOrder = "-1";
                 Reload();
             }
             if (UI::Selectable("Most Awarded", t_selectedSort == "Most Awarded")){
                 t_selectedSort = "Most Awarded";
-                t_selectedPriord = "8";
+                t_selectedOrder = "12";
                 Reload();
             }
             UI::EndCombo();

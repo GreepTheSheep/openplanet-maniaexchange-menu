@@ -1,12 +1,10 @@
 class MapTab : Tab
 {
     Net::HttpRequest@ m_MXrequest;
-    Net::HttpRequest@ m_MXAuthorsRequest;
     Net::HttpRequest@ m_TMIOrequest;
     Net::HttpRequest@ m_MXEmbedObjRequest;
     Net::HttpRequest@ m_MXReplaysRequest;
     MX::MapInfo@ m_map;
-    array<MX::MapAuthorInfo@> m_authors;
     array<TMIO::Leaderboard@> m_leaderboard;
     array<MX::MapReplay@> m_replays;
     int m_mapId;
@@ -16,7 +14,6 @@ class MapTab : Tab
     bool m_isMapOnPlayLater = false;
     bool m_isMapOnFavorite = false;
     bool m_error = false;
-    bool m_authorsError = false;
     bool m_TMIOrequestStart = false;
     bool m_TMIOrequestStarted = false;
     bool m_TMIOstopleaderboard = false;
@@ -34,7 +31,6 @@ class MapTab : Tab
         @g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24);
         m_mapId = trackId;
         StartMXRequest();
-        StartMXAuthorsRequest();
     }
 
     bool CanClose() override { return !m_isLoading; }
@@ -59,13 +55,18 @@ class MapTab : Tab
 #if DEPENDENCY_NADEOSERVICES
     void CheckIfMapExistsNadeoServices()
     {
-        m_isMapOnNadeoServices = MXNadeoServicesGlobal::CheckIfMapExistsAsync(m_map.TrackUID);
+        m_isMapOnNadeoServices = MXNadeoServicesGlobal::CheckIfMapExistsAsync(m_map.MapUid);
     }
 #endif
 
     void StartMXRequest()
     {
-        string url = "https://"+MXURL+"/api/maps/get_map_info/multi/"+m_mapId;
+        dictionary params;
+        params.Set("fields", MX::mapFields);
+        params.Set("id", tostring(m_mapId));
+        string urlParams = MX::DictToApiParams(params);
+
+        string url = "https://"+MXURL+"/api/maps" + urlParams;
         if (isDevMode) print("MapTab::StartRequest (MX): "+url);
         @m_MXrequest = API::Get(url);
     }
@@ -76,61 +77,27 @@ class MapTab : Tab
         if (m_MXrequest !is null && m_MXrequest.Finished()) {
             // Parse the response
             string res = m_MXrequest.String();
+            int resCode = m_MXrequest.ResponseCode();
             if (isDevMode) print("MapTab::CheckRequest (MX): " + res);
             @m_MXrequest = null;
             auto json = Json::Parse(res);
 
-            if (json.Length == 0) {
+            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
                 print("MapTab::CheckRequest (MX): Error parsing response");
                 m_error = true;
                 return;
             }
             // Handle the response
-            @m_map = MX::MapInfo(json[0]);
+            @m_map = MX::MapInfo(json["Results"][0]);
 #if DEPENDENCY_NADEOSERVICES
             startnew(CoroutineFunc(CheckIfMapExistsNadeoServices));
 #endif
         }
     }
 
-    void StartMXAuthorsRequest()
-    {
-        string url = "https://"+MXURL+"/api/maps/get_authors/"+m_mapId;
-        if (isDevMode) trace("MapTab::StartRequest (Authors): "+url);
-        @m_MXAuthorsRequest = API::Get(url);
-    }
-
-    void CheckMXAuthorsRequest()
-    {
-        // If there's a request, check if it has finished
-        if (m_MXAuthorsRequest !is null && m_MXAuthorsRequest.Finished()) {
-            // Parse the response
-            string res = m_MXAuthorsRequest.String();
-            if (isDevMode) trace("MapTab::CheckRequest (Authors): " + res);
-            @m_MXAuthorsRequest = null;
-            if (res.Length == 0) {
-                print("MapTab::CheckRequest (Authors): Error getting response");
-                m_authorsError = true;
-                return;
-            }
-            auto json = Json::Parse(res);
-
-            if (json.Length == 0) {
-                print("MapTab::ParseJSON (Authors): Error parsing response");
-                m_authorsError = true;
-                return;
-            }
-            // Handle the response
-            for (uint i = 0; i < json.Length; i++) {
-                MX::MapAuthorInfo@ author = MX::MapAuthorInfo(json[i]);
-                m_authors.InsertLast(author);
-            }
-        }
-    }
-
     void StartMXReplaysRequest()
     {
-        string url = "https://"+MXURL+"/api/replays/get_replays/"+m_mapId;
+        string url = "https://"+MXURL+"/api/replays?best=1&mapId=" + m_mapId;
         if (isDevMode) trace("MapTab::StartRequest (Replays): "+url);
         @m_MXReplaysRequest = API::Get(url);
     }
@@ -144,11 +111,12 @@ class MapTab : Tab
         if (m_MXReplaysRequest !is null && m_MXReplaysRequest.Finished()) {
             // Parse the response
             string res = m_MXReplaysRequest.String();
+            int resCode = m_MXReplaysRequest.ResponseCode();
             if (isDevMode) trace("MapTab::CheckRequest (Replays): " + res);
             @m_MXReplaysRequest = null;
             auto json = Json::Parse(res);
 
-            if (json.Length == 0) {
+            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
                 print("MapTab::CheckRequest (Replays): Error parsing response");
                 m_replaysError = true;
                 return;
@@ -157,9 +125,12 @@ class MapTab : Tab
                 // Remove any remaining replays if there's any
                 m_replays.RemoveRange(0, m_replays.Length);
             }
+
             // Handle the response
-            for (uint i = 0; i < json.Length; i++) {
-                MX::MapReplay@ replay = MX::MapReplay(json[i]);
+            Json::Value@ mapReplays = json["Results"];
+
+            for (uint i = 0; i < mapReplays.Length; i++) {
+                MX::MapReplay@ replay = MX::MapReplay(mapReplays[i]);
                 m_replays.InsertLast(replay);
             }
             m_replaysstopleaderboard = true;
@@ -169,7 +140,7 @@ class MapTab : Tab
     void StartTMIORequest(int offset = 0)
     {
         if (m_map is null) return;
-        string url = "https://trackmania.io/api/leaderboard/map/"+m_map.TrackUID;
+        string url = "https://trackmania.io/api/leaderboard/map/"+m_map.MapUid;
         if (offset != -1) url += "?length=100&offset=" + offset;
         if (isDevMode) trace("MapTab::StartRequest (TM.IO): "+url);
         m_TMIOrequestStarted = true;
@@ -223,7 +194,7 @@ class MapTab : Tab
 
     void StartMXEmbeddedRequest()
     {
-        string url = "https://"+MXURL+"/api/maps/embeddedobjects/"+m_mapId;
+        string url = "https://"+MXURL+"/api/maps/objects?trackId=" + m_mapId + "&count=" + m_map.EmbeddedObjectsCount;
         if (isDevMode) trace("MapTab::StartRequest (Embedded): "+url);
         @m_MXEmbedObjRequest = API::Get(url);
     }
@@ -237,18 +208,21 @@ class MapTab : Tab
         if (m_MXEmbedObjRequest !is null && m_MXEmbedObjRequest.Finished()) {
             // Parse the response
             string res = m_MXEmbedObjRequest.String();
+            int resCode = m_MXEmbedObjRequest.ResponseCode();
             if (isDevMode) trace("MapTab::CheckRequest (Embedded): " + res);
             @m_MXEmbedObjRequest = null;
             auto json = Json::Parse(res);
 
-            if (json.Length == 0) {
+            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
                 print("MapTab::CheckRequest (Embedded): Error parsing response");
                 m_mapEmbeddedObjectsError = true;
                 return;
             }
             // Handle the response
-            for (uint i = 0; i < json.Length; i++) {
-                MX::MapEmbeddedObject@ object = MX::MapEmbeddedObject(json[i], int(i) < Setting_EmbeddedObjectsLimit);
+            Json::Value@ mapObjects = json["Results"];
+
+            for (uint i = 0; i < mapObjects.Length; i++) {
+                MX::MapEmbeddedObject@ object = MX::MapEmbeddedObject(mapObjects[i], int(i) < Setting_EmbeddedObjectsLimit);
                 m_mapEmbeddedObjects.InsertLast(object);
             }
         }
@@ -270,12 +244,10 @@ class MapTab : Tab
             return;
         }
 
-        CheckMXAuthorsRequest();
-
         // Check if the map is already on the play later list
         for (uint i = 0; i < g_PlayLaterMaps.Length; i++) {
             MX::MapInfo@ playLaterMap = g_PlayLaterMaps[i];
-            if (playLaterMap.TrackID != m_map.TrackID) {
+            if (playLaterMap.MapId != m_map.MapId) {
                 m_isMapOnPlayLater = false;
             } else {
                 m_isMapOnPlayLater = true;
@@ -287,7 +259,7 @@ class MapTab : Tab
         // Check if the map is already on the favorites list
         for (uint i = 0; i < MXNadeoServicesGlobal::g_favoriteMaps.Length; i++) {
             NadeoServices::MapInfo@ favoriteMap = MXNadeoServicesGlobal::g_favoriteMaps[i];
-            if (favoriteMap.uid != m_map.TrackUID) {
+            if (favoriteMap.uid != m_map.MapUid) {
                 m_isMapOnFavorite = false;
             } else {
                 m_isMapOnFavorite = true;
@@ -303,37 +275,43 @@ class MapTab : Tab
 
         UI::BeginTabBar("MapImages");
 
-        if (m_map.ImageCount != 0) {
-            for (uint i = 1; i < m_map.ImageCount+1; i++) {
-                if(UI::BeginTabItem(tostring(i))){
-                    auto img = Images::CachedFromURL("https://"+MXURL+"/maps/"+m_map.TrackID+"/image/"+i);
+        for (uint i = 0; i < m_map.Images.Length; i++) {
+            MX::MapImage@ currImage = m_map.Images[i];
 
-                    if (img.m_texture !is null){
-                        vec2 thumbSize = img.m_texture.GetSize();
+            if (UI::BeginTabItem(tostring(currImage.Position))) {
+                auto img = Images::CachedFromURL("https://"+MXURL+"/mapimage/"+m_map.MapId+"/"+currImage.Position+"?hq=true");
+
+                if (img.m_texture !is null){
+                    vec2 thumbSize = img.m_texture.GetSize();
+                    UI::Image(img.m_texture, vec2(
+                        width,
+                        thumbSize.y / (thumbSize.x / width)
+                    ));
+                    if (UI::IsItemHovered()) {
+                        UI::BeginTooltip();
                         UI::Image(img.m_texture, vec2(
                             width,
                             thumbSize.y / (thumbSize.x / width)
                         ));
-                        if (UI::IsItemHovered()) {
-                            UI::BeginTooltip();
-                            UI::Image(img.m_texture, vec2(
-                                Draw::GetWidth() * 0.6,
-                                thumbSize.y / (thumbSize.x / (Draw::GetWidth() * 0.6))
-                            ));
-                            UI::EndTooltip();
-                        }
-                    } else {
-                        int HourGlassValue = Time::Stamp % 3;
-                        string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-                        UI::Text(Hourglass + " Loading");
+                        UI::EndTooltip();
                     }
-                    UI::EndTabItem();
+                } else if (!img.m_error) {
+                    int HourGlassValue = Time::Stamp % 3;
+                    string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
+                    UI::Text(Hourglass + " Loading");
+                } else if (img.m_unsupportedFormat) {
+                    UI::Text(Icons::FileImageO + " \\$zUnsupported file format WEBP");
+                } else if (img.m_notFound) {
+                    UI::Text("\\$fc0"+Icons::ExclamationTriangle+" \\$Image not found");
+                } else {
+                    UI::Text(Icons::Times+" \\$zError while loading image");
                 }
+                UI::EndTabItem();
             }
         }
 
         if(UI::BeginTabItem("Thumbnail")){
-            auto thumb = Images::CachedFromURL("https://"+MXURL+"/maps/thumbnail/"+m_map.TrackID);
+            auto thumb = Images::CachedFromURL("https://"+MXURL+"/mapthumb/"+m_map.MapId);
             if (thumb.m_texture !is null){
                 vec2 thumbSize = thumb.m_texture.GetSize();
                 UI::Image(thumb.m_texture, vec2(
@@ -348,10 +326,16 @@ class MapTab : Tab
                     ));
                     UI::EndTooltip();
                 }
-            } else {
+            } else if (!thumb.m_error) {
                 int HourGlassValue = Time::Stamp % 3;
                 string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
                 UI::Text(Hourglass + " Loading");
+            } else if (thumb.m_unsupportedFormat) {
+                UI::Text(Icons::FileImageO + " \\$zUnsupported file format WEBP");
+            } else if (thumb.m_notFound) {
+                UI::Text("\\$fc0"+Icons::ExclamationTriangle+" \\$zThumbnail not found");
+            } else {
+                UI::Text(Icons::Times+" \\$zError while loading thumbnail");
             }
             UI::EndTabItem();
         }
@@ -373,7 +357,7 @@ class MapTab : Tab
             UI::SetPreviousTooltip("Map Type");
         } else {
 #endif
-        UI::Text(Icons::Hourglass + " \\$f77" + m_map.LengthName);
+        UI::Text(Icons::Hourglass + " \\$f77" + Time::Format(m_map.Length));
         UI::SetPreviousTooltip("Length");
 #if MP4
         }
@@ -385,13 +369,13 @@ class MapTab : Tab
         UI::Text(Icons::LevelUp+ " \\$f77" + m_map.DifficultyName);
         UI::SetPreviousTooltip("Difficulty");
 
-        UI::Text(Icons::Hashtag+ " \\$f77" + m_map.TrackID);
+        UI::Text(Icons::Hashtag+ " \\$f77" + m_map.MapId);
         UI::SetPreviousTooltip("Track ID");
         UI::SameLine();
         UI::TextDisabled(Icons::Clipboard);
         UI::SetPreviousTooltip("Click to copy to clipboard");
         if (UI::IsItemClicked()) {
-            IO::SetClipboard(tostring(m_map.TrackID));
+            IO::SetClipboard(tostring(m_map.MapId));
             UI::ShowNotification(Icons::Clipboard + " Track ID copied to clipboard");
         }
 
@@ -416,11 +400,12 @@ class MapTab : Tab
         UI::Text(Icons::Money + " \\$f77" + m_map.DisplayCost);
         UI::SetPreviousTooltip("Coppers cost");
 
-        if (UI::GoldButton(Icons::Trophy + " Award this map on "+shortMXName)) OpenBrowserURL("https://"+MXURL+"/maps/"+m_map.TrackID+"#award");
+        // TODO doesn't work with v2 anymore
+        // if (UI::GoldButton(Icons::Trophy + " Award this map on "+shortMXName)) OpenBrowserURL("https://"+MXURL+"/mapshow/"+m_map.MapId+"#award");
 
-        if (UI::CyanButton(Icons::ExternalLink + " View on "+pluginName)) OpenBrowserURL("https://"+MXURL+"/maps/"+m_map.TrackID);
+        if (UI::CyanButton(Icons::ExternalLink + " View on "+pluginName)) OpenBrowserURL("https://"+MXURL+"/mapshow/"+m_map.MapId);
 #if TMNEXT
-        if (UI::Button(Icons::ExternalLink + " View on Trackmania.io")) OpenBrowserURL("https://trackmania.io/#/leaderboard/"+m_map.TrackUID);
+        if (UI::Button(Icons::ExternalLink + " View on Trackmania.io")) OpenBrowserURL("https://trackmania.io/#/leaderboard/"+m_map.MapUid);
 #endif
 
 #if TMNEXT
@@ -437,13 +422,13 @@ class MapTab : Tab
                     if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
                     UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
                     UI::ShowNotification(Icons::ExclamationTriangle + " Warning", "The map type is not supported for direct play, it can crash your game or returns you to the menu", UI::HSV(0.11, 1.0, 1.0), 15000);
-                    MX::mapToLoad = m_map.TrackID;
+                    MX::mapToLoad = m_map.MapId;
                 }
             } else {
                 if (UI::GreenButton(Icons::Play + " Play Map")) {
                     if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
                     UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
-                    MX::mapToLoad = m_map.TrackID;
+                    MX::mapToLoad = m_map.MapId;
                 }
 #if TMNEXT && DEPENDENCY_NADEOSERVICES
                 if (SupportedModes.HasKey(m_map.MapType) && Permissions::CreateAndUploadMap() && IsInServer()) {
@@ -452,8 +437,8 @@ class MapTab : Tab
 
                     UI::BeginDisabled(!sameMapType);
                     if (UI::GreenButton(Icons::Server + " Play Map on Nadeo-hosted Room")) {
-                        TMNext::AddMapToServer_MapUid = m_map.TrackUID;
-                        TMNext::AddMapToServer_MapMXId = m_map.TrackID;
+                        TMNext::AddMapToServer_MapUid = m_map.MapUid;
+                        TMNext::AddMapToServer_MapMXId = m_map.MapId;
                         TMNext::AddMapToServer_MapType = m_map.MapType;
                         Renderables::Add(PlayMapOnNadeoRoomInfos());
                     }
@@ -475,7 +460,7 @@ class MapTab : Tab
             if (UI::YellowButton(Icons::Wrench + " Edit Map")) {
                 if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
                 UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
-                MX::mapToEdit = m_map.TrackID;
+                MX::mapToEdit = m_map.MapId;
             }
 #if TMNEXT
         } else {
@@ -492,13 +477,13 @@ class MapTab : Tab
             if (!m_mapDownloaded) {
                 if (UI::PurpleButton(Icons::Download + " Download Map")) {
                     UI::ShowNotification("Downloading map...", Text::OpenplanetFormatCodes(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
-                    MX::mapToDL = m_map.TrackID;
+                    MX::mapToDL = m_map.MapId;
                     m_mapDownloaded = true;
                 }
             } else {
                 UI::Text("\\$0f0" + Icons::Download + " \\$zMap downloaded");
                 UI::PushStyleColor(UI::Col::Text, UI::GetStyleColor(UI::Col::TextDisabled));
-                UI::TextWrapped("to " + "Maps\\Downloaded\\"+pluginName+"\\" + m_map.TrackID + " - " + Path::SanitizeFileName(m_map.Name) + ".Map.Gbx");
+                UI::TextWrapped("to " + "Maps\\Downloaded\\"+pluginName+"\\" + m_map.MapId + " - " + Path::SanitizeFileName(m_map.Name) + ".Map.Gbx");
                 UI::PopStyleColor();
                 if (UI::RoseButton(Icons::FolderOpen + " Open Containing Folder")) OpenExplorerPath(IO::FromUserGameFolder("Maps/Downloaded/"+pluginName));
             }
@@ -522,7 +507,7 @@ class MapTab : Tab
 #endif
                 for (uint i = 0; i < g_PlayLaterMaps.Length; i++) {
                     MX::MapInfo@ playLaterMap = g_PlayLaterMaps[i];
-                    if (playLaterMap.TrackID == m_map.TrackID) {
+                    if (playLaterMap.MapId == m_map.MapId) {
                         g_PlayLaterMaps.RemoveAt(i);
                         m_isMapOnPlayLater = false;
                         SavePlayLater(g_PlayLaterMaps);
@@ -539,7 +524,7 @@ class MapTab : Tab
 #else
             if (UI::GreenButton(Icons::Heart + " Add to Favorites")) {
 #endif
-                MXNadeoServicesGlobal::m_mapUidToAction = m_map.TrackUID;
+                MXNadeoServicesGlobal::m_mapUidToAction = m_map.MapUid;
                 startnew(MXNadeoServicesGlobal::AddMapToFavoritesAsync);
             }
             UI::EndDisabled();
@@ -550,7 +535,7 @@ class MapTab : Tab
 #else
             if (UI::RedButton(Icons::Heart + " Remove from Favorites")) {
 #endif
-                MXNadeoServicesGlobal::m_mapUidToAction = m_map.TrackUID;
+                MXNadeoServicesGlobal::m_mapUidToAction = m_map.MapUid;
                 startnew(MXNadeoServicesGlobal::RemoveMapFromFavoritesAsync);
             }
         }
@@ -565,41 +550,38 @@ class MapTab : Tab
         UI::TextWrapped(Text::OpenplanetFormatCodes(m_map.GbxMapName));
         UI::PopFont();
 
-        if (m_authorsError) {
-            UI::TextDisabled("By " + m_map.Username);
-        } else {
-            // check if array is empty
-            if (m_authors.Length > 0) {
-                UI::TextDisabled("By: ");
-                UI::SameLine();
-                for (uint i = 0; i < m_authors.Length; i++) {
-                    MX::MapAuthorInfo@ author = m_authors[i];
-                    UI::TextDisabled(author.Username + (i == m_authors.Length - 1 ? "" : ", "));
-                    if (UI::IsItemHovered()) {
-                        UI::BeginTooltip();
-                        if (author.Uploader) {
-                            UI::Text(Icons::CloudUpload + " Uploader");
-                            UI::Separator();
-                        }
-                        if (author.Role != "") {
-                            UI::Text(author.Role);
-                            UI::Separator();
-                        }
-                        UI::TextDisabled("Click to see "+author.Username+"'s profile");
-                        UI::EndTooltip();
+        if (m_map.Authors.Length > 0) {
+            UI::TextDisabled("By: ");
+            UI::SameLine();
+            for (uint i = 0; i < m_map.Authors.Length; i++) {
+                MX::MapAuthorInfo@ author = m_map.Authors[i];
+                UI::TextDisabled(author.Name + (i == m_map.Authors.Length - 1 ? "" : ", "));
+                if (UI::IsItemHovered()) {
+                    UI::BeginTooltip();
+                    if (author.Uploader) {
+                        UI::Text(Icons::CloudUpload + " Uploader");
+                        UI::Separator();
                     }
-                    if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(author.UserID), true);
-                    if (i < m_authors.Length - 1) UI::SameLine();
+                    if (author.Role != "") {
+                        UI::Text(author.Role);
+                        UI::Separator();
+                    }
+                    UI::TextDisabled("Click to see " + author.Name + "'s profile");
+                    UI::EndTooltip();
                 }
-            } else {
-                int HourGlassValue = Time::Stamp % 3;
-                string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-                UI::TextDisabled(Hourglass + " By " + m_map.Username);
+                if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(author.UserId), true);
+                if (i < m_map.Authors.Length - 1) UI::SameLine();
             }
+        } else {
+            UI::TextDisabled("By " + m_map.Username);
         }
 
-        if (m_map.SizeWarning)
-            UI::Text("\\$f70" + Icons::ExclamationTriangle + " \\$zThis map is larger than 6MB and therefore can not be played on servers.");
+        if (m_map.ServerSizeExceeded)
+#if MP4
+            UI::Text("\\$f70" + Icons::ExclamationTriangle + " \\$zThis map is larger than 4MB and therefore can not be played on servers.");
+#else
+            UI::Text("\\$f70" + Icons::ExclamationTriangle + " \\$zThis map is larger than 7MB and therefore can not be played on servers.");
+#endif
 
         UI::Separator();
 
@@ -607,14 +589,14 @@ class MapTab : Tab
 
         if(UI::BeginTabItem("Description")){
             UI::BeginChild("MapDescriptionChild");
-            IfaceRender::MXComment(m_map.Comments);
+            IfaceRender::MXComment(m_map.AuthorComments);
             UI::EndChild();
             UI::EndTabItem();
         }
         if (m_map.ReplayCount > 0 && UI::BeginTabItem(shortMXName + " Leaderboard")) {
             UI::BeginChild("MapMXLeaderboardChild");
             CheckMXReplaysRequest();
-            if (UI::GreenButton(Icons::ExternalLink + " Submit")) OpenBrowserURL("https://"+MXURL+"/upload/replays/select_files/"+m_mapId);
+            if (UI::GreenButton(Icons::ExternalLink + " Submit")) OpenBrowserURL("https://"+MXURL+"/replayupload/"+m_mapId);
             if (m_MXReplaysRequest !is null && !m_MXReplaysRequest.Finished()) {
                 int HourGlassValue = Time::Stamp % 3;
                 string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
@@ -646,12 +628,21 @@ class MapTab : Tab
 
                                 UI::TableSetColumnIndex(0);
                                 UI::AlignTextToFramePadding();
-                                UI::Text(tostring(entry.Position));
+                                if (entry.IsValid) {
+                                    if (m_replays[0].Position == 0) { // TODO remove once Position is fixed
+                                        UI::Text(tostring(entry.Position + 1));
+                                    } else {
+                                        UI::Text(tostring(entry.Position));
+                                    }
+                                } else {
+                                    UI::Text("\\$f00" + Icons::Exclamation);
+                                    UI::SetPreviousTooltip("Replay was driven on a different version of the map");
+                                }
 
                                 UI::TableSetColumnIndex(1);
                                 UI::Text(entry.Username);
                                 UI::SetPreviousTooltip("Click to see "+entry.Username+"'s profile");
-                                if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(entry.UserID), true);
+                                if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(entry.UserId), true);
 
                                 UI::TableSetColumnIndex(2);
                                 UI::Text(Time::Format(entry.ReplayTime));
@@ -661,10 +652,15 @@ class MapTab : Tab
                                 }
 
                                 UI::TableSetColumnIndex(3);
-                                UI::Text(tostring(entry.ReplayPoints) + " \\$666("+tostring(entry.Percentage)+"%)");
-                                if (i != 0){
-                                    UI::SameLine();
-                                    UI::Text("\\$a66(" + (entry.ReplayPoints - m_replays[0].ReplayPoints) + ")");
+
+                                if (m_replays[0].Score == 0) {
+                                    UI::Text("−");
+                                } else {
+                                    UI::Text(tostring(entry.Score) + " \\$666("+tostring(entry.Percentage)+"%)"); // TODO missing percentage
+                                    if (i != 0) {
+                                        UI::SameLine();
+                                        UI::Text("\\$a66(" + (entry.Score - m_replays[0].Score) + ")");
+                                    }
                                 }
                             }
                         }
@@ -759,7 +755,7 @@ class MapTab : Tab
             UI::BeginChild("MapEmbeddedObjectsChild");
 
             CheckMXEmbeddedRequest();
-            if (m_mapEmbeddedObjects.Length != m_map.EmbeddedObjectsCount) {
+            if (m_mapEmbeddedObjects.Length == 0) {
                 int HourGlassValue = Time::Stamp % 3;
                 string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
                 UI::Text(Hourglass + " Loading...");
@@ -787,9 +783,9 @@ class MapTab : Tab
                             UI::TableSetColumnIndex(1);
                             if (object.Username.Length == 0) UI::TextDisabled(object.ObjectAuthor);
                             else UI::Text(object.Username);
-                            if (object.UserID > 0) {
+                            if (object.UserId > 0) {
                                 UI::SetPreviousTooltip("Click to see "+(object.Username.Length > 0 ? (object.Username+"'s") : "user")+" profile");
-                                if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(object.UserID), true);
+                                if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(object.UserId), true);
                             }
 
                             UI::TableSetColumnIndex(2);

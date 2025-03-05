@@ -1,40 +1,45 @@
 namespace MX
 {
-    class MapReplay
+    class MapReplay // TODO finish once the documentation is complete
     {
-        int ReplayID;
-        int UserID;
+        int ReplayId;
+        int UserId;
         string Username;
-        int TrackID;
-        string UploadedAt;
+        string ReplayAt;
         uint ReplayTime;
-        uint StuntScore;
-        uint Respawns;
-        int Position;
-        int Beaten;
         int Percentage;
         int ReplayPoints;
-        int NadeoPoints;
-        string ExeBuild;
-        string PlayerModel;
+        int Respawns;
+        int Position;
+        int Score;
 
         MapReplay(const Json::Value &in json)
         {
-            ReplayID = json["ReplayID"];
-            UserID = json["UserID"];
-            Username = json["Username"];
-            TrackID = json["TrackID"];
-            UploadedAt = json["UploadedAt"];
-            ReplayTime = json["ReplayTime"];
-            StuntScore = json["StuntScore"];
-            Respawns = json["Respawns"];
-            Position = json["Position"];
-            Beaten = json["Beaten"];
-            Percentage = json["Percentage"];
-            ReplayPoints = json["ReplayPoints"];
-            NadeoPoints = json["NadeoPoints"];
-            ExeBuild = json["ExeBuild"];
-            PlayerModel = json["PlayerModel"];
+            try {
+                ReplayId = json["ReplayId"];
+                if (json["User"].GetType() != Json::Type::Null) {
+                    UserId = json["User"]["UserId"];
+                    Username = json["User"]["Name"];
+                }
+                ReplayAt = json["ReplayAt"];
+                ReplayTime = json["ReplayTime"];
+                ReplayPoints = json["ReplayPoints"];
+                Respawns = json["Respawns"];
+                // Percentage = json["Percentage"]; TODO missing
+                Score = json["Score"];
+
+                if (json["Position"].GetType() != Json::Type::Null) {
+                    Position = json["Position"]; // TODO off by one
+                } else {
+                    Position = -1;
+                }
+            } catch {
+                mxWarn("Error parsing info for replay ID " + ReplayId + ": " + getExceptionInfo(), true);
+            }
+        }
+
+        bool get_IsValid() const {
+            return Position >= 0; // TODO change to 1 when Position gets fixed
         }
     }
 }

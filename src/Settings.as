@@ -70,9 +70,9 @@ void RenderMP4RepoSelectSettings()
                 print("Changed repository to " + repo + " (" + MXURL + "), reloading tags...");
                 startnew(MX::CheckForAPILoaded);
 
-                for (uint i = 0; i < mxMenu.tabs.Length; i++) {
-                    if (mxMenu.tabs[i] !is null) {
-                        mxMenu.tabs[i].Reload();
+                for (uint t = 0; t < mxMenu.tabs.Length; t++) {
+                    if (mxMenu.tabs[t] !is null) {
+                        mxMenu.tabs[t].Reload();
                     }
                 }
             }

@@ -110,11 +110,11 @@ void RenderMenuMain(){
 #endif
                             if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
                             UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(map.GbxMapName) + "\\$z\\$s by " + map.Username);
-                            MX::mapToLoad = map.TrackID;
+                            MX::mapToLoad = map.MapId;
                         }
                         if (!MX::APIDown && UI::MenuItem(Icons::Kenney::InfoCircle + " Open information")){
                             if (!Setting_ShowMenu) Setting_ShowMenu = true;
-                            mxMenu.AddTab(MapTab(map.TrackID), true);
+                            mxMenu.AddTab(MapTab(map.MapId), true);
                         }
                         if (UI::MenuItem("\\$f00"+Icons::TrashO + " Remove map")){
                             g_PlayLaterMaps.RemoveAt(i);
@@ -154,11 +154,11 @@ void RenderMenuMain(){
 #endif
                                 if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
                                 UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(map.GbxMapName) + " \\$zby " + map.Username);
-                                MX::mapToLoad = map.TrackID;
+                                MX::mapToLoad = map.MapId;
                             }
                             if (!MX::APIDown && UI::MenuItem(Icons::Kenney::InfoCircle + " Open information")){
                                 if (!Setting_ShowMenu) Setting_ShowMenu = true;
-                                mxMenu.AddTab(MapTab(map.TrackID), true);
+                                mxMenu.AddTab(MapTab(map.MapId), true);
                             }
                             if (UI::MenuItem("\\$f00"+Icons::TrashO + " Remove map")){
                                 MXNadeoServicesGlobal::m_mapUidToAction = mapNadeo.uid;
@@ -192,13 +192,13 @@ void RenderMenuMain(){
 #endif
         if (UI::BeginMenu(pluginColor+Icons::InfoCircle + " \\$zAbout")){
             if (UI::BeginMenu("\\$f00"+Icons::Heart + " \\$zSupport")){
-                if (UI::MenuItem(pluginColor+Icons::Heart + " \\$zSupport ManiaExchange")) OpenBrowserURL("https://"+MXURL+"/support");
+                if (UI::MenuItem(pluginColor+Icons::Heart + " \\$zSupport ManiaExchange")) OpenBrowserURL("https://"+MXURL+"/about?r=support");
                 if (UI::MenuItem(Icons::Heartbeat + " \\$zSupport the plugin creator")) OpenBrowserURL("https://github.com/sponsors/GreepTheSheep");
                 UI::EndMenu();
             }
             UI::Separator();
             if (UI::BeginMenu(pluginColor+Icons::KeyboardO + " \\$zContact")){
-                if (UI::MenuItem(pluginColor+Icons::KeyboardO + " \\$zContact ManiaExchange")) OpenBrowserURL("https://"+MXURL+"/messaging/compose/11");
+                if (UI::MenuItem(pluginColor+Icons::KeyboardO + " \\$zContact ManiaExchange")) OpenBrowserURL("https://"+MXURL+"/postcreate?PmTargetUserId=11");
                 if (UI::MenuItem(Icons::DiscordAlt + "Plugin creator's Discord")) OpenBrowserURL("https://greep.gq/discord");
                 UI::EndMenu();
             }

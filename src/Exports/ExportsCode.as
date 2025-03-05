@@ -30,14 +30,19 @@ namespace ManiaExchange
 
     Json::Value GetMapInfoAsync(int mapID)
     {
-        string url = "https://"+MXURL+"/api/maps/get_map_info/multi/"+mapID;
+        dictionary params;
+        params.Set("fields", MX::mapFields);
+        params.Set("id", tostring(mapID));
+        string urlParams = MX::DictToApiParams(params);
+
+        string url = "https://"+MXURL+"/api/maps" + urlParams;
         if (isDevMode) print("Exports::GetMapInfoAsync::StartRequest : "+url);
         Json::Value mxRes = API::GetAsync(url);
-        if (mxRes.Length == 0) {
+        if (mxRes.GetType() == Json::Type::Null || mxRes.Length == 0 || !mxRes.HasKey("Results") || mxRes["Results"].Length == 0) {
             if (isDevMode) print("Exports::GetMapInfoAsync::CheckRequest : Error parsing response");
             return Json::Parse("");
         }
         // Handle the response
-        return MX::MapInfo(mxRes[0]).ToJson();
+        return MX::MapInfo(mxRes["Results"][0]).ToJson();
     }
 }

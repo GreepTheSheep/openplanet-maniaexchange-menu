@@ -2,7 +2,7 @@ namespace MX
 {
     void GetAllMapTags()
     {
-        string url = "https://"+MXURL+"/api/tags/gettags";
+        string url = "https://"+MXURL+"/api/meta/tags";
         if (isDevMode) trace("Loading tags: " + url);
         Json::Value resNet = API::GetAsync(url);
 
@@ -21,10 +21,36 @@ namespace MX
 
             print(m_mapTags.Length + " tags loaded");
         } catch {
-            throw("Error while loading tags");
+            throw("Error while loading tags: " + getExceptionInfo());
         }
     }
 
+    void GetAllVehicles()
+    {
+        string url = "https://"+MXURL+"/api/meta/vehicles";
+        if (isDevMode) trace("Loading vehicles: " + url);
+        Json::Value res = API::GetAsync(url);
+
+        try {
+            m_vehicles.InsertLast("Any");
+
+            for (uint i = 0; i < res.Length; i++)
+            {
+                string vehicleName = res[i];
+
+                if (vehicleName != "") {
+                    if (isDevMode) trace("Loading vehicle " + vehicleName);
+                    m_vehicles.InsertLast(vehicleName);
+                }
+            }
+
+            print(m_vehicles.Length + " vehicles loaded");
+        } catch {
+            throw("Error while loading vehicles: " + getExceptionInfo());
+        }
+    }
+
+    // TODO change to v2 once the endpoint is added
     void GetAllLeaderboardSeasons()
     {
         string url = "https://"+MXURL+"/api/leaderboard/getseasons";
@@ -44,76 +70,31 @@ namespace MX
 
             print(m_leaderboardSeasons.Length + " seasons loaded");
         } catch {
-            throw("Error while loading seasons");
+            throw("Error while loading seasons: " + getExceptionInfo());
         }
     }
 
     void LoadEnvironments()
     {
 #if TMNEXT
-        m_environments.InsertLast(Environment(1, "Stadium"));
+        m_environments.InsertLast(MapEnvironment(1, "Stadium"));
 #else
         if (repo == MP4mxRepos::Trackmania) {
-            m_environments.InsertLast(Environment(-1, "Any"));
-            m_environments.InsertLast(Environment(0, "Custom"));
-            m_environments.InsertLast(Environment(1, "Canyon"));
-            m_environments.InsertLast(Environment(2, "Stadium"));
-            m_environments.InsertLast(Environment(3, "Valley"));
-            m_environments.InsertLast(Environment(4, "Lagoon"));
-            m_environments.InsertLast(Environment(5, "Desert / TMOne Speed"));
-            m_environments.InsertLast(Environment(6, "Snow / TMOne Alpine"));
-            // m_environments.InsertLast(Environment(7, "Rally (not available)"));
-            // m_environments.InsertLast(Environment(8, "Coast (not available)"));
-            m_environments.InsertLast(Environment(9, "Bay / TMOne Bay"));
-            m_environments.InsertLast(Environment(10, "Island / TM²U Island"));
+            m_environments.InsertLast(MapEnvironment(-1, "Any"));
+            m_environments.InsertLast(MapEnvironment(0, "Custom"));
+            m_environments.InsertLast(MapEnvironment(1, "Canyon"));
+            m_environments.InsertLast(MapEnvironment(2, "Stadium"));
+            m_environments.InsertLast(MapEnvironment(3, "Valley"));
+            m_environments.InsertLast(MapEnvironment(4, "Lagoon"));
+            m_environments.InsertLast(MapEnvironment(5, "Desert / TMOne Speed"));
+            m_environments.InsertLast(MapEnvironment(6, "Snow / TMOne Alpine"));
+            // m_environments.InsertLast(MapEnvironment(7, "Rally (not available)"));
+            // m_environments.InsertLast(MapEnvironment(8, "Coast (not available)"));
+            m_environments.InsertLast(MapEnvironment(9, "Bay / TMOne Bay"));
+            m_environments.InsertLast(MapEnvironment(10, "Island / TM²U Island"));
         } else {
-            m_environments.InsertLast(Environment(1, "Storm"));
+            m_environments.InsertLast(MapEnvironment(1, "Storm"));
         }
-#endif
-    }
-
-    void LoadVehicles()
-    {
-#if MP4
-        if (repo == MP4mxRepos::Trackmania) {
-            m_vehicles.InsertLast(Vehicle(-1, "Any"));
-            m_vehicles.InsertLast(Vehicle(0, "Custom"));
-            m_vehicles.InsertLast(Vehicle(1, "CanyonCar"));
-            m_vehicles.InsertLast(Vehicle(2, "StadiumCar"));
-            m_vehicles.InsertLast(Vehicle(3, "ValleyCar"));
-            m_vehicles.InsertLast(Vehicle(4, "LagoonCar"));
-            m_vehicles.InsertLast(Vehicle(5, "DesertCar"));
-            m_vehicles.InsertLast(Vehicle(6, "SnowCar"));
-            m_vehicles.InsertLast(Vehicle(7, "RallyCar"));
-            m_vehicles.InsertLast(Vehicle(8, "CoastCar"));
-            m_vehicles.InsertLast(Vehicle(9, "BayCar"));
-            m_vehicles.InsertLast(Vehicle(10, "IslandCar"));
-            m_vehicles.InsertLast(Vehicle(11, "SpeedCarV2"));
-            m_vehicles.InsertLast(Vehicle(12, "TrafficCar"));
-            m_vehicles.InsertLast(Vehicle(13, "RallyCarUD"));
-            m_vehicles.InsertLast(Vehicle(14, "DesertCarUD"));
-            m_vehicles.InsertLast(Vehicle(15, "SnowCarUD"));
-            m_vehicles.InsertLast(Vehicle(16, "BayCarUD"));
-            m_vehicles.InsertLast(Vehicle(17, "IslandCarUD"));
-            m_vehicles.InsertLast(Vehicle(18, "CoastCarUD"));
-            m_vehicles.InsertLast(Vehicle(19, "StadiumCarUD"));
-            m_vehicles.InsertLast(Vehicle(20, "CanyonCarFlippy"));
-            m_vehicles.InsertLast(Vehicle(21, "Low-Gravity Car"));
-            m_vehicles.InsertLast(Vehicle(22, "StadiumUpsideDown"));
-            m_vehicles.InsertLast(Vehicle(23, "SpeedCar"));
-            m_vehicles.InsertLast(Vehicle(24, "AlpineCar"));
-            m_vehicles.InsertLast(Vehicle(25, "Vehi2"));
-            m_vehicles.InsertLast(Vehicle(26, "Vehi1"));
-        } else {
-            m_vehicles.InsertLast(Vehicle(1, "StormMan"));
-        }
-#elif TMNEXT
-        m_vehicles.InsertLast(Vehicle(-1, "Any"));
-        // m_vehicles.InsertLast(Vehicle(0, "Custom"));
-        m_vehicles.InsertLast(Vehicle(1, "CarSport"));
-        m_vehicles.InsertLast(Vehicle(2, "CarSnow"));
-        m_vehicles.InsertLast(Vehicle(3, "CarRally"));
-        m_vehicles.InsertLast(Vehicle(4, "CarDesert"));
 #endif
     }
 
@@ -125,10 +106,9 @@ namespace MX
             GetAllMapTags();
             if (m_environments.Length > 0) m_environments.RemoveRange(0, m_environments.Length);
             LoadEnvironments();
-#if MP4
             if (m_vehicles.Length > 0) m_vehicles.RemoveRange(0, m_vehicles.Length);
-            LoadVehicles();
-
+            GetAllVehicles();
+#if MP4
             if (repo == MP4mxRepos::Trackmania) {
 #endif
             if (m_leaderboardSeasons.Length > 0) m_leaderboardSeasons.RemoveRange(0, m_leaderboardSeasons.Length);
@@ -162,12 +142,12 @@ namespace MX
             }
 #endif
 
-            auto json = API::GetAsync("https://"+MXURL+"/api/maps/get_map_info/multi/"+mapId);
-            if (json.Length == 0) {
+            auto json = API::GetAsync("https://"+MXURL+"/api/maps?fields=" + mapFields + "&id=" +mapId);
+            if (json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
                 mxError("Track not found.", true);
                 return;
             }
-            MX::MapInfo@ map = MX::MapInfo(json[0]);
+            MX::MapInfo@ map = MX::MapInfo(json["Results"][0]);
 
 #if TMNEXT
             if (Permissions::PlayLocalMap()) {
@@ -182,7 +162,7 @@ namespace MX
 #if TMNEXT
                     && Permissions::OpenAdvancedMapEditor()
 #endif
-                ) app.ManiaTitleControlScriptAPI.EditMap("https://"+MXURL+"/maps/download/"+mapId, "", "");
+                ) app.ManiaTitleControlScriptAPI.EditMap("https://"+MXURL+"/mapgbx/"+mapId, "", "");
                 else {
                     string Mode = "";
                     Json::Value Modes = MX::ModesFromMapType();
@@ -202,13 +182,13 @@ namespace MX
                     }
 #endif
 
-                    app.ManiaTitleControlScriptAPI.PlayMap("https://"+MXURL+"/maps/download/"+mapId, Mode, "");
+                    app.ManiaTitleControlScriptAPI.PlayMap("https://"+MXURL+"/mapgbx/"+mapId, Mode, "");
                 }
 #if TMNEXT
             } else mxError("You don't have permission to play custom maps.", true);
 #endif
         } catch {
-            mxError("Error while loading map");
+            mxError("Error while loading map: " + getExceptionInfo());
             mxError(pluginName + " API is not responding, it must be down.", true);
             APIDown = true;
         }
@@ -217,12 +197,12 @@ namespace MX
     void DownloadMap(int mapId, const string &in mapPackName = "", string _fileName = "")
     {
         try {
-            auto json = API::GetAsync("https://"+MXURL+"/api/maps/get_map_info/multi/"+mapId);
-            if (json.Length == 0) {
+            auto json = API::GetAsync("https://"+MXURL+"/api/maps?fields=" + mapFields + "&id=" +mapId);
+            if (json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
                 mxError("Track not found.", true);
                 return;
             }
-            MX::MapInfo@ map = MX::MapInfo(json[0]);
+            MX::MapInfo@ map = MX::MapInfo(json["Results"][0]);
 
             string downloadedMapFolder = IO::FromUserGameFolder("Maps/Downloaded");
             string mxDLFolder = downloadedMapFolder + "/" + pluginName;
@@ -235,7 +215,7 @@ namespace MX
                 if (!IO::FolderExists(mxDLFolder)) IO::CreateFolder(mxDLFolder);
             }
 
-            Net::HttpRequest@ netMap = API::Get("https://"+MXURL+"/maps/download/"+mapId);
+            Net::HttpRequest@ netMap = API::Get("https://"+MXURL+"/mapgbx/"+mapId);
             mapDownloadInProgress = true;
             trace("Started downloading map "+map.Name+" ("+mapId+") to "+mxDLFolder);
             while(!netMap.Finished()) {
@@ -243,12 +223,12 @@ namespace MX
             }
             mapDownloadInProgress = false;
 
-            if (_fileName.Length == 0) _fileName = map.TrackID + " - " + map.Name;
+            if (_fileName.Length == 0) _fileName = map.MapId + " - " + map.Name;
             _fileName = Path::SanitizeFileName(_fileName);
             netMap.SaveToFile(mxDLFolder + "/" + _fileName + ".Map.Gbx");
             print("Map downloaded to " + mxDLFolder + "/" + _fileName + ".Map.Gbx");
         } catch {
-            mxError("Error while downloading map");
+            mxError("Error while downloading map: " + getExceptionInfo());
             mxError(pluginName + " API is not responding, it must be down.", true);
             APIDown = true;
         }
@@ -268,7 +248,7 @@ namespace MX
         if (!IsInEditor()){
             if (currentMap !is null) {
                 string UIDMap = currentMap.MapInfo.MapUid;
-                string url = "https://"+MXURL+"/api/maps/get_map_info/multi/" + UIDMap;
+                string url = "https://"+MXURL+"/api/maps?fields=" + mapFields + "&uid=" + UIDMap;
                 if (req is null){
                     if (isDevMode) trace("LoadCurrentMap::StartRequest: " + url);
                     @req = API::Get(url);
@@ -282,9 +262,9 @@ namespace MX
                     // Evaluate reqest result
                     Json::Value returnedObject = Json::Parse(response);
                     try {
-                        if (returnedObject.Length > 0) {
-                            @currentMapInfo = MapInfo(returnedObject[0]);
-                            int g_MXId = returnedObject[0]["TrackID"];
+                        if (returnedObject["Results"].Length > 0) {
+                            @currentMapInfo = MapInfo(returnedObject["Results"][0]);
+                            int g_MXId = returnedObject["Results"][0]["MapId"];
                             return g_MXId;
                         } else {
                             return -1;
@@ -301,5 +281,22 @@ namespace MX
         } else {
             return -5;
         }
+    }
+
+    string DictToApiParams(dictionary params) {
+        string urlParams = "";
+        if (!params.IsEmpty()) {
+            auto keys = params.GetKeys();
+            for (uint i = 0; i < keys.Length; i++) {
+                string key = keys[i];
+                string value;
+                params.Get(key, value);
+
+                urlParams += (i == 0 ? "?" : "&");
+                urlParams += key + "=" + Net::UrlEncode(value);
+            }
+        }
+
+        return urlParams;
     }
 }

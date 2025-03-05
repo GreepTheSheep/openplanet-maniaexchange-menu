@@ -7,7 +7,7 @@ namespace MX
         string ObjectAuthor;
         string Name;
         bool onIX;
-        int UserID;
+        int UserId;
         string Username;
 
         MapEmbeddedObject(const Json::Value &in json, bool willFetchID = true)
@@ -15,14 +15,19 @@ namespace MX
             try {
                 ObjectPath = json["ObjectPath"];
                 ObjectAuthor = json["ObjectAuthor"];
-                Name = json["Name"];
                 onIX = json["onIX"];
-                if (json["UserID"].GetType() != Json::Type::Null) UserID = json["UserID"];
-                if (json["Username"].GetType() != Json::Type::Null) Username = json["Username"];
-                if (willFetchID) startnew(CoroutineFunc(TryGetID));
+
+                Name = Path::GetFileName(ObjectPath); // TODO temp fix, change to json["Name"] once it's added
+
+                if (json["Author"].GetType() != Json::Type::Null) {
+                    UserId = json["Author"]["UserId"];
+                    Username = json["Author"]["Name"];
+                }
+
+                if (willFetchID && onIX) startnew(CoroutineFunc(TryGetID));
                 else ID = -2;
             } catch {
-                mxWarn("Error parsing embedded object info for the map", true);
+                mxWarn("Error parsing embedded object info for the map: " + getExceptionInfo(), true);
             }
         }
 

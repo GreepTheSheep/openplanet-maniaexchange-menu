@@ -2,57 +2,64 @@ namespace MX
 {
     class MapPackInfo
     {
-        int ID;
-        int UserID;
+        int MappackId;
+        int UserId;
         string Username;
-        string Created;
-        string Edited;
+        string CreatedAt;
+        string UpdatedAt;
         string Description;
         string Name;
-        string TypeName;
-        bool Unreleased;
+        int Type;
+        bool IsPublic;
+        bool MaplistReleased;
         bool Downloadable;
-        int Downloads;
-        bool Request;
-        int TrackCount;
+        bool IsRequest;
+        int MapCount;
         array<MapTag@> Tags;
 
         MapPackInfo(const Json::Value &in json)
         {
             try {
-                ID = json["ID"];
-                UserID = json["UserID"];
-                Username = json["Username"];
-                Created = json["Created"];
-                Edited = json["Edited"];
-                Description = json["Description"];
+                MappackId = json["MappackId"];
                 Name = json["Name"];
-                TypeName = json["TypeName"];
-                Unreleased = json["Unreleased"];
+                CreatedAt = json["CreatedAt"];
+                if (json["Description"].GetType() != Json::Type::Null) Description = json["Description"];
+                Type = json["Type"];
+                IsPublic = json["IsPublic"];
+                MaplistReleased = json["MaplistReleased"];
                 Downloadable = json["Downloadable"];
-                Downloads = json["Downloads"];
-                Request = json["Request"];
-                TrackCount = json["TrackCount"];
+                IsRequest = json["IsRequest"];
+                MapCount = json["MapCount"];
 
-                // Tags is a string of ids separated by commas
-                // gets the ids and fetches the tags from m_mapTags
-                string tagIds = json["TagsString"];
-                string[] tagIdsSplit = tagIds.Split(",");
-                for (uint i = 0; i < tagIdsSplit.Length; i++)
-                {
-                    int tagId = Text::ParseInt(tagIdsSplit[i]);
-                    for (uint j = 0; j < m_mapTags.Length; j++)
+                if (json["UpdatedAt"].GetType() != Json::Type::Null) {
+                    UpdatedAt = json["UpdatedAt"];
+                } else {
+                    UpdatedAt = json["CreatedAt"];
+                }
+
+                if (json["Owner"].GetType() != Json::Type::Null) {
+                    UserId = json["Owner"]["UserId"];
+                    Username = json["Owner"]["Name"];
+                }
+
+                // Tags is an array of tag objects
+                if (json["Tags"].GetType() != Json::Type::Null) {
+                    const Json::Value@ tagObjects = json["Tags"];
+
+                    for (uint i = 0; i < tagObjects.Length; i++)
                     {
-                        if (m_mapTags[j].ID == tagId)
+                        for (uint j = 0; j < m_mapTags.Length; j++)
                         {
-                            Tags.InsertLast(m_mapTags[j]);
-                            break;
+                            if (m_mapTags[j].ID == tagObjects[i]["TagId"]) {
+                                Tags.InsertLast(m_mapTags[j]);
+                                break;
+                            }
                         }
                     }
                 }
             } catch {
                 Name = json["Name"];
-                mxWarn("Error parsing infos for the map pack: "+ Name, true);
+                mxWarn("Error parsing infos for the map pack " + Name + ": " + getExceptionInfo(), true);
             }
         }
 
@@ -60,31 +67,41 @@ namespace MX
         {
             Json::Value json = Json::Object();
             try {
-                json["ID"] = ID;
-                json["UserID"] = UserID;
+                json["MappackId"] = MappackId;
+                json["UserId"] = UserId;
                 json["Username"] = Username;
-                json["Created"] = Created;
-                json["Edited"] = Edited;
+                json["CreatedAt"] = CreatedAt;
+                json["UpdatedAt"] = UpdatedAt;
                 json["Description"] = Description;
                 json["Name"] = Name;
-                json["TypeName"] = TypeName;
-                json["Unreleased"] = Unreleased;
+                json["Type"] = Type;
+                json["IsPublic"] = IsPublic;
+                json["MaplistReleased"] = MaplistReleased;
                 json["Downloadable"] = Downloadable;
-                json["Downloads"] = Downloads;
-                json["Request"] = Request;
-                json["TrackCount"] = TrackCount;
+                json["IsRequest"] = IsRequest;
+                json["MapCount"] = MapCount;
 
-                string tagsStr = "";
+                Json::Value ownerObject = Json::Object();
+                ownerObject["UserId"] = UserId;
+                ownerObject["Name"] = Username;
+
+                json["Owner"] = ownerObject;
+
+                Json::Value tagArray = Json::Array();
                 for (uint i = 0; i < Tags.Length; i++)
                 {
-                    tagsStr += tostring(Tags[i].ID);
-                    if (i < Tags.Length - 1) tagsStr += ",";
+                    tagArray.Add(Tags[i].ToJson());
                 }
-                json["Tags"] = tagsStr;
+
+                json["Tags"] = tagArray;
             } catch {
-                mxWarn("Error converting map pack info to json for map pack "+Name, true);
+                mxWarn("Error converting map pack info to json for map pack " + Name + ": " + getExceptionInfo(), true);
             }
             return json;
+        }
+
+        string get_TypeName() {
+            return tostring(MappackTypes(Type));
         }
     }
 }

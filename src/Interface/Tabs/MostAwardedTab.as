@@ -1,7 +1,7 @@
 class MostAwardedTab : MapListTab
 {
     string t_selectedDate = "This Week";
-    string t_selectedMode = "4";
+    string t_selectedMode = "42";
 
     bool IsVisible() override {return Setting_Tab_MostAwarded_Visible;}
     string GetLabel() override {return Icons::Trophy + " Most Awarded Maps";}
@@ -11,27 +11,27 @@ class MostAwardedTab : MapListTab
     void GetRequestParams(dictionary@ params) override
     {
         MapListTab::GetRequestParams(params);
-        params.Set("priord", "8");
-        params.Set("mode", t_selectedMode);
+        params.Set("order1", t_selectedMode);
+        if (t_selectedDate != "All Time") params.Set("order2", "12");
     }
 
     void RenderHeader() override
     {
         UI::SetNextItemWidth(150);
         if (UI::BeginCombo("##MostAwardDateFilter", t_selectedDate)){
-            if (UI::Selectable("All Time", t_selectedDate == "All Time")){
-                t_selectedDate = "All Time";
-                t_selectedMode = "0";
-                Reload();
-            }
             if (UI::Selectable("This Week", t_selectedDate == "This Week")){
                 t_selectedDate = "This Week";
-                t_selectedMode = "4";
+                t_selectedMode = "42";
                 Reload();
             }
             if (UI::Selectable("This Month", t_selectedDate == "This Month")){
                 t_selectedDate = "This Month";
-                t_selectedMode = "5";
+                t_selectedMode = "44";
+                Reload();
+            }
+            if (UI::Selectable("All Time", t_selectedDate == "All Time")){
+                t_selectedDate = "All Time";
+                t_selectedMode = "12";
                 Reload();
             }
             UI::EndCombo();

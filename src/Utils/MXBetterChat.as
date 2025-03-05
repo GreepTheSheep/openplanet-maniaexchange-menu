@@ -131,8 +131,8 @@ namespace MXBetterChat
                 }
             } else
             {
-                if (m_send) BetterChat::SendChatMessage("$l[https://"+MXURL+"/maps/"+currentMapInfo.TrackID+"]\"" + currentMapInfo.Name + "\" on " + pluginName + "$l");
-                else OpenBrowserURL("https://"+MXURL+"/maps/"+currentMapInfo.TrackID);
+                if (m_send) BetterChat::SendChatMessage("$l[https://"+MXURL+"/mapshow/"+currentMapInfo.MapId+"]\"" + currentMapInfo.Name + "\" on " + pluginName + "$l");
+                else OpenBrowserURL("https://"+MXURL+"/mapshow/"+currentMapInfo.MapId);
             }
         }
     }

@@ -19,7 +19,7 @@ class MapPackTab : Tab
         @g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24);
         mapPack_maps.RemoveRange(0, mapPack_maps.Length);
         m_mapPackId = packId;
-        StartMXRequest(m_mapPackId);
+        StartMXRequest();
     }
 
     bool CanClose() override { return !m_isLoading; }
@@ -40,9 +40,19 @@ class MapPackTab : Tab
         }
     }
 
-    void StartMXRequest(int packId)
+    void GetRequestParams(dictionary@ params)
     {
-        string url = "https://"+MXURL+"/api/mappack/get_info/"+packId;
+        params.Set("fields", MX::mapPackFields);
+        params.Set("id", tostring(m_mapPackId));
+    }
+
+    void StartMXRequest()
+    {
+        dictionary params;
+        GetRequestParams(params);
+        string urlParams = MX::DictToApiParams(params);
+
+        string url = "https://"+MXURL+"/api/mappacks" + urlParams;
         if (isDevMode) trace("MapPackTab::StartRequest (MX): "+url);
         @m_MXrequest = API::Get(url);
     }
@@ -53,23 +63,24 @@ class MapPackTab : Tab
         if (m_MXrequest !is null && m_MXrequest.Finished()) {
             // Parse the response
             string res = m_MXrequest.String();
+            int resCode = m_MXrequest.ResponseCode();
             if (isDevMode) trace("MapPackTab::CheckRequest (MX): " + res);
             @m_MXrequest = null;
             auto json = Json::Parse(res);
 
-            if (json.HasKey("Exception")) {
-                string errorMsg = json["Message"];
+            if (resCode >= 400) {
+                string errorMsg = json.Get("title", "Unknown error");
                 HandleMXResponseError(errorMsg);
                 return;
             }
 
-            if (json.Length == 0) {
+            if (json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
                 HandleMXResponseError("Empty response");
                 return;
             }
-            StartMXMapListRequest(m_mapPackId);
+            StartMXMapListRequest();
             // Handle the response
-            HandleMXResponse(json);
+            HandleMXResponse(json["Results"][0]);
         }
     }
 
@@ -85,9 +96,14 @@ class MapPackTab : Tab
         m_errorMessage = errorMessage;
     }
 
-    void StartMXMapListRequest(int packId)
+    void StartMXMapListRequest()
     {
-        string url = "https://"+MXURL+"/api/mappack/get_mappack_tracks/"+packId;
+        dictionary mapParams;
+        mapParams.Set("fields", MX::mapFields);
+        mapParams.Set("mappackid", tostring(m_mapPackId));
+        string mapUrlParams = MX::DictToApiParams(mapParams);
+
+        string url = "https://"+MXURL+"/api/maps" + mapUrlParams;
         if (isDevMode) trace("MapPackTab::StartRequest (Map List): "+url);
         @m_MXMapsRequest = API::Get(url);
     }
@@ -98,17 +114,18 @@ class MapPackTab : Tab
         if (m_MXMapsRequest !is null && m_MXMapsRequest.Finished()) {
             // Parse the response
             string res = m_MXMapsRequest.String();
+            int resCode = m_MXMapsRequest.ResponseCode();
             if (isDevMode) trace("MapPackTab::CheckRequest (Map List): " + res);
             @m_MXMapsRequest = null;
             auto json = Json::Parse(res);
 
-            if (json.Length == 0) {
+            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
                 print("MapPackTab::CheckRequest (Map List): Error parsing response");
                 HandleMXMapListResponseError();
                 return;
             }
             // Handle the response
-            HandleMXMapListResponse(json);
+            HandleMXMapListResponse(json["Results"]);
         }
     }
 
@@ -149,7 +166,7 @@ class MapPackTab : Tab
 
         UI::BeginChild("Summary", vec2(width,0));
 
-        auto thumb = Images::CachedFromURL("https://"+MXURL+"/mappack/thumbnail/"+m_mapPack.ID);
+        auto thumb = Images::CachedFromURL("https://"+MXURL+"/mappackthumb/"+m_mapPack.MappackId);
         if (thumb.m_texture !is null){
             vec2 thumbSize = thumb.m_texture.GetSize();
             UI::Image(thumb.m_texture, vec2(
@@ -172,31 +189,31 @@ class MapPackTab : Tab
         }
         UI::NewLine();
 
-        if (m_mapPack.Unreleased) UI::Text(Icons::Times + " \\$f77Unreleased");
+        if (!m_mapPack.IsPublic) UI::Text(Icons::Times + " \\$f77Unreleased");
         UI::Text(Icons::ThList + " \\$f77" + m_mapPack.TypeName);
         UI::SetPreviousTooltip("MapPack Type");
-        UI::Text(Icons::ListOl + " \\$f77" + m_mapPack.TrackCount);
+        UI::Text(Icons::ListOl + " \\$f77" + m_mapPack.MapCount);
         UI::SetPreviousTooltip("Track Count");
 
-        UI::Text(Icons::Hashtag + " \\$f77" + m_mapPack.ID);
+        UI::Text(Icons::Hashtag + " \\$f77" + m_mapPack.MappackId);
         UI::SetPreviousTooltip("MapPack ID");
         UI::SameLine();
         UI::TextDisabled(Icons::Clipboard);
         UI::SetPreviousTooltip("Click to copy to clipboard");
         if (UI::IsItemClicked()) {
-            IO::SetClipboard(tostring(m_mapPack.ID));
+            IO::SetClipboard(tostring(m_mapPack.MappackId));
             UI::ShowNotification(Icons::Clipboard + " Map pack ID copied to clipboard");
         }
 
-        if (m_mapPack.Request) UI::Text(Icons::HandPeaceO+ " \\$f77Open for requests!");
-        UI::Text(Icons::Calendar + " \\$f77" + m_mapPack.Created);
+        if (m_mapPack.IsRequest) UI::Text(Icons::HandPeaceO+ " \\$f77Open for requests!");
+        UI::Text(Icons::Calendar + " \\$f77" + m_mapPack.CreatedAt);
         UI::SetPreviousTooltip("Created date");
-        if (m_mapPack.Created != m_mapPack.Edited) {
-            UI::Text(Icons::Refresh + " \\$f77" + m_mapPack.Edited);
+        if (m_mapPack.CreatedAt != m_mapPack.UpdatedAt) {
+            UI::Text(Icons::Refresh + " \\$f77" + m_mapPack.UpdatedAt);
             UI::SetPreviousTooltip("Edited date");
         }
 
-        if (UI::CyanButton(Icons::ExternalLink + " View on "+pluginName)) OpenBrowserURL("https://"+MXURL+"/mappack/view/"+m_mapPack.ID);
+        if (UI::CyanButton(Icons::ExternalLink + " View on "+pluginName)) OpenBrowserURL("https://"+MXURL+"/mappackshow/"+m_mapPack.MappackId);
 
 #if TMNEXT
         if (!m_mapListError && mapPack_maps.Length != 0 && Permissions::PlayLocalMap() && UI::GreenButton(Icons::Check + " Add to Play later")) {
@@ -212,7 +229,6 @@ class MapPackTab : Tab
         } else {
             m_isLoading = false;
             if (!m_mapDownloaded) {
-
                 if (!m_mapListError && mapPack_maps.Length != 0 && UI::PurpleButton(Icons::Download + " Download Pack")) {
                     Renderables::Add(MapPackActionWarn(MapPackActions::Download, mapPack_maps));
                 }
@@ -233,7 +249,7 @@ class MapPackTab : Tab
 
         UI::TextDisabled("By " + m_mapPack.Username);
         UI::SetPreviousTooltip("Click to view "+m_mapPack.Username+"'s profile");
-        if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(m_mapPack.UserID), true);
+        if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(m_mapPack.UserId), true);
 
         UI::Separator();
 
