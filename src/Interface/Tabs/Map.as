@@ -435,7 +435,7 @@ class MapTab : Tab
                     CTrackMania@ app = cast<CTrackMania>(GetApp());
                     bool sameMapType = CleanMapType(app.RootMap.MapType) == m_map.MapType;
 
-                    UI::BeginDisabled(!sameMapType);
+                    UI::BeginDisabled(!sameMapType || m_map.ServerSizeExceeded);
                     if (UI::GreenButton(Icons::Server + " Play Map on Nadeo-hosted Room")) {
                         TMNext::AddMapToServer_MapUid = m_map.MapUid;
                         TMNext::AddMapToServer_MapMXId = m_map.MapId;
@@ -444,6 +444,7 @@ class MapTab : Tab
                     }
                     UI::EndDisabled();
                     if (!sameMapType) UI::SetItemTooltip(Icons::Times + " Map type doesn't match the current room's game mode");
+                    else if (m_map.ServerSizeExceeded) UI::SetItemTooltip(Icons::Times + " Map size exceeds the server limit of 7MB");
                 }
 #endif
             }
