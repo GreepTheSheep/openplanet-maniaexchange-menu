@@ -2,7 +2,6 @@
 name = "ManiaExchange"
 author = "Greep"
 category = "TMX"
-perms = "paid"
 siteid = 154
 
 version = "1.3.0"

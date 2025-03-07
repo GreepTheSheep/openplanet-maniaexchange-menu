@@ -225,6 +225,13 @@ void RenderMenuMain(){
 }
 
 void Main(){
+#if TMNEXT
+    if (!OpenplanetHasPaidPermissions()) {
+        mxError("You need Club / Standard access to use this plugin!", true);
+        return;
+    }
+#endif
+
     @mxMenu = Window();
 #if MP4
     if (repo == MP4mxRepos::Trackmania) MXURL = "tm.mania.exchange";
