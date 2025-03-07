@@ -792,11 +792,15 @@ class MapTab : Tab
                             UI::TableSetColumnIndex(2);
                             if (object.ID != 0){
                                 if (object.ID == -1) {
-                                    UI::Text("\\$f00" + Icons::Times);
-                                    UI::SetPreviousTooltip("Error while fetching this object on item.exchange");
+                                    UI::BeginDisabled();
+                                    UI::YellowButton(Icons::Times);
+                                    UI::EndDisabled();
+                                    UI::SetItemTooltip("Error while fetching this object on item.exchange");
                                 } else if (object.ID == -2) {
-                                    UI::TextDisabled(Icons::ExclamationTriangle);
-                                    UI::SetPreviousTooltip("The list of embedded objects is too long for this map.");
+                                    UI::BeginDisabled();
+                                    UI::YellowButton(Icons::ExclamationTriangle);
+                                    UI::EndDisabled();
+                                    UI::SetItemTooltip("The list of embedded objects is too long for this map.");
                                 } else {
 #if DEPENDENCY_ITEMEXCHANGE
                                     if (UI::YellowButton(Icons::Exchange)) ItemExchange::ShowItemInfo(object.ID);
@@ -805,8 +809,10 @@ class MapTab : Tab
 #endif
                                 }
                             } else {
-                                UI::TextDisabled(Icons::Times);
-                                UI::SetPreviousTooltip("This object is not published on item.exchange");
+                                UI::BeginDisabled();
+                                UI::YellowButton(Icons::Times);
+                                UI::EndDisabled();
+                                UI::SetItemTooltip("This object is not published on item.exchange");
                             }
                             UI::PopID();
                         }
