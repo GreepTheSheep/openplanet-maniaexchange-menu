@@ -61,7 +61,7 @@ class Window{
         UI::PushStyleVar(UI::StyleVar::WindowRounding, 10.0);
         UI::PushStyleVar(UI::StyleVar::FramePadding, vec2(10, 6));
         UI::PushStyleVar(UI::StyleVar::WindowTitleAlign, vec2(.5, .5));
-        UI::SetNextWindowSize(820, 500);
+        UI::SetNextWindowSize(820, 500, UI::Cond::FirstUseEver);
         if(UI::Begin(nameMenu + " \\$666v"+Meta::ExecutingPlugin().Version+"###ManiaExchange Menu", Setting_ShowMenu)){
             // Push the last active tab style so that the separator line is colored (this is drawn in BeginTabBar)
             auto lastActiveTab = c_lastActiveTab;
