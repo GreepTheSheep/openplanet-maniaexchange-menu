@@ -225,5 +225,10 @@ namespace MX
 
             return GameModes::Race;
         }
+
+        bool get_SupportsLeaderboard() {
+            // Whether the map type supports online records (TMNEXT only)
+            return (GameMode != GameModes::Platform && GameMode != GameModes::Royal && GameMode != GameModes::Puzzle);
+        }
     }
 }

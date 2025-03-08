@@ -673,6 +673,8 @@ class MapTab : Tab
             UI::EndTabItem();
         }
 #if TMNEXT
+        UI::BeginDisabled(!m_map.SupportsLeaderboard);
+
         if(UI::BeginTabItem("Online Leaderboard")){
             UI::BeginChild("MapLeaderboardChild");
 
@@ -750,6 +752,8 @@ class MapTab : Tab
             UI::EndChild();
             UI::EndTabItem();
         }
+        UI::EndDisabled();
+        if (!m_map.SupportsLeaderboard) UI::SetItemTooltip("\\$f00" + Icons::Times + " \\$zThis map doesn't support online records");
 #endif
 
         if(m_map.EmbeddedObjectsCount > 0 && UI::BeginTabItem("Embedded objects (" + m_map.EmbeddedObjectsCount + ")")){
