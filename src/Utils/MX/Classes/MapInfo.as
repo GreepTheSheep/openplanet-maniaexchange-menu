@@ -216,5 +216,14 @@ namespace MX
             }
             return "Unknown";
         }
+
+        GameModes get_GameMode() {
+            if (MapType == "Platform" || MapType == "TM_Platform") return GameModes::Platform;
+            else if (MapType == "Puzzle") return GameModes::Puzzle;
+            else if (MapType == "EW Stunts - Score Attack" || MapType == "Stunts" || MapType == "TM_Stunt") return GameModes::Stunt;
+            else if (MapType == "TM_Royal") return GameModes::Royal;
+
+            return GameModes::Race;
+        }
     }
 }

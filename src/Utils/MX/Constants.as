@@ -18,6 +18,14 @@ namespace MX
         Contest
     };
 
+    enum GameModes {
+        Race,
+        Stunt,
+        Platform,
+        Puzzle,
+        Royal
+    };
+
     const array<string> mapPackFieldsArray = {
         "MappackId", 
         "Owner.Name", 
