@@ -96,7 +96,6 @@ class MapPackListTab : Tab
 
     void HandleResponse(const Json::Value &in json)
     {
-        MX::MapPackInfo@ mapPack;
         moreItems = json["More"];
 
         auto items = json["Results"];
