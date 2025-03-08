@@ -7,6 +7,8 @@ class MapPackTab : Tab
     MX::MapPackInfo@ m_mapPack;
 
     int m_mapPackId;
+    int m_lastIdMapList = 0;
+    bool m_moreItemsMapList = false;
     bool m_isLoading = false;
     bool m_error = false;
     bool m_mapListError = false;
@@ -101,6 +103,11 @@ class MapPackTab : Tab
         dictionary mapParams;
         mapParams.Set("fields", MX::mapFields);
         mapParams.Set("mappackid", tostring(m_mapPackId));
+
+        if (m_moreItemsMapList && m_lastIdMapList != 0) {
+            mapParams.Set("after", tostring(m_lastIdMapList));
+        }
+
         string mapUrlParams = MX::DictToApiParams(mapParams);
 
         string url = "https://"+MXURL+"/api/maps" + mapUrlParams;
@@ -125,6 +132,7 @@ class MapPackTab : Tab
                 return;
             }
             // Handle the response
+            m_moreItemsMapList = json["More"];
             HandleMXMapListResponse(json["Results"]);
         }
     }
@@ -135,6 +143,10 @@ class MapPackTab : Tab
             MX::MapInfo@ map = MX::MapInfo(json[i]);
             map.MapPackName = m_mapPack.Name;
             mapPack_maps.InsertLast(map);
+
+            if (m_moreItemsMapList && i == json.Length - 1) {
+                m_lastIdMapList = json[i]["MapId"];
+            }
         }
     }
 
@@ -293,7 +305,19 @@ class MapPackTab : Tab
                                 UI::PopID();
                             }
                         }
+
+                        if (m_MXMapsRequest !is null && m_moreItemsMapList) {
+                            UI::TableNextRow();
+                            UI::TableSetColumnIndex(0);
+                            UI::AlignTextToFramePadding();
+                            UI::Text(Icons::HourglassEnd + " Loading...");
+                        }
+
                         UI::EndTable();
+
+                        if (m_MXMapsRequest is null && m_moreItemsMapList && UI::GreenButton("Load more")) {
+                            StartMXMapListRequest();
+                        }
                     }
                 }
             }
