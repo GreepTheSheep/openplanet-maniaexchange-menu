@@ -646,10 +646,19 @@ class MapTab : Tab
                                 if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(entry.UserId), true);
 
                                 UI::TableSetColumnIndex(2);
-                                UI::Text(Time::Format(entry.ReplayTime));
+                                if (m_map.GameMode == MX::GameModes::Stunt) {
+                                    UI::Text(entry.ReplayPoints + " pts");
+                                } else {
+                                    UI::Text(Time::Format(entry.ReplayTime));
+                                }
+
                                 if (i != 0){
                                     UI::SameLine();
-                                    UI::Text("\\$f00(+ " + Time::Format(entry.ReplayTime - m_replays[0].ReplayTime) + ")");
+                                    if (m_map.GameMode == MX::GameModes::Stunt) {
+                                        UI::Text("\\$f00(− " + (m_replays[0].ReplayPoints - entry.ReplayPoints) + ")");
+                                    } else {
+                                        UI::Text("\\$f00(+ " + Time::Format(entry.ReplayTime - m_replays[0].ReplayTime) + ")");
+                                    }
                                 }
 
                                 UI::TableSetColumnIndex(3);
