@@ -40,9 +40,10 @@ namespace MX
                 yield();
             }
             string res = req.String();
-            if (isDevMode) trace("MapEmbeddedObject::CheckRequest (TryGetID): " + res);
+            auto json = req.Json();
             @req = null;
-            auto json = Json::Parse(res);
+
+            if (isDevMode) trace("MapEmbeddedObject::CheckRequest (TryGetID): " + res);
 
             if (json.GetType() == Json::Type::Null) {
                 print("MapEmbeddedObject::CheckRequest (TryGetID): Error parsing response");

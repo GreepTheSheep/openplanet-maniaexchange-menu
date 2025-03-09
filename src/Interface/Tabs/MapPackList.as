@@ -81,9 +81,10 @@ class MapPackListTab : Tab
             // Parse the response
             string res = m_request.String();
             int resCode = m_request.ResponseCode();
-            if (isDevMode) trace("MapPackListTab::CheckRequest: " + res);
+            auto json = m_request.Json();
             @m_request = null;
-            auto json = Json::Parse(res);
+
+            if (isDevMode) trace("MapPackListTab::CheckRequest: " + res);
 
             if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
                 mxError("Error while loading mappack list");

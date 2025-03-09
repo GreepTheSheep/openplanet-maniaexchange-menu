@@ -66,9 +66,10 @@ class MapPackTab : Tab
             // Parse the response
             string res = m_MXrequest.String();
             int resCode = m_MXrequest.ResponseCode();
-            if (isDevMode) trace("MapPackTab::CheckRequest (MX): " + res);
+            auto json = m_MXrequest.Json();
             @m_MXrequest = null;
-            auto json = Json::Parse(res);
+
+            if (isDevMode) trace("MapPackTab::CheckRequest (MX): " + res);
 
             if (resCode >= 400) {
                 string errorMsg = json.Get("title", "Unknown error");
@@ -122,9 +123,10 @@ class MapPackTab : Tab
             // Parse the response
             string res = m_MXMapsRequest.String();
             int resCode = m_MXMapsRequest.ResponseCode();
-            if (isDevMode) trace("MapPackTab::CheckRequest (Map List): " + res);
+            auto json = m_MXMapsRequest.Json();
             @m_MXMapsRequest = null;
-            auto json = Json::Parse(res);
+
+            if (isDevMode) trace("MapPackTab::CheckRequest (Map List): " + res);
 
             if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
                 print("MapPackTab::CheckRequest (Map List): Error parsing response");

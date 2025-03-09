@@ -55,7 +55,7 @@ namespace MXNadeoServicesGlobal
                 yield();
             }
             if (isDevMode) trace("NadeoServices - Check favorite maps: " + req.String());
-            auto res = Json::Parse(req.String());
+            auto res = req.Json();
 
             g_totalFavoriteMaps = res["itemCount"];
 
@@ -82,7 +82,7 @@ namespace MXNadeoServicesGlobal
                     yield();
                 }
                 if (isDevMode) trace("NadeoServices - Check favorite maps: " + req.String());
-                res = Json::Parse(req.String());
+                res = req.Json();
 
                 for (uint i = 0; i < res["mapList"].Length; i++) {
                     string mapName = res["mapList"][i]["name"];
@@ -119,7 +119,7 @@ namespace MXNadeoServicesGlobal
                     yield();
                 }
                 if (isDevMode) trace("NadeoServices - Map MX infos: " + mxReq.String());
-                auto mxJson = Json::Parse(mxReq.String());
+                auto mxJson = mxReq.Json();
                 int resCode = mxReq.ResponseCode();
 
                 if (resCode >= 400 || mxJson.GetType() == Json::Type::Null || !mxJson.HasKey("Results")) {
@@ -203,7 +203,7 @@ namespace MXNadeoServicesGlobal
         while (!req.Finished()) {
             yield();
         }
-        auto res = Json::Parse(req.String());
+        auto res = req.Json();
 
         if (res.GetType() != Json::Type::Object) {
             if (res.GetType() == Json::Type::Array && res[0].GetType() == Json::Type::String) {

@@ -94,9 +94,10 @@ class UserTab : Tab
             // Parse the response
             string res = m_MXUserInfoRequest.String();
             int resCode = m_MXUserInfoRequest.ResponseCode();
-            if (isDevMode) trace("UserTab::CheckRequest (MX): " + res);
+            auto json = m_MXUserInfoRequest.Json();
             @m_MXUserInfoRequest = null;
-            auto json = Json::Parse(res);
+
+            if (isDevMode) trace("UserTab::CheckRequest (MX): " + res);
 
             if (resCode >400 || json.GetType() != Json::Type::Object || !json.HasKey("Results") || json["Results"].Length == 0) {
                 mxWarn("UserTab::CheckRequest (MX): Error parsing response");
@@ -132,9 +133,10 @@ class UserTab : Tab
             // Parse the response
             string res = m_MXUserFeaturedMapRequest.String();
             int resCode = m_MXUserFeaturedMapRequest.ResponseCode();
-            if (isDevMode) trace("UserTab::FeaturedMap::CheckRequest (MX): " + res);
+            auto json = m_MXUserFeaturedMapRequest.Json();
             @m_MXUserFeaturedMapRequest = null;
-            auto json = Json::Parse(res);
+
+            if (isDevMode) trace("UserTab::FeaturedMap::CheckRequest (MX): " + res);
 
             if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
                 mxWarn("UserTab::FeaturedMap::CheckRequest (MX): Error parsing response");
@@ -164,9 +166,10 @@ class UserTab : Tab
             // Parse the response
             string res = m_MXUserLeaderboardRequest.String();
             int resCode = m_MXUserLeaderboardRequest.ResponseCode();
-            if (isDevMode) trace("UserTab::Leaderboard::CheckRequest (MX): " + res);
+            auto json = m_MXUserLeaderboardRequest.Json();
             @m_MXUserLeaderboardRequest = null;
-            auto json = Json::Parse(res);
+
+            if (isDevMode) trace("UserTab::Leaderboard::CheckRequest (MX): " + res);
 
             if (resCode >= 400 || json.GetType() == Json::Type::Null) {
                 m_leaderboardError = true;
@@ -220,9 +223,10 @@ class UserTab : Tab
             // Parse the response
             string res = m_MXUserMapsCreatedRequest.String();
             int resCode = m_MXUserMapsCreatedRequest.ResponseCode();
-            if (isDevMode) trace("UserTab::CreatedMaps::CheckRequest (MX): " + res);
+            auto json = m_MXUserMapsCreatedRequest.Json();
             @m_MXUserMapsCreatedRequest = null;
-            auto json = Json::Parse(res);
+
+            if (isDevMode) trace("UserTab::CreatedMaps::CheckRequest (MX): " + res);
 
             if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
                 mxError("Error while loading maps list");
@@ -277,9 +281,10 @@ class UserTab : Tab
             // Parse the response
             string res = m_MXUserMapsAwardedRequest.String();
             int resCode = m_MXUserMapsAwardedRequest.ResponseCode();
-            if (isDevMode) trace("UserTab::AwardedMaps::CheckRequest (MX): " + res);
+            auto json = m_MXUserMapsAwardedRequest.Json();
             @m_MXUserMapsAwardedRequest = null;
-            auto json = Json::Parse(res);
+
+            if (isDevMode) trace("UserTab::AwardedMaps::CheckRequest (MX): " + res);
 
             if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
                 mxError("Error while loading maps list");
@@ -334,9 +339,10 @@ class UserTab : Tab
             // Parse the response
             string res = m_MXUserMapPacksRequest.String();
             int resCode = m_MXUserMapPacksRequest.ResponseCode();
-            if (isDevMode) trace("UserTab::MapPacks::CheckRequest (MX): " + res);
+            auto json = m_MXUserMapPacksRequest.Json();
             @m_MXUserMapPacksRequest = null;
-            auto json = Json::Parse(res);
+
+            if (isDevMode) trace("UserTab::MapPacks::CheckRequest (MX): " + res);
 
             if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
                 mxError("Error while loading mappack list");

@@ -27,9 +27,10 @@ namespace TMNext
         while (!req.Finished()) {
             yield();
         }
-        if (isDevMode) trace("NadeoServices - Check server: " + req.String());
-        auto res = Json::Parse(req.String());
+        auto res = req.Json();
         isCheckingRoom = false;
+
+        if (isDevMode) trace("NadeoServices - Check server: " + req.String());
 
         if (res.GetType() == Json::Type::Array) {
             roomCheckErrorCode = res[0];

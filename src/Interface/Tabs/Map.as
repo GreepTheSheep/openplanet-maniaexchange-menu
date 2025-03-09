@@ -78,9 +78,10 @@ class MapTab : Tab
             // Parse the response
             string res = m_MXrequest.String();
             int resCode = m_MXrequest.ResponseCode();
-            if (isDevMode) print("MapTab::CheckRequest (MX): " + res);
+            auto json = m_MXrequest.Json();
             @m_MXrequest = null;
-            auto json = Json::Parse(res);
+
+            if (isDevMode) print("MapTab::CheckRequest (MX): " + res);
 
             if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
                 print("MapTab::CheckRequest (MX): Error parsing response");
@@ -112,9 +113,10 @@ class MapTab : Tab
             // Parse the response
             string res = m_MXReplaysRequest.String();
             int resCode = m_MXReplaysRequest.ResponseCode();
-            if (isDevMode) trace("MapTab::CheckRequest (Replays): " + res);
+            auto json = m_MXReplaysRequest.Json();
             @m_MXReplaysRequest = null;
-            auto json = Json::Parse(res);
+
+            if (isDevMode) trace("MapTab::CheckRequest (Replays): " + res);
 
             if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
                 print("MapTab::CheckRequest (Replays): Error parsing response");
@@ -153,9 +155,10 @@ class MapTab : Tab
         if (m_TMIOrequest !is null && m_TMIOrequest.Finished()) {
             // Parse the response
             string res = m_TMIOrequest.String();
-            if (isDevMode) trace("MapTab::CheckRequest (TM.IO): " + res);
+            auto json = m_TMIOrequest.Json();
             @m_TMIOrequest = null;
-            auto json = Json::Parse(res);
+
+            if (isDevMode) trace("MapTab::CheckRequest (TM.IO): " + res);
 
             // if error, handle it (particular case for "not found on API")
             if (json.HasKey("error")){
@@ -209,9 +212,10 @@ class MapTab : Tab
             // Parse the response
             string res = m_MXEmbedObjRequest.String();
             int resCode = m_MXEmbedObjRequest.ResponseCode();
-            if (isDevMode) trace("MapTab::CheckRequest (Embedded): " + res);
+            auto json = m_MXEmbedObjRequest.Json();
             @m_MXEmbedObjRequest = null;
-            auto json = Json::Parse(res);
+
+            if (isDevMode) trace("MapTab::CheckRequest (Embedded): " + res);
 
             if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
                 print("MapTab::CheckRequest (Embedded): Error parsing response");

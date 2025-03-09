@@ -256,11 +256,10 @@ namespace MX
 
                 if (req !is null && req.Finished()) {
                     string response = req.String();
+                    Json::Value returnedObject = req.Json();
                     @req = null;
                     if (isDevMode) trace("LoadCurrentMap::CheckResponse: " + response);
 
-                    // Evaluate reqest result
-                    Json::Value returnedObject = Json::Parse(response);
                     try {
                         if (returnedObject["Results"].Length > 0) {
                             @currentMapInfo = MapInfo(returnedObject["Results"][0]);
