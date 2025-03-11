@@ -820,7 +820,7 @@ class MapTab : Tab
                                     UI::SetItemTooltip("The list of embedded objects is too long for this map.");
                                 } else {
 #if DEPENDENCY_ITEMEXCHANGE
-                                    if (UI::YellowButton(Icons::Exchange)) ItemExchange::ShowItemInfo(object.ID);
+                                    if (UI::YellowButton(Icons::ItemExchange)) ItemExchange::ShowItemInfo(object.ID);
 #else
                                     if (UI::YellowButton(Icons::ExternalLink)) OpenBrowserURL("https://item.exchange/item/view/"+object.ID);
 #endif

@@ -16,7 +16,7 @@ string MXURL = "trackmania.exchange";
 
 #endif
 
-string nameMenu = pluginColor + Icons::Exchange + " \\$z"+ pluginName;
+string nameMenu = pluginColor + Icons::ManiaExchange + " \\$z"+ pluginName;
 array<MX::MapInfo@> g_PlayLaterMaps;
 string PlayLaterJSON = IO::FromStorageFolder("PlayLater.json");
 string repoName = "GreepTheSheep/openplanet-maniaexchange-menu";

@@ -3,7 +3,7 @@ namespace MXBetterChat
 {
     class OpenMapOnMXCmd : BetterChat::ICommand
     {
-        string Icon() { return pluginColor + Icons::Exchange; }
+        string Icon() { return pluginColor + Icons::ManiaExchange; }
         string Description() { return "Opens the map tab on ManiaExchange"; }
 
         void Run(const string &in text)
@@ -32,7 +32,7 @@ namespace MXBetterChat
 
     class ShowMapInfoJson : BetterChat::ICommand
     {
-        string Icon() { return pluginColor + Icons::Exchange; }
+        string Icon() { return pluginColor + Icons::ManiaExchange; }
         string Description() { return "MX DEV: show current map JSON"; }
 
         void Run(const string &in text)
@@ -105,8 +105,8 @@ namespace MXBetterChat
 
         string Icon()
         {
-            if (m_send) return "\\$acf" + Icons::Exchange;
-            else return pluginColor + Icons::Exchange;
+            if (m_send) return "\\$acf" + Icons::ManiaExchange;
+            else return pluginColor + Icons::ManiaExchange;
         }
         string Description()
         {
@@ -139,12 +139,12 @@ namespace MXBetterChat
 
     class TellMXPlugin : BetterChat::ICommand
     {
-        string Icon() { return "\\$acf" + Icons::Exchange; }
+        string Icon() { return "\\$acf" + Icons::ManiaExchange; }
         string Description() { return "Tells the " + pluginName + " plugin"; }
 
         void Run(const string &in text)
         {
-            BetterChat::SendChatMessage(Icons::Exchange + " I'm using the "+ pluginName +" plugin for Openplanet! You can access to your favorite maps directly from this plugin, including packs and more! $l[https://openplanet.dev/plugin/154]Get it here!$l");
+            BetterChat::SendChatMessage(Icons::ManiaExchange + " I'm using the "+ pluginName +" plugin for Openplanet! You can access to your favorite maps directly from this plugin, including packs and more! $l[https://openplanet.dev/plugin/154]Get it here!$l");
         }
     }
 }
