@@ -1,5 +1,5 @@
 namespace HomePageTabRender {
-    UI::Font@ Header = UI::LoadFont("DroidSans.ttf", 20);
+    UI::Font@ Header = UI::LoadFont("DroidSans.ttf", 20, -1, -1, true, true, true);
 
     void Home()
     {
