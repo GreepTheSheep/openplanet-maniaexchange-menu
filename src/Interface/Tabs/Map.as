@@ -416,8 +416,8 @@ class MapTab : Tab
         if (Permissions::PlayLocalMap()) {
 #endif
 
-            Json::Value SupportedModes = MX::ModesFromMapType();
-            if (!SupportedModes.HasKey(m_map.MapType)) {
+            bool isMapTypeSupported = MX::ModesFromMapType.Exists(m_map.MapType);
+            if (!isMapTypeSupported) {
                 UI::Text("\\$f70" + Icons::ExclamationTriangle + " \\$zThe map type is not supported for direct play\nit can crash your game or returns you to the menu");
                 if (!Setting_ShowPlayOnAllMaps) {
                     UI::SetPreviousTooltip("If you still want to play this map, check the box \"Show Play Button on all map types\" in the plugin settings");
@@ -435,7 +435,7 @@ class MapTab : Tab
                     MX::mapToLoad = m_map.MapId;
                 }
 #if TMNEXT && DEPENDENCY_NADEOSERVICES
-                if (SupportedModes.HasKey(m_map.MapType) && Permissions::CreateAndUploadMap() && IsInServer()) {
+                if (isMapTypeSupported && Permissions::CreateAndUploadMap() && IsInServer()) {
                     CTrackMania@ app = cast<CTrackMania>(GetApp());
                     bool sameMapType = CleanMapType(app.RootMap.MapType) == m_map.MapType;
 

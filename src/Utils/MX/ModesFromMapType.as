@@ -1,40 +1,37 @@
 namespace MX
 {
-    Json::Value ModesFromMapType(){
-        Json::Value json = Json::Object();
-
+    const dictionary ModesFromMapType = {
+#if MP4
         // ManiaPlanet
-        json["Race"] = ""; // Base ManiaPlanet Map Type
-        json["TrackMania\\Race"] = "";
-        json["Platform"] = "";
-        json["Stunts"] = "";
-        json["GoalHuntArena"] = "GoalHunt";
-        json["HuntersArena"] = "Hunters";
-        json["PursuitArena"] = "Pursuit";
-        json["TMOne\\PlatformOneArena"] = "";
-        json["EW Stunts - Score Attack"] = "ExtraWorldSolo";
-        json["EW Race - Time Attack"] = "ExtraWorldSolo";
-
-        // TMNext
-        json["TM_Race"] = ""; // Base TMNext Map Type
-        json["TM_Stunt"] = "TrackMania/TM_StuntSolo_Local";
-        json["TM_Platform"] = "TrackMania/TM_Platform_Local";
-        json["TM_Royal"] = "TrackMania/TM_RoyalTimeAttack_Local";
+        { "Race",                     "" }, // Base ManiaPlanet Map Type
+        { "TrackMania\\Race",         "" },
+        { "Platform",                 "" },
+        { "Stunts",                   "" },
+        { "GoalHuntArena",            "GoalHunt" },
+        { "HuntersArena",             "Hunters" },
+        { "PursuitArena",             "Pursuit" },
+        { "TMOne\\PlatformOneArena",  "" },
+        { "EW Stunts - Score Attack", "ExtraWorldSolo" },
+        { "EW Race - Time Attack",    "ExtraWorldSolo"},
 
         // Shootmania
-        json["MeleeArena"] = ""; // Base Shootmania Map Type
-        json["ObstacleTitleArena"] = "Obstacle";
-        json["ObstacleTitleArenaOld"] = "Obstacle";
-        json["ObstacleArena"] = "Obstacle";
-        json["SiegeV2Arena"] = "SiegePro";
-        json["SpeedBallArena"] = "SpeedBall";
-        json["RoyalArena"] = "RoyalPro";
-        json["EliteArena"] = "ElitePro";
-        json["JoustArena"] = "JoustPro";
-        json["CTFModeArena"] = "CTFMode";
-        json["CTFAgeArena"] = "CTFMode";
-        json["BattleArena"] = "BattlePro";
-
-        return json;
-    }
+        { "MeleeArena",               "" }, // Base Shootmania Map Type
+        { "ObstacleTitleArena",       "Obstacle" },
+        { "ObstacleTitleArenaOld",    "Obstacle" },
+        { "ObstacleArena",            "Obstacle" },
+        { "SiegeV2Arena",             "SiegePro" },
+        { "SpeedBallArena",           "SpeedBall" },
+        { "RoyalArena",               "RoyalPro" },
+        { "EliteArena",               "ElitePro" },
+        { "JoustArena",               "JoustPro" },
+        { "CTFModeArena",             "CTFMode" },
+        { "CTFAgeArena",              "CTFMode" },
+        { "BattleArena",              "BattlePro" }
+#elif TMNEXT
+        { "TM_Race",                  "" },
+        { "TM_Stunt",                 "TrackMania/TM_StuntSolo_Local" },
+        { "TM_Platform",              "TrackMania/TM_Platform_Local" },
+        { "TM_Royal",                 "TrackMania/TM_RoyalTimeAttack_Local" }
+#endif
+    };
 }

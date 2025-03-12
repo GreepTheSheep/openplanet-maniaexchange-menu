@@ -165,20 +165,12 @@ namespace MX
                 ) app.ManiaTitleControlScriptAPI.EditMap("https://"+MXURL+"/mapgbx/"+mapId, "", "");
                 else {
                     string Mode = "";
-                    Json::Value Modes = MX::ModesFromMapType();
-
-                    if (Modes.HasKey(map.MapType)) {
-                        Mode = Modes[map.MapType];
-                    }
+                    MX::ModesFromMapType.Get(map.MapType, Mode);
 
 #if MP4
-                    if (Mode == "" && repo == MP4mxRepos::Trackmania) {
-                        Json::Value TitlePackModes = MX::ModesFromTitlePack();
+                    if (Mode == "" && repo == MP4mxRepos::Trackmania){
                         const string loadedTP = CurrentTitlePack();
-
-                        if (TitlePackModes.HasKey(loadedTP)) {
-                            Mode = TitlePackModes[loadedTP];
-                        }
+                        MX::ModesFromTitlePack.Get(loadedTP, Mode);
                     }
 #endif
 

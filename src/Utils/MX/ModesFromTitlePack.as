@@ -1,39 +1,38 @@
 namespace MX
 {
-    Json::Value ModesFromTitlePack(){
-        Json::Value json = Json::Object();
-
+    const dictionary ModesFromTitlePack = {
+#if MP4
         // Base title packs
-        json["TMCanyon"] = "SingleMap";
-        json["TMStadium"] = "SingleMap";
-        json["TMValley"] = "SingleMap";
-        json["TMLagoon"] = "SingleMap";
+        { "TMCanyon",        "SingleMap" },
+        { "TMStadium",       "SingleMap" },
+        { "TMValley",        "SingleMap" },
+        { "TMLagoon",        "SingleMap" },
 
         // Envimix
-        json["TMAll"] = "SingleMap";
-        json["Envimix_Turbo"] = "EnvimixSolo";
-        json["Nadeo_Envimix"] = "EnvimixSolo";
+        { "TMAll",           "SingleMap" },
+        { "Envimix_Turbo",   "EnvimixSolo" },
+        { "Nadeo_Envimix",   "EnvimixSolo" },
 
         // Environments recreations
-        // json["TMOneAlpine"] = "Unbitn/TMOne/TimeAttackOne";
-        // json["TMOneSpeed"] = "Unbitn/TMOne/TimeAttackOne";
-        // json["TMOneBay"] = "Unbitn/TMOne/TimeAttackOne";
-        json["TM2Rally"] = "GlobalSolo";
-        json["TM2U_Island"] = "SoloUni";
-        json["TM2_Coast"] = "CoastSolo";
+        // TMOne's script doesn't work outside campaigns
+        // { "TMOneAlpine",     "Unbitn/TMOne/TimeAttackOne" },
+        // { "TMOneSpeed",      "Unbitn/TMOne/TimeAttackOne" },
+        // { "TMOneBay",        "Unbitn/TMOne/TimeAttackOne" },
+        { "TM2Rally",        "GlobalSolo" },
+        { "TM2U_Island",     "SoloUni" },
+        { "TM2_Coast",       "CoastSolo" },
 
         // Gamemodes recreations
-        json["Platform"] = "PlatformSolo";
-        json["ExtraWorld"] = "ExtraWorldSolo";
-        json["ModePlus"] = "GlobalSolo";
+        { "Platform",        "PlatformSolo" },
+        { "ExtraWorld",      "ExtraWorldSolo" },
+        { "ModePlus",        "GlobalSolo" },
 
         // Competition
-        json["esl_comp"] = "SingleMap";
+        { "esl_comp",        "SingleMap" },
 
         // Other
-        json["TMPlus_Canyon"] = "SingleMap";
-        json["TMPlus_Lagoon"] = "SingleMap";
-
-        return json;
-    }
+        { "TMPlus_Canyon",   "SingleMap" },
+        { "TMPlus_Lagoon",   "SingleMap" }
+    };
+#endif
 }
