@@ -238,7 +238,7 @@ void Main(){
     else if (repo == MP4mxRepos::Shootmania) MXURL = "sm.mania.exchange";
 #endif
     Meta::PluginCoroutine@ APILoad = startnew(MX::CheckForAPILoaded);
-    while (APILoad.IsRunning()) yield();
+    await(APILoad);
 
     g_PlayLaterMaps = LoadPlayLater();
 
