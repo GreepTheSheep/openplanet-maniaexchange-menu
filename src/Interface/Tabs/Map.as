@@ -272,7 +272,7 @@ class MapTab : Tab
         }
 #endif
 
-        float width = UI::GetWindowSize().x*0.35;
+        float width = UI::GetWindowSize().x*0.3;
         vec2 posTop = UI::GetCursorPos();
 
         UI::BeginChild("Summary", vec2(width,0));
@@ -291,14 +291,8 @@ class MapTab : Tab
                         width,
                         thumbSize.y / (thumbSize.x / width)
                     ));
-                    if (UI::IsItemHovered()) {
-                        UI::BeginTooltip();
-                        UI::Image(img.m_texture, vec2(
-                            width,
-                            thumbSize.y / (thumbSize.x / width)
-                        ));
-                        UI::EndTooltip();
-                    }
+
+                    UI::MXThumbnailTooltip(img, 0.3);
                 } else if (!img.m_error) {
                     int HourGlassValue = Time::Stamp % 3;
                     string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
@@ -322,14 +316,8 @@ class MapTab : Tab
                     width,
                     thumbSize.y / (thumbSize.x / width)
                 ));
-                if (UI::IsItemHovered()) {
-                    UI::BeginTooltip();
-                    UI::Image(thumb.m_texture, vec2(
-                        Draw::GetWidth() * 0.4,
-                        thumbSize.y / (thumbSize.x / (Draw::GetWidth() * 0.4))
-                    ));
-                    UI::EndTooltip();
-                }
+
+                UI::MXThumbnailTooltip(thumb, 0.3);
             } else if (!thumb.m_error) {
                 int HourGlassValue = Time::Stamp % 3;
                 string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));

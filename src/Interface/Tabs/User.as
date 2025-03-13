@@ -410,14 +410,8 @@ class UserTab : Tab
                 width,
                 thumbSize.y / (thumbSize.x / width)
             ));
-            if (UI::IsItemHovered()) {
-                UI::BeginTooltip();
-                UI::Image(img.m_texture, vec2(
-                    Draw::GetWidth() * 0.3,
-                    thumbSize.y / (thumbSize.x / (Draw::GetWidth() * 0.3))
-                ));
-                UI::EndTooltip();
-            }
+
+            UI::MXThumbnailTooltip(img, 0.3);
         } else if (!img.m_error) {
             int HourGlassValue = Time::Stamp % 3;
             string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
@@ -489,7 +483,7 @@ class UserTab : Tab
                     } else {
                         float featuredMapwidth = Draw::GetWidth() * 0.10;
                         UI::BeginChild("UserFeaturedMapImageChild", vec2(featuredMapwidth + 20, 0));
-                        auto featuredMapImg = Images::CachedFromURL("https://"+MXURL+"/mapimage/"+m_featuredMap.MapId+"/1");
+                        auto featuredMapImg = Images::CachedFromURL("https://"+MXURL+"/mapimage/"+m_featuredMap.MapId+"/1?hq=true");
 
                         if (featuredMapImg.m_texture !is null){
                             vec2 thumbSize = featuredMapImg.m_texture.GetSize();
@@ -497,14 +491,8 @@ class UserTab : Tab
                                 featuredMapwidth,
                                 thumbSize.y / (thumbSize.x / featuredMapwidth)
                             ));
-                            if (UI::IsItemHovered()) {
-                                UI::BeginTooltip();
-                                UI::Image(featuredMapImg.m_texture, vec2(
-                                    Draw::GetWidth() * 0.45,
-                                    thumbSize.y / (thumbSize.x / (Draw::GetWidth() * 0.45))
-                                ));
-                                UI::EndTooltip();
-                            }
+
+                            UI::MXThumbnailTooltip(featuredMapImg, 0.3);
                         } else if (!featuredMapImg.m_error) {
                             int HourGlassValue = Time::Stamp % 3;
                             string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
