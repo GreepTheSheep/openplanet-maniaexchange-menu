@@ -614,7 +614,7 @@ class UserTab : Tab
                     }
                     if (m_MXUserMapsCreatedRequest !is null && m_moreItemsCreatedMaps) {
                         UI::TableNextRow();
-                        UI::TableSetColumnIndex(0);
+                        UI::TableNextColumn();
                         UI::AlignTextToFramePadding();
                         UI::Text(Icons::HourglassEnd + " Loading...");
                     }
@@ -659,7 +659,7 @@ class UserTab : Tab
                     }
                     if (m_MXUserMapsCreatedRequest !is null && m_moreItemsAwardsGiven) {
                         UI::TableNextRow();
-                        UI::TableSetColumnIndex(0);
+                        UI::TableNextColumn();
                         UI::AlignTextToFramePadding();
                         UI::Text(Icons::HourglassEnd + " Loading...");
                     }
@@ -704,7 +704,7 @@ class UserTab : Tab
                     }
                     if (m_MXUserMapPacksRequest !is null && m_moreItemsMapPacks) {
                         UI::TableNextRow();
-                        UI::TableSetColumnIndex(0);
+                        UI::TableNextColumn();
                         UI::AlignTextToFramePadding();
                         UI::Text(Icons::HourglassEnd + " Loading...");
                     }

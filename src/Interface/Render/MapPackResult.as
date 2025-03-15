@@ -4,18 +4,18 @@ namespace IfaceRender
     {
         UI::TableNextRow();
 
-        UI::TableSetColumnIndex(0);
+        UI::TableNextColumn();
         UI::AlignTextToFramePadding();
         UI::Text(mapPack.Name);
         UI::MXMapPackThumbnailTooltip(mapPack.MappackId);
         if (UI::IsItemClicked()) mxMenu.AddTab(MapPackTab(mapPack.MappackId), true);
 
-        UI::TableSetColumnIndex(1);
+        UI::TableNextColumn();
         UI::Text(mapPack.Username);
         UI::SetPreviousTooltip("Click to view "+mapPack.Username+"'s profile");
         if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(mapPack.UserId), true);
 
-        UI::TableSetColumnIndex(2);
+        UI::TableNextColumn();
         if (mapPack.Tags.Length == 0) UI::Text("No tags");
         else{
             for (uint i = 0; i < mapPack.Tags.Length; i++) {
@@ -24,10 +24,10 @@ namespace IfaceRender
             }
         }
 
-        UI::TableSetColumnIndex(3);
+        UI::TableNextColumn();
         UI::Text(tostring(mapPack.MapCount));
 
-        UI::TableSetColumnIndex(4);
+        UI::TableNextColumn();
         // buttons
         if (UI::CyanButton(Icons::Kenney::InfoCircle)) {
             mxMenu.AddTab(MapPackTab(mapPack.MappackId), true);

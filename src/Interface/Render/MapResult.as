@@ -4,19 +4,19 @@ namespace IfaceRender
     {
         UI::TableNextRow();
 
-        UI::TableSetColumnIndex(0);
+        UI::TableNextColumn();
         UI::AlignTextToFramePadding();
         if (Setting_ColoredMapName) UI::Text(Text::OpenplanetFormatCodes(map.GbxMapName));
         else UI::Text(map.Name);
         UI::MXMapThumbnailTooltip(map.MapId);
         if (UI::IsItemClicked()) mxMenu.AddTab(MapTab(map.MapId), true);
 
-        UI::TableSetColumnIndex(1);
+        UI::TableNextColumn();
         UI::Text(map.Username);
         UI::SetPreviousTooltip("Click to view "+map.Username+"'s profile");
         if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(map.UserId), true);
 
-        UI::TableSetColumnIndex(2);
+        UI::TableNextColumn();
         if (map.Tags.Length == 0) UI::Text("No tags");
         else{
             for (uint i = 0; i < map.Tags.Length; i++) {
@@ -25,10 +25,10 @@ namespace IfaceRender
             }
         }
 
-        UI::TableSetColumnIndex(3);
+        UI::TableNextColumn();
         UI::Text(tostring(map.AwardCount));
 
-        UI::TableSetColumnIndex(4);
+        UI::TableNextColumn();
         // buttons
         if (UI::CyanButton(Icons::Kenney::InfoCircle)) {
             mxMenu.AddTab(MapTab(map.MapId), true);

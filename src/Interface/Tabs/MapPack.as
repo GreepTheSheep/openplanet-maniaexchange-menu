@@ -304,7 +304,7 @@ class MapPackTab : Tab
 
                         if (m_MXMapsRequest !is null && m_moreItemsMapList) {
                             UI::TableNextRow();
-                            UI::TableSetColumnIndex(0);
+                            UI::TableNextColumn();
                             UI::AlignTextToFramePadding();
                             UI::Text(Icons::HourglassEnd + " Loading...");
                         }

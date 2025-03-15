@@ -225,7 +225,7 @@ class MapPackListTab : Tab
                 }
                 if (m_request !is null && moreItems) {
                     UI::TableNextRow();
-                    UI::TableSetColumnIndex(0);
+                    UI::TableNextColumn();
                     UI::AlignTextToFramePadding();
                     UI::Text(Icons::HourglassEnd + " Loading...");
                 }

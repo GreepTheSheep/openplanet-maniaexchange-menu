@@ -619,7 +619,7 @@ class MapTab : Tab
                                 UI::TableNextRow();
                                 MX::MapReplay@ entry = m_replays[i];
 
-                                UI::TableSetColumnIndex(0);
+                                UI::TableNextColumn();
                                 UI::AlignTextToFramePadding();
                                 if (entry.IsValid) {
                                     if (m_replays[0].Position == 0) { // TODO remove once Position is fixed
@@ -632,12 +632,12 @@ class MapTab : Tab
                                     UI::SetPreviousTooltip("Replay was driven on a different version of the map");
                                 }
 
-                                UI::TableSetColumnIndex(1);
+                                UI::TableNextColumn();
                                 UI::Text(entry.Username);
                                 UI::SetPreviousTooltip("Click to see "+entry.Username+"'s profile");
                                 if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(entry.UserId), true);
 
-                                UI::TableSetColumnIndex(2);
+                                UI::TableNextColumn();
                                 if (m_map.GameMode == MX::GameModes::Stunt) {
                                     UI::Text(entry.ReplayPoints + " pts");
                                 } else {
@@ -653,7 +653,7 @@ class MapTab : Tab
                                     }
                                 }
 
-                                UI::TableSetColumnIndex(3);
+                                UI::TableNextColumn();
 
                                 if (m_replays[0].Score == 0) {
                                     UI::Text("−");
@@ -725,14 +725,14 @@ class MapTab : Tab
                                 UI::TableNextRow();
                                 TMIO::Leaderboard@ entry = m_leaderboard[i];
 
-                                UI::TableSetColumnIndex(0);
+                                UI::TableNextColumn();
                                 UI::AlignTextToFramePadding();
                                 UI::Text(tostring(entry.position));
 
-                                UI::TableSetColumnIndex(1);
+                                UI::TableNextColumn();
                                 UI::Text(entry.playerName);
 
-                                UI::TableSetColumnIndex(2);
+                                UI::TableNextColumn();
                                 UI::Text(Time::Format(entry.time));
                                 if (i != 0){
                                     UI::SameLine();
@@ -782,11 +782,11 @@ class MapTab : Tab
                             MX::MapEmbeddedObject@ object = m_mapEmbeddedObjects[i];
                             UI::PushID("EmbeddedObject" + i);
 
-                            UI::TableSetColumnIndex(0);
+                            UI::TableNextColumn();
                             UI::AlignTextToFramePadding();
                             UI::Text(object.Name);
 
-                            UI::TableSetColumnIndex(1);
+                            UI::TableNextColumn();
                             if (object.Username.Length == 0) UI::TextDisabled(object.ObjectAuthor);
                             else UI::Text(object.Username);
                             if (object.UserId > 0) {
@@ -794,7 +794,7 @@ class MapTab : Tab
                                 if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(object.UserId), true);
                             }
 
-                            UI::TableSetColumnIndex(2);
+                            UI::TableNextColumn();
                             if (object.ID != 0){
                                 if (object.ID == -1) {
                                     UI::BeginDisabled();
