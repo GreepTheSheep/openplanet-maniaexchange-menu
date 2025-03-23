@@ -18,7 +18,7 @@
 - Customizable: enable or disable tabs you want.
 - Access to map packs
 - Online leaderboard included (for Trackmania 2020, from trackmania.io)
-- A play later playlist, save all your maps and access them in 2 clicks anytime!
+- A play later playlist. Save all your maps and access them in 2 clicks anytime!
 - Possibility to download maps to your maps folder, so you can create club campaigns or rooms easily without alt-tabing
 - And many more!
 
@@ -37,16 +37,17 @@ Those commands are available in the game chat thanks to [Better Chat](https://op
 
 `/mx-tell-plugin` - Will send the ManiaExchange plugin info and download link in the chat
 
-
 `/mx-json` - Dev Mode Only: Will show the raw JSON for the current map
 
 ## Exports:
 - `ManiaExchange::ShowMapInfo(int MapID)` - Will open the tab to the corresponding map with its ID
+- `ManiaExchange::ShowMapInfo(string MapUID)` - Will open the tab to the corresponding map with its UID
 - `ManiaExchange::ShowMapPackInfo(int MapPackID)` - Will open the tab to the corresponding map pack with its ID
 - `ManiaExchange::ShowUserInfo(int userID)` - Will open the tab to the corresponding user info with its ID
-- `ManiaExchange::GetCurrentMapID()` - Will return the current map ID, possible return values on [the table below](#getcurrentmapid-possible-return-values)
-- `ManiaExchange::GetCurrentMapInfo()` - Will return a `Json::Value` containing most informations from ManiaExchange for the current playing map
-- `ManiaExchange::GetMapInfoAsync(int MapID)` - Will return a `Json::Value` containing most informations from ManiaExchange for the map with its ID
+- `ManiaExchange::GetCurrentMapID()` - Will return the current map ID. Possible return values in [the table below](#getcurrentmapid-possible-return-values)
+- `ManiaExchange::GetCurrentMapInfo()` - Will return a `Json::Value` containing most information from ManiaExchange for the current playing map
+- `ManiaExchange::GetMapInfoAsync(int MapID)` - Will return a `Json::Value` containing most information from ManiaExchange for the map with its ID
+- `ManiaExchange::GetMapInfoAsync(string MapUID)` - Will return a `Json::Value` containing most information from ManiaExchange for the map with its UID
 
 ### `GetCurrentMapID()` possible return values
 

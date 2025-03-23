@@ -3,6 +3,9 @@ namespace ManiaExchange
     // Opens the menu and shows a map from its ID
     import void ShowMapInfo(int mapID) from "ManiaExchange";
 
+    // Opens the menu and shows a map from its UID
+    import void ShowMapInfo(const string &in MapUID) from "ManiaExchange";
+
     // Opens the menu and shows a map pack from its ID
     import void ShowMapPackInfo(int mapPackID) from "ManiaExchange";
 
@@ -17,4 +20,7 @@ namespace ManiaExchange
 
     // The Map Info by its ID
     import Json::Value GetMapInfoAsync(int mapID) from "ManiaExchange";
+
+    // The Map Info by its UID
+    import Json::Value GetMapInfoAsync(const string &in MapUID) from "ManiaExchange";
 }

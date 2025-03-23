@@ -6,6 +6,12 @@ namespace ManiaExchange
         mxMenu.AddTab(MapTab(mapID), true);
     }
 
+    void ShowMapInfo(string mapUid)
+    {
+        if (!mxMenu.isOpened) Setting_ShowMenu = true;
+        mxMenu.AddTab(MapTab(mapUid), true);
+    }
+
     void ShowMapPackInfo(int mapPackID)
     {
         if (!mxMenu.isOpened) Setting_ShowMenu = true;
@@ -43,6 +49,26 @@ namespace ManiaExchange
             return Json::Parse("");
         }
         // Handle the response
+        return MX::MapInfo(mxRes["Results"][0]).ToJson();
+    }
+
+    Json::Value GetMapInfoAsync(const string &in MapUID)
+    {
+        dictionary params;
+        params.Set("fields", MX::mapFields);
+        params.Set("uid", MapUID);
+        string urlParams = MX::DictToApiParams(params);
+
+        string url = "https://"+MXURL+"/api/maps" + urlParams;
+        if (isDevMode) print("Exports::GetMapInfoAsync::StartRequest : " + url);
+
+        Json::Value mxRes = API::GetAsync(url);
+
+        if (mxRes.GetType() == Json::Type::Null || mxRes.Length == 0 || !mxRes.HasKey("Results") || mxRes["Results"].Length == 0) {
+            if (isDevMode) print("Exports::GetMapInfoAsync::CheckRequest : Error parsing response");
+            return Json::Parse("");
+        }
+
         return MX::MapInfo(mxRes["Results"][0]).ToJson();
     }
 }

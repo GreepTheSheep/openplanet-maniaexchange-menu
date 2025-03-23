@@ -8,6 +8,7 @@ class MapTab : Tab
     array<TMIO::Leaderboard@> m_leaderboard;
     array<MX::MapReplay@> m_replays;
     int m_mapId;
+    string m_mapUid = "";
     bool m_isMapOnNadeoServices = false;
     bool m_isLoading = false;
     bool m_mapDownloaded = false;
@@ -30,6 +31,12 @@ class MapTab : Tab
     MapTab(int trackId) {
         @g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24);
         m_mapId = trackId;
+        StartMXRequest();
+    }
+
+    MapTab(const string &in trackUid) {
+        @g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24);
+        m_mapUid = trackUid;
         StartMXRequest();
     }
 
@@ -63,7 +70,13 @@ class MapTab : Tab
     {
         dictionary params;
         params.Set("fields", MX::mapFields);
-        params.Set("id", tostring(m_mapId));
+
+        if (m_mapUid != "") {
+            params.Set("uid", m_mapUid);
+        } else {
+            params.Set("id", tostring(m_mapId));
+        }
+
         string urlParams = MX::DictToApiParams(params);
 
         string url = "https://"+MXURL+"/api/maps" + urlParams;
