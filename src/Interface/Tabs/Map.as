@@ -646,7 +646,8 @@ class MapTab : Tab
                                 }
 
                                 UI::TableNextColumn();
-                                UI::Text(entry.Username);
+                                bool isUser = Setting_Tab_YourProfile_UserID == entry.UserId;
+                                UI::Text(entry.Username + (isUser ? " " + Icons::User : ""));
                                 UI::SetPreviousTooltip("Click to see "+entry.Username+"'s profile");
                                 if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(entry.UserId), true);
 
@@ -743,7 +744,8 @@ class MapTab : Tab
                                 UI::Text(tostring(entry.position));
 
                                 UI::TableNextColumn();
-                                UI::Text(entry.playerName);
+                                bool isLocalUser = entry.playerID == GetApp().LocalPlayerInfo.WebServicesUserId;
+                                UI::Text(entry.playerName + (isLocalUser ? " " + Icons::User : ""));
 
                                 UI::TableNextColumn();
                                 UI::Text(Time::Format(entry.time));
