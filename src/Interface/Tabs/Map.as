@@ -785,7 +785,7 @@ class MapTab : Tab
                     PushTabStyle();
                     UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
                     UI::TableSetupColumn("Author", UI::TableColumnFlags::WidthStretch);
-                    UI::TableSetupColumn("Action", UI::TableColumnFlags::WidthFixed, 40);
+                    UI::TableSetupColumn("Action", UI::TableColumnFlags::WidthFixed);
                     UI::TableHeadersRow();
                     PopTabStyle();
                     UI::ListClipper clipper(m_mapEmbeddedObjects.Length);

@@ -208,8 +208,8 @@ class MapPackListTab : Tab
                 UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
                 UI::TableSetupColumn("Created by", UI::TableColumnFlags::WidthStretch);
                 UI::TableSetupColumn("Tags", UI::TableColumnFlags::WidthStretch);
-                UI::TableSetupColumn("Tracks", UI::TableColumnFlags::WidthFixed, 40);
-                UI::TableSetupColumn("Actions", UI::TableColumnFlags::WidthFixed, 40);
+                UI::TableSetupColumn("Tracks", UI::TableColumnFlags::WidthFixed);
+                UI::TableSetupColumn("Actions", UI::TableColumnFlags::WidthFixed);
                 UI::TableHeadersRow();
                 PopTabStyle();
 

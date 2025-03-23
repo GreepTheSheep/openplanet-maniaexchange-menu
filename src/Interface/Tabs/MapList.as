@@ -192,8 +192,8 @@ class MapListTab : Tab
                 UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
                 UI::TableSetupColumn("Created by", UI::TableColumnFlags::WidthStretch);
                 UI::TableSetupColumn("Style", UI::TableColumnFlags::WidthStretch);
-                UI::TableSetupColumn(Icons::Trophy, UI::TableColumnFlags::WidthFixed, 40);
-                UI::TableSetupColumn("Actions", UI::TableColumnFlags::WidthFixed, 80);
+                UI::TableSetupColumn(Icons::Trophy, UI::TableColumnFlags::WidthFixed);
+                UI::TableSetupColumn("Actions", UI::TableColumnFlags::WidthFixed);
                 UI::TableHeadersRow();
                 PopTabStyle();
 
