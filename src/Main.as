@@ -27,11 +27,7 @@ void RenderMenuMain(){
                 }
                 if(UI::BeginMenu(pluginColor + Icons::ICursor+"\\$z Enter map ID")) {
                     bool pressedEnter = false;
-                    inputMapID = UI::InputText("##InputMapId", inputMapID, pressedEnter, UI::InputTextFlags::EnterReturnsTrue | UI::InputTextFlags::CharsDecimal);
-                    if (!Regex::Contains(inputMapID, "^[0-9]*$")) {
-                        inputMapID = "";
-                        UI::TextDisabled("\\$f00" + Icons::Times +" \\$zOnly numbers are allowed");
-                    }
+                    inputMapID = UI::InputText("##InputMapId", inputMapID, pressedEnter, UI::InputTextFlags::EnterReturnsTrue | UI::InputTextFlags::CharsDecimal | UI::InputTextFlags::CallbackCharFilter | UI::InputTextFlags::CallbackAlways, UI::InputTextCallback(UI::MapIdCallback));
                     if (inputMapID != ""){
 #if TMNEXT
                         if (Permissions::PlayLocalMap() && (pressedEnter || UI::MenuItem(Icons::Play + " Play map"))){
