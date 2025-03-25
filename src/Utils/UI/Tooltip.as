@@ -11,7 +11,7 @@ namespace UI
 
     void MXThumbnailTooltip(CachedImage@ img, float resize = 0.25)
     {
-        if (UI::IsItemHovered(UI::HoveredFlags::DelayShort | UI::HoveredFlags::NoSharedDelay)) {
+        if (UI::IsItemHovered()) {
             UI::BeginTooltip();
             float width = Draw::GetWidth() * resize;
 
@@ -40,13 +40,17 @@ namespace UI
 
     void MXMapThumbnailTooltip(const int &in mapId, const int &in position = 1, float resize = 0.25)
     {
-        auto mapThumb = Images::CachedFromURL("https://" + MXURL + "/mapimage/" + mapId + "/" + position + "?hq=true");
-        MXThumbnailTooltip(mapThumb, resize);
+        if (UI::IsItemHovered(UI::HoveredFlags::DelayShort | UI::HoveredFlags::NoSharedDelay)) {
+            auto mapThumb = Images::CachedFromURL("https://" + MXURL + "/mapimage/" + mapId + "/" + position + "?hq=true");
+            MXThumbnailTooltip(mapThumb, resize);
+        }
     }
 
     void MXMapPackThumbnailTooltip(const int &in mapPackID, float resize = 0.25)
     {
-        auto mappackThumb = Images::CachedFromURL("https://" + MXURL + "/mappackthumb/" + mapPackID);
-        MXThumbnailTooltip(mappackThumb, resize);
+        if (UI::IsItemHovered(UI::HoveredFlags::DelayShort | UI::HoveredFlags::NoSharedDelay)) {
+            auto mappackThumb = Images::CachedFromURL("https://" + MXURL + "/mappackthumb/" + mapPackID);
+            MXThumbnailTooltip(mappackThumb, resize);
+        }
     }
 }
