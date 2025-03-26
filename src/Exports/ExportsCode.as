@@ -6,7 +6,7 @@ namespace ManiaExchange
         mxMenu.AddTab(MapTab(mapID), true);
     }
 
-    void ShowMapInfo(string mapUid)
+    void ShowMapInfo(const string &in mapUid)
     {
         if (!mxMenu.isOpened) Setting_ShowMenu = true;
         mxMenu.AddTab(MapTab(mapUid), true);
