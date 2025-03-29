@@ -71,9 +71,10 @@ namespace IfaceRender
 #else
         } else if (!isMapTypeSupported && !Setting_ShowPlayOnAllMaps) {
 #endif
-            UI::Text("\\$f90"+Icons::ExclamationTriangle);
-            if (UI::IsItemHovered()) {
-                UI::BeginTooltip();
+            UI::BeginDisabled();
+            UI::OrangeButton(Icons::ExclamationTriangle);
+            UI::EndDisabled();
+            if (UI::BeginItemTooltip()) {
                 UI::Text(Icons::ExclamationTriangle + " The map type is not supported for direct play, it can crash your game or returns you to the menu");
                 UI::TextDisabled(map.MapType);
                 UI::Separator();
