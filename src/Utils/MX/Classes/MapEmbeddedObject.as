@@ -24,7 +24,8 @@ namespace MX
                     Username = json["Author"]["Name"];
                 }
 
-                if (willFetchID && onIX) startnew(CoroutineFunc(TryGetID));
+                if (!onIX) ID = 0;
+                else if (willFetchID) startnew(CoroutineFunc(TryGetID));
                 else ID = -2;
             } catch {
                 mxWarn("Error parsing embedded object info for the map: " + getExceptionInfo(), true);
