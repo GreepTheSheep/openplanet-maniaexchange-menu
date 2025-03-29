@@ -74,6 +74,68 @@ namespace MX
         }
     }
 
+    void GetMapSearchOrders()
+    {
+        string url = "https://"+MXURL+"/api/meta/maporders";
+        if (isDevMode) trace("Loading map search orders: " + url);
+        Json::Value resNet = API::GetAsync(url);
+
+        try {
+            for (uint i = 0; i < resNet.Length; i++)
+            {
+                int orderKey = resNet[i]["Key"];
+                string orderName = resNet[i]["Name"];
+
+                // TODO No way of using these orders yet
+                if (orderName.Contains("User") || orderName.Contains("Video") || orderName.Contains("Replay")) continue;
+
+                m_mapSortingOrders.InsertLast(SortingOrder(resNet[i]));
+            }
+
+            print(m_mapSortingOrders.Length + " seasons loaded");
+        } catch {
+            throw("Error while loading sorting orders: " + getExceptionInfo());
+        }
+    }
+
+    void GetTitlepacks()
+    {
+        string url = "https://"+MXURL+"/api/meta/titlepacks";
+        if (isDevMode) trace("Loading titlepacks: " + url);
+        Json::Value res = API::GetAsync(url);
+
+        try {
+            m_titlepacks.InsertLast("Any");
+
+            for (uint i = 0; i < res.Length; i++) {
+                if (res[i] != "") m_titlepacks.InsertLast(res[i]);
+            }
+
+            print(m_titlepacks.Length + " titlepacks loaded");
+        } catch {
+            throw("Error while loading titlepacks: " + getExceptionInfo());
+        }
+    }
+
+    void GetMapTypes()
+    {
+        string url = "https://"+MXURL+"/api/meta/maptypes";
+        if (isDevMode) trace("Loading map types: " + url);
+        Json::Value res = API::GetAsync(url);
+
+        try {
+            m_maptypes.InsertLast("Any");
+
+            for (uint i = 0; i < res.Length; i++) {
+                if (res[i] != "") m_maptypes.InsertLast(res[i]);
+            }
+
+            print(m_maptypes.Length + " map types loaded");
+        } catch {
+            throw("Error while loading map types: " + getExceptionInfo());
+        }
+    }
+
     void LoadEnvironments()
     {
 #if TMNEXT
@@ -108,7 +170,14 @@ namespace MX
             LoadEnvironments();
             if (m_vehicles.Length > 0) m_vehicles.RemoveRange(0, m_vehicles.Length);
             GetAllVehicles();
+            if (m_mapSortingOrders.Length > 0) m_mapSortingOrders.RemoveRange(0, m_mapSortingOrders.Length);
+            GetMapSearchOrders();
+            if (m_maptypes.Length > 0) m_maptypes.RemoveRange(0, m_maptypes.Length);
+            GetMapTypes();
 #if MP4
+            if (m_titlepacks.Length > 0) m_titlepacks.RemoveRange(0, m_titlepacks.Length);
+            GetTitlepacks();
+
             if (repo == MP4mxRepos::Trackmania) {
 #endif
             if (m_leaderboardSeasons.Length > 0) m_leaderboardSeasons.RemoveRange(0, m_leaderboardSeasons.Length);

@@ -4,6 +4,9 @@ namespace MX
     array<LeaderboardSeason@> m_leaderboardSeasons;
     array<MapEnvironment@> m_environments;
     array<string> m_vehicles;
+    array<string> m_titlepacks;
+    array<string> m_maptypes;
+    array<SortingOrder@> m_mapSortingOrders;
 
     Net::HttpRequest@ req;
 
