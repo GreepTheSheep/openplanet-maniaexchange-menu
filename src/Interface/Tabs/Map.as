@@ -355,55 +355,55 @@ class MapTab : Tab
         UI::NewLine();
 
         UI::Text(Icons::Trophy + " \\$f77" + m_map.AwardCount);
-        UI::SetPreviousTooltip("Awards");
+        UI::SetItemTooltip("Awards");
 #if MP4
         if (repo == MP4mxRepos::Shootmania) {
             UI::Text(Icons::FileCodeO + " \\$f77" + m_map.MapType);
-            UI::SetPreviousTooltip("Map Type");
+            UI::SetItemTooltip("Map Type");
         } else {
 #endif
         UI::Text(Icons::Hourglass + " \\$f77" + Time::Format(m_map.Length));
-        UI::SetPreviousTooltip("Length");
+        UI::SetItemTooltip("Length");
 #if MP4
         }
 #endif
         if (m_map.Laps >= 1) {
             UI::Text(Icons::Refresh+ " \\$f77" + m_map.Laps);
-            UI::SetPreviousTooltip("Laps");
+            UI::SetItemTooltip("Laps");
         }
         UI::Text(Icons::LevelUp+ " \\$f77" + m_map.DifficultyName);
-        UI::SetPreviousTooltip("Difficulty");
+        UI::SetItemTooltip("Difficulty");
 
         UI::Text(Icons::Hashtag+ " \\$f77" + m_map.MapId);
-        UI::SetPreviousTooltip("Track ID");
+        UI::SetItemTooltip("Track ID");
         UI::SameLine();
         UI::TextDisabled(Icons::Clipboard);
-        UI::SetPreviousTooltip("Click to copy to clipboard");
+        UI::SetItemTooltip("Click to copy to clipboard");
         if (UI::IsItemClicked()) {
             IO::SetClipboard(tostring(m_map.MapId));
             UI::ShowNotification(Icons::Clipboard + " Track ID copied to clipboard");
         }
 
         UI::Text(Icons::Activitypub+ " \\$f77" + m_map.MapType);
-        UI::SetPreviousTooltip("Map Type");
+        UI::SetItemTooltip("Map Type");
         UI::Text(Icons::Calendar + " \\$f77" + m_map.UploadedAt);
-        UI::SetPreviousTooltip("Uploaded date");
+        UI::SetItemTooltip("Uploaded date");
         if (m_map.UploadedAt != m_map.UpdatedAt) {
             UI::Text(Icons::Refresh + " \\$f77" + m_map.UpdatedAt);
-            UI::SetPreviousTooltip("Updated date");
+            UI::SetItemTooltip("Updated date");
         }
 #if MP4
         UI::Text(Icons::Tree + " \\$f77" + m_map.EnvironmentName);
-        UI::SetPreviousTooltip("Environment");
+        UI::SetItemTooltip("Environment");
         UI::Text(Icons::Inbox + " \\$f77" + m_map.TitlePack);
-        UI::SetPreviousTooltip("Title Pack");
+        UI::SetItemTooltip("Title Pack");
         UI::Text(Icons::Car + " \\$f77" + m_map.VehicleName);
-        UI::SetPreviousTooltip("Vehicle");
+        UI::SetItemTooltip("Vehicle");
 #endif
         UI::Text(Icons::Sun + " \\$f77" + m_map.Mood);
-        UI::SetPreviousTooltip("Mood");
+        UI::SetItemTooltip("Mood");
         UI::Text(Icons::Money + " \\$f77" + m_map.DisplayCost);
-        UI::SetPreviousTooltip("Coppers cost");
+        UI::SetItemTooltip("Coppers cost");
 
         // TODO doesn't work with v2 anymore
         // if (UI::GoldButton(Icons::Trophy + " Award this map on "+shortMXName)) OpenBrowserURL("https://"+MXURL+"/mapshow/"+m_map.MapId+"#award");
@@ -421,7 +421,7 @@ class MapTab : Tab
             if (!isMapTypeSupported) {
                 UI::Text("\\$f70" + Icons::ExclamationTriangle + " \\$zThe map type is not supported for direct play\nit can crash your game or returns you to the menu");
                 if (!Setting_ShowPlayOnAllMaps) {
-                    UI::SetPreviousTooltip("If you still want to play this map, check the box \"Show Play Button on all map types\" in the plugin settings");
+                    UI::SetItemTooltip("If you still want to play this map, check the box \"Show Play Button on all map types\" in the plugin settings");
                 }
                 if (Setting_ShowPlayOnAllMaps && UI::OrangeButton(Icons::Play + " Play Map Anyway")) {
                     if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
@@ -562,8 +562,7 @@ class MapTab : Tab
             for (uint i = 0; i < m_map.Authors.Length; i++) {
                 MX::MapAuthorInfo@ author = m_map.Authors[i];
                 UI::TextDisabled(author.Name + (i == m_map.Authors.Length - 1 ? "" : ", "));
-                if (UI::IsItemHovered()) {
-                    UI::BeginTooltip();
+                if (UI::BeginItemTooltip()) {
                     if (author.Uploader) {
                         UI::Text(Icons::CloudUpload + " Uploader");
                         UI::Separator();
@@ -642,13 +641,13 @@ class MapTab : Tab
                                     }
                                 } else {
                                     UI::Text("\\$f00" + Icons::Exclamation);
-                                    UI::SetPreviousTooltip("Replay was driven on a different version of the map");
+                                    UI::SetItemTooltip("Replay was driven on a different version of the map");
                                 }
 
                                 UI::TableNextColumn();
                                 bool isUser = Setting_Tab_YourProfile_UserID == entry.UserId;
                                 UI::Text(entry.Username + (isUser ? " " + Icons::User : ""));
-                                UI::SetPreviousTooltip("Click to see "+entry.Username+"'s profile");
+                                UI::SetItemTooltip("Click to see "+entry.Username+"'s profile");
                                 if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(entry.UserId), true);
 
                                 UI::TableNextColumn();
@@ -805,7 +804,7 @@ class MapTab : Tab
                             if (object.Username.Length == 0) UI::TextDisabled(object.ObjectAuthor);
                             else UI::Text(object.Username);
                             if (object.UserId > 0) {
-                                UI::SetPreviousTooltip("Click to see "+(object.Username.Length > 0 ? (object.Username+"'s") : "user")+" profile");
+                                UI::SetItemTooltip("Click to see "+(object.Username.Length > 0 ? (object.Username+"'s") : "user")+" profile");
                                 if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(object.UserId), true);
                             }
 

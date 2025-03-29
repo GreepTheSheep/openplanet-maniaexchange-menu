@@ -394,12 +394,12 @@ class UserTab : Tab
         UI::SameLine();
         if (m_MXUserInfoRequest is null) {
             if (UI::Button(Icons::Refresh)) StartMXRequest();
-            UI::SetPreviousTooltip("Refresh User info");
+            UI::SetItemTooltip("Refresh User info");
         } else {
             int HourGlassValue = Time::Stamp % 3;
             string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
             UI::Text(Hourglass);
-            UI::SetPreviousTooltip("Loading...");
+            UI::SetItemTooltip("Loading...");
         }
 
         auto img = Images::CachedFromURL("https://account.mania.exchange/account/avatar/"+m_userId);
@@ -425,22 +425,22 @@ class UserTab : Tab
         }
 
         UI::Text(Icons::Calendar+ " \\$f77" + m_user.RegisteredAt);
-        UI::SetPreviousTooltip("Registered");
+        UI::SetItemTooltip("Registered");
 
         UI::Text(Icons::Map+ " \\$f77" + m_user.MapCount);
-        UI::SetPreviousTooltip("Tracks created");
+        UI::SetItemTooltip("Tracks created");
 
         UI::Text(Icons::Inbox+ " \\$f77" + m_user.MappackCount);
-        UI::SetPreviousTooltip("Mappacks created");
+        UI::SetItemTooltip("Mappacks created");
 
         UI::Text(Icons::Trophy+ " \\$f77" + m_user.AwardsReceivedCount);
-        UI::SetPreviousTooltip("Awards");
+        UI::SetItemTooltip("Awards");
 
         UI::Text(Icons::Hashtag+ " \\$f77" + m_user.UserId);
-        UI::SetPreviousTooltip("User ID");
+        UI::SetItemTooltip("User ID");
         UI::SameLine();
         UI::TextDisabled(Icons::Clipboard);
-        UI::SetPreviousTooltip("Click to copy to clipboard");
+        UI::SetItemTooltip("Click to copy to clipboard");
         if (UI::IsItemClicked()) {
             IO::SetClipboard(tostring(m_user.UserId));
             UI::ShowNotification(Icons::Clipboard + " User ID copied to clipboard");

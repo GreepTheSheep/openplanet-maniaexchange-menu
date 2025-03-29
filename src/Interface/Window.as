@@ -88,7 +88,7 @@ class Window{
                 if (tab.CanClose()){
                     bool open = true;
                     bool beginTabClosable = UI::BeginTabItem(tab.GetLabel()+(tab.GetTooltip().Length > 0 ? "###"+tab.GetTooltip() : ""), open, flags);
-                    if (tab.GetTooltip().Length > 0) UI::SetPreviousTooltip(tab.GetTooltip());
+                    if (tab.GetTooltip().Length > 0) UI::SetItemTooltip(tab.GetTooltip());
                     if (beginTabClosable){
                         @c_lastActiveTab = tab;
 
@@ -104,7 +104,7 @@ class Window{
                     }
                 } else {
                     bool beginTab = UI::BeginTabItem(tab.GetLabel()+(tab.GetTooltip().Length > 0 ? "###"+tab.GetTooltip() : ""), flags);
-                    if (tab.GetTooltip().Length > 0) UI::SetPreviousTooltip(tab.GetTooltip());
+                    if (tab.GetTooltip().Length > 0) UI::SetItemTooltip(tab.GetTooltip());
                     if (beginTab){
                         @c_lastActiveTab = tab;
 

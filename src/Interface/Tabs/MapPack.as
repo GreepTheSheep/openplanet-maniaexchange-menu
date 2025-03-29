@@ -199,15 +199,15 @@ class MapPackTab : Tab
 
         if (!m_mapPack.IsPublic) UI::Text(Icons::Times + " \\$f77Unreleased");
         UI::Text(Icons::ThList + " \\$f77" + m_mapPack.TypeName);
-        UI::SetPreviousTooltip("MapPack Type");
+        UI::SetItemTooltip("MapPack Type");
         UI::Text(Icons::ListOl + " \\$f77" + m_mapPack.MapCount);
-        UI::SetPreviousTooltip("Track Count");
+        UI::SetItemTooltip("Track Count");
 
         UI::Text(Icons::Hashtag + " \\$f77" + m_mapPack.MappackId);
-        UI::SetPreviousTooltip("MapPack ID");
+        UI::SetItemTooltip("MapPack ID");
         UI::SameLine();
         UI::TextDisabled(Icons::Clipboard);
-        UI::SetPreviousTooltip("Click to copy to clipboard");
+        UI::SetItemTooltip("Click to copy to clipboard");
         if (UI::IsItemClicked()) {
             IO::SetClipboard(tostring(m_mapPack.MappackId));
             UI::ShowNotification(Icons::Clipboard + " Map pack ID copied to clipboard");
@@ -215,10 +215,10 @@ class MapPackTab : Tab
 
         if (m_mapPack.IsRequest) UI::Text(Icons::HandPeaceO+ " \\$f77Open for requests!");
         UI::Text(Icons::Calendar + " \\$f77" + m_mapPack.CreatedAt);
-        UI::SetPreviousTooltip("Created date");
+        UI::SetItemTooltip("Created date");
         if (m_mapPack.CreatedAt != m_mapPack.UpdatedAt) {
             UI::Text(Icons::Refresh + " \\$f77" + m_mapPack.UpdatedAt);
-            UI::SetPreviousTooltip("Edited date");
+            UI::SetItemTooltip("Edited date");
         }
 
         if (UI::CyanButton(Icons::ExternalLink + " View on "+pluginName)) OpenBrowserURL("https://"+MXURL+"/mappackshow/"+m_mapPack.MappackId);
@@ -256,7 +256,7 @@ class MapPackTab : Tab
         UI::PopFont();
 
         UI::TextDisabled("By " + m_mapPack.Username);
-        UI::SetPreviousTooltip("Click to view "+m_mapPack.Username+"'s profile");
+        UI::SetItemTooltip("Click to view "+m_mapPack.Username+"'s profile");
         if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(m_mapPack.UserId), true);
 
         UI::Separator();

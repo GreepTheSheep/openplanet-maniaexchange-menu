@@ -12,7 +12,7 @@ namespace IfaceRender
 
         UI::TableNextColumn();
         UI::Text(mapPack.Username);
-        UI::SetPreviousTooltip("Click to view "+mapPack.Username+"'s profile");
+        UI::SetItemTooltip("Click to view "+mapPack.Username+"'s profile");
         if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(mapPack.UserId), true);
 
         UI::TableNextColumn();

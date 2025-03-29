@@ -1,18 +1,8 @@
 namespace UI
 {
-    void SetPreviousTooltip(const string &in text)
-    {
-        if (UI::IsItemHovered()) {
-            UI::BeginTooltip();
-            UI::Text(text);
-            UI::EndTooltip();
-        }
-    }
-
     void MXThumbnailTooltip(CachedImage@ img, float resize = 0.25)
     {
-        if (UI::IsItemHovered()) {
-            UI::BeginTooltip();
+        if (UI::BeginItemTooltip()) {
             float width = Draw::GetWidth() * resize;
 
             if (img.m_texture !is null){

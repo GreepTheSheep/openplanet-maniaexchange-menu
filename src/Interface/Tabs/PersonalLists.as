@@ -86,7 +86,7 @@ class PersonalListsTab : MapListTab
             }
             UI::SameLine();
             UI::TextDisabled(Icons::ExclamationTriangle + " Only maps available on TMX are displayed");
-            UI::SetPreviousTooltip("All favorite maps are displayed in game via the Local menu or via the Openplanet overlay");
+            UI::SetItemTooltip("All favorite maps are displayed in game via the Local menu or via the Openplanet overlay");
         }
 #endif
         UI::SameLine();

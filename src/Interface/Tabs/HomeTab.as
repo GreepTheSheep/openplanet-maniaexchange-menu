@@ -52,12 +52,11 @@ class HomePageTab : Tab {
         UI::PopFont();
         UI::SameLine();
         UI::TextDisabled(Icons::ExternalLink);
-        UI::SetPreviousTooltip("Click to open the website");
+        UI::SetItemTooltip("Click to open the website");
         if (UI::IsItemClicked()) OpenBrowserURL("https://"+MXURL);
 #if MP4
         UI::TextDisabled("Current repository: " + MXURL + "    " + Icons::InfoCircle);
-        if (UI::IsItemHovered()) {
-            UI::BeginTooltip();
+        if (UI::BeginItemTooltip()) {
             UI::Text("You can change the repository on the plugin settings.");
             UI::EndTooltip();
         }

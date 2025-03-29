@@ -13,7 +13,7 @@ namespace IfaceRender
 
         UI::TableNextColumn();
         UI::Text(map.Username);
-        UI::SetPreviousTooltip("Click to view "+map.Username+"'s profile");
+        UI::SetItemTooltip("Click to view "+map.Username+"'s profile");
         if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(map.UserId), true);
 
         UI::TableNextColumn();
@@ -60,8 +60,7 @@ namespace IfaceRender
                 UI::ShowNotification(Icons::ExclamationTriangle + " Warning", "The map type is not supported for direct play, it can crash your game or returns you to the menu", UI::HSV(0.11, 1.0, 1.0), 15000);
                 MX::mapToLoad = map.MapId;
             }
-            if (UI::IsItemHovered()) {
-                UI::BeginTooltip();
+            if (UI::BeginItemTooltip()) {
                 UI::Text(Icons::ExclamationTriangle + " The map type is not supported for direct play, it can crash your game or returns you to the menu");
                 UI::TextDisabled(map.MapType);
                 UI::EndTooltip();

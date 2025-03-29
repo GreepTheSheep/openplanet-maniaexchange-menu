@@ -75,7 +75,7 @@ class TagsListTab : MapListTab
             Reload();
         }
         bool selectedTagInc = UI::Checkbox("Tag inclusive search", m_tagInclusive);
-        UI::SetPreviousTooltip("If checked, maps must contain all selected tags.");
+        UI::SetItemTooltip("If checked, maps must contain all selected tags.");
         if (selectedTagInc != m_tagInclusive) {
             m_tagInclusive = selectedTagInc;
             Reload();
