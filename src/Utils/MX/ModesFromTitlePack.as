@@ -33,6 +33,6 @@ namespace MX
         // Other
         { "TMPlus_Canyon",   "SingleMap" },
         { "TMPlus_Lagoon",   "SingleMap" }
-    };
 #endif
+    };
 }
