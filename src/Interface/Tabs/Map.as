@@ -704,11 +704,13 @@ class MapTab : Tab
             }
 
             if (m_TMIOerror){
+                UI::AlignTextToFramePadding();
                 UI::Text("\\$f00" + Icons::Times + "\\$z "+ m_TMIOerrorMsg);
             } else {
+                UI::AlignTextToFramePadding();
                 UI::Text(Icons::Heartbeat + " The leaderboard is fetched directly from Trackmania.io (Nadeo Services)");
                 UI::SameLine();
-                if (UI::OrangeButton(Icons::Refresh)){
+                if (UI::Button(Icons::Refresh)){
                     m_leaderboard.RemoveRange(0, m_leaderboard.Length);
                     if (!m_TMIOrequestStarted) m_TMIOrequestStart = true;
                     m_TMIOstopleaderboard = false;
