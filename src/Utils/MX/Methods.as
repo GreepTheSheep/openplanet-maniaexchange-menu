@@ -87,7 +87,10 @@ namespace MX
                 string orderName = resNet[i]["Name"];
 
                 // TODO No way of using these orders yet
-                if (orderName.Contains("User") || orderName.Contains("Video") || orderName.Contains("Replay")) continue;
+                if (orderName.Contains("User") || orderName.Contains("Video")) continue;
+
+                // TODO currently broken and raise error 500
+                if (orderName.Contains("Rating") || orderName.Contains("Replay")) continue;
 
                 m_mapSortingOrders.InsertLast(SortingOrder(resNet[i]));
             }
