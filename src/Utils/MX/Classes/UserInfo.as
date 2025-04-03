@@ -41,8 +41,8 @@ namespace MX
                 VideosCreatedCount = json["VideosCreatedCount"];
                 // FeaturedTrackID = json["FeaturedTrackID"]; // TODO missing
             } catch {
-                mxWarn("Error parsing user info for user " + Name + ": " + getExceptionInfo(), true);
-                print(Json::Write(ToJson()));
+                Logging::Warn("Error parsing user info for user " + Name + ": " + getExceptionInfo(), true);
+                Logging::Debug(Json::Write(ToJson()));
             }
         }
 
@@ -68,7 +68,7 @@ namespace MX
                 json["VideosCreatedCount"] = VideosCreatedCount;
                 // json["FeaturedTrackID"] = FeaturedTrackID; // TODO missing
             } catch {
-                mxWarn("Error converting user info to json for user " + Name + ": " + getExceptionInfo(), true);
+                Logging::Warn("Error converting user info to json for user " + Name + ": " + getExceptionInfo(), true);
             }
             return json;
         }

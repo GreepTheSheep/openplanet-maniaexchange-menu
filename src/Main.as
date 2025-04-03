@@ -71,15 +71,17 @@ void RenderMenuMain(){
                     UI::TextDisabled(Hourglass + " Loading...");
                 }
 
-                if (isDevMode && currentMapID == -4){
+#if SIG_DEVELOPER
+                if (currentMapID == -4){
                     UI::Separator();
                     UI::TextDisabled("Not in a map.");
                 }
 
-                if (isDevMode && currentMapID == -5){
+                if (currentMapID == -5){
                     UI::Separator();
                     UI::TextDisabled("In map editor.");
                 }
+#endif
             }
         } else {
             UI::TextDisabled("\\$f00" + Icons::Server + " \\$z" + shortMXName + " is down!");
@@ -223,7 +225,7 @@ void RenderMenuMain(){
 void Main(){
 #if TMNEXT
     if (!OpenplanetHasPaidPermissions()) {
-        mxError("You need Club / Standard access to use this plugin!", true);
+        Logging::Error("You need Club / Standard access to use this plugin!", true);
         return;
     }
 #endif
@@ -281,7 +283,7 @@ void MapChecker() {
                 if (!MX::APIDown && currentMapID < 0 && currentMapID != -1) {
                     currentMapID = MX::GetCurrentMapMXID();
                     if (currentMapID < 0 && currentMapID != -3) {
-                        if (isDevMode) print("MX ID error: " + currentMapID);
+                        Logging::Debug("MX ID error: " + currentMapID);
                         sleep(30000);
                     }
                 }
@@ -304,10 +306,11 @@ void BetterChatRegisterCommands() {
         BetterChat::RegisterCommand("mx-awards", MXBetterChat::MapAwards(false));
         BetterChat::RegisterCommand("mx-tell-awards", MXBetterChat::MapAwards(true));
         BetterChat::RegisterCommand("mx-tell-plugin", MXBetterChat::TellMXPlugin());
-
-        if (isDevMode) BetterChat::RegisterCommand("mx-json", MXBetterChat::ShowMapInfoJson());
+#if SIG_DEVELOPER
+        BetterChat::RegisterCommand("mx-json", MXBetterChat::ShowMapInfoJson());
+#endif
     } catch {
-        mxError("Better Chat: unable to register commands: " + getExceptionInfo(), true);
+        Logging::Error("Better Chat: unable to register commands: " + getExceptionInfo(), true);
     }
 }
 #endif
@@ -324,7 +327,9 @@ void OnDestroyed() {
 #if DEPENDENCY_BETTERCHAT
     BetterChat::UnregisterCommand("mx");
     BetterChat::UnregisterCommand("maniaexchange");
-    if (isDevMode) BetterChat::UnregisterCommand("mx-json");
+#if SIG_DEVELOPER
+    BetterChat::UnregisterCommand("mx-json");
+#endif
     BetterChat::UnregisterCommand("mx-awards");
     BetterChat::UnregisterCommand("mx-tell-awards");
     BetterChat::UnregisterCommand("mx-page");

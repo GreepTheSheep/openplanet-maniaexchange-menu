@@ -21,4 +21,3 @@ array<MX::MapInfo@> g_PlayLaterMaps;
 string PlayLaterJSON = IO::FromStorageFolder("PlayLater.json");
 string repoName = "GreepTheSheep/openplanet-maniaexchange-menu";
 string repoURL = "https://github.com/"+repoName;
-bool isDevMode = Meta::IsDeveloperMode();

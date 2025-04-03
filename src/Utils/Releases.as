@@ -33,7 +33,7 @@ namespace GH
     void StartReleasesReq()
     {
         string url = "https://api.github.com/repos/"+repoName+"/releases";
-        if (isDevMode) trace("Releases::SendRequest : " + url);
+        Logging::Debug("Releases::SendRequest : " + url);
         @ReleasesReq = API::Get(url);
     }
 
@@ -46,10 +46,10 @@ namespace GH
             auto json = ReleasesReq.Json();
             @ReleasesReq = null;
 
-            if (isDevMode) trace("Releases::CheckRequest : " + res);
+            Logging::Debug("Releases::CheckRequest : " + res);
 
             if (json.GetType() != Json::Type::Array || json.Length == 0) {
-                print("Releases::CheckRequest : Error parsing response");
+                Logging::Info("Releases::CheckRequest : Error parsing response");
                 releasesRequestError = true;
                 return;
             }

@@ -9,12 +9,16 @@ namespace TMIO
         string playerID;
 
         Leaderboard(Json::Value leaderboard){
-            position = leaderboard["position"];
-            time = leaderboard["time"];
-            ghostURL = "https://trackmania.io";
-            ghostURL += leaderboard["url"];
-            playerName = leaderboard["player"]["name"];
-            playerID = leaderboard["player"]["id"];
+            try {
+                position = leaderboard["position"];
+                time = leaderboard["time"];
+                ghostURL = "https://trackmania.io";
+                ghostURL += leaderboard["url"];
+                playerName = leaderboard["player"]["name"];
+                playerID = leaderboard["player"]["id"];
+            } catch {
+                Logging::Warn("Error parsing info for TM.io leaderboard: " + getExceptionInfo(), true);
+            }
         }
     }
 }

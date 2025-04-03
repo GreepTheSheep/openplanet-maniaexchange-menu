@@ -80,7 +80,7 @@ class MapTab : Tab
         string urlParams = MX::DictToApiParams(params);
 
         string url = "https://"+MXURL+"/api/maps" + urlParams;
-        if (isDevMode) print("MapTab::StartRequest (MX): "+url);
+        Logging::Debug("MapTab::StartRequest (MX): "+url);
         @m_MXrequest = API::Get(url);
     }
 
@@ -94,10 +94,10 @@ class MapTab : Tab
             auto json = m_MXrequest.Json();
             @m_MXrequest = null;
 
-            if (isDevMode) print("MapTab::CheckRequest (MX): " + res);
+            Logging::Debug("MapTab::CheckRequest (MX): " + res);
 
             if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
-                print("MapTab::CheckRequest (MX): Error parsing response");
+                Logging::Info("MapTab::CheckRequest (MX): Error parsing response");
                 m_error = true;
                 return;
             }
@@ -112,7 +112,7 @@ class MapTab : Tab
     void StartMXReplaysRequest()
     {
         string url = "https://"+MXURL+"/api/replays?best=1&mapId=" + m_mapId;
-        if (isDevMode) trace("MapTab::StartRequest (Replays): "+url);
+        Logging::Debug("MapTab::StartRequest (Replays): "+url);
         @m_MXReplaysRequest = API::Get(url);
     }
 
@@ -129,10 +129,10 @@ class MapTab : Tab
             auto json = m_MXReplaysRequest.Json();
             @m_MXReplaysRequest = null;
 
-            if (isDevMode) trace("MapTab::CheckRequest (Replays): " + res);
+            Logging::Debug("MapTab::CheckRequest (Replays): " + res);
 
             if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
-                print("MapTab::CheckRequest (Replays): Error parsing response");
+                Logging::Info("MapTab::CheckRequest (Replays): Error parsing response");
                 m_replaysError = true;
                 return;
             }
@@ -157,7 +157,7 @@ class MapTab : Tab
         if (m_map is null) return;
         string url = "https://trackmania.io/api/leaderboard/map/"+m_map.MapUid;
         if (offset != -1) url += "?length=100&offset=" + offset;
-        if (isDevMode) trace("MapTab::StartRequest (TM.IO): "+url);
+        Logging::Debug("MapTab::StartRequest (TM.IO): "+url);
         m_TMIOrequestStarted = true;
         @m_TMIOrequest = API::Get(url);
     }
@@ -171,7 +171,7 @@ class MapTab : Tab
             auto json = m_TMIOrequest.Json();
             @m_TMIOrequest = null;
 
-            if (isDevMode) trace("MapTab::CheckRequest (TM.IO): " + res);
+            Logging::Debug("MapTab::CheckRequest (TM.IO): " + res);
 
             // if error, handle it (particular case for "not found on API")
             if (json.HasKey("error")){
@@ -179,7 +179,7 @@ class MapTab : Tab
             } else {
                 // if tops is null return no results, else handle the response
                 if (json["tops"].GetType() == Json::Type::Null) {
-                    if (isDevMode) print("MapTab::CheckRequest (TM.IO): No results");
+                    Logging::Info("MapTab::CheckRequest (TM.IO): No results");
                     m_TMIONoRes = true;
                 }
                 else HandleTMIOResponse(json["tops"]);
@@ -211,7 +211,7 @@ class MapTab : Tab
     void StartMXEmbeddedRequest()
     {
         string url = "https://"+MXURL+"/api/maps/objects?trackId=" + m_mapId + "&count=" + m_map.EmbeddedObjectsCount;
-        if (isDevMode) trace("MapTab::StartRequest (Embedded): "+url);
+        Logging::Debug("MapTab::StartRequest (Embedded): "+url);
         @m_MXEmbedObjRequest = API::Get(url);
     }
 
@@ -228,10 +228,10 @@ class MapTab : Tab
             auto json = m_MXEmbedObjRequest.Json();
             @m_MXEmbedObjRequest = null;
 
-            if (isDevMode) trace("MapTab::CheckRequest (Embedded): " + res);
+            Logging::Debug("MapTab::CheckRequest (Embedded): " + res);
 
             if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
-                print("MapTab::CheckRequest (Embedded): Error parsing response");
+                Logging::Info("MapTab::CheckRequest (Embedded): Error parsing response");
                 m_mapEmbeddedObjectsError = true;
                 return;
             }

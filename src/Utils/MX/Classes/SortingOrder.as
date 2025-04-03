@@ -12,7 +12,7 @@ namespace MX
                 Name = json["Name"];
             } catch {
                 Name = json["Name"];
-                mxWarn("Error parsing sorting order " + Name + ": " + getExceptionInfo());
+                Logging::Warn("Error parsing sorting order " + Name + ": " + getExceptionInfo());
             }
         }
     }

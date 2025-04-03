@@ -49,7 +49,7 @@ class MapListTab : Tab
 
         string url = "https://"+MXURL+"/api/maps" + urlParams;
 
-        if (isDevMode) trace("MapListTab::StartRequest: " + url);
+        Logging::Debug("MapListTab::StartRequest: " + url);
         @m_request = API::Get(url);
     }
 
@@ -86,10 +86,10 @@ class MapListTab : Tab
             auto json = m_request.Json();
             @m_request = null;
 
-            if (isDevMode) trace("MapListTab::CheckRequest: " + res);
+            Logging::Debug("MapListTab::CheckRequest: " + res);
 
             if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
-                mxError("Error while loading maps list");
+                Logging::Error("Error while loading maps list");
                 return;
             } else {
                 HandleResponse(json);

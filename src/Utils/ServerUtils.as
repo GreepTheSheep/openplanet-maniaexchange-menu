@@ -30,7 +30,7 @@ namespace TMNext
         auto res = req.Json();
         isCheckingRoom = false;
 
-        if (isDevMode) trace("NadeoServices - Check server: " + req.String());
+        Logging::Trace("NadeoServices - Check server: " + req.String());
 
         if (res.GetType() == Json::Type::Array) {
             roomCheckErrorCode = res[0];
@@ -55,9 +55,9 @@ namespace TMNext
         auto regScript = dfm.Map_NadeoServices_Register(userId, AddMapToServer_MapUid);
         while (regScript.IsProcessing) yield();
         if (regScript.HasFailed)
-            mxError("Uploading map failed: " + regScript.ErrorType + ", " + regScript.ErrorCode + ", " + regScript.ErrorDescription);
+            Logging::Error("Uploading map failed: " + regScript.ErrorType + ", " + regScript.ErrorCode + ", " + regScript.ErrorDescription);
         else if (regScript.HasSucceeded)
-            trace("UploadMapFromLocal: Map uploaded: " + AddMapToServer_MapUid);
+            Logging::Debug("UploadMapFromLocal: Map uploaded: " + AddMapToServer_MapUid);
         dfm.TaskResult_Release(regScript.Id);
 #endif
         string downloadedMapFolder = IO::FromUserGameFolder("Maps/Downloaded");
@@ -70,20 +70,20 @@ namespace TMNext
         if (!MXNadeoServicesGlobal::CheckIfMapExistsAsync(AddMapToServer_MapUid))
             UploadMapToNadeoServices();
 
-        trace("Adding map '" + AddMapToServer_MapUid + "' to Nadeo Room #"+AddMapToServer_ClubId+"-"+AddMapToServer_RoomId);
+        Logging::Trace("Adding map '" + AddMapToServer_MapUid + "' to Nadeo Room #"+AddMapToServer_ClubId+"-"+AddMapToServer_RoomId);
 
         if (foundRoom.room.maps.Length > 0) {
             const string mapUid = foundRoom.room.currentMapUid.Length > 0 ? foundRoom.room.currentMapUid : foundRoom.room.maps[0];
             Json::Value mapInfo = MXNadeoServicesGlobal::GetMapInfoAsync(mapUid);
 
             if (mapInfo is null) {
-                mxWarn("Couldn't find information for map UID " + mapUid, true);
+                Logging::Warn("Couldn't find information for map UID " + mapUid, true);
                 return;
             } else {
                 string serverMapType = CleanMapType(string(mapInfo["mapType"]));
 
                 if (serverMapType != AddMapToServer_MapType) {
-                    mxError("Map type doesn't match the room's current game mode", true);
+                    Logging::Error("Map type doesn't match the room's current game mode", true);
                     return;
                 }
             }
@@ -124,7 +124,7 @@ namespace TMNext
         Net::HttpRequest@ req = NadeoServices::Post("NadeoLiveServices", NadeoServices::BaseURLLive()+"/api/token/club/"+AddMapToServer_ClubId+"/room/"+AddMapToServer_RoomId+"/edit", Json::Write(bodyJson));
         req.Start();
         while (!req.Finished()) yield();
-        print("NadeoServices::UpdateRoom - "+req.String());
+        Logging::Trace("NadeoServices::UpdateRoom - "+req.String());
 
         if (AddMapToServer_PlayMapNow) {
             if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
@@ -147,7 +147,7 @@ namespace TMNext
             @req = NadeoServices::Post("NadeoLiveServices", NadeoServices::BaseURLLive()+"/api/token/club/"+AddMapToServer_ClubId+"/room/"+AddMapToServer_RoomId+"/edit", Json::Write(bodyJson));
             req.Start();
             while (!req.Finished()) yield();
-            print("NadeoServices::UpdateRoom (reset S_TimeLimit to 0) - "+req.String());
+            Logging::Trace("NadeoServices::UpdateRoom (reset S_TimeLimit to 0) - "+req.String());
             AddMapToServer_PlayMapNow = false;
         }
 #endif

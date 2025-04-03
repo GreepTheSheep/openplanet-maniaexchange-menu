@@ -24,10 +24,10 @@ namespace HomePageTabRender {
         UI::Text("Plugin ID \\$777" + Meta::ExecutingPlugin().ID);
         UI::Text("Site ID \\$777" + Meta::ExecutingPlugin().SiteID);
         UI::Text("Type \\$777" + tostring(Meta::ExecutingPlugin().Type));
-        if (isDevMode) {
-            UI::SameLine();
-            UI::Text("\\$777(\\$f39"+Icons::Code+" \\$777Dev mode)");
-        }
+#if SIG_DEVELOPER
+        UI::SameLine();
+        UI::Text("\\$777(\\$f39"+Icons::Code+" \\$777Dev mode)");
+#endif
         if (UI::Button(Icons::Heart + " \\$zSponsor")) OpenBrowserURL("https://github.com/sponsors/GreepTheSheep");
         UI::SameLine();
         if (UI::Button(Icons::Kenney::GithubAlt + " Github")) OpenBrowserURL(repoURL);

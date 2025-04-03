@@ -46,7 +46,7 @@ enum MP4mxRepos {
 [Setting hidden]
 MP4mxRepos repo = MP4mxRepos::Trackmania;
 
-[SettingsTab name="ManiaPlanet 4"]
+[SettingsTab name="ManiaPlanet 4" icon="ManiaExchange" order=3]
 void RenderMP4RepoSelectSettings()
 {
     if (UI::BeginCombo("Repository for maps", tostring(repo))) {
@@ -55,7 +55,7 @@ void RenderMP4RepoSelectSettings()
                 repo = MP4mxRepos(i);
                 if (repo == MP4mxRepos::Trackmania) MXURL = "tm.mania.exchange";
                 else if (repo == MP4mxRepos::Shootmania) MXURL = "sm.mania.exchange";
-                print("Changed repository to " + repo + " (" + MXURL + "), reloading tags...");
+                Logging::Info("Changed repository to " + repo + " (" + MXURL + "), reloading tags...");
                 startnew(MX::CheckForAPILoaded);
 
                 for (uint t = 0; t < mxMenu.tabs.Length; t++) {
@@ -91,7 +91,7 @@ NadeoServicesFavoriteMapListSort Setting_NadeoServices_FavoriteMaps_Sort = Nadeo
 [Setting hidden]
 NadeoServicesFavoriteMapListSortOrder Setting_NadeoServices_FavoriteMaps_SortOrder = NadeoServicesFavoriteMapListSortOrder::Descending;
 
-[SettingsTab name="Favorite Maps"]
+[SettingsTab name="Favorite Maps" icon="Star" order=3]
 void RenderNadeoServicesSettings()
 {
     if (UI::Button(Icons::Refresh + " Refresh Favorite Maps")) {
@@ -125,3 +125,23 @@ void RenderNadeoServicesSettings()
     }
 }
 #endif
+
+[Setting hidden]
+LogLevel Setting_LogLevel = LogLevel::Info;
+
+[SettingsTab name="Dev" order=4]
+void RenderDevSettings()
+{
+    if (UI::Button("Reset to default")) {
+        Setting_LogLevel = LogLevel::Info;
+    }
+
+    if (UI::BeginCombo("Log level", tostring(Setting_LogLevel))) {
+        for (int i = 0; i <= LogLevel::Trace; i++) {
+            if (UI::Selectable(tostring(LogLevel(i)), Setting_LogLevel == LogLevel(i))) {
+                Setting_LogLevel = LogLevel(i);
+            }
+        }
+        UI::EndCombo();
+    }
+}

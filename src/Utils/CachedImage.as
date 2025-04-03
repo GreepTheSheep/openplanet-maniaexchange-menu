@@ -9,7 +9,7 @@ class CachedImage
 
     void DownloadFromURLAsync()
     {
-        trace("Loading texture: " + m_url);
+        Logging::Debug("Loading texture: " + m_url);
         auto req = API::Get(m_url);
         while (!req.Finished()) {
             yield();
@@ -32,7 +32,7 @@ class CachedImage
                         m_error = true;
                     }
                 } else {
-                    print("WEBP conversion failed. Error " + webpReq.ResponseCode());
+                    Logging::Debug("WEBP conversion failed. Error " + webpReq.ResponseCode());
                     m_unsupportedFormat = true;
                     m_error = true;
                 }

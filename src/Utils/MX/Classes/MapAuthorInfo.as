@@ -15,7 +15,7 @@ namespace MX
                 Role = json["Role"];
                 Uploader = uploader;
             } catch {
-                mxWarn("Error parsing author info for the map: " + getExceptionInfo(), true);
+                Logging::Warn("Error parsing author info for the map: " + getExceptionInfo(), true);
             }
         }
 
@@ -30,7 +30,7 @@ namespace MX
                 json["User"] = userObject;
                 json["Role"] = Role;
             } catch {
-                mxWarn("Error converting map author info to json for author " + Name + ": " + getExceptionInfo(), true);
+                Logging::Warn("Error converting map author info to json for author " + Name + ": " + getExceptionInfo(), true);
             }
 
             return json;

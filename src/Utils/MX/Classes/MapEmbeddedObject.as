@@ -28,14 +28,14 @@ namespace MX
                 else if (willFetchID) startnew(CoroutineFunc(TryGetID));
                 else ID = -2;
             } catch {
-                mxWarn("Error parsing embedded object info for the map: " + getExceptionInfo(), true);
+                Logging::Warn("Error parsing embedded object info for the map: " + getExceptionInfo(), true);
             }
         }
 
         void TryGetID()
         {
             string url = "https://item.exchange/itemsearch/search?api=on&format=json&filename=" + Net::UrlEncode(Name) + "&authorlogin=" + Net::UrlEncode(ObjectAuthor);
-            if (isDevMode) trace("MapEmbeddedObject::StartRequest (TryGetID): "+url);
+            Logging::Debug("MapEmbeddedObject::StartRequest (TryGetID): "+url);
             Net::HttpRequest@ req = API::Get(url);
             while (!req.Finished()) {
                 yield();
@@ -44,17 +44,17 @@ namespace MX
             auto json = req.Json();
             @req = null;
 
-            if (isDevMode) trace("MapEmbeddedObject::CheckRequest (TryGetID): " + res);
+            Logging::Debug("MapEmbeddedObject::CheckRequest (TryGetID): " + res);
 
             if (json.GetType() == Json::Type::Null) {
-                print("MapEmbeddedObject::CheckRequest (TryGetID): Error parsing response");
+                Logging::Debug("MapEmbeddedObject::CheckRequest (TryGetID): Error parsing response");
                 ID = -1;
                 return;
             }
             // Handle the response
             if (json.HasKey("results") && json["results"].GetType() == Json::Type::Array && json["results"].Length > 0) {
                 ID = json["results"][0]["ID"];
-                trace("Object ID found for " + ObjectPath + ": " + ID);
+                Logging::Trace("Object ID found for " + ObjectPath + ": " + ID);
                 return;
             }
             ID = 0;

@@ -80,7 +80,7 @@ class UserTab : Tab
         string userUrlParams = MX::DictToApiParams(params);
 
         string url = "https://"+MXURL+"/api/users" + userUrlParams;
-        if (isDevMode) trace("UserTab::StartRequest (MX): "+url);
+        Logging::Debug("UserTab::StartRequest (MX): "+url);
         @m_MXUserInfoRequest = API::Get(url);
     }
 
@@ -97,10 +97,10 @@ class UserTab : Tab
             auto json = m_MXUserInfoRequest.Json();
             @m_MXUserInfoRequest = null;
 
-            if (isDevMode) trace("UserTab::CheckRequest (MX): " + res);
+            Logging::Debug("UserTab::CheckRequest (MX): " + res);
 
             if (resCode >400 || json.GetType() != Json::Type::Object || !json.HasKey("Results") || json["Results"].Length == 0) {
-                mxWarn("UserTab::CheckRequest (MX): Error parsing response");
+                Logging::Warn("UserTab::CheckRequest (MX): Error parsing response");
                 m_error = true;
                 return;
             }
@@ -122,7 +122,7 @@ class UserTab : Tab
         string mapUrlParams = MX::DictToApiParams(params);
 
         string url = "https://"+MXURL+"/api/maps" + mapUrlParams;
-        if (isDevMode) trace("UserTab::FeaturedMap::StartRequest (MX): "+url);
+        Logging::Debug("UserTab::FeaturedMap::StartRequest (MX): "+url);
         @m_MXUserFeaturedMapRequest = API::Get(url);
     }
 
@@ -136,10 +136,10 @@ class UserTab : Tab
             auto json = m_MXUserFeaturedMapRequest.Json();
             @m_MXUserFeaturedMapRequest = null;
 
-            if (isDevMode) trace("UserTab::FeaturedMap::CheckRequest (MX): " + res);
+            Logging::Debug("UserTab::FeaturedMap::CheckRequest (MX): " + res);
 
             if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
-                mxWarn("UserTab::FeaturedMap::CheckRequest (MX): Error parsing response");
+                Logging::Warn("UserTab::FeaturedMap::CheckRequest (MX): Error parsing response");
                 m_featuredMapError = true;
                 return;
             }
@@ -152,7 +152,7 @@ class UserTab : Tab
     {
         string url = "https://"+MXURL+"/api/leaderboard/season/"+m_selectedLeaderboardId+"/user/"+m_userId;
 
-        if (isDevMode) trace("UserTab::Leaderboard::StartRequest: " + url);
+        Logging::Debug("UserTab::Leaderboard::StartRequest: " + url);
         @m_MXUserLeaderboardRequest = API::Get(url);
     }
 
@@ -169,12 +169,12 @@ class UserTab : Tab
             auto json = m_MXUserLeaderboardRequest.Json();
             @m_MXUserLeaderboardRequest = null;
 
-            if (isDevMode) trace("UserTab::Leaderboard::CheckRequest (MX): " + res);
+            Logging::Debug("UserTab::Leaderboard::CheckRequest (MX): " + res);
 
             if (resCode >= 400 || json.GetType() == Json::Type::Null) {
                 m_leaderboardError = true;
                 m_leaderboardErrorMessage = "Error while loading user leaderboard";
-                mxError(m_leaderboardErrorMessage);
+                Logging::Error(m_leaderboardErrorMessage);
                 return;
             }
             if (json.GetType() == Json::Type::Array) {
@@ -183,7 +183,7 @@ class UserTab : Tab
             if (json.GetType() == Json::Type::Null) {
                 m_leaderboardError = true;
                 m_leaderboardErrorMessage = "No leaderboard data found for this season";
-                mxError(m_leaderboardErrorMessage);
+                Logging::Error(m_leaderboardErrorMessage);
                 return;
             }
             m_leaderboardError = false;
@@ -209,7 +209,7 @@ class UserTab : Tab
 
         string url = "https://"+MXURL+"/api/maps" + urlParams;
 
-        if (isDevMode) trace("UserTab::CreatedMaps::StartRequest: " + url);
+        Logging::Debug("UserTab::CreatedMaps::StartRequest: " + url);
         @m_MXUserMapsCreatedRequest = API::Get(url);
     }
 
@@ -226,10 +226,10 @@ class UserTab : Tab
             auto json = m_MXUserMapsCreatedRequest.Json();
             @m_MXUserMapsCreatedRequest = null;
 
-            if (isDevMode) trace("UserTab::CreatedMaps::CheckRequest (MX): " + res);
+            Logging::Debug("UserTab::CreatedMaps::CheckRequest (MX): " + res);
 
             if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
-                mxError("Error while loading maps list");
+                Logging::Error("Error while loading maps list");
                 return;
             }
 
@@ -267,7 +267,7 @@ class UserTab : Tab
 
         string url = "https://"+MXURL+"/api/maps" + urlParams;
 
-        if (isDevMode) trace("UserTab::AwardedMaps::StartRequest: " + url);
+        Logging::Debug("UserTab::AwardedMaps::StartRequest: " + url);
         @m_MXUserMapsAwardedRequest = API::Get(url);
     }
 
@@ -284,10 +284,10 @@ class UserTab : Tab
             auto json = m_MXUserMapsAwardedRequest.Json();
             @m_MXUserMapsAwardedRequest = null;
 
-            if (isDevMode) trace("UserTab::AwardedMaps::CheckRequest (MX): " + res);
+            Logging::Debug("UserTab::AwardedMaps::CheckRequest (MX): " + res);
 
             if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
-                mxError("Error while loading maps list");
+                Logging::Error("Error while loading maps list");
                 return;
             }
 
@@ -325,7 +325,7 @@ class UserTab : Tab
 
         string url = "https://"+MXURL+"/api/mappacks" + urlParams;
 
-        if (isDevMode) trace("UserTab::MapPacks::StartRequest: " + url);
+        Logging::Debug("UserTab::MapPacks::StartRequest: " + url);
         @m_MXUserMapPacksRequest = API::Get(url);
     }
 
@@ -342,10 +342,10 @@ class UserTab : Tab
             auto json = m_MXUserMapPacksRequest.Json();
             @m_MXUserMapPacksRequest = null;
 
-            if (isDevMode) trace("UserTab::MapPacks::CheckRequest (MX): " + res);
+            Logging::Debug("UserTab::MapPacks::CheckRequest (MX): " + res);
 
             if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
-                mxError("Error while loading mappack list");
+                Logging::Error("Error while loading mappack list");
                 return;
             }
 

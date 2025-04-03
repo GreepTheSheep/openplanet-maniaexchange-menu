@@ -3,7 +3,7 @@ namespace MX
     void GetAllMapTags()
     {
         string url = "https://"+MXURL+"/api/meta/tags";
-        if (isDevMode) trace("Loading tags: " + url);
+        Logging::Debug("Loading tags: " + url);
         Json::Value resNet = API::GetAsync(url);
 
         try {
@@ -12,14 +12,14 @@ namespace MX
                 int tagID = resNet[i]["ID"];
                 string tagName = resNet[i]["Name"];
 
-                if (isDevMode) trace("Loading tag #"+tagID+" - "+tagName);
+                Logging::Trace("Loading tag #"+tagID+" - "+tagName);
 
                 m_mapTags.InsertLast(MapTag(resNet[i]));
             }
 
             m_mapTags.Sort(function(a,b) { return a.Name < b.Name; });
 
-            print(m_mapTags.Length + " tags loaded");
+            Logging::Info(m_mapTags.Length + " tags loaded");
         } catch {
             throw("Error while loading tags: " + getExceptionInfo());
         }
@@ -28,7 +28,7 @@ namespace MX
     void GetAllVehicles()
     {
         string url = "https://"+MXURL+"/api/meta/vehicles";
-        if (isDevMode) trace("Loading vehicles: " + url);
+        Logging::Debug("Loading vehicles: " + url);
         Json::Value res = API::GetAsync(url);
 
         try {
@@ -37,12 +37,12 @@ namespace MX
                 string vehicleName = res[i];
 
                 if (vehicleName != "") {
-                    if (isDevMode) trace("Loading vehicle " + vehicleName);
+                    Logging::Trace("Loading vehicle " + vehicleName);
                     m_vehicles.InsertLast(vehicleName);
                 }
             }
 
-            print(m_vehicles.Length + " vehicles loaded");
+            Logging::Info(m_vehicles.Length + " vehicles loaded");
         } catch {
             throw("Error while loading vehicles: " + getExceptionInfo());
         }
@@ -52,7 +52,7 @@ namespace MX
     void GetAllLeaderboardSeasons()
     {
         string url = "https://"+MXURL+"/api/leaderboard/getseasons";
-        if (isDevMode) trace("Loading seasons: " + url);
+        Logging::Debug("Loading seasons: " + url);
         Json::Value resNet = API::GetAsync(url);
 
         try {
@@ -61,12 +61,12 @@ namespace MX
                 int seasonID = resNet[i]["SeasonID"];
                 string seasonName = resNet[i]["Name"];
 
-                if (isDevMode) trace("Loading season #"+seasonID+" - "+seasonName);
+                Logging::Trace("Loading season #"+seasonID+" - "+seasonName);
 
                 m_leaderboardSeasons.InsertLast(LeaderboardSeason(resNet[i]));
             }
 
-            print(m_leaderboardSeasons.Length + " seasons loaded");
+            Logging::Info(m_leaderboardSeasons.Length + " seasons loaded");
         } catch {
             throw("Error while loading seasons: " + getExceptionInfo());
         }
@@ -75,7 +75,7 @@ namespace MX
     void GetMapSearchOrders()
     {
         string url = "https://"+MXURL+"/api/meta/maporders";
-        if (isDevMode) trace("Loading map search orders: " + url);
+        Logging::Debug("Loading map search orders: " + url);
         Json::Value resNet = API::GetAsync(url);
 
         try {
@@ -93,7 +93,7 @@ namespace MX
                 m_mapSortingOrders.InsertLast(SortingOrder(resNet[i]));
             }
 
-            print(m_mapSortingOrders.Length + " seasons loaded");
+            Logging::Info(m_mapSortingOrders.Length + " seasons loaded");
         } catch {
             throw("Error while loading sorting orders: " + getExceptionInfo());
         }
@@ -102,7 +102,7 @@ namespace MX
     void GetTitlepacks()
     {
         string url = "https://"+MXURL+"/api/meta/titlepacks";
-        if (isDevMode) trace("Loading titlepacks: " + url);
+        Logging::Debug("Loading titlepacks: " + url);
         Json::Value res = API::GetAsync(url);
 
         try {
@@ -112,7 +112,7 @@ namespace MX
                 if (res[i] != "") m_titlepacks.InsertLast(res[i]);
             }
 
-            print(m_titlepacks.Length + " titlepacks loaded");
+            Logging::Info(m_titlepacks.Length + " titlepacks loaded");
         } catch {
             throw("Error while loading titlepacks: " + getExceptionInfo());
         }
@@ -121,7 +121,7 @@ namespace MX
     void GetMapTypes()
     {
         string url = "https://"+MXURL+"/api/meta/maptypes";
-        if (isDevMode) trace("Loading map types: " + url);
+        Logging::Debug("Loading map types: " + url);
         Json::Value res = API::GetAsync(url);
 
         try {
@@ -131,7 +131,7 @@ namespace MX
                 if (res[i] != "") m_maptypes.InsertLast(res[i]);
             }
 
-            print(m_maptypes.Length + " map types loaded");
+            Logging::Info(m_maptypes.Length + " map types loaded");
         } catch {
             throw("Error while loading map types: " + getExceptionInfo());
         }
@@ -188,13 +188,13 @@ namespace MX
             APIRefresh = false;
 #if FORCE_API_DOWN
             APIDown = true;
-            mxWarn("API set to forced down", true);
+            Logging::Warn("API set to forced down", true);
 #else
             APIDown = false;
 #endif
         } catch {
-            mxError(getExceptionInfo(), isDevMode);
-            mxError(pluginName + " API is not responding, it must be down.", true);
+            Logging::Error(getExceptionInfo());
+            Logging::Error(pluginName + " API is not responding, it must be down.", true);
             APIDown = true;
             APIRefresh = false;
         }
@@ -206,14 +206,14 @@ namespace MX
         try {
 #if MP4
             if (CurrentTitlePack() == "") {
-                mxError("You must select a title pack before opening a map", true);
+                Logging::Error("You must select a title pack before opening a map", true);
                 return;
             }
 #endif
 
             auto json = API::GetAsync("https://"+MXURL+"/api/maps?fields=" + mapFields + "&id=" +mapId);
             if (json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
-                mxError("Track not found.", true);
+                Logging::Error("Track not found.", true);
                 return;
             }
             MX::MapInfo@ map = MX::MapInfo(json["Results"][0]);
@@ -246,11 +246,11 @@ namespace MX
                     app.ManiaTitleControlScriptAPI.PlayMap("https://"+MXURL+"/mapgbx/"+mapId, Mode, "");
                 }
 #if TMNEXT
-            } else mxError("You don't have permission to play custom maps.", true);
+            } else Logging::Error("You don't have permission to play custom maps.", true);
 #endif
         } catch {
-            mxError("Error while loading map: " + getExceptionInfo());
-            mxError(pluginName + " API is not responding, it must be down.", true);
+            Logging::Error("Error while loading map: " + getExceptionInfo());
+            Logging::Error(pluginName + " API is not responding, it must be down.", true);
             APIDown = true;
         }
     }
@@ -260,7 +260,7 @@ namespace MX
         try {
             auto json = API::GetAsync("https://"+MXURL+"/api/maps?fields=" + mapFields + "&id=" +mapId);
             if (json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
-                mxError("Track not found.", true);
+                Logging::Error("Track not found.", true);
                 return;
             }
             MX::MapInfo@ map = MX::MapInfo(json["Results"][0]);
@@ -278,7 +278,7 @@ namespace MX
 
             Net::HttpRequest@ netMap = API::Get("https://"+MXURL+"/mapgbx/"+mapId);
             mapDownloadInProgress = true;
-            trace("Started downloading map "+map.Name+" ("+mapId+") to "+mxDLFolder);
+            Logging::Debug("Started downloading map "+map.Name+" ("+mapId+") to "+mxDLFolder);
             while(!netMap.Finished()) {
                 yield();
             }
@@ -287,10 +287,10 @@ namespace MX
             if (_fileName.Length == 0) _fileName = map.MapId + " - " + map.Name;
             _fileName = Path::SanitizeFileName(_fileName);
             netMap.SaveToFile(mxDLFolder + "/" + _fileName + ".Map.Gbx");
-            print("Map downloaded to " + mxDLFolder + "/" + _fileName + ".Map.Gbx");
+            Logging::Info("Map downloaded to " + mxDLFolder + "/" + _fileName + ".Map.Gbx");
         } catch {
-            mxError("Error while downloading map: " + getExceptionInfo());
-            mxError(pluginName + " API is not responding, it must be down.", true);
+            Logging::Error("Error while downloading map: " + getExceptionInfo());
+            Logging::Error(pluginName + " API is not responding, it must be down.", true);
             APIDown = true;
         }
     }
@@ -311,7 +311,7 @@ namespace MX
                 string UIDMap = currentMap.MapInfo.MapUid;
                 string url = "https://"+MXURL+"/api/maps?fields=" + mapFields + "&uid=" + UIDMap;
                 if (req is null){
-                    if (isDevMode) trace("LoadCurrentMap::StartRequest: " + url);
+                    Logging::Debug("LoadCurrentMap::StartRequest: " + url);
                     @req = API::Get(url);
                 }
 
@@ -319,7 +319,7 @@ namespace MX
                     string response = req.String();
                     Json::Value returnedObject = req.Json();
                     @req = null;
-                    if (isDevMode) trace("LoadCurrentMap::CheckResponse: " + response);
+                    Logging::Trace("LoadCurrentMap::CheckResponse: " + response);
 
                     try {
                         if (returnedObject["Results"].Length > 0) {

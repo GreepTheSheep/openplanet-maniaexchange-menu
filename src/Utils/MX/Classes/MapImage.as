@@ -15,7 +15,7 @@ namespace MX
                 Height = json["Height"];
                 HasHighQuality = json["HasHighQuality"];
             } catch {
-                mxWarn("Failed to parse image info for the map: " + getExceptionInfo());
+                Logging::Warn("Failed to parse image info for the map: " + getExceptionInfo());
             }
         }
 
@@ -29,7 +29,7 @@ namespace MX
                 json["Height"] = Height;
                 json["HasHighQuality"] = HasHighQuality;
             } catch {
-                mxWarn("Error converting map image to json for map: " + getExceptionInfo());
+                Logging::Warn("Error converting map image to json for map: " + getExceptionInfo());
             }
 
             return json;

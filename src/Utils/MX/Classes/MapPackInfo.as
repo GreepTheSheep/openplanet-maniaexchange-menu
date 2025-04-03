@@ -59,7 +59,7 @@ namespace MX
                 }
             } catch {
                 Name = json["Name"];
-                mxWarn("Error parsing infos for the map pack " + Name + ": " + getExceptionInfo(), true);
+                Logging::Warn("Error parsing infos for the map pack " + Name + ": " + getExceptionInfo(), true);
             }
         }
 
@@ -95,7 +95,7 @@ namespace MX
 
                 json["Tags"] = tagArray;
             } catch {
-                mxWarn("Error converting map pack info to json for map pack " + Name + ": " + getExceptionInfo(), true);
+                Logging::Warn("Error converting map pack info to json for map pack " + Name + ": " + getExceptionInfo(), true);
             }
             return json;
         }

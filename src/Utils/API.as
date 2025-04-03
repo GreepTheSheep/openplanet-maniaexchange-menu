@@ -16,7 +16,7 @@ namespace API
             yield();
         }
         string resStr = req.String();
-        if (isDevMode) trace("GetAsync Res: " + resStr);
+        Logging::Debug("GetAsync Res: " + resStr);
         return req.Json();
     }
 }

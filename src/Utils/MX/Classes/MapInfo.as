@@ -59,7 +59,7 @@ namespace MX
                 EmbeddedObjectsCount = json["EmbeddedObjectsCount"];
                 EmbeddedItemsSize = json["EmbeddedItemsSize"];
                 ServerSizeExceeded = json["ServerSizeExceeded"];
-    
+
                 if (json["UpdatedAt"].GetType() != Json::Type::Null) {
                     UpdatedAt = json["UpdatedAt"];
                 } else {
@@ -115,7 +115,7 @@ namespace MX
                 @jsonCache = ToJson();
             } catch {
                 Name = json["Name"];
-                mxWarn("Error parsing infos for the map " + Name + ": " + getExceptionInfo(), true);
+                Logging::Warn("Error parsing infos for the map " + Name + ": " + getExceptionInfo(), true);
             }
         }
 
@@ -184,7 +184,7 @@ namespace MX
                 json["TrackID"] = MapId;
                 json["TrackUID"] = MapUid;
             } catch {
-                mxWarn("Error converting map info to json for map " + Name + ": " + getExceptionInfo());
+                Logging::Warn("Error converting map info to json for map " + Name + ": " + getExceptionInfo());
             }
             return json;
         }

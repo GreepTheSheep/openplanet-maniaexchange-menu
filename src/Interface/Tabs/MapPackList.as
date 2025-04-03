@@ -51,7 +51,7 @@ class MapPackListTab : Tab
 
         string url = "https://"+MXURL+"/api/mappacks" + urlParams;
 
-        if (isDevMode) trace("MapPackListTab::StartRequest: " + url);
+        Logging::Debug("MapPackListTab::StartRequest: " + url);
         @m_request = API::Get(url);
     }
 
@@ -84,10 +84,10 @@ class MapPackListTab : Tab
             auto json = m_request.Json();
             @m_request = null;
 
-            if (isDevMode) trace("MapPackListTab::CheckRequest: " + res);
+            Logging::Debug("MapPackListTab::CheckRequest: " + res);
 
             if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
-                mxError("Error while loading mappack list");
+                Logging::Error("Error while loading mappack list");
                 return;
             } else {
                 HandleResponse(json);

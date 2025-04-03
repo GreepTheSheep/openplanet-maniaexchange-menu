@@ -14,7 +14,7 @@ namespace MX
                 Color = json["Color"];
             } catch {
                 Name = json["Name"];
-                mxWarn("Error parsing tag " + Name + ": " + getExceptionInfo());
+                Logging::Warn("Error parsing tag " + Name + ": " + getExceptionInfo());
             }
         }
 
@@ -26,7 +26,7 @@ namespace MX
                 json["Name"] = Name;
                 json["Color"] = Color;
             } catch {
-                mxWarn("Error converting tag info to json for tag " + Name + ": " + getExceptionInfo(), true);
+                Logging::Warn("Error converting tag info to json for tag " + Name + ": " + getExceptionInfo(), true);
             }
 
             return json;

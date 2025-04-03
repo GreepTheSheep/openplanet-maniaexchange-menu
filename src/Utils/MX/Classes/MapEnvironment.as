@@ -7,7 +7,7 @@ namespace MX
 
         MapEnvironment(const int &in id, const string &in name)
         {
-            if (isDevMode) trace("Loading Environment #"+id+" - "+name);
+            Logging::Trace("Loading Environment #"+id+" - "+name);
             ID = id;
             Name = name;
         }

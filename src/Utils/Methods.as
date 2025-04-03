@@ -45,16 +45,16 @@ array<MX::MapInfo@> LoadPlayLater() {
         Json::Value FileData_Old = Json::FromFile(IO::FromDataFolder("ManiaExchange_PlayLater.json"));
         if (FileData_Old.GetType() == Json::Type::Array) {
             for (uint i = 0; i < FileData_Old.Length; i++) {
-                if (isDevMode) {
-                    string mapName = FileData_Old[i]["Name"];
-                    trace("Loading map #"+i+" from Old Play later file: " + mapName);
-                }
+
+                string mapName = FileData_Old[i]["Name"];
+                Logging::Trace("Loading map #"+i+" from Old Play later file: " + mapName);
+
                 MX::MapInfo@ map = MX::MapInfo(FileData_Old[i]);
                 m_maps.InsertAt(0, map);
             }
             SavePlayLater(m_maps);
             IO::Delete(IO::FromDataFolder("ManiaExchange_PlayLater.json"));
-            print(tostring(m_maps.Length) + " maps loaded from Play Later list and migrated to PluginStorage.");
+            Logging::Info(tostring(m_maps.Length) + " maps loaded from Play Later list and migrated to PluginStorage.");
         } else {
             UI::ShowNotification("\\$afa" + Icons::InfoCircle + " Thanks for installing "+pluginName+"!","No data file was detected, that means it's your first install. Welcome!", 15000);
             SavePlayLater(m_maps);
@@ -62,7 +62,7 @@ array<MX::MapInfo@> LoadPlayLater() {
 
         return m_maps;
     } else if (FileData.GetType() != Json::Type::Array) {
-        mxError("The data file seems to yield invalid data. If it persists, consider deleting the file " + PlayLaterJSON, true);
+        Logging::Error("The data file seems to yield invalid data. If it persists, consider deleting the file " + PlayLaterJSON, true);
         return m_maps;
     } else {
         if (FileData.Length > 0 && !FileData[0].HasKey("MapId")) {
@@ -83,7 +83,7 @@ array<MX::MapInfo@> LoadPlayLater() {
                 Json::Value res = API::GetAsync(mxUrl);
 
                 if (res.GetType() == Json::Type::Null || !res.HasKey("Results") || res["Results"].Length == 0) {
-                    mxError("Something went wrong when getting PlayLater maps from MX. Stopping migration...", true);
+                    Logging::Error("Something went wrong when getting PlayLater maps from MX. Stopping migration...", true);
                     return m_maps;
                 }
 
@@ -98,10 +98,10 @@ array<MX::MapInfo@> LoadPlayLater() {
                 sleep(1500);
             }
 
-            print("Finished to fetch PlayLater.json maps. Found " + m_maps.Length + " maps out of " + FileData.Length);
+            Logging::Info("Finished to fetch PlayLater.json maps. Found " + m_maps.Length + " maps out of " + FileData.Length);
 
             if (m_maps.Length < FileData.Length) {
-                mxWarn("Failed to convert all maps in PlayLater.json, missing " + (FileData.Length - m_maps.Length) + " map/s!", true);
+                Logging::Warn("Failed to convert all maps in PlayLater.json, missing " + (FileData.Length - m_maps.Length) + " map/s!", true);
             }
 
             IO::Copy(PlayLaterJSON, IO::FromStorageFolder("PlayLaterOld.json"));
@@ -111,19 +111,19 @@ array<MX::MapInfo@> LoadPlayLater() {
             return m_maps;
         } else {
             for (uint i = 0; i < FileData.Length; i++) {
-                if (isDevMode) {
-                    string mapName = FileData[i]["Name"];
-                    trace("Loading map #"+i+" from Play later: " + mapName);
-                }
                 if (FileData[i].GetType() != Json::Type::Object) {
-                    mxError("The data file seems to yield invalid data. If it persists, consider deleting the file " + PlayLaterJSON, true);
+                    Logging::Error("The data file seems to yield invalid data. If it persists, consider deleting the file " + PlayLaterJSON, true);
                     return m_maps;
                 }
+
+                string mapName = FileData[i]["Name"];
+                Logging::Trace("Loading map #"+i+" from Play later: " + mapName);
+
                 MX::MapInfo@ map = MX::MapInfo(FileData[i]);
                 m_maps.InsertAt(0, map);
             }
         }
-        print(tostring(m_maps.Length) + " maps loaded from Play Later list.");
+        Logging::Info(tostring(m_maps.Length) + " maps loaded from Play Later list.");
         return m_maps;
     }
 }

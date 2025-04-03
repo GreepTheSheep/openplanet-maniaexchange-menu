@@ -34,7 +34,7 @@ namespace MX
                     Position = -1;
                 }
             } catch {
-                mxWarn("Error parsing info for replay ID " + ReplayId + ": " + getExceptionInfo(), true);
+                Logging::Warn("Error parsing info for replay ID " + ReplayId + ": " + getExceptionInfo(), true);
             }
         }
 

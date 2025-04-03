@@ -55,7 +55,7 @@ class MapPackTab : Tab
         string urlParams = MX::DictToApiParams(params);
 
         string url = "https://"+MXURL+"/api/mappacks" + urlParams;
-        if (isDevMode) trace("MapPackTab::StartRequest (MX): "+url);
+        Logging::Debug("MapPackTab::StartRequest (MX): "+url);
         @m_MXrequest = API::Get(url);
     }
 
@@ -69,7 +69,7 @@ class MapPackTab : Tab
             auto json = m_MXrequest.Json();
             @m_MXrequest = null;
 
-            if (isDevMode) trace("MapPackTab::CheckRequest (MX): " + res);
+            Logging::Debug("MapPackTab::CheckRequest (MX): " + res);
 
             if (resCode >= 400) {
                 string errorMsg = json.Get("title", "Unknown error");
@@ -94,7 +94,7 @@ class MapPackTab : Tab
 
     void HandleMXResponseError(const string &in errorMessage = "")
     {
-        print("MapPackTab::CheckRequest (MX): Error parsing response");
+        Logging::Info("MapPackTab::CheckRequest (MX): Error parsing response");
         m_error = true;
         m_errorMessage = errorMessage;
     }
@@ -112,7 +112,7 @@ class MapPackTab : Tab
         string mapUrlParams = MX::DictToApiParams(mapParams);
 
         string url = "https://"+MXURL+"/api/maps" + mapUrlParams;
-        if (isDevMode) trace("MapPackTab::StartRequest (Map List): "+url);
+        Logging::Debug("MapPackTab::StartRequest (Map List): "+url);
         @m_MXMapsRequest = API::Get(url);
     }
 
@@ -126,10 +126,10 @@ class MapPackTab : Tab
             auto json = m_MXMapsRequest.Json();
             @m_MXMapsRequest = null;
 
-            if (isDevMode) trace("MapPackTab::CheckRequest (Map List): " + res);
+            Logging::Debug("MapPackTab::CheckRequest (Map List): " + res);
 
             if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
-                print("MapPackTab::CheckRequest (Map List): Error parsing response");
+                Logging::Info("MapPackTab::CheckRequest (Map List): Error parsing response");
                 HandleMXMapListResponseError();
                 return;
             }

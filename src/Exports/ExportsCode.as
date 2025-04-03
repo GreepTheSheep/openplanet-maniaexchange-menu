@@ -42,10 +42,10 @@ namespace ManiaExchange
         string urlParams = MX::DictToApiParams(params);
 
         string url = "https://"+MXURL+"/api/maps" + urlParams;
-        if (isDevMode) print("Exports::GetMapInfoAsync::StartRequest : "+url);
+        Logging::Debug("Exports::GetMapInfoAsync::StartRequest : "+url);
         Json::Value mxRes = API::GetAsync(url);
         if (mxRes.GetType() == Json::Type::Null || mxRes.Length == 0 || !mxRes.HasKey("Results") || mxRes["Results"].Length == 0) {
-            if (isDevMode) print("Exports::GetMapInfoAsync::CheckRequest : Error parsing response");
+            Logging::Info("Exports::GetMapInfoAsync::CheckRequest : Error parsing response");
             return Json::Parse("");
         }
         // Handle the response
@@ -60,12 +60,12 @@ namespace ManiaExchange
         string urlParams = MX::DictToApiParams(params);
 
         string url = "https://"+MXURL+"/api/maps" + urlParams;
-        if (isDevMode) print("Exports::GetMapInfoAsync::StartRequest : " + url);
+        Logging::Debug("Exports::GetMapInfoAsync::StartRequest : " + url);
 
         Json::Value mxRes = API::GetAsync(url);
 
         if (mxRes.GetType() == Json::Type::Null || mxRes.Length == 0 || !mxRes.HasKey("Results") || mxRes["Results"].Length == 0) {
-            if (isDevMode) print("Exports::GetMapInfoAsync::CheckRequest : Error parsing response");
+            Logging::Info("Exports::GetMapInfoAsync::CheckRequest : Error parsing response");
             return Json::Parse("");
         }
 
