@@ -15,15 +15,11 @@ class Window{
             @m_YourProfileTab = UserTab(Setting_Tab_YourProfile_UserID, true);
             AddTab(m_YourProfileTab);
         }
-        AddTab(MostAwardedTab());
         AddTab(FeaturedMapsTab());
-        AddTab(TagsListTab());
-        AddTab(LatestMapsTab());
-        AddTab(RecentlyAwardedTab());
         AddTab(TOTDTab());
         AddTab(PersonalListsTab());
         AddTab(MapPackListTab());
-        AddTab(SearchTab());
+        AddTab(MapListTab());
     }
 
     void AddTab(Tab@ tab, bool select = false, int index = -1){

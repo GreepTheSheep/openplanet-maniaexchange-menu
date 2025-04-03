@@ -20,34 +20,22 @@ int Setting_Tab_YourProfile_UserID = 0;
 
 int Tab_YourProfile_UserID_Old = 0;
 
-[Setting name="Most Awarded" category="Display Tabs"]
-bool Setting_Tab_MostAwarded_Visible = true;
-
 [Setting name="Featured" category="Display Tabs"]
 bool Setting_Tab_Featured_Visible = true;
-
-[Setting name="Tags" category="Display Tabs"]
-bool Setting_Tab_Tags_Visible = true;
-
-[Setting name="Latest" category="Display Tabs"]
-bool Setting_Tab_Latest_Visible = true;
-
-[Setting name="Recently Awarded" category="Display Tabs"]
-bool Setting_Tab_RecentlyAwarded_Visible = false;
 
 #if TMNEXT
 [Setting name="TOTDs" category="Display Tabs"]
 #endif
 bool Setting_Tab_TOTD_Visible = false;
 
-[Setting name="Search" category="Display Tabs"]
-bool Setting_Tab_Search_Visible = true;
-
 [Setting name="Personal Lists" category="Display Tabs"]
 bool Setting_Tab_PersonalLists_Visible = true;
 
 [Setting name="Map Packs" category="Display Tabs"]
 bool Setting_Tab_MapPacks_Visible = true;
+
+[Setting name="Maps" category="Display Tabs"]
+bool Setting_Tab_Search_Visible = true;
 
 #if MP4
 enum MP4mxRepos {

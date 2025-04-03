@@ -32,8 +32,6 @@ namespace MX
         Json::Value res = API::GetAsync(url);
 
         try {
-            m_vehicles.InsertLast("Any");
-
             for (uint i = 0; i < res.Length; i++)
             {
                 string vehicleName = res[i];
@@ -145,7 +143,6 @@ namespace MX
         m_environments.InsertLast(MapEnvironment(1, "Stadium"));
 #else
         if (repo == MP4mxRepos::Trackmania) {
-            m_environments.InsertLast(MapEnvironment(-1, "Any"));
             m_environments.InsertLast(MapEnvironment(0, "Custom"));
             m_environments.InsertLast(MapEnvironment(1, "Canyon"));
             m_environments.InsertLast(MapEnvironment(2, "Stadium"));

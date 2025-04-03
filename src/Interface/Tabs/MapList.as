@@ -4,11 +4,21 @@ class MapListTab : Tab
     array<MX::MapInfo@> maps;
     bool moreItems = false;
     bool m_useRandom = false;
-    bool m_firstLoad = true;
-    int m_selectedEnviroId = -1;
-    string m_selectedEnviroName = "Any";
-    string m_selectedVehicle = "Any";
     int lastId = 0;
+    MapFilters@ filters;
+    int m_sortingKey = 0;
+    string m_sortingName = "None";
+    uint64 m_typingStart;
+    string m_selectedMode = "Track name";
+    string m_sortSearchCombo;
+
+    MapListTab() {
+        @filters = MapFilters(this);
+    }
+
+    string GetLabel() override { return Icons::Map + " Maps"; }
+
+    vec4 GetColor() override { return vec4(0.22f, 0.61f, 0.43f, 1); }
 
     void GetRequestParams(dictionary@ params)
     {
@@ -18,8 +28,7 @@ class MapListTab : Tab
             params.Set("after", tostring(lastId));
         }
 
-        if (m_selectedEnviroName != "Any") params.Set("environment", tostring(m_selectedEnviroId));
-        if (m_selectedVehicle != "Any") params.Set("vehicle", m_selectedVehicle);
+        if (m_sortingKey > 0) params.Set("order1", tostring(m_sortingKey));
 
         if (m_useRandom) {
             params.Set("random", "1");
@@ -28,6 +37,8 @@ class MapListTab : Tab
         } else {
             params.Set("count", "100");
         }
+
+        filters.GetRequestParams(params);
     }
 
     void StartRequest()
@@ -48,23 +59,23 @@ class MapListTab : Tab
         if (!MX::APIDown && maps.Length == 0 && m_request is null && UI::IsWindowAppearing()) {
             StartRequest();
         }
+
+        if (m_request !is null) {
+            return;
+        }
+
+        if (m_typingStart == 0) {
+            return;
+        }
+
+        if (Time::Now > m_typingStart + 1000) {
+            m_typingStart = 0;
+            StartRequest();
+        }
     }
 
     void CheckRequest()
     {
-        if (m_firstLoad) {
-            m_firstLoad = false;
-#if TMNEXT
-            m_selectedEnviroName = "Stadium";
-            m_selectedEnviroId = 1;
-#else
-            if (repo == MP4mxRepos::Shootmania) {
-                m_selectedEnviroName = "Storm";
-                m_selectedEnviroId = 1;
-                m_selectedVehicle = "StormMan";
-            }
-#endif
-        }
         CheckStartRequest();
 
         // If there's a request, check if it has finished
@@ -101,48 +112,87 @@ class MapListTab : Tab
         }
     }
 
-    void RenderHeader()
+    void RenderSearchBar()
     {
         UI::AlignTextToFramePadding();
-
-        if (MX::m_environments.Length > 1) {
-            UI::Text("Environment:");
-            UI::SameLine();
-            UI::SetNextItemWidth(150);
-            if (UI::BeginCombo("##EnviroFilter", m_selectedEnviroName)){
-                for (uint i = 0; i < MX::m_environments.Length; i++) {
-                    MX::MapEnvironment@ envi = MX::m_environments[i];
-                    if (UI::Selectable(envi.Name, m_selectedEnviroName == envi.Name)){
-                        m_selectedEnviroName = envi.Name;
-                        m_selectedEnviroId = envi.ID;
-                        Reload();
-                    }
-                }
-                UI::EndCombo();
+        UI::Text("Search:");
+        UI::SameLine();
+        UI::SetNextItemWidth(120);
+        if (UI::BeginCombo("##NamesFilter", m_selectedMode)) {
+            if (UI::Selectable("Track name", m_selectedMode == "Track name")) {
+                m_selectedMode = "Track name";
+                if (filters.m_name == filters.m_author) filters.m_author = "";
+                Reload();
             }
-            UI::SameLine();
+
+            if (UI::Selectable("Author name", m_selectedMode == "Author name")) {
+                m_selectedMode = "Author name";
+                if (filters.m_name == filters.m_author) filters.m_name = "";
+                Reload();
+            }
+            UI::EndCombo();
         }
 
-        if (MX::m_vehicles.Length > 1) {
-            UI::Text("Vehicle:");
-            UI::SameLine();
-            UI::SetNextItemWidth(150);
-            if (UI::BeginCombo("##VehicleFilter", m_selectedVehicle)){
-                for (uint i = 0; i < MX::m_vehicles.Length; i++) {
-                    string vehicleName = MX::m_vehicles[i];
-                    if (UI::Selectable(vehicleName, m_selectedVehicle == vehicleName)){
-                        m_selectedVehicle = vehicleName;
-                        Reload();
-                    }
-                }
-                UI::EndCombo();
-            }
-            UI::SameLine();
+        UI::SameLine();
+
+        bool changed = false;
+
+        if (m_selectedMode == "Track name") {
+            filters.m_name = UI::InputText("##NameSearch", filters.m_name, changed);
+        } else {
+            filters.m_author = UI::InputText("##AuthorSearch", filters.m_author, changed);
         }
+
+        if (changed) {
+            m_typingStart = Time::Now;
+            Clear();
+        }
+    }
+
+    void RenderHeader()
+    {
+        float itemSpacing = UI::GetStyleVarVec2(UI::StyleVar::ItemSpacing).x;
+
+        UI::AlignTextToFramePadding();
+
+        UI::Text("Sort:");
+        UI::SameLine();
+        UI::SetNextItemWidth(225);
+        if (UI::BeginCombo("##SortOrders", m_sortingName)) {
+            UI::SetNextItemWidth(UI::GetContentRegionAvail().x - itemSpacing);
+            m_sortSearchCombo = UI::InputText("##SortOrderSearch", m_sortSearchCombo);
+
+            UI::Separator();
+
+            for (uint i = 0; i < MX::m_mapSortingOrders.Length; i++) {
+                MX::SortingOrder@ order = MX::m_mapSortingOrders[i];
+
+                if (!order.Name.ToLower().Contains(m_sortSearchCombo.ToLower())) continue;
+
+                if (UI::Selectable(order.Name, m_sortingName == order.Name)) {
+                    m_sortingName = order.Name;
+                    m_sortingKey = order.Key;
+                    Reload();
+                }
+            }
+
+            UI::EndCombo();
+        } else {
+            m_sortSearchCombo = "";
+        }
+
+        UI::SameLine();
+
         if (UI::GreenButton(Icons::Random + " Random result")){
             m_useRandom = true;
             Reload();
         }
+        UI::SameLine();
+
+        if (UI::OrangeButton(Icons::Filter + " Filters")) {
+            Renderables::Add(filters);
+        }
+
         UI::SameLine();
         UI::SetCursorPos(vec2(UI::GetWindowSize().x - 40, UI::GetCursorPos().y));
         UI::BeginDisabled(m_request !is null);
@@ -166,6 +216,8 @@ class MapListTab : Tab
     void Render() override
     {
         CheckRequest();
+
+        RenderSearchBar();
 
         RenderHeader();
 
