@@ -658,7 +658,7 @@ class UserTab : Tab
 #else
                 int columns = 5;
 #endif
-                if (UI::BeginTable("CreatedMapsList", columns, UI::TableFlags::RowBg | UI::TableFlags::Hideable)) {
+                if (UI::BeginTable("AwardedMapsList", columns, UI::TableFlags::RowBg | UI::TableFlags::Hideable)) {
                     UI::TableSetupScrollFreeze(0, 1);
                     PushTabStyle();
                     UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
