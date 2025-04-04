@@ -11,6 +11,7 @@ class MapListTab : Tab
     uint64 m_typingStart;
     string m_selectedMode = "Track name";
     string m_sortSearchCombo;
+    MapColumns@ columnWidths = MapColumns();
 
     MapListTab() {
         @filters = MapFilters(this);
@@ -110,6 +111,8 @@ class MapListTab : Tab
                 lastId = items[i]["MapId"];
             }
         }
+
+        columnWidths.Update(maps);
     }
 
     void RenderSearchBar()
@@ -205,6 +208,7 @@ class MapListTab : Tab
         maps.RemoveRange(0, maps.Length);
         lastId = 0;
         moreItems = false;
+        columnWidths.Reset();
     }
 
     void Reload() override
@@ -248,11 +252,11 @@ class MapListTab : Tab
                 UI::TableSetupScrollFreeze(0, 1);
                 PushTabStyle();
                 UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
-                UI::TableSetupColumn("Created by", UI::TableColumnFlags::WidthStretch);
+                UI::TableSetupColumn("Created by", UI::TableColumnFlags::WidthFixed, columnWidths.author);
 #if MP4
-                UI::TableSetupColumn("Envi/Vehicle", UI::TableColumnFlags::WidthFixed);
+                UI::TableSetupColumn("Envi/Vehicle", UI::TableColumnFlags::WidthFixed, columnWidths.enviVehicle);
                 UI::TableSetColumnEnabled(2, repo == MP4mxRepos::Trackmania);
-                UI::TableSetupColumn("Title pack", UI::TableColumnFlags::WidthFixed);
+                UI::TableSetupColumn("Title pack", UI::TableColumnFlags::WidthFixed, columnWidths.titlepack);
 #endif
                 UI::TableSetupColumn("Style", UI::TableColumnFlags::WidthStretch);
                 UI::TableSetupColumn(Icons::Trophy, UI::TableColumnFlags::WidthFixed);
