@@ -591,11 +591,21 @@ class UserTab : Tab
                 string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
                 UI::Text(Hourglass + " Loading...");
             } else {
-                if (UI::BeginTable("CreatedMapsList", 5, UI::TableFlags::RowBg)) {
+#if MP4
+                int columns = 7;
+#else
+                int columns = 5;
+#endif
+                if (UI::BeginTable("CreatedMapsList", columns, UI::TableFlags::RowBg | UI::TableFlags::Hideable)) {
                     UI::TableSetupScrollFreeze(0, 1);
                     PushTabStyle();
                     UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
                     UI::TableSetupColumn("Created by", UI::TableColumnFlags::WidthStretch);
+#if MP4
+                    UI::TableSetupColumn("Envi/Vehicle", UI::TableColumnFlags::WidthFixed);
+                    UI::TableSetColumnEnabled(2, repo == MP4mxRepos::Trackmania);
+                    UI::TableSetupColumn("Title pack", UI::TableColumnFlags::WidthFixed);
+#endif
                     UI::TableSetupColumn("Style", UI::TableColumnFlags::WidthStretch);
                     UI::TableSetupColumn(Icons::Trophy, UI::TableColumnFlags::WidthFixed);
                     UI::TableSetupColumn("Actions", UI::TableColumnFlags::WidthFixed);
@@ -636,11 +646,21 @@ class UserTab : Tab
                 string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
                 UI::Text(Hourglass + " Loading...");
             } else {
-                if (UI::BeginTable("CreatedMapsList", 5, UI::TableFlags::RowBg)) {
+#if MP4
+                int columns = 7;
+#else
+                int columns = 5;
+#endif
+                if (UI::BeginTable("CreatedMapsList", columns, UI::TableFlags::RowBg | UI::TableFlags::Hideable)) {
                     UI::TableSetupScrollFreeze(0, 1);
                     PushTabStyle();
                     UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
                     UI::TableSetupColumn("Created by", UI::TableColumnFlags::WidthStretch);
+#if MP4
+                    UI::TableSetupColumn("Envi/Vehicle", UI::TableColumnFlags::WidthFixed);
+                    UI::TableSetColumnEnabled(2, repo == MP4mxRepos::Trackmania);
+                    UI::TableSetupColumn("Title pack", UI::TableColumnFlags::WidthFixed);
+#endif
                     UI::TableSetupColumn("Style", UI::TableColumnFlags::WidthStretch);
                     UI::TableSetupColumn(Icons::Trophy, UI::TableColumnFlags::WidthFixed);
                     UI::TableSetupColumn("Actions", UI::TableColumnFlags::WidthFixed);

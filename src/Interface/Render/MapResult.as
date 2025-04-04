@@ -16,6 +16,16 @@ namespace IfaceRender
         UI::SetItemTooltip("Click to view "+map.Username+"'s profile");
         if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(map.UserId), true);
 
+#if MP4
+        UI::TableNextColumn();
+        string envi = map.EnvironmentName.Length == 0 ? "Unknown" : map.EnvironmentName;
+        string vehicle = map.VehicleName.Length == 0 ? "Unknown" : map.VehicleName;
+        UI::Text(envi + "/" + vehicle);
+
+        UI::TableNextColumn();
+        UI::Text(map.TitlePack.Length == 0 ? "Unknown" : map.TitlePack);
+#endif
+
         UI::TableNextColumn();
         if (map.Tags.Length == 0) UI::Text("No tags");
         else{
