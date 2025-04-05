@@ -6,17 +6,20 @@ namespace IfaceRender
         formatted =
             comment.Replace("[tmx]", "Trackmania\\$075Exchange\\$z")
                 .Replace("[mx]", "Mania\\$09FExchange\\$z")
-                .Replace("[b]", "")
-                .Replace("[/b]", "")
-                .Replace("[i]", "")
-                .Replace("[/i]", "")
+                .Replace("[i]", "*")
+                .Replace("[/i]", "*")
                 .Replace("[u]", "__")
                 .Replace("[/u]", "__")
                 .Replace("[s]", "~~")
                 .Replace("[/s]", "~~")
                 .Replace("[hr]", "")
                 .Replace("[list]", "\n")
-                .Replace("[/list]", "\n");
+                .Replace("[/list]", "\n")
+                .Replace("&nbsp;", " ")
+                .Replace("\r", "  ");
+
+        // bold text replacement
+        formatted = Regex::Replace(formatted, "\\[b\\] *?(.*?) *?\\[\\/b\\]", "**$1**");
 
         // url regex replacement: https://regex101.com/r/UcN0NN/1
         formatted = Regex::Replace(formatted, "\\[url=([^\\]]*)\\]([^\\[]*)\\[\\/url\\]", "[$2]($1)");
