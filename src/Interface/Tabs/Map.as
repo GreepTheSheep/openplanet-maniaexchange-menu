@@ -357,20 +357,17 @@ class MapTab : Tab
         UI::Text(Icons::Trophy + " \\$f77" + m_map.AwardCount);
         UI::SetItemTooltip("Awards");
 #if MP4
-        if (repo == MP4mxRepos::Shootmania) {
-            UI::Text(Icons::FileCodeO + " \\$f77" + m_map.MapType);
-            UI::SetItemTooltip("Map Type");
-        } else {
+        if (repo == MP4mxRepos::Trackmania) {
 #endif
         UI::Text(Icons::Hourglass + " \\$f77" + Time::Format(m_map.Length));
         UI::SetItemTooltip("Length");
-#if MP4
-        }
-#endif
         if (m_map.Laps >= 1) {
             UI::Text(Icons::Refresh+ " \\$f77" + m_map.Laps);
             UI::SetItemTooltip("Laps");
         }
+#if MP4
+        }
+#endif
         UI::Text(Icons::LevelUp+ " \\$f77" + m_map.DifficultyName);
         UI::SetItemTooltip("Difficulty");
 
@@ -384,7 +381,7 @@ class MapTab : Tab
             UI::ShowNotification(Icons::Clipboard + " Track ID copied to clipboard");
         }
 
-        UI::Text(Icons::Activitypub+ " \\$f77" + m_map.MapType);
+        UI::Text(Icons::FileCodeO+ " \\$f77" + m_map.MapType);
         UI::SetItemTooltip("Map Type");
         UI::Text(Icons::Calendar + " \\$f77" + m_map.UploadedAt);
         UI::SetItemTooltip("Uploaded date");
@@ -393,12 +390,16 @@ class MapTab : Tab
             UI::SetItemTooltip("Updated date");
         }
 #if MP4
-        UI::Text(Icons::Tree + " \\$f77" + m_map.EnvironmentName);
-        UI::SetItemTooltip("Environment");
         UI::Text(Icons::Inbox + " \\$f77" + m_map.TitlePack);
         UI::SetItemTooltip("Title Pack");
-        UI::Text(Icons::Car + " \\$f77" + m_map.VehicleName);
-        UI::SetItemTooltip("Vehicle");
+        if (repo == MP4mxRepos::Trackmania) {
+            UI::Text(Icons::Tree + " \\$f77" + m_map.EnvironmentName);
+            UI::SetItemTooltip("Environment");
+#endif
+            UI::Text(Icons::Car + " \\$f77" + m_map.VehicleName);
+            UI::SetItemTooltip("Vehicle");
+#if MP4
+        }
 #endif
         UI::Text(Icons::Sun + " \\$f77" + m_map.Mood);
         UI::SetItemTooltip("Mood");
