@@ -26,7 +26,7 @@ namespace GH
             prerelease = json["prerelease"];
             created_at = json["created_at"];
             published_at = json["published_at"];
-            body = json["body"];
+            body = Format::GithubChangelog(json["body"]);
         }
     }
 

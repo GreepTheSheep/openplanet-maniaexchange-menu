@@ -22,7 +22,7 @@ namespace HomePageTabRender {
 
                 if (UI::BeginTabItem((release.name.Replace('v', '') == Meta::ExecutingPlugin().Version ? "\\$090": "") + Icons::Tag + " \\$z" + release.name)) {
                     UI::BeginChild("Changelog"+release.name);
-                    UI::Markdown(IfaceRender::FormatChangelogBody(release.body));
+                    UI::Markdown(release.body);
                     UI::EndChild();
                     UI::EndTabItem();
                 }

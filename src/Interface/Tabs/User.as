@@ -473,7 +473,7 @@ class UserTab : Tab
 
         if (UI::BeginTabItem("Description")) {
             UI::BeginChild("UserDescriptionChild", vec2(0, UI::GetWindowSize().y * 0.6));
-            IfaceRender::MXComment(m_user.Bio);
+            UI::Markdown(m_user.Bio);
             UI::EndChild();
             if (m_hasFeaturedMap) {
                 UI::Separator();
@@ -518,9 +518,9 @@ class UserTab : Tab
                         UI::Text(Text::OpenplanetFormatCodes(m_featuredMap.GbxMapName));
                         UI::PopFont();
                         if (m_featuredMap.AuthorComments.Length > 100) {
-                            IfaceRender::MXComment(m_featuredMap.AuthorComments.SubStr(0, 100) + "...");
+                            UI::Markdown(m_featuredMap.AuthorComments.SubStr(0, 100) + "...");
                         } else {
-                            IfaceRender::MXComment(m_featuredMap.AuthorComments);
+                            UI::Markdown(m_featuredMap.AuthorComments);
                         }
                         if (UI::Button(Icons::InfoCircle)) mxMenu.AddTab(MapTab(m_featuredMap.MapId), true);
                         UI::SameLine();

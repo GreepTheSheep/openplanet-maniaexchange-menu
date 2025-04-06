@@ -44,8 +44,8 @@ namespace MX
                 if (json["OnlineMapId"].GetType() != Json::Type::Null) OnlineMapId = json["OnlineMapId"];
                 MapType = json["MapType"];
                 UploadedAt = json["UploadedAt"];
-                if (json["GbxMapName"].GetType() != Json::Type::Null) GbxMapName = json["GbxMapName"];
-                if (json["AuthorComments"].GetType() != Json::Type::Null) AuthorComments = json["AuthorComments"];
+                if (json["GbxMapName"].GetType() != Json::Type::Null) GbxMapName = Format::GbxText(json["GbxMapName"]);
+                if (json["AuthorComments"].GetType() != Json::Type::Null) AuthorComments = Format::MXText(json["AuthorComments"]);
                 TitlePack = json["TitlePack"];
                 Mood = json["Mood"];
                 DisplayCost = json["DisplayCost"];

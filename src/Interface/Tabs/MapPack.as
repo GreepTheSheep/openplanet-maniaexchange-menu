@@ -268,7 +268,7 @@ class MapPackTab : Tab
 
         if(UI::BeginTabItem("Description")){
             UI::BeginChild("MapPackDescriptionChild");
-            IfaceRender::MXComment(m_mapPack.Description);
+            UI::Markdown(m_mapPack.Description);
             UI::EndChild();
             UI::EndTabItem();
         }

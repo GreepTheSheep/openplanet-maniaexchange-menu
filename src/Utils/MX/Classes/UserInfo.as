@@ -26,7 +26,7 @@ namespace MX
                 UserId = json["UserId"];
                 Name = json["Name"];
                 if (json["IngameLogin"].GetType() != Json::Type::Null) IngameLogin = json["IngameLogin"];
-                if (json["Bio"].GetType() != Json::Type::Null) Bio = json["Bio"];
+                if (json["Bio"].GetType() != Json::Type::Null) Bio = Format::MXText(json["Bio"]);
                 RegisteredAt = json["RegisteredAt"];
                 MapCount = json["MapCount"];
                 MappackCount = json["MappackCount"];

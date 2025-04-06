@@ -23,7 +23,7 @@ namespace MX
                 MappackId = json["MappackId"];
                 Name = json["Name"];
                 CreatedAt = json["CreatedAt"];
-                if (json["Description"].GetType() != Json::Type::Null) Description = json["Description"];
+                if (json["Description"].GetType() != Json::Type::Null) Description = Format::MXText(json["Description"]);
                 Type = json["Type"];
                 IsPublic = json["IsPublic"];
                 MaplistReleased = json["MaplistReleased"];

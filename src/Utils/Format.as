@@ -1,6 +1,10 @@
-namespace IfaceRender
-{
-    void MXComment(const string &in comment){
+namespace Format {
+    string MXText(const string &in comment)
+    {
+        if (comment.Length == 0) {
+            return comment;
+        }
+
         string formatted = "";
 
         formatted =
@@ -46,6 +50,23 @@ namespace IfaceRender
         // align replacement
         formatted = Regex::Replace(formatted, "\\[align=([^\\]]*)\\]([^\\[]*)\\[\\/align\\]", "$2");
 
-        UI::Markdown(formatted);
+        return formatted;
+    }
+
+    string GithubChangelog(string _body)
+    {
+        // Directs urls
+        _body = Regex::Replace(_body, "(https?:\\/\\/[^\\[ ]*)", "[" + Icons::ExternalLink + " $1]($1)");
+
+        // Issues links
+        _body = Regex::Replace(_body, "\\(?#([0-9]+)\\)?", "[#$1]("+repoURL+"/issues/$1)");
+
+        return _body;
+    }
+
+    string GbxText(string name)
+    {
+        // remove BOMs and newlines
+        return Regex::Replace(name, "[\u200B-\u200F\uFEFF\\n]", "");
     }
 }

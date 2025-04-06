@@ -594,7 +594,7 @@ class MapTab : Tab
 
         if(UI::BeginTabItem("Description")){
             UI::BeginChild("MapDescriptionChild");
-            IfaceRender::MXComment(m_map.AuthorComments);
+            UI::Markdown(m_map.AuthorComments);
             UI::EndChild();
             UI::EndTabItem();
         }
