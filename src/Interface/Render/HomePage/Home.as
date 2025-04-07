@@ -1,6 +1,4 @@
 namespace HomePageTabRender {
-    UI::Font@ Header = UI::LoadFont("DroidSans.ttf", 20, -1, -1, true, true, true);
-
     void Home()
     {
         if (MX::APIDown) {
@@ -14,7 +12,7 @@ namespace HomePageTabRender {
                 UI::Text(Hourglass + " Refreshing...");
             }
         } else {
-            UI::PushFont(Header);
+            UI::PushFont(Fonts::Header);
             UI::Text("Welcome to " + pluginName + ", select a tab to begin.");
             UI::PopFont();
         }

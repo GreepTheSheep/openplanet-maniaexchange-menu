@@ -1,7 +1,5 @@
 namespace UI
 {
-    UI::Font@ g_fontSeparator = UI::LoadFont("DroidSans-Bold.ttf", 18);
-
     // Alignment
 
     void CenterAlign() {
@@ -44,7 +42,7 @@ namespace UI
     }
 
     void PaddedHeaderSeparator(const string &in text) {
-        UI::PushFont(g_fontSeparator);
+        UI::PushFont(Fonts::MidBold);
         UI::PaddedSeparator(text);
         UI::PopFont();
     }

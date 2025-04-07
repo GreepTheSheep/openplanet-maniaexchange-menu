@@ -26,22 +26,17 @@ class MapTab : Tab
     bool m_replaysError = false;
     bool m_replaysstopleaderboard = false;
 
-    UI::Font@ g_fontHeader;
-
     MapTab(int trackId) {
-        @g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24);
         m_mapId = trackId;
         StartMXRequest();
     }
 
     MapTab(const string &in trackUid) {
-        @g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24);
         m_mapUid = trackUid;
         StartMXRequest();
     }
 
     MapTab(MX::MapInfo@ map) {
-        @g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24);
         @m_map = map;
 
 #if DEPENDENCY_NADEOSERVICES
@@ -562,7 +557,7 @@ class MapTab : Tab
         UI::SetCursorPos(posTop + vec2(width + 8, 0));
         UI::BeginChild("Description");
 
-        UI::PushFont(g_fontHeader);
+        UI::PushFont(Fonts::BigBold);
         UI::TextWrapped(Text::OpenplanetFormatCodes(m_map.GbxMapName));
         UI::PopFont();
 

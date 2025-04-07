@@ -36,10 +36,7 @@ class UserTab : Tab
     MapColumns@ createdWidths = MapColumns();
     MapColumns@ awardedWidths = MapColumns();
 
-    UI::Font@ g_fontHeader;
-
     UserTab(const int &in userId, bool yourProfile = false) {
-        @g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24);
         m_userId = userId;
         m_isYourProfileTab = yourProfile;
     }
@@ -394,7 +391,7 @@ class UserTab : Tab
 
         UI::BeginChild("Summary", vec2(width,0));
 
-        UI::PushFont(g_fontHeader);
+        UI::PushFont(Fonts::BigBold);
         UI::Text(m_user.Name);
         UI::PopFont();
 
@@ -514,7 +511,7 @@ class UserTab : Tab
                         UI::EndChild();
                         UI::SetCursorPos(posTop + vec2(featuredMapwidth + 28, 20));
                         UI::BeginChild("UserFeaturedMapDescriptionChild");
-                        UI::PushFont(g_fontHeader);
+                        UI::PushFont(Fonts::BigBold);
                         UI::Text(Text::OpenplanetFormatCodes(m_featuredMap.GbxMapName));
                         UI::PopFont();
                         if (m_featuredMap.AuthorComments.Length > 100) {

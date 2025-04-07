@@ -15,16 +15,12 @@ class MapPackTab : Tab
     bool m_mapDownloaded = false;
     MapColumns@ columnWidths = MapColumns();
 
-    UI::Font@ g_fontHeader;
-
     MapPackTab(int packId) {
-        @g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24);
         m_mapPackId = packId;
         StartMXRequest();
     }
 
     MapPackTab(MX::MapPackInfo@ mapPack) {
-        @g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24);
         @m_mapPack = mapPack;
         m_mapPackId = mapPack.MappackId;
         StartMXMapListRequest();
@@ -259,7 +255,7 @@ class MapPackTab : Tab
         UI::SetCursorPos(posTop + vec2(width + 8, 0));
         UI::BeginChild("Description");
 
-        UI::PushFont(g_fontHeader);
+        UI::PushFont(Fonts::BigBold);
         UI::Text(m_mapPack.Name);
         UI::PopFont();
 

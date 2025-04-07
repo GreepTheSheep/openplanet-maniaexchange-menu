@@ -16,7 +16,7 @@ namespace HomePageTabRender {
         UI::SameLine();
         if (UI::Button(Icons::DiscordAlt + " Discord")) OpenBrowserURL("https://discord.mania.exchange/");
 
-        UI::PushFont(Header);
+        UI::PushFont(Fonts::Header);
         UI::SeparatorText(pluginColor + Icons::Plug + " \\$z " + "Plugin");
         UI::PopFont();
         UI::Text("Made by \\$777" + Meta::ExecutingPlugin().Author);
@@ -36,7 +36,7 @@ namespace HomePageTabRender {
         UI::SameLine();
         if (UI::Button(Icons::Heartbeat + " Plugin Home")) OpenBrowserURL("https://openplanet.nl/files/" + Meta::ExecutingPlugin().SiteID);
 
-        UI::PushFont(Header);
+        UI::PushFont(Fonts::Header);
         UI::SeparatorText("\\$f39" + Icons::Heartbeat + " \\$z " + "Openplanet");
         UI::PopFont();
         UI::Text("Version \\$777" + Meta::OpenplanetBuildInfo());

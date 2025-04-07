@@ -230,6 +230,8 @@ void Main(){
     }
 #endif
 
+    startnew(Fonts::Load);
+
     @mxMenu = Window();
 #if MP4
     if (repo == MP4mxRepos::Trackmania) MXURL = "tm.mania.exchange";

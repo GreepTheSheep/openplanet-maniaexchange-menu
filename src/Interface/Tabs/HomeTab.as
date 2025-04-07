@@ -1,14 +1,4 @@
 class HomePageTab : Tab {
-    UI::Font@ g_fontTitle;
-    UI::Font@ g_fontHeader;
-    UI::Font@ g_fontHeader2;
-
-    HomePageTab() {
-        @g_fontTitle = UI::LoadFont("DroidSans-Bold.ttf", 32);
-        @g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24);
-        @g_fontHeader2 = UI::LoadFont("DroidSans-Bold.ttf", 18);
-    }
-
     string GetLabel() override { return Icons::Home; }
 
     string GetTooltip() override { return "Home"; }
@@ -37,10 +27,10 @@ class HomePageTab : Tab {
         UI::EndChild();
         UI::SetCursorPos(posTop + vec2(width + 8, 0));
         UI::BeginChild("Description");
-        UI::PushFont(g_fontTitle);
+        UI::PushFont(Fonts::TitleBold);
         UI::Text("Welcome to " + pluginName);
         UI::PopFont();
-        UI::PushFont(g_fontHeader2);
+        UI::PushFont(Fonts::MidBold);
 #if MP4
         string actualRepo = "Unknown";
         if (MXURL.StartsWith("tm.")) actualRepo = "Trackmania";
