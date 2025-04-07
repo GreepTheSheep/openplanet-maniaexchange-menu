@@ -10,8 +10,9 @@ class MapPackListTab : Tab
     uint64 u_typingStart;
     string t_selectedMode = "Mappack name";
     string t_paramMode = "name";
-    string t_selectedFilter = "Latest";
-    string t_selectedPriord = "0";
+    int t_sortingKey = 0;
+    string t_sortingName = "None";
+    string t_sortSearchCombo;
 
     bool IsVisible() override {return Setting_Tab_MapPacks_Visible;}
     string GetLabel() override {return Icons::Inbox + " Map Packs";}
@@ -20,7 +21,8 @@ class MapPackListTab : Tab
     void GetRequestParams(dictionary@ params)
     {
         params.Set("fields", MX::mapPackFields);
-        params.Set("order1", t_selectedPriord);
+
+        if (t_sortingKey > 0) params.Set("order1", tostring(t_sortingKey));
 
         if (moreItems && lastId != 0) {
             params.Set("after", tostring(lastId));
@@ -111,6 +113,8 @@ class MapPackListTab : Tab
 
     void RenderHeader()
     {
+        float itemSpacing = UI::GetStyleVarVec2(UI::StyleVar::ItemSpacing).x;
+
         UI::AlignTextToFramePadding();
         UI::Text("Search:");
         UI::SameLine();
@@ -135,25 +139,34 @@ class MapPackListTab : Tab
             u_typingStart = Time::Now;
             Clear();
         }
-        UI::SetNextItemWidth(150);
-        if (UI::BeginCombo("##MapPackFilter", t_selectedFilter)){
-            if (UI::Selectable("Latest", t_selectedFilter == "Latest")){
-                t_selectedFilter = "Latest";
-                t_selectedPriord = "0";
-                Reload();
+
+        UI::AlignTextToFramePadding();
+        UI::Text("Sort:");
+        UI::SameLine();
+        UI::SetNextItemWidth(225);
+        if (UI::BeginCombo("##MappackSortOrders", t_sortingName)) {
+            UI::SetNextItemWidth(UI::GetContentRegionAvail().x - itemSpacing);
+            t_sortSearchCombo = UI::InputText("###MappackSortOrderSearch", t_sortSearchCombo);
+
+            UI::Separator();
+
+            for (uint i = 0; i < MX::m_mappackSortingOrders.Length; i++) {
+                MX::SortingOrder@ order = MX::m_mappackSortingOrders[i];
+
+                if (!order.Name.ToLower().Contains(t_sortSearchCombo.ToLower())) continue;
+
+                if (UI::Selectable(order.Name, t_sortingName == order.Name)) {
+                    t_sortingName = order.Name;
+                    t_sortingKey = order.Key;
+                    Reload();
+                }
             }
-            if (UI::Selectable("Most downloaded", t_selectedFilter == "Most downloaded")){
-                t_selectedFilter = "Most downloaded";
-                t_selectedPriord = "12";
-                Reload();
-            }
-            if (UI::Selectable("Most tracks", t_selectedFilter == "Most tracks")){
-                t_selectedFilter = "Most tracks";
-                t_selectedPriord = "14";
-                Reload();
-            }
+
             UI::EndCombo();
+        } else {
+            t_sortSearchCombo = "";
         }
+
         UI::SameLine();
         if (UI::GreenButton(Icons::Random + " Random result")){
             m_useRandom = true;

@@ -7,6 +7,7 @@ namespace MX
     array<string> m_titlepacks;
     array<string> m_maptypes;
     array<SortingOrder@> m_mapSortingOrders;
+    array<SortingOrder@> m_mappackSortingOrders;
 
     Net::HttpRequest@ req;
 

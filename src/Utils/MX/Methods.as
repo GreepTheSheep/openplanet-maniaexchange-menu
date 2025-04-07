@@ -99,6 +99,30 @@ namespace MX
         }
     }
 
+    void GetMapPackSearchOrders()
+    {
+        string url = "https://"+MXURL+"/api/meta/mappackorders";
+        Logging::Debug("Loading mappack search orders: " + url);
+        Json::Value resNet = API::GetAsync(url);
+
+        try {
+            for (uint i = 0; i < resNet.Length; i++)
+            {
+                int orderKey = resNet[i]["Key"];
+                string orderName = resNet[i]["Name"];
+
+                // TODO doesn't work currently
+                if (orderName.Contains("Activity")) continue;
+
+                m_mappackSortingOrders.InsertLast(SortingOrder(resNet[i]));
+            }
+
+            Logging::Info(m_mappackSortingOrders.Length + " mappack sorting orders loaded");
+        } catch {
+            throw("Error while loading mappack sorting orders: " + getExceptionInfo());
+        }
+    }
+
     void GetTitlepacks()
     {
         string url = "https://"+MXURL+"/api/meta/titlepacks";
@@ -172,6 +196,8 @@ namespace MX
             GetAllVehicles();
             if (m_mapSortingOrders.Length > 0) m_mapSortingOrders.RemoveRange(0, m_mapSortingOrders.Length);
             GetMapSearchOrders();
+            if (m_mappackSortingOrders.Length > 0) m_mappackSortingOrders.RemoveRange(0, m_mappackSortingOrders.Length);
+            GetMapPackSearchOrders();
             if (m_maptypes.Length > 0) m_maptypes.RemoveRange(0, m_maptypes.Length);
             GetMapTypes();
 #if MP4
