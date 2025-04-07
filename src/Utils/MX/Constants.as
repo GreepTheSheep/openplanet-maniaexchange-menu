@@ -12,6 +12,7 @@ namespace MX
     };
 
     enum MappackTypes {
+        Any = -1,
         Standard,
         Campaign,
         Competition,
@@ -27,19 +28,19 @@ namespace MX
     };
 
     const array<string> mapPackFieldsArray = {
-        "MappackId", 
-        "Owner.Name", 
-        "Owner.UserId", 
-        "CreatedAt", 
-        "UpdatedAt", 
-        "Description", 
-        "Name", 
+        "MappackId",
+        "Owner.Name",
+        "Owner.UserId",
+        "CreatedAt",
+        "UpdatedAt",
+        "Description",
+        "Name",
         "Type",
-        "IsPublic", 
-        "MaplistReleased", 
+        "IsPublic",
+        "MaplistReleased",
         "Downloadable",
-        "IsRequest", 
-        "MapCount", 
+        "IsRequest",
+        "MapCount",
         "Tags"
     };
     const string mapPackFields = string::Join(mapPackFieldsArray, ",");

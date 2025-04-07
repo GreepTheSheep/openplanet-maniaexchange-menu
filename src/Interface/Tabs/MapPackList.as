@@ -6,13 +6,16 @@ class MapPackListTab : Tab
     bool moreItems = false;
     int lastId = 0;
 
-    string u_search;
+    MappackFilters@ filters;
     uint64 u_typingStart;
     string t_selectedMode = "Mappack name";
-    string t_paramMode = "name";
     int t_sortingKey = 0;
     string t_sortingName = "None";
     string t_sortSearchCombo;
+
+    MapPackListTab() {
+        @filters = MappackFilters(this);
+    }
 
     bool IsVisible() override {return Setting_Tab_MapPacks_Visible;}
     string GetLabel() override {return Icons::Inbox + " Map Packs";}
@@ -23,24 +26,17 @@ class MapPackListTab : Tab
         params.Set("fields", MX::mapPackFields);
         params.Set("count", "100");
 
-        if (t_sortingKey > 0) params.Set("order1", tostring(t_sortingKey));
-
         if (moreItems && lastId != 0) {
             params.Set("after", tostring(lastId));
         }
 
-        if (u_search != "") {
-            params.Set(t_paramMode, u_search);
-        }
+        if (t_sortingKey > 0) params.Set("order1", tostring(t_sortingKey));
 
+        filters.GetRequestParams(params);
     }
 
     void StartRequest()
     {
-        if (u_search.Length > 0 && u_search.Length < 2) {
-            return;
-        }
-
         dictionary params;
         GetRequestParams(params);
         string urlParams = MX::DictToApiParams(params);
@@ -56,6 +52,10 @@ class MapPackListTab : Tab
         // If there's not already a request and the window is appearing, we start a new request
         if (!MX::APIDown && mapPacks.Length == 0 && m_request is null && UI::IsWindowAppearing()) {
             StartRequest();
+        }
+
+        if (m_request !is null) {
+            return;
         }
 
         if (u_typingStart == 0) {
@@ -140,34 +140,46 @@ class MapPackListTab : Tab
         }
     }
 
-    void RenderHeader()
+    void RenderSearchBar()
     {
-        float itemSpacing = UI::GetStyleVarVec2(UI::StyleVar::ItemSpacing).x;
-
         UI::AlignTextToFramePadding();
         UI::Text("Search:");
         UI::SameLine();
         UI::SetNextItemWidth(140);
-        if (UI::BeginCombo("##NamesFilter", t_selectedMode)){
-            if (UI::Selectable("Mappack name", t_selectedMode == "Mappack name")){
+        if (UI::BeginCombo("##NamesFilter", t_selectedMode)) {
+            if (UI::Selectable("Mappack name", t_selectedMode == "Mappack name")) {
                 t_selectedMode = "Mappack name";
-                t_paramMode = "name";
+                if (filters.t_name == filters.t_manager) filters.t_manager = "";
                 Reload();
             }
-            if (UI::Selectable("Creator name", t_selectedMode == "Creator name")){
-                t_selectedMode = "Creator name";
-                t_paramMode = "owner";
+
+            if (UI::Selectable("Manager name", t_selectedMode == "Manager name")) {
+                t_selectedMode = "Manager name";
+                if (filters.t_name == filters.t_manager) filters.t_name = "";
                 Reload();
             }
             UI::EndCombo();
         }
+
         UI::SameLine();
+
         bool changed = false;
-        u_search = UI::InputText("##MapPackSearch", u_search, changed);
+
+        if (t_selectedMode == "Mappack name") {
+            filters.t_name = UI::InputText("##NameSearch", filters.t_name, changed);
+        } else {
+            filters.t_manager = UI::InputText("##ManagerSearch", filters.t_manager, changed);
+        }
+
         if (changed) {
             u_typingStart = Time::Now;
             Clear();
         }
+    }
+
+    void RenderHeader()
+    {
+        float itemSpacing = UI::GetStyleVarVec2(UI::StyleVar::ItemSpacing).x;
 
         UI::AlignTextToFramePadding();
         UI::Text("Sort:");
@@ -207,6 +219,12 @@ class MapPackListTab : Tab
         UI::EndDisabled();
 
         UI::SameLine();
+
+        if (UI::OrangeButton(Icons::Filter + " Filters")) {
+            Renderables::Add(filters);
+        }
+
+        UI::SameLine();
         UI::SetCursorPos(vec2(UI::GetWindowSize().x - 40, UI::GetCursorPos().y));
         UI::BeginDisabled(m_request !is null);
         if (UI::Button(Icons::Refresh)) Reload();
@@ -231,6 +249,7 @@ class MapPackListTab : Tab
         CheckRequest();
         CheckRandomRequest();
 
+        RenderSearchBar();
         RenderHeader();
 
         if (m_request !is null && mapPacks.Length == 0) {

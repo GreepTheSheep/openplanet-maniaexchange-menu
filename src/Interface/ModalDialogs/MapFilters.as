@@ -35,7 +35,7 @@ class MapFilters : ModalDialog
     string vehicleSearchCombo;
 
     MapFilters(Tab@ tab) {
-        super(Icons::Filter + " \\$zFilters###MapFilters");
+        super(Icons::Filter + " \\$zMap filters###MapFilters");
         m_size = vec2(800, 600);
         @activeTab = tab;
     }
