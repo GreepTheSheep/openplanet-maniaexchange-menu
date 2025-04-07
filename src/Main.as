@@ -132,7 +132,7 @@ void RenderMenuMain(){
             UI::EndMenu();
         }
         if (g_PlayLaterMaps.Length > 0 && UI::MenuItem("\\$f00"+Icons::TrashO + " Clear list")){
-            Renderables::Add(ClarPlayLaterListWarn());
+            Renderables::Add(ClearPlayLaterListWarn());
         }
         UI::Separator();
 #if DEPENDENCY_NADEOSERVICES

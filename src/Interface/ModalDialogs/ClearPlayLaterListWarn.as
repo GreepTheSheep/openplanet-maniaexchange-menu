@@ -1,14 +1,14 @@
-class ClarPlayLaterListWarn : ModalDialog
+class ClearPlayLaterListWarn : ModalDialog
 {
-    ClarPlayLaterListWarn() {
-        super("\\$f90" + Icons::ExclamationTriangle + " \\$zWarning###ClarPlayLaterListWarn");
+    ClearPlayLaterListWarn() {
+        super("\\$f90" + Icons::ExclamationTriangle + " \\$zWarning###ClearPlayLaterListWarn");
         m_size = vec2(400, 140);
     }
 
     void RenderDialog() override
     {
         UI::BeginChild("Content", vec2(0, -35));
-        UI::Text("Are you sure to empty the Play later list?");
+        UI::Text("This will clear the Play later list.\n\nAre you sure?");
         UI::EndChild();
         if (UI::Button(Icons::Times + " No")) {
             Close();
@@ -19,7 +19,7 @@ class ClarPlayLaterListWarn : ModalDialog
             Close();
             g_PlayLaterMaps.RemoveRange(0, g_PlayLaterMaps.Length);
             SavePlayLater(g_PlayLaterMaps);
-            UI::ShowNotification("\\$0f0"+ Icons::Check +" \\$zPlay Later list has been cleared.");
+            UI::ShowNotification(pluginName, Icons::Check + " Succesfully cleared the Play Later list.", UI::HSV(0.33, 0.7, 0.65));
         }
     }
 }

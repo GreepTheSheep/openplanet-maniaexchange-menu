@@ -20,10 +20,10 @@ class MapPackActionWarn : ModalDialog
         UI::BeginChild("Content", vec2(0, -35));
         switch (m_action) {
             case MapPackActions::AddPlayLater:
-                UI::Text("This will add " + m_mapPack_maps.Length + " maps to the Play later list,\nare you sure?");
+                UI::Text("This will add " + m_mapPack_maps.Length + " maps to the Play later list.\n\nAre you sure?");
                 break;
             case MapPackActions::Download:
-                UI::Text("This will download " + m_mapPack_maps.Length + " maps to your Downloaded Maps folder,\nare you sure?");
+                UI::Text("This will download " + m_mapPack_maps.Length + " maps to your Downloaded Maps folder.\n\nAre you sure?");
                 break;
             default:
                 Close();
@@ -43,14 +43,14 @@ class MapPackActionWarn : ModalDialog
                         g_PlayLaterMaps.InsertAt(g_PlayLaterMaps.Length, m_mapPack_maps[i]);
                     }
                     SavePlayLater(g_PlayLaterMaps);
-                    UI::ShowNotification("\\$0f0"+Icons::Check+" \\$zAdded "+m_mapPack_maps.Length+" maps to the Play Later list");
+                    UI::ShowNotification(pluginName, Icons::Check + " Succesfully added " + m_mapPack_maps.Length + " maps to the Play Later list", UI::HSV(0.33, 0.7, 0.65));
                     break;
                 case MapPackActions::Download:
                     for (uint i = 0; i < m_mapPack_maps.Length; i++) {
                         MX::MapInfo@ map = m_mapPack_maps[i];
-                        UI::ShowNotification("Downloading map...", Text::OpenplanetFormatCodes(map.GbxMapName) + "\\$z\\$s by " + map.Username);
                         startnew(CoroutineFunc(map.DownloadMap));
                     }
+                    UI::ShowNotification(pluginName, Icons::Check+" Succesfully downloaded " + m_mapPack_maps.Length + " maps to your Downloaded Maps folder", UI::HSV(0.33, 0.7, 0.65));
                     break;
             }
         }
