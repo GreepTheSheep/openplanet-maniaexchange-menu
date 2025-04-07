@@ -1,9 +1,9 @@
 class MapPackListTab : Tab
 {
     Net::HttpRequest@ m_request;
+    Net::HttpRequest@ m_randomRequest;
     array<MX::MapPackInfo@> mapPacks;
     bool moreItems = false;
-    bool m_useRandom = false;
     int lastId = 0;
 
     string u_search;
@@ -21,6 +21,7 @@ class MapPackListTab : Tab
     void GetRequestParams(dictionary@ params)
     {
         params.Set("fields", MX::mapPackFields);
+        params.Set("count", "100");
 
         if (t_sortingKey > 0) params.Set("order1", tostring(t_sortingKey));
 
@@ -32,13 +33,6 @@ class MapPackListTab : Tab
             params.Set(t_paramMode, u_search);
         }
 
-        if (m_useRandom) {
-            params.Set("random", "1");
-            params.Set("count", "1");
-            m_useRandom = false;
-        } else {
-            params.Set("count", "100");
-        }
     }
 
     void StartRequest()
@@ -111,6 +105,41 @@ class MapPackListTab : Tab
         }
     }
 
+    void StartRandomRequest()
+    {
+        dictionary params;
+        params.Set("fields", MX::mapPackFields);
+        params.Set("random", "1");
+        params.Set("count", "1");
+
+        string urlParams = MX::DictToApiParams(params);
+
+        string url = "https://"+MXURL+"/api/mappacks" + urlParams;
+        Logging::Debug("MapPackListTab::StartRandomRequest: " + url);
+        @m_randomRequest = API::Get(url);
+    }
+
+    void CheckRandomRequest()
+    {
+        if (m_randomRequest !is null && m_randomRequest.Finished()) {
+            string res = m_randomRequest.String();
+            int resCode = m_randomRequest.ResponseCode();
+            auto json = m_randomRequest.Json();
+            @m_randomRequest = null;
+
+            Logging::Debug("MapPackListTab::CheckRandomRequest: " + res);
+
+            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
+                Logging::Error("Error while getting random mappack");
+                return;
+            }
+
+            MX::MapPackInfo@ mappack = MX::MapPackInfo(json["Results"][0]);
+
+            mxMenu.AddTab(MapPackTab(mappack), true);
+        }
+    }
+
     void RenderHeader()
     {
         float itemSpacing = UI::GetStyleVarVec2(UI::StyleVar::ItemSpacing).x;
@@ -168,10 +197,15 @@ class MapPackListTab : Tab
         }
 
         UI::SameLine();
+
+        UI::BeginDisabled(m_randomRequest !is null);
+
         if (UI::GreenButton(Icons::Random + " Random result")){
-            m_useRandom = true;
-            Reload();
+            StartRandomRequest();
         }
+
+        UI::EndDisabled();
+
         UI::SameLine();
         UI::SetCursorPos(vec2(UI::GetWindowSize().x - 40, UI::GetCursorPos().y));
         UI::BeginDisabled(m_request !is null);
@@ -195,6 +229,7 @@ class MapPackListTab : Tab
     void Render() override
     {
         CheckRequest();
+        CheckRandomRequest();
 
         RenderHeader();
 
