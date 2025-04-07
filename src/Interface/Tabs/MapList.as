@@ -190,9 +190,9 @@ class MapListTab : Tab
         UI::Text("Sort:");
         UI::SameLine();
         UI::SetNextItemWidth(225);
-        if (UI::BeginCombo("##SortOrders", m_sortingName)) {
+        if (UI::BeginCombo("##MapSortOrders", m_sortingName)) {
             UI::SetNextItemWidth(UI::GetContentRegionAvail().x - itemSpacing);
-            m_sortSearchCombo = UI::InputText("##SortOrderSearch", m_sortSearchCombo);
+            m_sortSearchCombo = UI::InputText("##MapSortOrderSearch", m_sortSearchCombo);
 
             UI::Separator();
 

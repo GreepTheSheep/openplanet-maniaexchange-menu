@@ -8,6 +8,7 @@ class MapColumns {
     void Update(array<MX::MapInfo@> maps) {
         if (maps.IsEmpty()) {
             Reset();
+            return;
         }
 
         for (uint i = 0; i < maps.Length; i++) {

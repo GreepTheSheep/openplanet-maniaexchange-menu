@@ -93,9 +93,9 @@ namespace MX
                 m_mapSortingOrders.InsertLast(SortingOrder(resNet[i]));
             }
 
-            Logging::Info(m_mapSortingOrders.Length + " seasons loaded");
+            Logging::Info(m_mapSortingOrders.Length + " map sorting orders loaded");
         } catch {
-            throw("Error while loading sorting orders: " + getExceptionInfo());
+            throw("Error while loading map sorting orders: " + getExceptionInfo());
         }
     }
 
