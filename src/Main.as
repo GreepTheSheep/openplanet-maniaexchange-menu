@@ -112,7 +112,7 @@ void RenderMenuMain(){
                         }
                         if (!MX::APIDown && UI::MenuItem(Icons::Kenney::InfoCircle + " Open information")){
                             if (!Setting_ShowMenu) Setting_ShowMenu = true;
-                            mxMenu.AddTab(MapTab(map.MapId), true);
+                            mxMenu.AddTab(MapTab(map), true);
                         }
                         if (UI::MenuItem("\\$f00"+Icons::TrashO + " Remove map")){
                             g_PlayLaterMaps.RemoveAt(i);
@@ -156,7 +156,7 @@ void RenderMenuMain(){
                             }
                             if (!MX::APIDown && UI::MenuItem(Icons::Kenney::InfoCircle + " Open information")){
                                 if (!Setting_ShowMenu) Setting_ShowMenu = true;
-                                mxMenu.AddTab(MapTab(map.MapId), true);
+                                mxMenu.AddTab(MapTab(map), true);
                             }
                             if (UI::MenuItem("\\$f00"+Icons::TrashO + " Remove map")){
                                 MXNadeoServicesGlobal::m_mapUidToAction = mapNadeo.uid;

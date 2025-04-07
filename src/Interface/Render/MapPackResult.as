@@ -8,7 +8,7 @@ namespace IfaceRender
         UI::AlignTextToFramePadding();
         UI::Text(mapPack.Name);
         UI::MXMapPackThumbnailTooltip(mapPack.MappackId);
-        if (UI::IsItemClicked()) mxMenu.AddTab(MapPackTab(mapPack.MappackId), true);
+        if (UI::IsItemClicked()) mxMenu.AddTab(MapPackTab(mapPack), true);
 
         UI::TableNextColumn();
         UI::Text(mapPack.Username);
@@ -30,7 +30,7 @@ namespace IfaceRender
         UI::TableNextColumn();
         // buttons
         if (UI::CyanButton(Icons::Kenney::InfoCircle)) {
-            mxMenu.AddTab(MapPackTab(mapPack.MappackId), true);
+            mxMenu.AddTab(MapPackTab(mapPack), true);
         }
         UI::MXMapPackThumbnailTooltip(mapPack.MappackId);
     }

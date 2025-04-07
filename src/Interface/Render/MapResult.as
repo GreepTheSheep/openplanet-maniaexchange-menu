@@ -9,7 +9,7 @@ namespace IfaceRender
         if (Setting_ColoredMapName) UI::Text(Text::OpenplanetFormatCodes(map.GbxMapName));
         else UI::Text(map.Name);
         UI::MXMapThumbnailTooltip(map.MapId);
-        if (UI::IsItemClicked()) mxMenu.AddTab(MapTab(map.MapId), true);
+        if (UI::IsItemClicked()) mxMenu.AddTab(MapTab(map), true);
 
         UI::TableNextColumn();
         UI::Text(map.Username);
@@ -41,7 +41,7 @@ namespace IfaceRender
         UI::TableNextColumn();
         // buttons
         if (UI::CyanButton(Icons::Kenney::InfoCircle)) {
-            mxMenu.AddTab(MapTab(map.MapId), true);
+            mxMenu.AddTab(MapTab(map), true);
         }
         UI::MXMapThumbnailTooltip(map.MapId);
         UI::SameLine();

@@ -522,7 +522,7 @@ class UserTab : Tab
                         } else {
                             UI::Markdown(m_featuredMap.AuthorComments);
                         }
-                        if (UI::Button(Icons::InfoCircle)) mxMenu.AddTab(MapTab(m_featuredMap.MapId), true);
+                        if (UI::Button(Icons::InfoCircle)) mxMenu.AddTab(MapTab(m_featuredMap), true);
                         UI::SameLine();
                         if (UI::GreenButton(Icons::Play)) {
                             if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
