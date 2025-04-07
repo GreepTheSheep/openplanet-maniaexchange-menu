@@ -4,8 +4,8 @@
 
 [![Version](https://img.shields.io/badge/dynamic/json?color=pink&label=Version&query=version&url=https%3A%2F%2Fopenplanet.dev%2Fapi%2Fplugin%2F154)](https://openplanet.dev/plugin/maniaexchange)
 [![Total Downloads](https://img.shields.io/badge/dynamic/json?color=green&label=Downloads&query=downloads&url=https%3A%2F%2Fopenplanet.dev%2Fapi%2Fplugin%2F154)](https://openplanet.dev/plugin/maniaexchange)
-![Tags 1](https://img.shields.io/badge/dynamic/json?color=darkgreen&label=Game&query=tags%5B0%5D.name&url=https%3A%2F%2Fopenplanet.dev%2Fapi%2Fplugin%2F154)
-![Tags 2](https://img.shields.io/badge/dynamic/json?color=blue&label=Game&query=tags%5B1%5D.name&url=https%3A%2F%2Fopenplanet.dev%2Fapi%2Fplugin%2F154)
+![Game 1](https://img.shields.io/badge/dynamic/json?color=darkgreen&label=Game&query=games%5B0%5D&url=https%3A%2F%2Fopenplanet.dev%2Fapi%2Fplugin%2F154)
+![Game 2](https://img.shields.io/badge/dynamic/json?color=blue&label=Game&query=games%5B1%5D&url=https%3A%2F%2Fopenplanet.dev%2Fapi%2Fplugin%2F154)
 ![Signed](https://img.shields.io/badge/dynamic/json?color=green&label=Signed&query=signed&url=https%3A%2F%2Fopenplanet.dev%2Fapi%2Fplugin%2F154)
 
 **Access your favorite maps directly from ManiaExchange, including packs and more!**
