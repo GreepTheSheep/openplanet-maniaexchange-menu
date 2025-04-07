@@ -8,11 +8,11 @@ class MapPackActionWarn : ModalDialog
     MapPackActions m_action;
     array<MX::MapInfo@> m_mapPack_maps;
 
-    MapPackActionWarn(MapPackActions action, array<MX::MapInfo@> mapPack_maps) {
+    MapPackActionWarn(MapPackActions action, array<MX::MapInfo@> maps) {
         super("\\$f90" + Icons::ExclamationTriangle + " \\$zWarning###MapPackActionWarn");
         m_size = vec2(400, 140);
         m_action = action;
-        m_mapPack_maps = mapPack_maps;
+        m_mapPack_maps = maps;
     }
 
     void RenderDialog() override
@@ -39,15 +39,15 @@ class MapPackActionWarn : ModalDialog
             Close();
             switch (m_action) {
                 case MapPackActions::AddPlayLater:
-                    for (uint i = 0; i < mapPack_maps.Length; i++) {
-                        g_PlayLaterMaps.InsertAt(g_PlayLaterMaps.Length, mapPack_maps[i]);
+                    for (uint i = 0; i < m_mapPack_maps.Length; i++) {
+                        g_PlayLaterMaps.InsertAt(g_PlayLaterMaps.Length, m_mapPack_maps[i]);
                     }
                     SavePlayLater(g_PlayLaterMaps);
-                    UI::ShowNotification("\\$0f0"+Icons::Check+" \\$zAdded "+mapPack_maps.Length+" maps to the Play Later list");
+                    UI::ShowNotification("\\$0f0"+Icons::Check+" \\$zAdded "+m_mapPack_maps.Length+" maps to the Play Later list");
                     break;
                 case MapPackActions::Download:
-                    for (uint i = 0; i < mapPack_maps.Length; i++) {
-                        MX::MapInfo@ map = mapPack_maps[i];
+                    for (uint i = 0; i < m_mapPack_maps.Length; i++) {
+                        MX::MapInfo@ map = m_mapPack_maps[i];
                         UI::ShowNotification("Downloading map...", Text::OpenplanetFormatCodes(map.GbxMapName) + "\\$z\\$s by " + map.Username);
                         startnew(CoroutineFunc(map.DownloadMap));
                     }

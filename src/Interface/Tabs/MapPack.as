@@ -1,5 +1,3 @@
-array<MX::MapInfo@> mapPack_maps;
-
 class MapPackTab : Tab
 {
     Net::HttpRequest@ m_MXrequest;
@@ -8,6 +6,7 @@ class MapPackTab : Tab
 
     int m_mapPackId;
     int m_lastIdMapList = 0;
+    array<MX::MapInfo@> mapPack_maps;
     bool m_moreItemsMapList = false;
     bool m_isLoading = false;
     bool m_error = false;
@@ -20,7 +19,6 @@ class MapPackTab : Tab
 
     MapPackTab(int packId) {
         @g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24);
-        mapPack_maps.RemoveRange(0, mapPack_maps.Length);
         m_mapPackId = packId;
         StartMXRequest();
     }
