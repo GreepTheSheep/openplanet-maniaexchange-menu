@@ -40,6 +40,15 @@ class MapTab : Tab
         StartMXRequest();
     }
 
+    MapTab(MX::MapInfo@ map) {
+        @g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24);
+        @m_map = map;
+
+#if DEPENDENCY_NADEOSERVICES
+        startnew(CoroutineFunc(CheckIfMapExistsNadeoServices));
+#endif
+    }
+
     bool CanClose() override { return !m_isLoading; }
 
     string GetLabel() override {

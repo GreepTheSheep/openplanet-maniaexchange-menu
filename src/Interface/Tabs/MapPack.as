@@ -25,6 +25,13 @@ class MapPackTab : Tab
         StartMXRequest();
     }
 
+    MapPackTab(MX::MapPackInfo@ mapPack) {
+        @g_fontHeader = UI::LoadFont("DroidSans-Bold.ttf", 24);
+        @m_mapPack = mapPack;
+        m_mapPackId = mapPack.MappackId;
+        StartMXMapListRequest();
+    }
+
     bool CanClose() override { return !m_isLoading; }
 
     string GetLabel() override {
