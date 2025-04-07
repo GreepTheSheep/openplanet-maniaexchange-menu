@@ -3,7 +3,7 @@ class MapListTab : Tab
     Net::HttpRequest@ m_request;
     array<MX::MapInfo@> maps;
     bool moreItems = false;
-    bool m_useRandom = false;
+    Net::HttpRequest@ m_randomRequest;
     int lastId = 0;
     MapFilters@ filters;
     int m_sortingKey = 0;
@@ -24,20 +24,13 @@ class MapListTab : Tab
     void GetRequestParams(dictionary@ params)
     {
         params.Set("fields", MX::mapFields);
+        params.Set("count", "100");
 
         if (moreItems && lastId != 0) {
             params.Set("after", tostring(lastId));
         }
 
         if (m_sortingKey > 0) params.Set("order1", tostring(m_sortingKey));
-
-        if (m_useRandom) {
-            params.Set("random", "1");
-            params.Set("count", "1");
-            m_useRandom = false;
-        } else {
-            params.Set("count", "100");
-        }
 
         filters.GetRequestParams(params);
     }
@@ -115,6 +108,42 @@ class MapListTab : Tab
         columnWidths.Update(maps);
     }
 
+    void StartRandomRequest()
+    {
+        dictionary params;
+        params.Set("fields", MX::mapFields);
+        params.Set("random", "1");
+        params.Set("count", "1");
+        filters.GetRequestParams(params);
+
+        string mapUrlParams = MX::DictToApiParams(params);
+
+        string url = "https://"+MXURL+"/api/maps" + mapUrlParams;
+        Logging::Debug("MapListTab::StartRandomRequest: " + url);
+        @m_randomRequest = API::Get(url);
+    }
+
+    void CheckRandomRequest()
+    {
+        if (m_randomRequest !is null && m_randomRequest.Finished()) {
+            string res = m_randomRequest.String();
+            int resCode = m_randomRequest.ResponseCode();
+            auto json = m_randomRequest.Json();
+            @m_randomRequest = null;
+
+            Logging::Debug("MapListTab::CheckRandomRequest: " + res);
+
+            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
+                Logging::Error("Error while getting random map");
+                return;
+            }
+
+            MX::MapInfo@ map = MX::MapInfo(json["Results"][0]);
+
+            mxMenu.AddTab(MapTab(map), true);
+        }
+    }
+
     void RenderSearchBar()
     {
         UI::AlignTextToFramePadding();
@@ -186,10 +215,14 @@ class MapListTab : Tab
 
         UI::SameLine();
 
+        UI::BeginDisabled(m_randomRequest !is null);
+
         if (UI::GreenButton(Icons::Random + " Random result")){
-            m_useRandom = true;
-            Reload();
+            StartRandomRequest();
         }
+
+        UI::EndDisabled();
+
         UI::SameLine();
 
         if (UI::OrangeButton(Icons::Filter + " Filters")) {
@@ -220,6 +253,7 @@ class MapListTab : Tab
     void Render() override
     {
         CheckRequest();
+        CheckRandomRequest();
 
         RenderSearchBar();
 
