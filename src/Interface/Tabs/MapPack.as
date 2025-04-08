@@ -23,7 +23,7 @@ class MapPackTab : Tab
     MapPackTab(MX::MapPackInfo@ mapPack) {
         @m_mapPack = mapPack;
         m_mapPackId = mapPack.MappackId;
-        StartMXMapListRequest();
+        if (m_mapPack.MapCount > 0) StartMXMapListRequest();
     }
 
     bool CanClose() override { return !m_isLoading; }
@@ -90,15 +90,12 @@ class MapPackTab : Tab
                 HandleMXResponseError("Failed to find mappack");
                 return;
             }
-            StartMXMapListRequest();
-            // Handle the response
-            HandleMXResponse(json["Results"][0]);
-        }
-    }
 
-    void HandleMXResponse(const Json::Value &in json)
-    {
-        @m_mapPack = MX::MapPackInfo(json);
+            // Handle the response
+            @m_mapPack = MX::MapPackInfo(json);
+
+            if (m_mapPack.MapCount > 0) StartMXMapListRequest();
+        }
     }
 
     void HandleMXResponseError(const string &in errorMessage = "")
@@ -283,7 +280,9 @@ class MapPackTab : Tab
             UI::BeginChild("MapListChild");
 
             if (m_mapListError) {
-                UI::Text("\\$f00" + Icons::Times + " \\$zMap list for this pack is empty.");
+                UI::Text("\\$f00" + Icons::Times + " \\$zError while loading mappack map list.");
+            } else if (m_mapPack.MapCount == 0) {
+                UI::Text("Map list for this pack is empty.");
             } else {
                 if (mapPack_maps.Length == 0) {
                     int HourGlassValue = Time::Stamp % 3;
