@@ -64,7 +64,7 @@ namespace Format {
         return _body;
     }
 
-    string GbxText(string name)
+    string GbxText(const string &in name)
     {
         // remove BOMs and newlines
         return Regex::Replace(name, "[\u200B-\u200F\uFEFF\\n]", "");
