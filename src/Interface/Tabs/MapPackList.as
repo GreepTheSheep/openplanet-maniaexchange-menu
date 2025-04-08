@@ -24,11 +24,6 @@ class MapPackListTab : Tab
     void GetRequestParams(dictionary@ params)
     {
         params.Set("fields", MX::mapPackFields);
-        params.Set("count", "100");
-
-        if (moreItems && lastId != 0) {
-            params.Set("after", tostring(lastId));
-        }
 
         if (t_sortingKey > 0) params.Set("order1", tostring(t_sortingKey));
 
@@ -38,6 +33,12 @@ class MapPackListTab : Tab
     void StartRequest()
     {
         dictionary params;
+        params.Set("count", "100");
+
+        if (moreItems && lastId != 0) {
+            params.Set("after", tostring(lastId));
+        }
+
         GetRequestParams(params);
         string urlParams = MX::DictToApiParams(params);
 
@@ -108,9 +109,9 @@ class MapPackListTab : Tab
     void StartRandomRequest()
     {
         dictionary params;
-        params.Set("fields", MX::mapPackFields);
         params.Set("random", "1");
         params.Set("count", "1");
+        GetRequestParams(params);
 
         string urlParams = MX::DictToApiParams(params);
 

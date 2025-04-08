@@ -24,11 +24,6 @@ class MapListTab : Tab
     void GetRequestParams(dictionary@ params)
     {
         params.Set("fields", MX::mapFields);
-        params.Set("count", "100");
-
-        if (moreItems && lastId != 0) {
-            params.Set("after", tostring(lastId));
-        }
 
         if (m_sortingKey > 0) params.Set("order1", tostring(m_sortingKey));
 
@@ -38,7 +33,14 @@ class MapListTab : Tab
     void StartRequest()
     {
         dictionary params;
+        params.Set("count", "100");
+
+        if (moreItems && lastId != 0) {
+            params.Set("after", tostring(lastId));
+        }
+
         GetRequestParams(params);
+
         string urlParams = MX::DictToApiParams(params);
 
         string url = "https://"+MXURL+"/api/maps" + urlParams;
@@ -111,10 +113,9 @@ class MapListTab : Tab
     void StartRandomRequest()
     {
         dictionary params;
-        params.Set("fields", MX::mapFields);
         params.Set("random", "1");
         params.Set("count", "1");
-        filters.GetRequestParams(params);
+        GetRequestParams(params);
 
         string mapUrlParams = MX::DictToApiParams(params);
 
