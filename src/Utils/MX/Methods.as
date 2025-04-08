@@ -257,7 +257,7 @@ namespace MX
 #if TMNEXT
                     && Permissions::OpenAdvancedMapEditor()
 #endif
-                ) app.ManiaTitleControlScriptAPI.EditMap("https://"+MXURL+"/mapgbx/"+mapId, "", "");
+                ) app.ManiaTitleControlScriptAPI.EditMap("https://"+MXURL+"/mapgbx/"+mapId+"?t="+map.UpdatedAt, "", "");
                 else {
                     string Mode = "";
                     MX::ModesFromMapType.Get(map.MapType, Mode);
@@ -269,7 +269,7 @@ namespace MX
                     }
 #endif
 
-                    app.ManiaTitleControlScriptAPI.PlayMap("https://"+MXURL+"/mapgbx/"+mapId, Mode, "");
+                    app.ManiaTitleControlScriptAPI.PlayMap("https://"+MXURL+"/mapgbx/"+mapId+"?t="+map.UpdatedAt, Mode, "");
                 }
 #if TMNEXT
             } else Logging::Error("You don't have permission to play custom maps.", true);
