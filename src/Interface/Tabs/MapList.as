@@ -82,7 +82,7 @@ class MapListTab : Tab
 
             Logging::Debug("MapListTab::CheckRequest: " + res);
 
-            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
+            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
                 Logging::Error("Error while loading maps list");
                 return;
             } else {
@@ -133,8 +133,11 @@ class MapListTab : Tab
 
             Logging::Debug("MapListTab::CheckRandomRequest: " + res);
 
-            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
-                Logging::Error("Error while getting random map");
+            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
+                Logging::Error("MapListTab::CheckRandomRequest: Error while getting random map");
+                return;
+            } else if (json["Results"].Length == 0) {
+                Logging::Warn("MapListTab::CheckRandomRequest: Failed to get a random map", true);
                 return;
             }
 

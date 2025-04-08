@@ -75,12 +75,19 @@ class MapPackTab : Tab
 
             if (resCode >= 400) {
                 string errorMsg = json.Get("title", "Unknown error");
+                Logging::Error("MapPackTab::CheckRequest (MX): Error " + resCode + " - " + errorMsg);
                 HandleMXResponseError(errorMsg);
                 return;
             }
 
-            if (json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
+            if (json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
+                Logging::Error("MapPackTab::CheckRequest (MX): Error while loading mappack");
                 HandleMXResponseError("Empty response");
+                return;
+            } else if (json["Results"].Length == 0) {
+                // This should be impossible
+                Logging::Error("MapPackTab::CheckRequest (MX): Failed to find a mappack with ID " + m_mapPackId);
+                HandleMXResponseError("Failed to find mappack");
                 return;
             }
             StartMXMapListRequest();
@@ -96,7 +103,6 @@ class MapPackTab : Tab
 
     void HandleMXResponseError(const string &in errorMessage = "")
     {
-        Logging::Info("MapPackTab::CheckRequest (MX): Error parsing response");
         m_error = true;
         m_errorMessage = errorMessage;
     }
@@ -130,11 +136,16 @@ class MapPackTab : Tab
 
             Logging::Debug("MapPackTab::CheckRequest (Map List): " + res);
 
-            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
+            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
                 Logging::Info("MapPackTab::CheckRequest (Map List): Error parsing response");
-                HandleMXMapListResponseError();
+                m_mapListError = true;
+                return;
+            } else if (json["Results"].Length == 0) {
+                Logging::Error("MapPackTab::CheckRequest (Map List): API returned 0 maps! Expected " + m_mapPack.MapCount);
+                m_mapListError = true;
                 return;
             }
+
             // Handle the response
             m_moreItemsMapList = json["More"];
             HandleMXMapListResponse(json["Results"]);
@@ -154,11 +165,6 @@ class MapPackTab : Tab
         }
 
         columnWidths.Update(mapPack_maps);
-    }
-
-    void HandleMXMapListResponseError()
-    {
-        m_mapListError = true;
     }
 
     void Render() override

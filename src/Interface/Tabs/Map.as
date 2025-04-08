@@ -100,8 +100,14 @@ class MapTab : Tab
 
             Logging::Debug("MapTab::CheckRequest (MX): " + res);
 
-            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
-                Logging::Info("MapTab::CheckRequest (MX): Error parsing response");
+            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
+                Logging::Error("MapTab::CheckRequest (MX): Error parsing response");
+                m_error = true;
+                return;
+            } else if (json["Results"].Length == 0) {
+                // This should be impossible
+                string reqId = m_mapUid != "" ? m_mapUid : tostring(m_mapId);
+                Logging::Error("MapTab::CheckRequest (MX): Failed to find a map with UID/ID " + reqId);
                 m_error = true;
                 return;
             }
@@ -135,11 +141,16 @@ class MapTab : Tab
 
             Logging::Debug("MapTab::CheckRequest (Replays): " + res);
 
-            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
-                Logging::Info("MapTab::CheckRequest (Replays): Error parsing response");
+            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
+                Logging::Error("MapTab::CheckRequest (Replays): Error parsing response");
+                m_replaysError = true;
+                return;
+            } else if (json["Results"].Length == 0) {
+                Logging::Error("MapTab::CheckRequest (Replays): API returned 0 replays! Expected " + m_map.ReplayCount);
                 m_replaysError = true;
                 return;
             }
+
             if (m_replays.Length > 0) {
                 // Remove any remaining replays if there's any
                 m_replays.RemoveRange(0, m_replays.Length);
@@ -234,11 +245,16 @@ class MapTab : Tab
 
             Logging::Debug("MapTab::CheckRequest (Embedded): " + res);
 
-            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
+            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
                 Logging::Info("MapTab::CheckRequest (Embedded): Error parsing response");
                 m_mapEmbeddedObjectsError = true;
                 return;
+            } else if (json["Results"].Length == 0) {
+                Logging::Error("MapTab::CheckRequest (Embedded): API returned 0 embedded objects! Expected " + m_map.EmbeddedObjectsCount);
+                m_mapEmbeddedObjectsError = true;
+                return;
             }
+
             // Handle the response
             Json::Value@ mapObjects = json["Results"];
 

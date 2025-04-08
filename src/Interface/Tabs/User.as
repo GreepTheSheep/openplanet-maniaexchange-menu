@@ -99,11 +99,17 @@ class UserTab : Tab
 
             Logging::Debug("UserTab::CheckRequest (MX): " + res);
 
-            if (resCode >400 || json.GetType() != Json::Type::Object || !json.HasKey("Results") || json["Results"].Length == 0) {
-                Logging::Warn("UserTab::CheckRequest (MX): Error parsing response");
+            if (resCode >400 || json.GetType() != Json::Type::Object || !json.HasKey("Results")) {
+                Logging::Error("UserTab::CheckRequest (MX): Error parsing response");
+                m_error = true;
+                return;
+            } else if (json["Results"].Length == 0) {
+                // This should be impossible
+                Logging::Error("UserTab::CheckRequest (MX): Failed to find an user with ID " + m_userId);
                 m_error = true;
                 return;
             }
+
             // Handle the response
             @m_user = MX::UserInfo(json["Results"][0]);
 
@@ -138,11 +144,16 @@ class UserTab : Tab
 
             Logging::Debug("UserTab::FeaturedMap::CheckRequest (MX): " + res);
 
-            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
-                Logging::Warn("UserTab::FeaturedMap::CheckRequest (MX): Error parsing response");
+            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
+                Logging::Error("UserTab::FeaturedMap::CheckRequest (MX): Error parsing response");
+                m_featuredMapError = true;
+                return;
+            } else if (json["Results"].Length == 0) {
+                Logging::Error("UserTab::FeaturedMap::CheckRequest (MX): Failed to find featured map with ID " + m_user.FeaturedTrackID);
                 m_featuredMapError = true;
                 return;
             }
+
             // Handle the response
             @m_featuredMap = MX::MapInfo(json["Results"][0]);
         }
@@ -228,8 +239,11 @@ class UserTab : Tab
 
             Logging::Debug("UserTab::CreatedMaps::CheckRequest (MX): " + res);
 
-            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
-                Logging::Error("Error while loading maps list");
+            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
+                Logging::Error("UserTab::CreatedMaps::CheckRequest (MX): Error while loading created maps list");
+                return;
+            } else if (json["Results"].Length == 0) {
+                Logging::Error("UserTab::CreatedMaps::CheckRequest (MX): API returned 0 created maps! Expected " + m_user.MapCount);
                 return;
             }
 
@@ -288,8 +302,11 @@ class UserTab : Tab
 
             Logging::Debug("UserTab::AwardedMaps::CheckRequest (MX): " + res);
 
-            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
-                Logging::Error("Error while loading maps list");
+            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
+                Logging::Error("UserTab::AwardedMaps::CheckRequest (MX): Error while loading awarded maps list");
+                return;
+            } else if (json["Results"].Length == 0) {
+                Logging::Error("UserTab::AwardedMaps::CheckRequest (MX): API returned 0 awarded maps! Expected " + m_user.AwardsGivenCount);
                 return;
             }
 
@@ -348,8 +365,11 @@ class UserTab : Tab
 
             Logging::Debug("UserTab::MapPacks::CheckRequest (MX): " + res);
 
-            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
-                Logging::Error("Error while loading mappack list");
+            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
+                Logging::Error("UserTab::MapPacks::CheckRequest (MX): Error while loading mappack list");
+                return;
+            } else if (json["Results"].Length == 0) {
+                Logging::Error("UserTab::MapPacks::CheckRequest (MX): API returned 0 user mappacks! Expected " + m_user.MappackCount);
                 return;
             }
 

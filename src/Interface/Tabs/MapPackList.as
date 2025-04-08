@@ -82,8 +82,8 @@ class MapPackListTab : Tab
 
             Logging::Debug("MapPackListTab::CheckRequest: " + res);
 
-            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
-                Logging::Error("Error while loading mappack list");
+            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
+                Logging::Error("MapPackListTab::CheckRequest: Error while loading mappack list");
                 return;
             } else {
                 HandleResponse(json);
@@ -129,8 +129,11 @@ class MapPackListTab : Tab
 
             Logging::Debug("MapPackListTab::CheckRandomRequest: " + res);
 
-            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
-                Logging::Error("Error while getting random mappack");
+            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
+                Logging::Error("MapPackListTab::CheckRandomRequest: Error while getting random mappack");
+                return;
+            } else if (json["Results"].Length == 0) {
+                Logging::Warn("MapPackListTab::CheckRandomRequest: Failed to get a random mappack", true);
                 return;
             }
 

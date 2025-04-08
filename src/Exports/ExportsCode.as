@@ -44,8 +44,11 @@ namespace ManiaExchange
         string url = "https://"+MXURL+"/api/maps" + urlParams;
         Logging::Debug("Exports::GetMapInfoAsync::StartRequest : "+url);
         Json::Value mxRes = API::GetAsync(url);
-        if (mxRes.GetType() == Json::Type::Null || mxRes.Length == 0 || !mxRes.HasKey("Results") || mxRes["Results"].Length == 0) {
-            Logging::Info("Exports::GetMapInfoAsync::CheckRequest : Error parsing response");
+        if (mxRes.GetType() == Json::Type::Null || mxRes.Length == 0 || !mxRes.HasKey("Results")) {
+            Logging::Error("Exports::GetMapInfoAsync::CheckRequest: Error parsing response");
+            return Json::Parse("");
+        } else if (mxRes["Results"].Length == 0) {
+            Logging::Warn("Exports::GetMapInfoAsync::CheckRequest: Couldn't find a " + shortMXName + " map with the ID " + mapID);
             return Json::Parse("");
         }
         // Handle the response
@@ -64,8 +67,11 @@ namespace ManiaExchange
 
         Json::Value mxRes = API::GetAsync(url);
 
-        if (mxRes.GetType() == Json::Type::Null || mxRes.Length == 0 || !mxRes.HasKey("Results") || mxRes["Results"].Length == 0) {
-            Logging::Info("Exports::GetMapInfoAsync::CheckRequest : Error parsing response");
+        if (mxRes.GetType() == Json::Type::Null || mxRes.Length == 0 || !mxRes.HasKey("Results")) {
+            Logging::Error("Exports::GetMapInfoAsync::CheckRequest: Error parsing response");
+            return Json::Parse("");
+        } else if (mxRes["Results"].Length == 0) {
+            Logging::Warn("Exports::GetMapInfoAsync::CheckRequest: Couldn't find a " + shortMXName + " map with the UID " + MapUID);
             return Json::Parse("");
         }
 
