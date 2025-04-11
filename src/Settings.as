@@ -13,6 +13,9 @@ bool Setting_ShowPlayOnAllMaps = false;
 [Setting name="Limit count for embedded objects" category="UI" min=0 max=75 description="Limit the count of embedded objects in the map info tab. A high value can make a lot of requests to the server, so it is recommended to keep this value as low as possible."]
 int Setting_EmbeddedObjectsLimit = 25;
 
+[Setting name="Colored tags" category="UI" description="When disabled, style tags will use the default gray background color instead of the colors provided by MX"]
+bool Setting_ColoredTags = true;
+
 // Tabs
 
 [Setting name="Your profile (Your user ID)" category="Display Tabs" description="Set your (or any other) User ID here to get your profile tab" min=0]

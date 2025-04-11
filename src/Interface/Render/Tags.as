@@ -6,7 +6,7 @@ namespace IfaceRender
     {
         vec4 color;
 
-        if (Text::TryParseHexColor(tag.Color, color)) {
+        if (Setting_ColoredTags && Text::TryParseHexColor(tag.Color, color)) {
             Controls::Tag("\\$s" + tag.Name, color);
         } else {
             Controls::Tag("\\$s" + tag.Name, TAG_COLOR);
