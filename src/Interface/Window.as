@@ -15,6 +15,7 @@ class Window{
             @m_YourProfileTab = UserTab(Setting_Tab_YourProfile_UserID, true);
             AddTab(m_YourProfileTab);
         }
+        AddTab(MostAwardedTab());
         AddTab(FeaturedMapsTab());
         AddTab(TOTDTab());
         AddTab(PersonalListsTab());

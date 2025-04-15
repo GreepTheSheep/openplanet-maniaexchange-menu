@@ -187,7 +187,7 @@ class MapListTab : Tab
         }
     }
 
-    void RenderHeader()
+    void RenderSortingOrders()
     {
         float itemSpacing = UI::GetStyleVarVec2(UI::StyleVar::ItemSpacing).x;
 
@@ -218,6 +218,11 @@ class MapListTab : Tab
         } else {
             m_sortSearchCombo = "";
         }
+    }
+
+    void RenderHeader()
+    {
+        RenderSortingOrders();
 
         UI::SameLine();
 

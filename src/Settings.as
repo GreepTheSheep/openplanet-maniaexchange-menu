@@ -23,6 +23,9 @@ int Setting_Tab_YourProfile_UserID = 0;
 
 int Tab_YourProfile_UserID_Old = 0;
 
+[Setting name="Most Awarded" category="Display Tabs"]
+bool Setting_Tab_MostAwarded_Visible = true;
+
 [Setting name="Featured" category="Display Tabs"]
 bool Setting_Tab_Featured_Visible = true;
 
