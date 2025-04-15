@@ -38,7 +38,7 @@ bool Setting_Tab_PersonalLists_Visible = true;
 bool Setting_Tab_MapPacks_Visible = true;
 
 [Setting name="Maps" category="Display Tabs"]
-bool Setting_Tab_Search_Visible = true;
+bool Setting_Tab_Maps_Visible = true;
 
 #if MP4
 enum MP4mxRepos {
