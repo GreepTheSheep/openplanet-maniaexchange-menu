@@ -32,10 +32,7 @@ class HomePageTab : Tab {
         UI::PopFont();
         UI::PushFont(Fonts::MidBold);
 #if MP4
-        string actualRepo = "Unknown";
-        if (MXURL.StartsWith("tm.")) actualRepo = "Trackmania";
-        else if (MXURL.StartsWith("sm.")) actualRepo = "Shootmania";
-        UI::TextDisabled("The content network for "+actualRepo+" - driven by the community.");
+        UI::TextDisabled("The content network for " + tostring(repo) + " - driven by the community.");
 #else
         UI::TextDisabled("The content network for Trackmania - driven by the community.");
 #endif
