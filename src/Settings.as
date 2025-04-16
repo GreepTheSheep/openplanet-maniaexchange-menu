@@ -57,16 +57,19 @@ void RenderMP4RepoSelectSettings()
 {
     if (UI::BeginCombo("Repository for maps", tostring(repo))) {
         for (int i = 0; i < 2; i++) {
-            if (UI::Selectable(tostring(MP4mxRepos(i)), false)) {
-                repo = MP4mxRepos(i);
-                if (repo == MP4mxRepos::Trackmania) MXURL = "tm.mania.exchange";
-                else if (repo == MP4mxRepos::Shootmania) MXURL = "sm.mania.exchange";
-                Logging::Info("Changed repository to " + repo + " (" + MXURL + "), reloading tags...");
-                startnew(MX::CheckForAPILoaded);
+            if (UI::Selectable(tostring(MP4mxRepos(i)), repo == MP4mxRepos(i))) {
+                if (repo != MP4mxRepos(i)) {
+                    repo = MP4mxRepos(i);
 
-                for (uint t = 0; t < mxMenu.tabs.Length; t++) {
-                    if (mxMenu.tabs[t] !is null) {
-                        mxMenu.tabs[t].Reload();
+                    if (repo == MP4mxRepos::Trackmania) MXURL = "tm.mania.exchange";
+                    else if (repo == MP4mxRepos::Shootmania) MXURL = "sm.mania.exchange";
+                    Logging::Info("Changed repository to " + tostring(repo) + " (" + MXURL + "), reloading...");
+                    startnew(MX::CheckForAPILoaded);
+
+                    for (uint t = 0; t < mxMenu.tabs.Length; t++) {
+                        if (mxMenu.tabs[t] !is null) {
+                            mxMenu.tabs[t].Reload();
+                        }
                     }
                 }
             }
