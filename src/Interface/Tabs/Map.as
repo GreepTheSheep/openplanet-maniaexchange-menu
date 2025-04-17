@@ -121,7 +121,7 @@ class MapTab : Tab
 
     void StartMXReplaysRequest()
     {
-        string url = "https://"+MXURL+"/api/replays?best=1&mapId=" + m_mapId;
+        string url = "https://"+MXURL+"/api/replays?best=1&mapId=" + m_map.MapId;
         Logging::Debug("MapTab::StartRequest (Replays): "+url);
         @m_MXReplaysRequest = API::Get(url);
     }
@@ -225,7 +225,7 @@ class MapTab : Tab
 
     void StartMXEmbeddedRequest()
     {
-        string url = "https://"+MXURL+"/api/maps/objects?trackId=" + m_mapId + "&count=" + m_map.EmbeddedObjectsCount;
+        string url = "https://"+MXURL+"/api/maps/objects?trackId=" + m_map.MapId + "&count=" + m_map.EmbeddedObjectsCount;
         Logging::Debug("MapTab::StartRequest (Embedded): "+url);
         @m_MXEmbedObjRequest = API::Get(url);
     }
@@ -622,7 +622,7 @@ class MapTab : Tab
         if (UI::BeginTabItem(shortMXName + " Leaderboard")) {
             UI::BeginChild("MapMXLeaderboardChild");
 
-            if (UI::GreenButton(Icons::ExternalLink + " Submit")) OpenBrowserURL("https://"+MXURL+"/replayupload/"+m_mapId);
+            if (UI::GreenButton(Icons::ExternalLink + " Submit")) OpenBrowserURL("https://"+MXURL+"/replayupload/"+m_map.MapId);
 
             if (m_map.ReplayCount == 0) {
                 UI::Text("No records found for this map. Be the first!");
