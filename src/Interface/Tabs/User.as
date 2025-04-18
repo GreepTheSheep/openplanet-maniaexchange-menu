@@ -169,7 +169,7 @@ class UserTab : Tab
 
     void CheckMXLeaderboardRequest() // TODO change once leaderboards are released on 2.0
     {
-        if (!MX::APIDown && m_leaderboard is null && m_MXUserLeaderboardRequest is null && UI::IsWindowAppearing()) {
+        if (!MX::APIDown && m_leaderboard is null && !m_leaderboardError && m_MXUserLeaderboardRequest is null && UI::IsWindowAppearing()) {
             StartMXLeaderboardRequest();
         }
         // If there's a request, check if it has finished
@@ -226,7 +226,7 @@ class UserTab : Tab
 
     void CheckMXCreatedMapsRequest()
     {
-        if (!MX::APIDown && m_mapsCreated.Length == 0 && m_MXUserMapsCreatedRequest is null && UI::IsWindowAppearing()) {
+        if (!MX::APIDown && m_mapsCreated.Length == 0 && !m_createdMapsError && m_MXUserMapsCreatedRequest is null && UI::IsWindowAppearing()) {
             StartMXCreatedMapsRequest();
         }
         // If there's a request, check if it has finished
@@ -241,15 +241,18 @@ class UserTab : Tab
 
             if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
                 Logging::Error("UserTab::CreatedMaps::CheckRequest (MX): Error while loading created maps list");
+                m_createdMapsError = true;
                 return;
             } else if (json["Results"].Length == 0) {
                 Logging::Error("UserTab::CreatedMaps::CheckRequest (MX): API returned 0 created maps! Expected " + m_user.MapCount);
+                m_createdMapsError = true;
                 return;
             }
 
             // Handle the response
             if (json.HasKey("title")) {
                 m_createdMapsError = true;
+                return;
             } else {
                 m_moreItemsCreatedMaps = json["More"];
                 auto items = json["Results"];
@@ -289,7 +292,7 @@ class UserTab : Tab
 
     void CheckMXAwardedMapsRequest()
     {
-        if (!MX::APIDown && m_mapsAwardsGiven.Length == 0 && m_MXUserMapsAwardedRequest is null && UI::IsWindowAppearing()) {
+        if (!MX::APIDown && m_mapsAwardsGiven.Length == 0 && !m_awardedMapsError && m_MXUserMapsAwardedRequest is null && UI::IsWindowAppearing()) {
             StartMXAwardedMapsRequest();
         }
         // If there's a request, check if it has finished
@@ -304,15 +307,18 @@ class UserTab : Tab
 
             if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
                 Logging::Error("UserTab::AwardedMaps::CheckRequest (MX): Error while loading awarded maps list");
+                m_awardedMapsError = true;
                 return;
             } else if (json["Results"].Length == 0) {
                 Logging::Error("UserTab::AwardedMaps::CheckRequest (MX): API returned 0 awarded maps! Expected " + m_user.AwardsGivenCount);
+                m_awardedMapsError = true;
                 return;
             }
 
             // Handle the response
             if (json.HasKey("title")) {
                 m_awardedMapsError = true;
+                return;
             } else {
                 m_moreItemsAwardsGiven = json["More"];
                 auto items = json["Results"];
@@ -352,7 +358,7 @@ class UserTab : Tab
 
     void CheckMXMapPacksRequest()
     {
-        if (!MX::APIDown && m_mapPacks.Length == 0 && m_MXUserMapPacksRequest is null && UI::IsWindowAppearing()) {
+        if (!MX::APIDown && m_mapPacks.Length == 0 && !m_mapPacksError && m_MXUserMapPacksRequest is null && UI::IsWindowAppearing()) {
             StartMXMapPacksRequest();
         }
         // If there's a request, check if it has finished
@@ -367,15 +373,18 @@ class UserTab : Tab
 
             if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
                 Logging::Error("UserTab::MapPacks::CheckRequest (MX): Error while loading mappack list");
+                m_mapPacksError = true;
                 return;
             } else if (json["Results"].Length == 0) {
                 Logging::Error("UserTab::MapPacks::CheckRequest (MX): API returned 0 user mappacks! Expected " + m_user.MappackCount);
+                m_mapPacksError = true;
                 return;
             }
 
             // Handle the response
             if (json.HasKey("title")) {
                 m_mapPacksError = true;
+                return;
             } else {
                 m_moreItemsMapPacks = json["More"];
                 auto items = json["Results"];
@@ -499,55 +508,53 @@ class UserTab : Tab
                 UI::Text(pluginColor + Icons::Map + " \\$zFeatured Map:");
                 if (m_featuredMapError) {
                     UI::Text("\\$f00" + Icons::Times + " \\$zError while loading featured map");
+                } else if (m_MXUserFeaturedMapRequest !is null && m_featuredMap is null) {
+                    int HourGlassValue = Time::Stamp % 3;
+                    string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
+                    UI::Text(Hourglass + " Loading...");
                 } else {
-                    if (m_featuredMap is null) {
+                    float featuredMapwidth = Draw::GetWidth() * 0.10;
+                    UI::BeginChild("UserFeaturedMapImageChild", vec2(featuredMapwidth + 20, 0));
+                    auto featuredMapImg = Images::CachedFromURL("https://"+MXURL+"/mapimage/"+m_featuredMap.MapId+"/1?hq=true");
+
+                    if (featuredMapImg.m_texture !is null){
+                        vec2 thumbSize = featuredMapImg.m_texture.GetSize();
+                        UI::Image(featuredMapImg.m_texture, vec2(
+                            featuredMapwidth,
+                            thumbSize.y / (thumbSize.x / featuredMapwidth)
+                        ));
+
+                        UI::MXThumbnailTooltip(featuredMapImg, 0.3);
+                    } else if (!featuredMapImg.m_error) {
                         int HourGlassValue = Time::Stamp % 3;
                         string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-                        UI::Text(Hourglass + " Loading...");
+                        UI::Text(Hourglass + " Loading thumbnail...");
+                    } else if (featuredMapImg.m_unsupportedFormat) {
+                        UI::Text(Icons::FileImageO + " \\$zUnsupported file format WEBP");
+                    } else if (featuredMapImg.m_notFound) {
+                        UI::Text("\\$fc0"+Icons::ExclamationTriangle+" \\$Thumbnail not found");
                     } else {
-                        float featuredMapwidth = Draw::GetWidth() * 0.10;
-                        UI::BeginChild("UserFeaturedMapImageChild", vec2(featuredMapwidth + 20, 0));
-                        auto featuredMapImg = Images::CachedFromURL("https://"+MXURL+"/mapimage/"+m_featuredMap.MapId+"/1?hq=true");
-
-                        if (featuredMapImg.m_texture !is null){
-                            vec2 thumbSize = featuredMapImg.m_texture.GetSize();
-                            UI::Image(featuredMapImg.m_texture, vec2(
-                                featuredMapwidth,
-                                thumbSize.y / (thumbSize.x / featuredMapwidth)
-                            ));
-
-                            UI::MXThumbnailTooltip(featuredMapImg, 0.3);
-                        } else if (!featuredMapImg.m_error) {
-                            int HourGlassValue = Time::Stamp % 3;
-                            string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-                            UI::Text(Hourglass + " Loading thumbnail...");
-                        } else if (featuredMapImg.m_unsupportedFormat) {
-                            UI::Text(Icons::FileImageO + " \\$zUnsupported file format WEBP");
-                        } else if (featuredMapImg.m_notFound) {
-                            UI::Text("\\$fc0"+Icons::ExclamationTriangle+" \\$Thumbnail not found");
-                        } else {
-                            UI::Text(Icons::Times+" \\$zError while loading thumbnail");
-                        }
-                        UI::EndChild();
-                        UI::SetCursorPos(posTop + vec2(featuredMapwidth + 28, 20));
-                        UI::BeginChild("UserFeaturedMapDescriptionChild");
-                        UI::PushFont(Fonts::BigBold);
-                        UI::Text(Text::OpenplanetFormatCodes(m_featuredMap.GbxMapName));
-                        UI::PopFont();
-                        if (m_featuredMap.AuthorComments.Length > 100) {
-                            UI::Markdown(m_featuredMap.AuthorComments.SubStr(0, 100) + "...");
-                        } else {
-                            UI::Markdown(m_featuredMap.AuthorComments);
-                        }
-                        if (UI::Button(Icons::InfoCircle)) mxMenu.AddTab(MapTab(m_featuredMap), true);
-                        UI::SameLine();
-                        if (UI::GreenButton(Icons::Play)) {
-                            if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
-                            UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(m_featuredMap.GbxMapName) + "\\$z\\$s by " + m_featuredMap.Username);
-                            MX::mapToLoad = m_featuredMap.MapId;
-                        }
-                        UI::EndChild();
+                        UI::Text(Icons::Times+" \\$zError while loading thumbnail");
                     }
+                    UI::EndChild();
+                    UI::SetCursorPos(posTop + vec2(featuredMapwidth + 28, 20));
+                    UI::BeginChild("UserFeaturedMapDescriptionChild");
+                    UI::PushFont(Fonts::BigBold);
+                    UI::Text(Text::OpenplanetFormatCodes(m_featuredMap.GbxMapName));
+                    UI::PopFont();
+                    if (m_featuredMap.AuthorComments.Length > 100) {
+                        UI::Markdown(m_featuredMap.AuthorComments.SubStr(0, 100) + "...");
+                    } else {
+                        UI::Markdown(m_featuredMap.AuthorComments);
+                    }
+                    if (UI::Button(Icons::InfoCircle)) mxMenu.AddTab(MapTab(m_featuredMap), true);
+                    UI::SameLine();
+                    if (UI::GreenButton(Icons::Play)) {
+                        if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
+                        UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(m_featuredMap.GbxMapName) + "\\$z\\$s by " + m_featuredMap.Username);
+                        MX::mapToLoad = m_featuredMap.MapId;
+                    }
+                    UI::EndChild();
                 }
                 UI::EndChild();
             }
@@ -614,6 +621,9 @@ class UserTab : Tab
                 int HourGlassValue = Time::Stamp % 3;
                 string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
                 UI::Text(Hourglass + " Loading...");
+            } else if (m_createdMapsError) {
+                UI::AlignTextToFramePadding();
+                UI::Text("\\$f00" + Icons::Times + "\\$z Error while loading created maps");
             } else {
 #if MP4
                 int columns = 7;
@@ -669,6 +679,9 @@ class UserTab : Tab
                 int HourGlassValue = Time::Stamp % 3;
                 string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
                 UI::Text(Hourglass + " Loading...");
+            } else if (m_awardedMapsError) {
+                UI::AlignTextToFramePadding();
+                UI::Text("\\$f00" + Icons::Times + "\\$z Error while loading awarded maps");
             } else {
 #if MP4
                 int columns = 7;
@@ -724,6 +737,9 @@ class UserTab : Tab
                 int HourGlassValue = Time::Stamp % 3;
                 string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
                 UI::Text(Hourglass + " Loading...");
+            } else if (m_mapPacksError) {
+                UI::AlignTextToFramePadding();
+                UI::Text("\\$f00" + Icons::Times + "\\$z Error while loading mappacks");
             } else {
                 if (UI::BeginTable("UserMapPacksList", 5, UI::TableFlags::RowBg)) {
                     UI::TableSetupScrollFreeze(0, 1);

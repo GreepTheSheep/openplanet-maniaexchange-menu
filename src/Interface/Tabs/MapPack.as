@@ -283,56 +283,54 @@ class MapPackTab : Tab
                 UI::Text("\\$f00" + Icons::Times + " \\$zError while loading mappack map list.");
             } else if (m_mapPack.MapCount == 0) {
                 UI::Text("Map list for this pack is empty.");
+            } else if (m_MXMapsRequest !is null && mapPack_maps.Length == 0) {
+                int HourGlassValue = Time::Stamp % 3;
+                string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
+                UI::Text(Hourglass + " Loading...");
             } else {
-                if (mapPack_maps.Length == 0) {
-                    int HourGlassValue = Time::Stamp % 3;
-                    string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-                    UI::Text(Hourglass + " Loading...");
-                } else {
 #if MP4
-                    int columns = 7;
+                int columns = 7;
 #else
-                    int columns = 5;
+                int columns = 5;
 #endif
-                    if (UI::BeginTable("List", columns, UI::TableFlags::RowBg | UI::TableFlags::Hideable)) {
-                        UI::TableSetupScrollFreeze(0, 1);
-                        PushTabStyle();
-                        UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
-                        UI::TableSetupColumn("Created by", UI::TableColumnFlags::WidthFixed, columnWidths.author);
+                if (UI::BeginTable("List", columns, UI::TableFlags::RowBg | UI::TableFlags::Hideable)) {
+                    UI::TableSetupScrollFreeze(0, 1);
+                    PushTabStyle();
+                    UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
+                    UI::TableSetupColumn("Created by", UI::TableColumnFlags::WidthFixed, columnWidths.author);
 #if MP4
-                        UI::TableSetupColumn("Envi/Vehicle", UI::TableColumnFlags::WidthFixed, columnWidths.enviVehicle);
-                        UI::TableSetColumnEnabled(2, repo == MP4mxRepos::Trackmania);
-                        UI::TableSetupColumn("Title pack", UI::TableColumnFlags::WidthFixed, columnWidths.titlepack);
+                    UI::TableSetupColumn("Envi/Vehicle", UI::TableColumnFlags::WidthFixed, columnWidths.enviVehicle);
+                    UI::TableSetColumnEnabled(2, repo == MP4mxRepos::Trackmania);
+                    UI::TableSetupColumn("Title pack", UI::TableColumnFlags::WidthFixed, columnWidths.titlepack);
 #endif
-                        UI::TableSetupColumn("Style", UI::TableColumnFlags::WidthStretch);
-                        UI::TableSetupColumn(Icons::Trophy, UI::TableColumnFlags::WidthFixed);
-                        UI::TableSetupColumn("Actions", UI::TableColumnFlags::WidthFixed);
-                        UI::TableHeadersRow();
-                        PopTabStyle();
+                    UI::TableSetupColumn("Style", UI::TableColumnFlags::WidthStretch);
+                    UI::TableSetupColumn(Icons::Trophy, UI::TableColumnFlags::WidthFixed);
+                    UI::TableSetupColumn("Actions", UI::TableColumnFlags::WidthFixed);
+                    UI::TableHeadersRow();
+                    PopTabStyle();
 
-                        UI::ListClipper clipper(mapPack_maps.Length);
-                        while(clipper.Step()) {
-                            for(int j = clipper.DisplayStart; j < clipper.DisplayEnd; j++)
-                            {
-                                UI::PushID("ResMap"+j);
-                                MX::MapInfo@ map = mapPack_maps[j];
-                                IfaceRender::MapResult(map);
-                                UI::PopID();
-                            }
+                    UI::ListClipper clipper(mapPack_maps.Length);
+                    while(clipper.Step()) {
+                        for(int j = clipper.DisplayStart; j < clipper.DisplayEnd; j++)
+                        {
+                            UI::PushID("ResMap"+j);
+                            MX::MapInfo@ map = mapPack_maps[j];
+                            IfaceRender::MapResult(map);
+                            UI::PopID();
                         }
+                    }
 
-                        if (m_MXMapsRequest !is null && m_moreItemsMapList) {
-                            UI::TableNextRow();
-                            UI::TableNextColumn();
-                            UI::AlignTextToFramePadding();
-                            UI::Text(Icons::HourglassEnd + " Loading...");
-                        }
+                    if (m_MXMapsRequest !is null && m_moreItemsMapList) {
+                        UI::TableNextRow();
+                        UI::TableNextColumn();
+                        UI::AlignTextToFramePadding();
+                        UI::Text(Icons::HourglassEnd + " Loading...");
+                    }
 
-                        UI::EndTable();
+                    UI::EndTable();
 
-                        if (m_MXMapsRequest is null && m_moreItemsMapList && UI::GreenButton("Load more")) {
-                            StartMXMapListRequest();
-                        }
+                    if (m_MXMapsRequest is null && m_moreItemsMapList && UI::GreenButton("Load more")) {
+                        StartMXMapListRequest();
                     }
                 }
             }

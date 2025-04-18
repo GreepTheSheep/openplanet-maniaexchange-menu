@@ -128,7 +128,7 @@ class MapTab : Tab
 
     void CheckMXReplaysRequest()
     {
-        if (!MX::APIDown && !m_replaysstopleaderboard && m_MXReplaysRequest is null && UI::IsWindowAppearing()) {
+        if (!MX::APIDown && !m_replaysstopleaderboard && !m_replaysError && m_MXReplaysRequest is null && UI::IsWindowAppearing()) {
             StartMXReplaysRequest();
         }
         // If there's a request, check if it has finished
@@ -232,7 +232,7 @@ class MapTab : Tab
 
     void CheckMXEmbeddedRequest()
     {
-        if (!MX::APIDown && m_mapEmbeddedObjects.Length != m_map.EmbeddedObjectsCount && m_MXEmbedObjRequest is null && UI::IsWindowAppearing()) {
+        if (!MX::APIDown && m_mapEmbeddedObjects.Length != m_map.EmbeddedObjectsCount && !m_mapEmbeddedObjectsError && m_MXEmbedObjRequest is null && UI::IsWindowAppearing()) {
             StartMXEmbeddedRequest();
         }
         // If there's a request, check if it has finished
@@ -633,81 +633,79 @@ class MapTab : Tab
                     int HourGlassValue = Time::Stamp % 3;
                     string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
                     UI::Text(Hourglass + " Loading...");
+                } else if (m_replaysError) {
+                    UI::Text("\\$f00" + Icons::Times + "\\$z Error while loading leaderboard");
                 } else {
-                    if (m_replaysError) {
-                        UI::Text("\\$f00" + Icons::Times + "\\$z Error while loading leaderboard");
-                    } else {
-                        UI::SameLine();
-                        if (UI::Button(Icons::Refresh)) {
-                            m_replays.RemoveRange(0, m_replays.Length);
-                            m_replaysstopleaderboard = false;
-                            StartMXReplaysRequest();
-                        }
-                        if (UI::BeginTable("MXLeaderboardList", 4, UI::TableFlags::RowBg)) {
-                            UI::TableSetupScrollFreeze(0, 1);
-                            PushTabStyle();
-                            UI::TableSetupColumn("Position", UI::TableColumnFlags::WidthFixed, 40);
-                            UI::TableSetupColumn("Player", UI::TableColumnFlags::WidthStretch);
-                            UI::TableSetupColumn("Time", UI::TableColumnFlags::WidthStretch);
-                            UI::TableSetupColumn("Score", UI::TableColumnFlags::WidthStretch);
-                            UI::TableHeadersRow();
-                            PopTabStyle();
-                            UI::ListClipper clipper(m_replays.Length);
-                            while(clipper.Step()) {
-                                for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
-                                    UI::TableNextRow();
-                                    MX::MapReplay@ entry = m_replays[i];
+                    UI::SameLine();
+                    if (UI::Button(Icons::Refresh)) {
+                        m_replays.RemoveRange(0, m_replays.Length);
+                        m_replaysstopleaderboard = false;
+                        StartMXReplaysRequest();
+                    }
+                    if (UI::BeginTable("MXLeaderboardList", 4, UI::TableFlags::RowBg)) {
+                        UI::TableSetupScrollFreeze(0, 1);
+                        PushTabStyle();
+                        UI::TableSetupColumn("Position", UI::TableColumnFlags::WidthFixed, 40);
+                        UI::TableSetupColumn("Player", UI::TableColumnFlags::WidthStretch);
+                        UI::TableSetupColumn("Time", UI::TableColumnFlags::WidthStretch);
+                        UI::TableSetupColumn("Score", UI::TableColumnFlags::WidthStretch);
+                        UI::TableHeadersRow();
+                        PopTabStyle();
+                        UI::ListClipper clipper(m_replays.Length);
+                        while(clipper.Step()) {
+                            for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
+                                UI::TableNextRow();
+                                MX::MapReplay@ entry = m_replays[i];
 
-                                    UI::TableNextColumn();
-                                    UI::AlignTextToFramePadding();
-                                    if (entry.IsValid) {
-                                        if (m_replays[0].Position == 0) { // TODO remove once Position is fixed
-                                            UI::Text(tostring(entry.Position + 1));
-                                        } else {
-                                            UI::Text(tostring(entry.Position));
-                                        }
+                                UI::TableNextColumn();
+                                UI::AlignTextToFramePadding();
+                                if (entry.IsValid) {
+                                    if (m_replays[0].Position == 0) { // TODO remove once Position is fixed
+                                        UI::Text(tostring(entry.Position + 1));
                                     } else {
-                                        UI::Text("\\$f00" + Icons::Exclamation);
-                                        UI::SetItemTooltip("Replay was driven on a different version of the map");
+                                        UI::Text(tostring(entry.Position));
                                     }
+                                } else {
+                                    UI::Text("\\$f00" + Icons::Exclamation);
+                                    UI::SetItemTooltip("Replay was driven on a different version of the map");
+                                }
 
-                                    UI::TableNextColumn();
-                                    bool isUser = Setting_Tab_YourProfile_UserID == entry.UserId;
-                                    UI::Text(entry.Username + (isUser ? " " + Icons::User : ""));
-                                    UI::SetItemTooltip("Click to see "+entry.Username+"'s profile");
-                                    if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(entry.UserId), true);
+                                UI::TableNextColumn();
+                                bool isUser = Setting_Tab_YourProfile_UserID == entry.UserId;
+                                UI::Text(entry.Username + (isUser ? " " + Icons::User : ""));
+                                UI::SetItemTooltip("Click to see "+entry.Username+"'s profile");
+                                if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(entry.UserId), true);
 
-                                    UI::TableNextColumn();
+                                UI::TableNextColumn();
+                                if (m_map.GameMode == MX::GameModes::Stunt) {
+                                    UI::Text(entry.ReplayPoints + " pts");
+                                } else {
+                                    UI::Text(Time::Format(entry.ReplayTime));
+                                }
+
+                                if (i != 0){
+                                    UI::SameLine();
                                     if (m_map.GameMode == MX::GameModes::Stunt) {
-                                        UI::Text(entry.ReplayPoints + " pts");
+                                        UI::Text("\\$f00(− " + (m_replays[0].ReplayPoints - entry.ReplayPoints) + ")");
                                     } else {
-                                        UI::Text(Time::Format(entry.ReplayTime));
+                                        UI::Text("\\$f00(+ " + Time::Format(entry.ReplayTime - m_replays[0].ReplayTime) + ")");
                                     }
+                                }
 
-                                    if (i != 0){
+                                UI::TableNextColumn();
+
+                                if (m_replays[0].Score == 0) {
+                                    UI::Text("−");
+                                } else {
+                                    UI::Text(tostring(entry.Score) + " \\$666("+tostring(entry.Percentage)+"%)"); // TODO missing percentage
+                                    if (i != 0) {
                                         UI::SameLine();
-                                        if (m_map.GameMode == MX::GameModes::Stunt) {
-                                            UI::Text("\\$f00(− " + (m_replays[0].ReplayPoints - entry.ReplayPoints) + ")");
-                                        } else {
-                                            UI::Text("\\$f00(+ " + Time::Format(entry.ReplayTime - m_replays[0].ReplayTime) + ")");
-                                        }
-                                    }
-
-                                    UI::TableNextColumn();
-
-                                    if (m_replays[0].Score == 0) {
-                                        UI::Text("−");
-                                    } else {
-                                        UI::Text(tostring(entry.Score) + " \\$666("+tostring(entry.Percentage)+"%)"); // TODO missing percentage
-                                        if (i != 0) {
-                                            UI::SameLine();
-                                            UI::Text("\\$a66(" + (entry.Score - m_replays[0].Score) + ")");
-                                        }
+                                        UI::Text("\\$a66(" + (entry.Score - m_replays[0].Score) + ")");
                                     }
                                 }
                             }
-                            UI::EndTable();
                         }
+                        UI::EndTable();
                     }
                 }
             }
@@ -805,10 +803,13 @@ class MapTab : Tab
             UI::BeginChild("MapEmbeddedObjectsChild");
 
             CheckMXEmbeddedRequest();
-            if (m_mapEmbeddedObjects.Length == 0) {
+            if (m_MXEmbedObjRequest !is null && m_mapEmbeddedObjects.Length == 0) {
                 int HourGlassValue = Time::Stamp % 3;
                 string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
                 UI::Text(Hourglass + " Loading...");
+            } else if (m_mapEmbeddedObjectsError) {
+                UI::AlignTextToFramePadding();
+                UI::Text("\\$f00" + Icons::Times + "\\$z Error while loading embedded objects");
             } else {
                 UI::Text(m_mapEmbeddedObjects.Length + " objects found, with a total size of " + (m_map.EmbeddedItemsSize / 1024) + " KB");
                 if (UI::BeginTable("EmbeddedObjectsList", 3, UI::TableFlags::RowBg)) {
