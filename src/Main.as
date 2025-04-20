@@ -5,6 +5,9 @@ Window@ mxMenu;
 
 void RenderMenu()
 {
+#if TMNEXT
+    if (!OpenplanetHasPaidPermissions()) return;
+#endif
     if(UI::MenuItem(nameMenu + (MX::APIDown ? " \\$f00"+Icons::Server : "")+ (MX::APIRefresh ? " \\$666"+Icons::Refresh : "") + (MXNadeoServicesGlobal::APIRefresh ? " \\$850"+Icons::Refresh : "") + "###" + pluginName + "Menu", "", Setting_ShowMenu)) {
         if (MX::APIDown) {
             Renderables::Add(APIDownWarning());
@@ -15,6 +18,9 @@ void RenderMenu()
 }
 
 void RenderMenuMain(){
+#if TMNEXT
+    if (!OpenplanetHasPaidPermissions()) return;
+#endif
     if(UI::BeginMenu(nameMenu + (MX::APIDown ? " \\$f00"+Icons::Server : "") + (MX::APIRefresh ? " \\$666"+Icons::Refresh : "") + (MXNadeoServicesGlobal::APIRefresh ? " \\$850"+Icons::Refresh : "") + "###" + pluginName + "Menu")) {
         if (!MX::APIDown) {
             if (MX::APIRefresh) {
@@ -318,10 +324,16 @@ void BetterChatRegisterCommands() {
 #endif
 
 void RenderInterface(){
+#if TMNEXT
+    if (!OpenplanetHasPaidPermissions()) return;
+#endif
     mxMenu.Render();
 }
 
 void Render(){
+#if TMNEXT
+    if (!OpenplanetHasPaidPermissions()) return;
+#endif
     Renderables::Render();
 }
 
