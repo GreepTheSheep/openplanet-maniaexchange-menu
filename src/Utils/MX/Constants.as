@@ -69,6 +69,7 @@ namespace MX
         "TrackValue",
         "AwardCount",
         "ReplayCount",
+        "CommentCount",
         "Images",
         "EmbeddedObjectsCount",
         "EmbeddedItemsSize",
@@ -98,4 +99,18 @@ namespace MX
         "VideosCreatedCount"
     };
     const string userFields = string::Join(userFieldsArray, ",");
+
+    const array<string> commentFieldsArray = {
+        "CommentId",
+        "Comment",
+        "ReplyTo",
+        "User.UserId",
+        "User.Name",
+        "PostedAt",
+        "UpdatedAt",
+        "HasAwarded",
+        "IsAuthor"
+        "Replies"
+    };
+    const string commentFields = string::Join(commentFieldsArray, ",");
 }

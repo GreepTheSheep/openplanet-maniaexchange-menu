@@ -25,6 +25,7 @@ namespace MX
         int TrackValue;
         int AwardCount;
         int ReplayCount;
+        int CommentCount;
         uint EmbeddedObjectsCount;
         int EmbeddedItemsSize;
         bool ServerSizeExceeded;
@@ -40,7 +41,7 @@ namespace MX
             try {
                 MapId = json["MapId"];
                 MapUid = json["MapUid"];
-                Name = json["Name"];
+                Name = string(json["Name"]).Trim();
                 if (json["OnlineMapId"].GetType() != Json::Type::Null) OnlineMapId = json["OnlineMapId"];
                 MapType = json["MapType"];
                 UploadedAt = json["UploadedAt"];
@@ -56,6 +57,7 @@ namespace MX
                 TrackValue = json["TrackValue"];
                 AwardCount = json["AwardCount"];
                 ReplayCount = json["ReplayCount"];
+                if (json.HasKey("CommentCount")) CommentCount = json["CommentCount"];
                 EmbeddedObjectsCount = json["EmbeddedObjectsCount"];
                 EmbeddedItemsSize = json["EmbeddedItemsSize"];
                 ServerSizeExceeded = json["ServerSizeExceeded"];
@@ -144,6 +146,7 @@ namespace MX
                 json["TrackValue"] = TrackValue;
                 json["AwardCount"] = AwardCount;
                 json["ReplayCount"] = ReplayCount;
+                json["CommentCount"] = CommentCount;
                 json["EmbeddedObjectsCount"] = EmbeddedObjectsCount;
                 json["EmbeddedItemsSize"] = EmbeddedItemsSize;
                 json["ServerSizeExceeded"] = ServerSizeExceeded;

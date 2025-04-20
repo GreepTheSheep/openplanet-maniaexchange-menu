@@ -4,9 +4,11 @@ class MapTab : Tab
     Net::HttpRequest@ m_TMIOrequest;
     Net::HttpRequest@ m_MXEmbedObjRequest;
     Net::HttpRequest@ m_MXReplaysRequest;
+    Net::HttpRequest@ m_MXCommentsRequest;
     MX::MapInfo@ m_map;
     array<TMIO::Leaderboard@> m_leaderboard;
     array<MX::MapReplay@> m_replays;
+    array<MX::MapComment@> m_comments;
     int m_mapId;
     string m_mapUid = "";
     bool m_isMapOnNadeoServices = false;
@@ -25,6 +27,8 @@ class MapTab : Tab
     bool m_mapEmbeddedObjectsError = false;
     bool m_replaysError = false;
     bool m_replaysstopleaderboard = false;
+    bool m_commentsStopRequest = false;
+    bool m_commentsError = false;
 
     MapTab(int trackId) {
         m_mapId = trackId;
@@ -265,6 +269,44 @@ class MapTab : Tab
         }
     }
 
+    void StartMXCommentsRequest()
+    {
+        string url = "https://"+MXURL+"/api/maps/comments?trackId=" + m_map.MapId + "&count=50&fields=" + MX::commentFields;
+        Logging::Debug("MapTab::StartRequest (Comments): " + url);
+        @m_MXCommentsRequest = API::Get(url);
+    }
+
+    void CheckMXCommentsRequest()
+    {
+        if (!MX::APIDown && !m_commentsStopRequest && !m_commentsError && m_MXCommentsRequest is null && UI::IsWindowAppearing()) {
+            StartMXCommentsRequest();
+        }
+
+        if (m_MXCommentsRequest !is null && m_MXCommentsRequest.Finished()) {
+            string res = m_MXCommentsRequest.String();
+            int resCode = m_MXCommentsRequest.ResponseCode();
+            auto json = m_MXCommentsRequest.Json();
+            @m_MXCommentsRequest = null;
+
+            Logging::Debug("MapTab::CheckRequest (Comments): " + res);
+
+            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
+                Logging::Info("MapTab::CheckRequest (Comments): Error parsing response");
+                m_commentsError = true;
+                return;
+            }
+
+            // Handle the response
+            Json::Value@ mapComments = json["Results"];
+
+            for (uint i = 0; i < mapComments.Length; i++) {
+                MX::MapComment@ comment = MX::MapComment(mapComments[i]);
+                m_comments.InsertLast(comment);
+            }
+
+            m_commentsStopRequest = true;
+        }
+    }
     void Render() override
     {
         CheckMXRequest();
@@ -706,6 +748,66 @@ class MapTab : Tab
                             }
                         }
                         UI::EndTable();
+                    }
+                }
+            }
+            UI::EndChild();
+            UI::EndTabItem();
+        }
+
+        // CommentCount is usually innacurate
+        if (UI::BeginTabItem("Comments")) {
+            UI::BeginChild("MapMXCommentsChild");
+
+            CheckMXCommentsRequest();
+
+            if (m_MXCommentsRequest !is null && !m_MXCommentsRequest.Finished()) {
+                int HourGlassValue = Time::Stamp % 3;
+                string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
+                UI::Text(Hourglass + " Loading...");
+            } else if (m_commentsError) {
+                UI::AlignTextToFramePadding();
+                UI::Text("\\$f00" + Icons::Times + "\\$z Error while loading comments");
+            } else {
+                if (UI::GreenButton(Icons::Plus + " Post comment")) OpenBrowserURL("https://"+MXURL+"/commentupdate/"+m_map.MapId);
+
+                UI::SameLine();
+
+                if (UI::Button(Icons::Refresh)) {
+                    m_comments.RemoveRange(0, m_comments.Length);
+                    m_commentsStopRequest = false;
+                    StartMXCommentsRequest();
+                }
+
+                if (m_comments.Length == 0) {
+                    UI::AlignTextToFramePadding();
+                    UI::Text("No comments found for this map. Be the first!");
+                } else {
+                    UI::DrawList@ dl = UI::GetWindowDrawList();
+
+                    for (uint i = 0; i < m_comments.Length; i++) {
+                        MX::MapComment@ comment = m_comments[i];
+
+                        IfaceRender::MapComment(comment);
+
+                        vec2 pos = UI::GetCursorScreenPos();
+
+                        UI::Indent();
+
+                        for (uint r = 0; r < comment.Replies.Length; r++) {
+                            IfaceRender::MapComment(comment.Replies[r]);
+
+                            vec4 rect = UI::GetItemRect();
+                            float middle = rect.y + Draw::MeasureString(comment.Username).y;
+
+                            dl.AddLine(vec2(pos.x, middle), vec2(pos.x + 15, middle), vec4(0.5, 0.5, 0.5, 1), 5.0f);
+
+                            if (r == comment.Replies.Length - 1) {
+                                dl.AddLine(pos, vec2(pos.x, middle), vec4(0.5, 0.5, 0.5, 1), 7.0f);
+                            }
+                        }
+
+                        UI::Unindent();
                     }
                 }
             }
