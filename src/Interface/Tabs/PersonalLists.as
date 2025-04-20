@@ -41,6 +41,7 @@ class PersonalListsTab : MapListTab
 
     void RenderHeader() override
     {
+#if DEPENDENCY_NADEOSERVICES
         UI::SetNextItemWidth(120);
         if (UI::BeginCombo("##PersonalListSelect", t_selectedList)){
             for (uint i = 0; i < t_lists.Length; i++) {
@@ -51,7 +52,7 @@ class PersonalListsTab : MapListTab
             }
             UI::EndCombo();
         }
-#if DEPENDENCY_NADEOSERVICES
+
         if (t_selectedList == "Favorites") {
             UI::SameLine();
             UI::Text("| Sorting:");
@@ -87,21 +88,40 @@ class PersonalListsTab : MapListTab
             UI::SameLine();
             UI::TextDisabled(Icons::ExclamationTriangle + " Only maps available on TMX are displayed");
             UI::SetItemTooltip("All favorite maps are displayed in game via the Local menu or via the Openplanet overlay");
+
+            UI::SameLine();
+            UI::SetCursorPos(vec2(UI::GetWindowSize().x - 40, UI::GetCursorPos().y));
+
+            UI::BeginDisabled(MXNadeoServicesGlobal::APIRefresh);
+
+            if (UI::Button(Icons::Refresh)) {
+                startnew(MXNadeoServicesGlobal::ReloadFavoriteMapsAsync);
+                Reload();
+            }
+
+            UI::EndDisabled();
         }
 #endif
-        UI::SameLine();
-        UI::SetCursorPos(vec2(UI::GetWindowSize().x - 40, UI::GetCursorPos().y));
-#if DEPENDENCY_NADEOSERVICES
-        UI::BeginDisabled(MXNadeoServicesGlobal::APIRefresh);
-#endif
-        if (UI::Button(Icons::Refresh)) {
-#if DEPENDENCY_NADEOSERVICES
-            startnew(MXNadeoServicesGlobal::ReloadFavoriteMapsAsync);
-#endif
-            Reload();
+
+        if (t_selectedList == "Play later") {
+            UI::SameLine();
+            UI::SetCursorPos(vec2(UI::GetWindowSize().x - 120, UI::GetCursorPos().y));
+
+            UI::BeginDisabled(g_PlayLaterMaps.Length == 0);
+
+            if (UI::RedButton(Icons::TrashO + " Clear")) {
+                Renderables::Add(ClearPlayLaterListWarn());
+            }
+
+            UI::EndDisabled();
+
+            if (maps.Length != g_PlayLaterMaps.Length) Reload();
+
+            UI::SameLine();
+
+            if (UI::Button(Icons::Refresh)) {
+                Reload();
+            }
         }
-#if DEPENDENCY_NADEOSERVICES
-        UI::EndDisabled();
-#endif
     }
 }
