@@ -4,7 +4,6 @@ namespace MXNadeoServicesGlobal
     bool APIRefresh = false;
     array<NadeoServices::MapInfo@> g_favoriteMaps;
     int g_totalFavoriteMaps;
-    string m_mapUidToAction;
 
 #if DEPENDENCY_NADEOSERVICES
     void LoadNadeoLiveServices()
@@ -240,40 +239,66 @@ namespace MXNadeoServicesGlobal
         return NadeoServices::MapInfo(res).ToJson();
     }
 
-    void AddMapToFavoritesAsync()
+    void AddMapToFavoritesAsync(ref@ mapData)
     {
-        string url = NadeoServices::BaseURLLive()+"/api/token/map/favorite/"+m_mapUidToAction+"/add";
+        MX::MapInfo@ map = cast<MX::MapInfo>(mapData);
+        string url = NadeoServices::BaseURLLive()+"/api/token/map/favorite/"+map.MapUid+"/add";
         Logging::Debug("NadeoServices - Add map to favorites: " + url);
         Net::HttpRequest@ req = NadeoServices::Post("NadeoLiveServices", url);
         req.Start();
         while (!req.Finished()) {
             yield();
         }
-        if (req.ResponseCode() != 200) {
-            Logging::Error("NadeoServices - Error adding map to favorites: " + req.String());
+        auto res = req.Json();
+
+        if (req.ResponseCode() >= 400) {
+            if (res.GetType() != Json::Type::Array) {
+                Logging::Error("NadeoServices - Error adding map to favorites: " + req.String());
+            } else {
+                Logging::Error("NadeoServices - Error adding map to favorites: Failed to find a map with UID " + map.MapUid);
+            }
         } else {
-            Logging::Debug("NadeoServices - "+req.String()+": " + m_mapUidToAction);
+            Logging::Debug("NadeoServices - Succesfully added map with UID " + map.MapUid + " to favorites");
+            startnew(MXNadeoServicesGlobal::ReloadFavoriteMapsAsync);
         }
-        m_mapUidToAction = "";
-        startnew(MXNadeoServicesGlobal::ReloadFavoriteMapsAsync);
     }
 
-    void RemoveMapFromFavoritesAsync()
+    void RemoveMapFromFavoritesAsync(ref@ mapData)
     {
-        string url = NadeoServices::BaseURLLive()+"/api/token/map/favorite/"+m_mapUidToAction+"/remove";
+        NadeoServices::MapInfo@ map = cast<NadeoServices::MapInfo>(mapData);
+
+        string url = NadeoServices::BaseURLLive()+"/api/token/map/favorite/"+map.uid+"/remove";
         Logging::Debug("NadeoServices - Remove map from favorites: " + url);
         Net::HttpRequest@ req = NadeoServices::Post("NadeoLiveServices", url);
         req.Start();
         while (!req.Finished()) {
             yield();
         }
-        if (req.ResponseCode() != 200) {
-            Logging::Error("NadeoServices - Error removing map from favorites: " + req.String());
+
+        auto res = req.Json();
+
+        if (req.ResponseCode() >= 400) {
+            if (res.GetType() != Json::Type::Array) {
+                Logging::Error("NadeoServices - Error removing map from favorites: " + req.String());
+            } else {
+                string errorText = res[0];
+                if (errorText == "map:error-notFound") {
+                    Logging::Error("NadeoServices - Error removing map from favorites: Failed to find a map with UID " + map.uid);
+                } else {
+                    Logging::Error("NadeoServices - Error removing map from favorites: A map with UID" + map.uid + " doesn't exist in your favorites");
+                }
+            }
         } else {
-            Logging::Debug("NadeoServices - "+req.String()+": " + m_mapUidToAction);
+            Logging::Debug("NadeoServices - Succesfully removed map with UID " + map.uid + " from favorites");
+
+            if (map.MXMapInfo !is null) {
+                UI::ShowNotification(Text::OpenplanetFormatCodes(map.MXMapInfo.Name) + " \\$zby " + map.MXMapInfo.Username + " has been removed from favorites!");
+            } else {
+                UI::ShowNotification(Text::OpenplanetFormatCodes(map.name) + "\\$z" + (map.authorUsername.Length > 0 ? (" by " + map.authorUsername) : "") + " has been removed from favorites!");
+            }
+
+            startnew(MXNadeoServicesGlobal::ReloadFavoriteMapsAsync);
         }
-        m_mapUidToAction = "";
-        startnew(MXNadeoServicesGlobal::ReloadFavoriteMapsAsync);
     }
 #endif
 }

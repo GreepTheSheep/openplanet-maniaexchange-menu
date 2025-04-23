@@ -593,19 +593,23 @@ class MapTab : Tab
 #else
             if (UI::GreenButton(Icons::Heart + " Add to Favorites")) {
 #endif
-                MXNadeoServicesGlobal::m_mapUidToAction = m_map.MapUid;
-                startnew(MXNadeoServicesGlobal::AddMapToFavoritesAsync);
+                startnew(MXNadeoServicesGlobal::AddMapToFavoritesAsync, m_map);
             }
             UI::EndDisabled();
-            if (!m_isMapOnNadeoServices) UI::SetItemTooltip(Icons::ExclamationTriangle + " This map is not on Nadeo Services, impossible to add it to favorites");
+            if (!m_isMapOnNadeoServices) UI::SetItemTooltip(Icons::ExclamationTriangle + " This map is not on Nadeo Services, can't add it to your favorites");
         } else {
 #if TMNEXT
             if (Permissions::PlayLocalMap() && UI::RedButton(Icons::Heart + " Remove from Favorites")) {
 #else
             if (UI::RedButton(Icons::Heart + " Remove from Favorites")) {
 #endif
-                MXNadeoServicesGlobal::m_mapUidToAction = m_map.MapUid;
-                startnew(MXNadeoServicesGlobal::RemoveMapFromFavoritesAsync);
+                for (uint i = 0; i < MXNadeoServicesGlobal::g_favoriteMaps.Length; i++) {
+                    NadeoServices::MapInfo@ favoriteMap = MXNadeoServicesGlobal::g_favoriteMaps[i];
+                    if (favoriteMap.uid == m_map.MapUid) {
+                        startnew(MXNadeoServicesGlobal::RemoveMapFromFavoritesAsync, favoriteMap);
+                        break;
+                    }
+                }
             }
         }
 #endif

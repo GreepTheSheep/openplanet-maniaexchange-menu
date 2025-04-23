@@ -1,6 +1,6 @@
 bool IsInEditor(){
     CTrackMania@ app = cast<CTrackMania>(GetApp());
-    auto editor = cast<CGameCtnEditorCommon@>(app.Editor);
+    auto editor = cast<CGameCtnEditorCommon>(app.Editor);
     return editor !is null;
 }
 

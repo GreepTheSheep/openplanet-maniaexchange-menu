@@ -165,9 +165,7 @@ void RenderMenuMain(){
                                 mxMenu.AddTab(MapTab(map), true);
                             }
                             if (UI::MenuItem("\\$f00"+Icons::TrashO + " Remove map")){
-                                MXNadeoServicesGlobal::m_mapUidToAction = mapNadeo.uid;
-                                startnew(MXNadeoServicesGlobal::RemoveMapFromFavoritesAsync);
-                                UI::ShowNotification(Text::OpenplanetFormatCodes(mapNadeo.name) + " \\$zby " + map.Username + " has been removed from favorites!");
+                                startnew(MXNadeoServicesGlobal::RemoveMapFromFavoritesAsync, mapNadeo);
                             }
                             UI::EndMenu();
                         }
@@ -175,9 +173,7 @@ void RenderMenuMain(){
                         if (UI::BeginMenu((Setting_ColoredMapName ? Text::OpenplanetFormatCodes(mapNadeo.name) : Text::StripFormatCodes(mapNadeo.name)) + "\\$z" + (mapNadeo.authorUsername.Length > 0 ? (" by " + mapNadeo.authorUsername) : ""))) {
                             UI::TextDisabled(Icons::Times + " This map is not available on " + pluginName);
                             if (UI::MenuItem("\\$f00"+Icons::TrashO + " Remove map")){
-                                MXNadeoServicesGlobal::m_mapUidToAction = mapNadeo.uid;
-                                startnew(MXNadeoServicesGlobal::RemoveMapFromFavoritesAsync);
-                                UI::ShowNotification(Text::OpenplanetFormatCodes(mapNadeo.name) + "\\$z" + (mapNadeo.authorUsername.Length > 0 ? (" by " + mapNadeo.authorUsername) : "") + " has been removed from favorites!");
+                                startnew(MXNadeoServicesGlobal::RemoveMapFromFavoritesAsync, mapNadeo);
                             }
                             UI::EndMenu();
                         }
