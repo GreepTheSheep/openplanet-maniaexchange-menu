@@ -6,7 +6,7 @@ Window@ mxMenu;
 void RenderMenu()
 {
 #if TMNEXT
-    if (!OpenplanetHasPaidPermissions()) return;
+    if (!hasPermissions) return;
 #endif
     if(UI::MenuItem(nameMenu + (MX::APIDown ? " \\$f00"+Icons::Server : "")+ (MX::APIRefresh ? " \\$666"+Icons::Refresh : "") + (MXNadeoServicesGlobal::APIRefresh ? " \\$850"+Icons::Refresh : "") + "###" + pluginName + "Menu", "", Setting_ShowMenu)) {
         if (MX::APIDown) {
@@ -19,7 +19,7 @@ void RenderMenu()
 
 void RenderMenuMain(){
 #if TMNEXT
-    if (!OpenplanetHasPaidPermissions()) return;
+    if (!hasPermissions) return;
 #endif
     if(UI::BeginMenu(nameMenu + (MX::APIDown ? " \\$f00"+Icons::Server : "") + (MX::APIRefresh ? " \\$666"+Icons::Refresh : "") + (MXNadeoServicesGlobal::APIRefresh ? " \\$850"+Icons::Refresh : "") + "###" + pluginName + "Menu")) {
         if (!MX::APIDown) {
@@ -226,7 +226,7 @@ void RenderMenuMain(){
 
 void Main(){
 #if TMNEXT
-    if (!OpenplanetHasPaidPermissions()) {
+    if (!hasPermissions) {
         Logging::Error("You need Club / Standard access to use this plugin!", true);
         return;
     }
@@ -321,14 +321,14 @@ void BetterChatRegisterCommands() {
 
 void RenderInterface(){
 #if TMNEXT
-    if (!OpenplanetHasPaidPermissions()) return;
+    if (!hasPermissions) return;
 #endif
     mxMenu.Render();
 }
 
 void Render(){
 #if TMNEXT
-    if (!OpenplanetHasPaidPermissions()) return;
+    if (!hasPermissions) return;
 #endif
     Renderables::Render();
 }
