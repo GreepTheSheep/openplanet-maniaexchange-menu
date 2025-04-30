@@ -150,6 +150,9 @@ class MapPackListTab : Tab
         UI::Text("Search:");
         UI::SameLine();
         UI::SetNextItemWidth(140);
+
+        UI::BeginDisabled(m_request !is null);
+
         if (UI::BeginCombo("##NamesFilter", t_selectedMode)) {
             if (UI::Selectable("Mappack name", t_selectedMode == "Mappack name")) {
                 t_selectedMode = "Mappack name";
@@ -164,6 +167,8 @@ class MapPackListTab : Tab
             }
             UI::EndCombo();
         }
+
+        UI::EndDisabled();
 
         UI::SameLine();
 
@@ -189,6 +194,9 @@ class MapPackListTab : Tab
         UI::Text("Sort:");
         UI::SameLine();
         UI::SetNextItemWidth(225);
+
+        UI::BeginDisabled(m_request !is null);
+
         if (UI::BeginCombo("##MappackSortOrders", t_sortingName)) {
             UI::SetNextItemWidth(UI::GetContentRegionAvail().x - itemSpacing);
             t_sortSearchCombo = UI::InputText("###MappackSortOrderSearch", t_sortSearchCombo);
@@ -230,8 +238,9 @@ class MapPackListTab : Tab
 
         UI::SameLine();
         UI::SetCursorPos(vec2(UI::GetWindowSize().x - 40, UI::GetCursorPos().y));
-        UI::BeginDisabled(m_request !is null);
+
         if (UI::Button(Icons::Refresh)) Reload();
+
         UI::EndDisabled();
     }
 

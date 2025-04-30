@@ -23,6 +23,9 @@ class MostAwardedTab : MapListTab
         UI::Text("Sort:");
         UI::SameLine();
         UI::SetNextItemWidth(150);
+
+        UI::BeginDisabled(m_request !is null);
+
         if (UI::BeginCombo("##MapSortOrders", m_sortingName)) {
             if (UI::Selectable("This Week", m_sortingName == "This Week")) {
                 m_sortingName = "This Week";
@@ -41,5 +44,7 @@ class MostAwardedTab : MapListTab
             }
             UI::EndCombo();
         }
+
+        UI::EndDisabled();
     }
 }

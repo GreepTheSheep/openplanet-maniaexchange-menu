@@ -156,6 +156,9 @@ class MapListTab : Tab
         UI::Text("Search:");
         UI::SameLine();
         UI::SetNextItemWidth(120);
+
+        UI::BeginDisabled(m_request !is null);
+
         if (UI::BeginCombo("##NamesFilter", m_selectedMode)) {
             if (UI::Selectable("Track name", m_selectedMode == "Track name")) {
                 m_selectedMode = "Track name";
@@ -170,6 +173,8 @@ class MapListTab : Tab
             }
             UI::EndCombo();
         }
+
+        UI::EndDisabled();
 
         UI::SameLine();
 
@@ -196,6 +201,9 @@ class MapListTab : Tab
         UI::Text("Sort:");
         UI::SameLine();
         UI::SetNextItemWidth(225);
+
+        UI::BeginDisabled(m_request !is null);
+
         if (UI::BeginCombo("##MapSortOrders", m_sortingName)) {
             UI::SetNextItemWidth(UI::GetContentRegionAvail().x - itemSpacing);
             m_sortSearchCombo = UI::InputText("##MapSortOrderSearch", m_sortSearchCombo);
@@ -218,6 +226,8 @@ class MapListTab : Tab
         } else {
             m_sortSearchCombo = "";
         }
+
+        UI::EndDisabled();
     }
 
     void RenderHeader()
@@ -225,6 +235,8 @@ class MapListTab : Tab
         RenderSortingOrders();
 
         UI::SameLine();
+
+        UI::BeginDisabled(m_request !is null);
 
         UI::BeginDisabled(m_randomRequest !is null);
 
@@ -242,8 +254,9 @@ class MapListTab : Tab
 
         UI::SameLine();
         UI::SetCursorPos(vec2(UI::GetWindowSize().x - 40, UI::GetCursorPos().y));
-        UI::BeginDisabled(m_request !is null);
+
         if (UI::Button(Icons::Refresh)) Reload();
+
         UI::EndDisabled();
     }
 
