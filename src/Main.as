@@ -239,8 +239,7 @@ void Main(){
     if (repo == MP4mxRepos::Trackmania) MXURL = "tm.mania.exchange";
     else if (repo == MP4mxRepos::Shootmania) MXURL = "sm.mania.exchange";
 #endif
-    Meta::PluginCoroutine@ APILoad = startnew(MX::CheckForAPILoaded);
-    await(APILoad);
+    await(startnew(MX::CheckForAPILoaded));
 
     g_PlayLaterMaps = LoadPlayLater();
 
