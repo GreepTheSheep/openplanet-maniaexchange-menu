@@ -84,6 +84,14 @@ namespace Format {
     string GbxText(const string &in name)
     {
         // remove BOMs and newlines
-        return Regex::Replace(name, "[\u200B-\u200F\uFEFF\\n]", "");
+        string text = Regex::Replace(name, "[\u200B-\u200F\uFEFF\\n]", "");
+
+        array<string> formatCodes = Regex::Search(text, "^(\\$([0-9a-f]{1,3}|[gimnostuwz<>]|[hlp](\\[[^\\]]+\\])?) *)+", regexFlags);
+
+        if (formatCodes.Length > 0) {
+            text = text.Replace(formatCodes[0], formatCodes[0].Replace(" ", ""));
+        }
+
+        return text;
     }
 }
