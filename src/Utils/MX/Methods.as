@@ -316,8 +316,6 @@ namespace MX
             Logging::Info("Map downloaded to " + mxDLFolder + "/" + _fileName + ".Map.Gbx");
         } catch {
             Logging::Error("Error while downloading map: " + getExceptionInfo());
-            Logging::Error(pluginName + " API is not responding, it must be down.", true);
-            APIDown = true;
         }
     }
 
