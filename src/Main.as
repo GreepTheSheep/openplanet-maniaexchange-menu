@@ -33,7 +33,7 @@ void RenderMenuMain(){
                 }
                 if(UI::BeginMenu(pluginColor + Icons::ICursor+"\\$z Enter map ID")) {
                     bool pressedEnter = false;
-                    inputMapID = UI::InputText("##InputMapId", inputMapID, pressedEnter, UI::InputTextFlags::EnterReturnsTrue | UI::InputTextFlags::CharsDecimal | UI::InputTextFlags::CallbackCharFilter | UI::InputTextFlags::CallbackAlways, UI::InputTextCallback(UI::MapIdCallback));
+                    inputMapID = UI::InputText("##InputMapId", inputMapID, pressedEnter, UI::InputTextFlags::EnterReturnsTrue | UI::InputTextFlags::CharsDecimal | UI::InputTextFlags::CallbackCharFilter | UI::InputTextFlags::CallbackAlways, UI::InputTextCallback(UI::MXIdCallback));
                     if (inputMapID != ""){
 #if TMNEXT
                         if (Permissions::PlayLocalMap() && (pressedEnter || UI::MenuItem(Icons::Play + " Play map"))){

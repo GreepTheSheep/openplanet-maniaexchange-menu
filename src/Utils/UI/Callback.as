@@ -1,6 +1,7 @@
 namespace UI
 {
-    void MapIdCallback(UI::InputTextCallbackData@ data) {
+    // Callback for map, mappack, and user IDs
+    void MXIdCallback(UI::InputTextCallbackData@ data) {
         if (data.EventFlag == UI::InputTextFlags::CallbackAlways) {
             if (data.TextLength > 6) {
                 data.DeleteChars(6, data.TextLength - 6);
