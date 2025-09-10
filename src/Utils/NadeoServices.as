@@ -231,7 +231,7 @@ namespace MXNadeoServicesGlobal
         }
         auto res = req.Json();
 
-        if (res.GetType() != Json::Type::Object) {
+        if (req.ResponseCode() >= 400 || res.GetType() != Json::Type::Object || !res.HasKey("uid")) {
             Logging::Error("NadeoServices - Error getting map information: " + req.String());
             return null;
         }

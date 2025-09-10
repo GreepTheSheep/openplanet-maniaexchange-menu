@@ -38,7 +38,7 @@ class PlayMapOnNadeoRoomInfos : ModalDialog
 
     void RenderStep1()
     {
-        UI::TextWrapped("If you want to play a specific map on a room, you'll need to provide some informations.");
+        UI::TextWrapped("If you want to play a specific map on a room, you'll need to provide some information.");
         UI::NewLine();
         UI::TextWrapped("You'll need to have the admin role of the club where the room is hosted, then provide the identifier of the club and the room.");
         UI::TextWrapped(Icons::LightbulbO + " \\$fb5To see how to get the club and the room identifier, click here");

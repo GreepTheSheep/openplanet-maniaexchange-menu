@@ -334,7 +334,7 @@ namespace MX
         auto currentMap = GetCurrentMap();
         if (!IsInEditor()){
             if (currentMap !is null) {
-                string UIDMap = currentMap.MapInfo.MapUid;
+                string UIDMap = currentMap.IdName;
                 string url = "https://"+MXURL+"/api/maps?fields=" + mapFields + "&uid=" + UIDMap;
                 if (req is null){
                     Logging::Debug("LoadCurrentMap::StartRequest: " + url);

@@ -1,5 +1,3 @@
-vec2 itemSpacing = UI::GetStyleVarVec2(UI::StyleVar::ItemSpacing);
-
 class MapColumns {
     float author;
     float titlepack;
