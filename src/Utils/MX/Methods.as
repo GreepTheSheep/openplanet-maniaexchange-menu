@@ -235,6 +235,14 @@ namespace MX
                 Logging::Error("You must select a title pack before opening a map", true);
                 return;
             }
+#elif TMNEXT
+            if (intoEditor && !Permissions::OpenAdvancedMapEditor()) {
+                Logging::Error("You don't have permission to open the advanced map editor.", true);
+                return;
+            } else if (!intoEditor && !Permissions::PlayLocalMap()) {
+                Logging::Error("You don't have permission to play custom maps.", true);
+                return;
+            }
 #endif
 
             auto json = API::GetAsync("https://"+MXURL+"/api/maps?fields=" + mapFields + "&id=" +mapId);
@@ -245,39 +253,31 @@ namespace MX
             MX::MapInfo@ map = MX::MapInfo(json["Results"][0]);
 
 #if TMNEXT
-            if (Permissions::PlayLocalMap()) {
+            ClosePauseMenu();
 #endif
-                CTrackMania@ app = cast<CTrackMania>(GetApp());
-                app.BackToMainMenu(); // If we're on a map, go back to the main menu else we'll get stuck on the current map
-                while(!app.ManiaTitleControlScriptAPI.IsReady) {
-                    yield(); // Wait until the ManiaTitleControlScriptAPI is ready for loading the next map
-                }
-                if (
-                    intoEditor
-#if TMNEXT
-                    && Permissions::OpenAdvancedMapEditor()
-#endif
-                ) app.ManiaTitleControlScriptAPI.EditMap("https://"+MXURL+"/mapgbx/"+mapId+"?t="+map.UpdatedAt, "", "");
-                else {
-                    string Mode = "";
-                    MX::ModesFromMapType.Get(map.MapType, Mode);
+
+            CTrackMania@ app = cast<CTrackMania>(GetApp());
+            app.BackToMainMenu(); // If we're on a map, go back to the main menu else we'll get stuck on the current map
+            while(!app.ManiaTitleControlScriptAPI.IsReady) {
+                yield(); // Wait until the ManiaTitleControlScriptAPI is ready for loading the next map
+            }
+            if (intoEditor) {
+                app.ManiaTitleControlScriptAPI.EditMap("https://"+MXURL+"/mapgbx/"+mapId+"?t="+map.UpdatedAt, "", "");
+            } else {
+                string Mode = "";
+                MX::ModesFromMapType.Get(map.MapType, Mode);
 
 #if MP4
-                    if (Mode == "" && repo == MP4mxRepos::Trackmania){
-                        const string loadedTP = CurrentTitlePack();
-                        MX::ModesFromTitlePack.Get(loadedTP, Mode);
-                    }
+                if (Mode == "" && repo == MP4mxRepos::Trackmania) {
+                    const string loadedTP = CurrentTitlePack();
+                    MX::ModesFromTitlePack.Get(loadedTP, Mode);
+                }
 #endif
 
-                    app.ManiaTitleControlScriptAPI.PlayMap("https://"+MXURL+"/mapgbx/"+mapId+"?t="+map.UpdatedAt, Mode, "");
-                }
-#if TMNEXT
-            } else Logging::Error("You don't have permission to play custom maps.", true);
-#endif
+                app.ManiaTitleControlScriptAPI.PlayMap("https://"+MXURL+"/mapgbx/"+mapId+"?t="+map.UpdatedAt, Mode, "");
+            }
         } catch {
-            Logging::Error("Error while loading map: " + getExceptionInfo());
-            Logging::Error(pluginName + " API is not responding, it must be down.", true);
-            APIDown = true;
+            Logging::Error("Error while loading map: " + getExceptionInfo(), true);
         }
     }
 

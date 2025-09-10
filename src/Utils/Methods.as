@@ -10,6 +10,20 @@ bool IsInServer(){
     return  ServerInfo.JoinLink != "";
 }
 
+void ClosePauseMenu() {
+    if(IsPauseMenuDisplayed()) {
+        CSmArenaClient@ playground = cast<CSmArenaClient>(GetApp().CurrentPlayground);
+        if(playground !is null) {
+            playground.Interface.ManialinkScriptHandler.CloseInGameMenu(CGameScriptHandlerPlaygroundInterface::EInGameMenuResult::Resume);
+        }
+    }
+}
+
+bool IsPauseMenuDisplayed() {
+    CTrackMania@ app = cast<CTrackMania>(GetApp());
+    return app.ManiaPlanetScriptAPI.ActiveContext_InGameMenuDisplayed;
+}
+
 CGameCtnChallenge@ GetCurrentMap(){
     CTrackMania@ g_app = cast<CTrackMania>(GetApp());
     return g_app.RootMap;
