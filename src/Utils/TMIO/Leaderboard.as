@@ -12,8 +12,7 @@ namespace TMIO
             try {
                 position = leaderboard["position"];
                 time = leaderboard["time"];
-                ghostURL = "https://trackmania.io";
-                ghostURL += leaderboard["url"];
+                ghostURL = "https://trackmania.io" + string(leaderboard["url"]);
                 playerName = leaderboard["player"]["name"];
                 playerID = leaderboard["player"]["id"];
             } catch {

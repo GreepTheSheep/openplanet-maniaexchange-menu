@@ -53,9 +53,7 @@ class UserTab : Tab
             if (m_user is null)
                 return Icons::User + " Loading...";
             else {
-                string res = Icons::User+" ";
-                res += m_user.Name;
-                return res;
+                return Icons::User + " " + m_user.Name;
             }
         }
     }

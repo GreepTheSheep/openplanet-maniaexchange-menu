@@ -31,16 +31,14 @@ class MapPackTab : Tab
     string GetLabel() override {
         if (m_error) {
             m_isLoading = false;
-            return "\\$f00"+Icons::Times+" \\$zError";
+            return "\\$f00" + Icons::Times + " \\$zError";
         }
         if (m_mapPack is null) {
             m_isLoading = true;
-            return Icons::Inbox+" Loading...";
+            return Icons::Inbox + " Loading...";
         } else {
             m_isLoading = false;
-            string res = Icons::Inbox+" ";
-            res += m_mapPack.Name;
-            return res;
+            return Icons::Inbox + " " + m_mapPack.Name;
         }
     }
 

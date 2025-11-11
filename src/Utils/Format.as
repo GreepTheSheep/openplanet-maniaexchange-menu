@@ -88,7 +88,7 @@ namespace Format {
 
         array<string> formatCodes = Regex::Search(text, "^(\\$([0-9a-f]{1,3}|[gimnostuwz<>]|[hlp](\\[[^\\]]+\\])?) *)+", regexFlags);
 
-        if (formatCodes.Length > 0) {
+        if (!formatCodes.IsEmpty()) {
             text = text.Replace(formatCodes[0], formatCodes[0].Replace(" ", ""));
         }
 
