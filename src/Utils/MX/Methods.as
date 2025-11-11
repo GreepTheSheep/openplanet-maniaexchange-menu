@@ -34,12 +34,13 @@ namespace MX
         try {
             for (uint i = 0; i < res.Length; i++)
             {
-                string vehicleName = res[i];
-
-                if (vehicleName != "") {
-                    Logging::Trace("Loading vehicle " + vehicleName);
-                    m_vehicles.InsertLast(vehicleName);
+                if (res[i] != Json::Type::String || res[i] == "") {
+                    continue;
                 }
+
+                string vehicleName = res[i];
+                Logging::Trace("Loading vehicle " + vehicleName);
+                m_vehicles.InsertLast(vehicleName);
             }
 
             Logging::Info(m_vehicles.Length + " vehicles loaded");
@@ -133,7 +134,11 @@ namespace MX
             m_titlepacks.InsertLast("Any");
 
             for (uint i = 0; i < res.Length; i++) {
-                if (res[i] != "") m_titlepacks.InsertLast(res[i]);
+                if (res[i] != Json::Type::String || res[i] == "") {
+                    continue;
+                }
+
+                m_titlepacks.InsertLast(res[i]);
             }
 
             Logging::Info(m_titlepacks.Length + " titlepacks loaded");
@@ -152,7 +157,11 @@ namespace MX
             m_maptypes.InsertLast("Any");
 
             for (uint i = 0; i < res.Length; i++) {
-                if (res[i] != "") m_maptypes.InsertLast(res[i]);
+                if (res[i] != Json::Type::String || res[i] == "") {
+                    continue;
+                }
+
+                m_maptypes.InsertLast(res[i]);
             }
 
             Logging::Info(m_maptypes.Length + " map types loaded");
