@@ -34,7 +34,7 @@ namespace MX
         try {
             for (uint i = 0; i < res.Length; i++)
             {
-                if (res[i] != Json::Type::String || res[i] == "") {
+                if (res[i].GetType() != Json::Type::String || res[i] == "") {
                     continue;
                 }
 
@@ -134,7 +134,7 @@ namespace MX
             m_titlepacks.InsertLast("Any");
 
             for (uint i = 0; i < res.Length; i++) {
-                if (res[i] != Json::Type::String || res[i] == "") {
+                if (res[i].GetType() != Json::Type::String || res[i] == "") {
                     continue;
                 }
 
@@ -157,7 +157,7 @@ namespace MX
             m_maptypes.InsertLast("Any");
 
             for (uint i = 0; i < res.Length; i++) {
-                if (res[i] != Json::Type::String || res[i] == "") {
+                if (res[i].GetType() != Json::Type::String || res[i] == "") {
                     continue;
                 }
 
