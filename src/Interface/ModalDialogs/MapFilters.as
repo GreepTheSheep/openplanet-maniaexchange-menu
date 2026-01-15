@@ -27,12 +27,7 @@ class MapFilters : ModalDialog
     int m_maxLength = 0;
 
     // To search in combos
-    string maptypeSearchCombo;
-    string titlepackSearchCombo;
-    string tagSearchCombo;
-    string etagSearchCombo;
-    string enviSearchCombo;
-    string vehicleSearchCombo;
+    string m_searchCombo;
 
     MapFilters(Tab@ tab) {
         super(Icons::Filter + " \\$zMap filters###MapFilters");
@@ -56,12 +51,7 @@ class MapFilters : ModalDialog
         m_selectedEnvironments.RemoveRange(0, m_selectedEnvironments.Length);
         m_minLength = 0;
         m_maxLength = 0;
-        maptypeSearchCombo = "";
-        titlepackSearchCombo = "";
-        tagSearchCombo = "";
-        etagSearchCombo = "";
-        enviSearchCombo = "";
-        vehicleSearchCombo = "";
+        m_searchCombo = "";
     }
 
     void RenderDialog() override {
@@ -131,15 +121,19 @@ class MapFilters : ModalDialog
 
         UI::SetItemText("Map Type:");
         if (UI::BeginCombo("##MapTypeFilter", m_maptype)) {
+            if (UI::IsWindowAppearing()) {
+                m_searchCombo = "";
+            }
+
             UI::SetNextItemWidth(UI::GetContentRegionAvail().x - itemSpacing);
-            maptypeSearchCombo = UI::InputText("##MapTypeSearch", maptypeSearchCombo);
+            m_searchCombo = UI::InputText("##MapTypeSearch", m_searchCombo);
 
             UI::Separator();
 
             for (uint i = 0; i < MX::m_maptypes.Length; i++) {
                 string maptype = MX::m_maptypes[i];
 
-                if (!maptype.ToLower().Contains(maptypeSearchCombo.ToLower())) continue;
+                if (!maptype.ToLower().Contains(m_searchCombo.ToLower())) continue;
 
                 if (UI::Selectable(maptype, m_maptype == maptype)) {
                     m_maptype = maptype;
@@ -147,9 +141,6 @@ class MapFilters : ModalDialog
             }
 
             UI::EndCombo();
-        } else {
-            // Reset search bar on combo closing
-            maptypeSearchCombo = "";
         }
 
         if (m_maptype != "Any" && UI::ResetButton()) {
@@ -159,15 +150,19 @@ class MapFilters : ModalDialog
 #if MP4
         UI::SetCenteredItemText("Title pack:");
         if (UI::BeginCombo("##TitlePackFilter", m_titlepack)) {
+            if (UI::IsWindowAppearing()) {
+                m_searchCombo = "";
+            }
+
             UI::SetNextItemWidth(UI::GetContentRegionAvail().x - itemSpacing);
-            titlepackSearchCombo = UI::InputText("##TitlePackSearch", titlepackSearchCombo);
+            m_searchCombo = UI::InputText("##TitlePackSearch", m_searchCombo);
 
             UI::Separator();
 
             for (uint i = 0; i < MX::m_titlepacks.Length; i++) {
                 string titlepack = MX::m_titlepacks[i];
 
-                if (!titlepack.ToLower().Contains(titlepackSearchCombo.ToLower())) continue;
+                if (!titlepack.ToLower().Contains(m_searchCombo.ToLower())) continue;
 
                 if (UI::Selectable(titlepack, m_titlepack == titlepack)) {
                     m_titlepack = titlepack;
@@ -175,8 +170,6 @@ class MapFilters : ModalDialog
             }
 
             UI::EndCombo();
-        } else {
-            titlepackSearchCombo = "";
         }
 
         if (m_titlepack != "Any" && UI::ResetButton()) {
@@ -196,15 +189,19 @@ class MapFilters : ModalDialog
         }
 
         if (UI::BeginCombo("###TagsIncludeCombo", includeText)) {
+            if (UI::IsWindowAppearing()) {
+                m_searchCombo = "";
+            }
+
             UI::SetNextItemWidth(UI::GetContentRegionAvail().x - itemSpacing);
-            tagSearchCombo = UI::InputText("##TagSearch", tagSearchCombo);
+            m_searchCombo = UI::InputText("##TagSearch", m_searchCombo);
 
             UI::Separator();
 
             for (uint i = 0; i < MX::m_mapTags.Length; i++) {
                 MX::MapTag@ tag = MX::m_mapTags[i];
 
-                if (!tag.Name.ToLower().Contains(tagSearchCombo.ToLower())) continue;
+                if (!tag.Name.ToLower().Contains(m_searchCombo.ToLower())) continue;
 
                 UI::PushID("TagBtn" + i);
 
@@ -222,8 +219,6 @@ class MapFilters : ModalDialog
             }
 
             UI::EndCombo();
-        } else {
-            tagSearchCombo = "";
         }
 
         if (m_includedTags.Length > 0 && UI::ResetButton()) {
@@ -240,15 +235,19 @@ class MapFilters : ModalDialog
         }
 
         if (UI::BeginCombo("###TagsExcludeCombo", excludeText)) {
+            if (UI::IsWindowAppearing()) {
+                m_searchCombo = "";
+            }
+
             UI::SetNextItemWidth(UI::GetContentRegionAvail().x - itemSpacing);
-            etagSearchCombo = UI::InputText("##TagSearch", etagSearchCombo);
+            m_searchCombo = UI::InputText("##TagSearch", m_searchCombo);
 
             UI::Separator();
 
             for (uint i = 0; i < MX::m_mapTags.Length; i++) {
                 MX::MapTag@ tag = MX::m_mapTags[i];
 
-                if (!tag.Name.ToLower().Contains(etagSearchCombo.ToLower())) continue;
+                if (!tag.Name.ToLower().Contains(m_searchCombo.ToLower())) continue;
 
                 UI::PushID("TagExBtn" + i);
 
@@ -266,8 +265,6 @@ class MapFilters : ModalDialog
             }
 
             UI::EndCombo();
-        } else {
-            etagSearchCombo = "";
         }
 
         if (m_excludedTags.Length > 0 && UI::ResetButton()) {
@@ -315,15 +312,19 @@ class MapFilters : ModalDialog
                 }
 
                 if (UI::BeginCombo("###EnviFilter", enviText)) {
+                    if (UI::IsWindowAppearing()) {
+                        m_searchCombo = "";
+                    }
+
                     UI::SetNextItemWidth(UI::GetContentRegionAvail().x - itemSpacing);
-                    enviSearchCombo = UI::InputText("##EnviSearch", enviSearchCombo);
+                    m_searchCombo = UI::InputText("##EnviSearch", m_searchCombo);
 
                     UI::Separator();
 
                     for (uint i = 0; i < MX::m_environments.Length; i++) {
                         MX::MapEnvironment@ envi = MX::m_environments[i];
 
-                        if (!envi.Name.ToLower().Contains(enviSearchCombo.ToLower())) continue;
+                        if (!envi.Name.ToLower().Contains(m_searchCombo.ToLower())) continue;
 
                         UI::PushID("EnviBtn" + i);
 
@@ -341,8 +342,6 @@ class MapFilters : ModalDialog
                     }
 
                     UI::EndCombo();
-                } else {
-                    enviSearchCombo = "";
                 }
 
                 if (m_selectedEnvironments.Length > 0 && UI::ResetButton()) {
@@ -362,15 +361,19 @@ class MapFilters : ModalDialog
                 }
 
                 if (UI::BeginCombo("##VehicleFilter", vehicleText)) {
+                    if (UI::IsWindowAppearing()) {
+                        m_searchCombo = "";
+                    }
+
                     UI::SetNextItemWidth(UI::GetContentRegionAvail().x - itemSpacing);
-                    vehicleSearchCombo = UI::InputText("##VehicleSearch", vehicleSearchCombo);
+                    m_searchCombo = UI::InputText("##VehicleSearch", m_searchCombo);
 
                     UI::Separator();
 
                     for (uint i = 0; i < MX::m_vehicles.Length; i++) {
                         string vehicleName = MX::m_vehicles[i];
 
-                        if (!vehicleName.ToLower().Contains(vehicleSearchCombo.ToLower())) continue;
+                        if (!vehicleName.ToLower().Contains(m_searchCombo.ToLower())) continue;
 
                         UI::PushID("VehicleBtn" + i);
 
@@ -388,8 +391,6 @@ class MapFilters : ModalDialog
                     }
 
                     UI::EndCombo();
-                } else {
-                    vehicleSearchCombo = "";
                 }
 #if TMNEXT
                 UI::SetItemTooltip("\\$f90" + Icons::ExclamationTriangle + "\\$z This will filter by the base vehicle used by the map, it won't include maps that use car triggers instead.\n\nTo include those maps, consider filtering by tags instead.");

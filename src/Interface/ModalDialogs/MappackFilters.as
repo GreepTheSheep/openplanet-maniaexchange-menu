@@ -16,8 +16,7 @@ class MappackFilters : ModalDialog
     string t_toDate;
 
     // To search in combos
-    string tagSearchCombo;
-    string etagSearchCombo;
+    string m_searchCombo;
 
     MappackFilters(Tab@ tab) {
         super(Icons::Filter + " \\$zMappack filters###MappackFilters");
@@ -34,8 +33,7 @@ class MappackFilters : ModalDialog
         t_tagInclusiveSearch = false;
         t_fromDate = "";
         t_toDate = "";
-        tagSearchCombo = "";
-        etagSearchCombo = "";
+        m_searchCombo = "";
     }
 
     void RenderDialog() override {
@@ -88,15 +86,19 @@ class MappackFilters : ModalDialog
         }
 
         if (UI::BeginCombo("###TagsIncludeCombo", includeText)) {
+            if (UI::IsWindowAppearing()) {
+                m_searchCombo = "";
+            }
+
             UI::SetNextItemWidth(UI::GetContentRegionAvail().x - itemSpacing);
-            tagSearchCombo = UI::InputText("##TagSearch", tagSearchCombo);
+            m_searchCombo = UI::InputText("##TagSearch", m_searchCombo);
 
             UI::Separator();
 
             for (uint i = 0; i < MX::m_mapTags.Length; i++) {
                 MX::MapTag@ tag = MX::m_mapTags[i];
 
-                if (!tag.Name.ToLower().Contains(tagSearchCombo.ToLower())) continue;
+                if (!tag.Name.ToLower().Contains(m_searchCombo.ToLower())) continue;
 
                 UI::PushID("TagBtn" + i);
 
@@ -114,8 +116,6 @@ class MappackFilters : ModalDialog
             }
 
             UI::EndCombo();
-        } else {
-            tagSearchCombo = "";
         }
 
         if (t_includedTags.Length > 0 && UI::ResetButton()) {
@@ -132,15 +132,19 @@ class MappackFilters : ModalDialog
         }
 
         if (UI::BeginCombo("###TagsExcludeCombo", excludeText)) {
+            if (UI::IsWindowAppearing()) {
+                m_searchCombo = "";
+            }
+
             UI::SetNextItemWidth(UI::GetContentRegionAvail().x - itemSpacing);
-            etagSearchCombo = UI::InputText("##TagSearch", etagSearchCombo);
+            m_searchCombo = UI::InputText("##TagSearch", m_searchCombo);
 
             UI::Separator();
 
             for (uint i = 0; i < MX::m_mapTags.Length; i++) {
                 MX::MapTag@ tag = MX::m_mapTags[i];
 
-                if (!tag.Name.ToLower().Contains(etagSearchCombo.ToLower())) continue;
+                if (!tag.Name.ToLower().Contains(m_searchCombo.ToLower())) continue;
 
                 UI::PushID("TagExBtn" + i);
 
@@ -158,8 +162,6 @@ class MappackFilters : ModalDialog
             }
 
             UI::EndCombo();
-        } else {
-            etagSearchCombo = "";
         }
 
         if (t_excludedTags.Length > 0 && UI::ResetButton()) {
