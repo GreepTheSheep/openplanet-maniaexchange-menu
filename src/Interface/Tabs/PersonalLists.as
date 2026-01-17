@@ -1,34 +1,38 @@
+enum ListTypes {
+#if DEPENDENCY_NADEOSERVICES
+    Favorites,
+#endif
+    Play_Later,
+    _Last
+}
+
 class PersonalListsTab : MapListTab
 {
-    array<string> t_lists = {
-#if DEPENDENCY_NADEOSERVICES
-        "Favorites",
-#endif
-        "Play later"
-    };
-    string t_selectedList = t_lists[0];
+    ListTypes t_selectedList = ListTypes(0);
 
-    bool IsVisible() override {return Setting_Tab_PersonalLists_Visible;}
-    string GetLabel() override {return Icons::List + " Personal Lists";}
-
-    vec4 GetColor() override { return vec4(0.58f, 0.1f, 0.79f, 1); }
+    bool IsVisible() override  { return Setting_Tab_PersonalLists_Visible; }
+    string GetLabel() override { return Icons::List + " Personal Lists"; }
+    vec4 GetColor() override   { return vec4(0.58f, 0.1f, 0.79f, 1); }
 
     void GetRequestParams(dictionary@ params) override {}
 
     void StartRequest() override
     {
+        switch (t_selectedList) {
 #if DEPENDENCY_NADEOSERVICES
-        if (t_selectedList == "Favorites") {
-            array<MX::MapInfo@> mxMapInfo;
-            for (uint i = 0; i < MXNadeoServicesGlobal::g_favoriteMaps.Length; i++) {
-                if (MXNadeoServicesGlobal::g_favoriteMaps[i].MXMapInfo !is null) {
-                    maps.InsertLast(MXNadeoServicesGlobal::g_favoriteMaps[i].MXMapInfo);
+            case ListTypes::Favorites:
+                for (uint i = 0; i < MXNadeoServicesGlobal::g_favoriteMaps.Length; i++) {
+                    if (MXNadeoServicesGlobal::g_favoriteMaps[i].MXMapInfo !is null) {
+                        maps.InsertLast(MXNadeoServicesGlobal::g_favoriteMaps[i].MXMapInfo);
+                    }
                 }
-            }
-        }
+
+                break;
 #endif
-        if (t_selectedList == "Play later") {
-            maps = g_PlayLaterMaps;
+            case ListTypes::Play_Later:
+            default:
+                maps = g_PlayLaterMaps;
+                break;
         }
     }
 
@@ -43,21 +47,26 @@ class PersonalListsTab : MapListTab
     {
 #if DEPENDENCY_NADEOSERVICES
         UI::SetNextItemWidth(120);
-        if (UI::BeginCombo("##PersonalListSelect", t_selectedList)){
-            for (uint i = 0; i < t_lists.Length; i++) {
-                if (UI::Selectable(t_lists[i], t_selectedList == t_lists[i])){
-                    t_selectedList = t_lists[i];
+        if (UI::BeginCombo("##PersonalListSelect", tostring(t_selectedList).Replace("_", " "))) {
+            for (uint i = 0; i < ListTypes::_Last; i++) {
+                if (UI::Selectable(tostring(ListTypes(i)).Replace("_", " "), t_selectedList == ListTypes(i))) {
+                    t_selectedList = ListTypes(i);
                     Reload();
                 }
             }
+
             UI::EndCombo();
         }
 
-        if (t_selectedList == "Favorites") {
-            UI::SameLine();
+        UI::SameLine();
+
+        if (t_selectedList == ListTypes::Favorites) {
             UI::Text("| Sorting:");
+
             UI::SameLine();
+
             UI::BeginDisabled(MXNadeoServicesGlobal::APIRefresh);
+
             UI::SetNextItemWidth(90);
             if (UI::BeginCombo("##FavoritesSorting", tostring(Setting_NadeoServices_FavoriteMaps_Sort))) {
                 for (int i = 0; i < 2; i++) {
@@ -66,9 +75,12 @@ class PersonalListsTab : MapListTab
                         startnew(MXNadeoServicesGlobal::ReloadFavoriteMapsAsync);
                     }
                 }
+
                 UI::EndCombo();
             }
+
             UI::SameLine();
+
             UI::SetNextItemWidth(120);
             if (UI::BeginCombo("##FavoritesSortingOrder", tostring(Setting_NadeoServices_FavoriteMaps_SortOrder))) {
                 for (int i = 0; i < 2; i++) {
@@ -77,15 +89,20 @@ class PersonalListsTab : MapListTab
                         startnew(MXNadeoServicesGlobal::ReloadFavoriteMapsAsync);
                     }
                 }
+
                 UI::EndCombo();
             }
+
             UI::EndDisabled();
+
             if (MXNadeoServicesGlobal::APIRefresh) {
                 UI::SameLine();
-                UI::Text("\\$850"+Icons::Refresh + " Now refreshing favorite maps list... \\$z|");
+                UI::Text(Icons::AnimatedHourglass + " Refreshing favorites...");
                 Reload();
             }
+
             UI::SameLine();
+
             UI::TextDisabled(Icons::ExclamationTriangle + " Only maps available on TMX are displayed");
             UI::SetItemTooltip("All favorite maps are displayed in game via the Local menu or via the Openplanet overlay");
 
@@ -103,11 +120,10 @@ class PersonalListsTab : MapListTab
         }
 #endif
 
-        if (t_selectedList == "Play later") {
-            UI::SameLine();
+        if (t_selectedList == ListTypes::Play_Later) {
             UI::SetCursorPos(vec2(UI::GetWindowSize().x - 120, UI::GetCursorPos().y));
 
-            UI::BeginDisabled(g_PlayLaterMaps.Length == 0);
+            UI::BeginDisabled(g_PlayLaterMaps.IsEmpty());
 
             if (UI::RedButton(Icons::TrashO + " Clear")) {
                 Renderables::Add(ClearPlayLaterListWarn());

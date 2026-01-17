@@ -18,6 +18,7 @@ class MapPackActionWarn : ModalDialog
     void RenderDialog() override
     {
         UI::BeginChild("Content", vec2(0, -35));
+
         switch (m_action) {
             case MapPackActions::AddPlayLater:
                 UI::Text("This will add " + m_mapPack_maps.Length + " maps to the Play later list.\n\nAre you sure?");
@@ -29,14 +30,21 @@ class MapPackActionWarn : ModalDialog
                 Close();
                 break;
         }
+
         UI::EndChild();
+
         if (UI::Button(Icons::Times + " No")) {
             Close();
         }
+
         UI::SameLine();
-        UI::SetCursorPos(vec2(UI::GetWindowSize().x - 85, UI::GetCursorPos().y));
+
+        float buttonWidth = UI::MeasureButton(Icons::Check + " Yes").x;
+        UI::RightAlignButton(buttonWidth);
+
         if (UI::GreenButton(Icons::Check + " Yes")) {
             Close();
+
             switch (m_action) {
                 case MapPackActions::AddPlayLater:
                     for (uint i = 0; i < m_mapPack_maps.Length; i++) {

@@ -53,18 +53,22 @@ class MapTab : Tab
     string GetLabel() override {
         if (m_error) {
             m_isLoading = false;
-            return "\\$f00"+Icons::Times+" \\$zError";
+            return "\\$f00" + Icons::Times + "\\$z Error";
         }
+
         if (m_map is null) {
             m_isLoading = true;
-            return Icons::Map+" Loading...";
-        } else {
-            m_isLoading = false;
-            string res = Icons::Map+" ";
-            if (Setting_ColoredMapName) res += Text::OpenplanetFormatCodes(m_map.GbxMapName);
-            else res += m_map.Name;
-            return res;
+            return Icons::Map + " Loading...";
+
         }
+
+        m_isLoading = false;
+
+        if (Setting_ColoredMapName) {
+            return Icons::Map + " " + Text::OpenplanetFormatCodes(m_map.GbxMapName);
+        }
+
+        return Icons::Map + " " + Text::OpenplanetFormatCodes(m_map.GbxMapName);
     }
 
 #if DEPENDENCY_NADEOSERVICES
@@ -87,7 +91,7 @@ class MapTab : Tab
 
         string urlParams = MX::DictToApiParams(params);
 
-        string url = "https://"+MXURL+"/api/maps" + urlParams;
+        string url = MXURL + "/api/maps" + urlParams;
         Logging::Debug("MapTab::StartRequest (MX): "+url);
         @m_MXrequest = API::Get(url);
     }
@@ -125,7 +129,7 @@ class MapTab : Tab
 
     void StartMXReplaysRequest()
     {
-        string url = "https://"+MXURL+"/api/replays?best=1&mapId=" + m_map.MapId;
+        string url = MXURL + "/api/replays?best=1&mapId=" + m_map.MapId;
         Logging::Debug("MapTab::StartRequest (Replays): "+url);
         @m_MXReplaysRequest = API::Get(url);
     }
@@ -193,7 +197,7 @@ class MapTab : Tab
             Logging::Debug("MapTab::CheckRequest (TM.IO): " + res);
 
             // if error, handle it (particular case for "not found on API")
-            if (json.HasKey("error")){
+            if (json.HasKey("error")) {
                 HandleTMIOResponseError(json["error"]);
             } else {
                 // if tops is null return no results, else handle the response
@@ -229,7 +233,7 @@ class MapTab : Tab
 
     void StartMXEmbeddedRequest()
     {
-        string url = "https://"+MXURL+"/api/maps/objects?trackId=" + m_map.MapId + "&count=" + m_map.EmbeddedObjectsCount;
+        string url = MXURL + "/api/maps/objects?trackId=" + m_map.MapId + "&count=" + m_map.EmbeddedObjectsCount;
         Logging::Debug("MapTab::StartRequest (Embedded): "+url);
         @m_MXEmbedObjRequest = API::Get(url);
     }
@@ -271,7 +275,7 @@ class MapTab : Tab
 
     void StartMXCommentsRequest()
     {
-        string url = "https://"+MXURL+"/api/maps/comments?trackId=" + m_map.MapId + "&count=50&fields=" + MX::commentFields;
+        string url = MXURL + "/api/maps/comments?trackId=" + m_map.MapId + "&count=50&fields=" + MX::commentFields;
         Logging::Debug("MapTab::StartRequest (Comments): " + url);
         @m_MXCommentsRequest = API::Get(url);
     }
@@ -317,9 +321,7 @@ class MapTab : Tab
         }
 
         if (m_map is null) {
-            int HourGlassValue = Time::Stamp % 3;
-            string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-            UI::Text(Hourglass + " Loading...");
+            UI::Text(Icons::AnimatedHourglass + " Loading...");
             return;
         }
 
@@ -358,9 +360,9 @@ class MapTab : Tab
             MX::MapImage@ currImage = m_map.Images[i];
 
             if (UI::BeginTabItem(tostring(currImage.Position))) {
-                auto img = Images::CachedFromURL("https://"+MXURL+"/mapimage/"+m_map.MapId+"/"+currImage.Position+"?hq=true");
+                auto img = Images::CachedFromURL(MXURL + "/mapimage/"+m_map.MapId+"/"+currImage.Position+"?hq=true");
 
-                if (img.m_texture !is null){
+                if (img.m_texture !is null) {
                     vec2 thumbSize = img.m_texture.GetSize();
                     UI::Image(img.m_texture, vec2(
                         width,
@@ -369,23 +371,21 @@ class MapTab : Tab
 
                     UI::MXThumbnailTooltip(img, 0.3);
                 } else if (!img.m_error) {
-                    int HourGlassValue = Time::Stamp % 3;
-                    string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-                    UI::Text(Hourglass + " Loading");
+                    UI::Text(Icons::AnimatedHourglass + " Loading");
                 } else if (img.m_unsupportedFormat) {
                     UI::Text(Icons::FileImageO + " \\$zUnsupported file format WEBP");
                 } else if (img.m_notFound) {
-                    UI::Text("\\$fc0"+Icons::ExclamationTriangle+" \\$Image not found");
+                    UI::Text("\\$fc0" + Icons::ExclamationTriangle + "\\$ Image not found");
                 } else {
-                    UI::Text(Icons::Times+" \\$zError while loading image");
+                    UI::Text(Icons::Times + "\\$z Error while loading image");
                 }
                 UI::EndTabItem();
             }
         }
 
-        if(UI::BeginTabItem("Thumbnail")){
-            auto thumb = Images::CachedFromURL("https://"+MXURL+"/mapthumb/"+m_map.MapId);
-            if (thumb.m_texture !is null){
+        if (UI::BeginTabItem("Thumbnail")) {
+            auto thumb = Images::CachedFromURL(MXURL + "/mapthumb/" + m_map.MapId);
+            if (thumb.m_texture !is null) {
                 vec2 thumbSize = thumb.m_texture.GetSize();
                 UI::Image(thumb.m_texture, vec2(
                     width,
@@ -394,15 +394,13 @@ class MapTab : Tab
 
                 UI::MXThumbnailTooltip(thumb, 0.3);
             } else if (!thumb.m_error) {
-                int HourGlassValue = Time::Stamp % 3;
-                string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-                UI::Text(Hourglass + " Loading");
+                UI::Text(Icons::AnimatedHourglass + " Loading");
             } else if (thumb.m_unsupportedFormat) {
-                UI::Text(Icons::FileImageO + " \\$zUnsupported file format WEBP");
+                UI::Text(Icons::FileImageO + "\\$z Unsupported file format WEBP");
             } else if (thumb.m_notFound) {
-                UI::Text("\\$fc0"+Icons::ExclamationTriangle+" \\$zThumbnail not found");
+                UI::Text("\\$fc0" + Icons::ExclamationTriangle + "\\$z Thumbnail not found");
             } else {
-                UI::Text(Icons::Times+" \\$zError while loading thumbnail");
+                UI::Text(Icons::Times + "\\$z Error while loading thumbnail");
             }
             UI::EndTabItem();
         }
@@ -469,9 +467,9 @@ class MapTab : Tab
         UI::SetItemTooltip("Coppers cost");
 
         // TODO doesn't work with v2 anymore
-        // if (UI::GoldButton(Icons::Trophy + " Award this map on "+shortMXName)) OpenBrowserURL("https://"+MXURL+"/mapshow/"+m_map.MapId+"#award");
+        // if (UI::GoldButton(Icons::Trophy + " Award this map on "+shortMXName)) OpenBrowserURL(MXURL + "/mapshow/"+m_map.MapId+"#award");
 
-        if (UI::CyanButton(Icons::ExternalLink + " View on "+pluginName)) OpenBrowserURL("https://"+MXURL+"/mapshow/"+m_map.MapId);
+        if (UI::CyanButton(Icons::ExternalLink + " View on "+pluginName)) OpenBrowserURL(MXURL + "/mapshow/"+m_map.MapId);
 #if TMNEXT
         if (UI::Button(Icons::ExternalLink + " View on Trackmania.io")) OpenBrowserURL("https://trackmania.io/#/leaderboard/"+m_map.MapUid);
 #endif
@@ -485,40 +483,37 @@ class MapTab : Tab
                 UI::Text("\\$f70" + Icons::ExclamationTriangle + " \\$zThe map type is not supported for direct play\nit can crash your game or returns you to the menu");
                 if (!Setting_ShowPlayOnAllMaps) {
                     UI::SetItemTooltip("If you still want to play this map, check the box \"Show Play Button on all map types\" in the plugin settings");
-                }
-                if (Setting_ShowPlayOnAllMaps && UI::OrangeButton(Icons::Play + " Play Map Anyway")) {
-                    if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
+                } else if (UI::OrangeButton(Icons::Play + " Play Map Anyway")) {
                     UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
                     UI::ShowNotification(Icons::ExclamationTriangle + " Warning", "The map type is not supported for direct play, it can crash your game or returns you to the menu", UI::HSV(0.11, 1.0, 1.0), 15000);
-                    MX::mapToLoad = m_map.MapId;
+                    startnew(CoroutineFunc(m_map.PlayMap));
                 }
             } else {
                 if (UI::GreenButton(Icons::Play + " Play Map")) {
-                    if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
                     UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
-                    MX::mapToLoad = m_map.MapId;
+                    startnew(CoroutineFunc(m_map.PlayMap));
                 }
 #if TMNEXT && DEPENDENCY_NADEOSERVICES
                 if (isMapTypeSupported && Permissions::CreateAndUploadMap() && IsInServer()) {
                     CTrackMania@ app = cast<CTrackMania>(GetApp());
-                    bool sameMapType = CleanMapType(app.RootMap.MapType) == m_map.MapType;
 
-                    UI::BeginDisabled(!sameMapType || m_map.ServerSizeExceeded);
-                    if (UI::GreenButton(Icons::Server + " Play Map on Nadeo-hosted Room")) {
-                        TMNext::AddMapToServer_MapUid = m_map.MapUid;
-                        TMNext::AddMapToServer_MapMXId = m_map.MapId;
-                        TMNext::AddMapToServer_MapType = m_map.MapType;
-                        Renderables::Add(PlayMapOnNadeoRoomInfos());
+                    if (app.RootMap !is null) {
+                        bool sameMapType = CleanMapType(app.RootMap.MapType) == m_map.MapType;
+
+                        UI::BeginDisabled(!sameMapType || m_map.ServerSizeExceeded);
+                        if (UI::GreenButton(Icons::Server + " Play Map on Nadeo-hosted Room")) {
+                            Renderables::Add(PlayMapInRoom(m_map));
+                        }
+                        UI::EndDisabled();
+                        if (!sameMapType) UI::SetItemTooltip(Icons::Times + " Map type doesn't match the current room's game mode");
+                        else if (m_map.ServerSizeExceeded) UI::SetItemTooltip(Icons::Times + " Map size exceeds the server limit of 7MB");
                     }
-                    UI::EndDisabled();
-                    if (!sameMapType) UI::SetItemTooltip(Icons::Times + " Map type doesn't match the current room's game mode");
-                    else if (m_map.ServerSizeExceeded) UI::SetItemTooltip(Icons::Times + " Map size exceeds the server limit of 7MB");
                 }
 #endif
             }
 #if TMNEXT
         } else {
-            UI::Text("\\$f00"+Icons::Times + " \\$zYou do not have permissions to play");
+            UI::Text("\\$f00" + Icons::Times + "\\$z You do not have permissions to play");
             UI::Text("Consider buying club access of the game.");
         }
 #endif
@@ -527,18 +522,17 @@ class MapTab : Tab
         if (Permissions::OpenAdvancedMapEditor()) {
 #endif
             if (UI::YellowButton(Icons::Wrench + " Edit Map")) {
-                if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
                 UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
-                MX::mapToEdit = m_map.MapId;
+                startnew(CoroutineFunc(m_map.EditMap));
             }
 #if TMNEXT
         } else {
-            UI::Text("\\$f00"+Icons::Times + " \\$zYou do not have permissions to edit maps");
+            UI::Text("\\$f00" + Icons::Times + " \\$zYou do not have permissions to edit maps");
             UI::Text("Consider buying at least club access of the game.");
         }
 #endif
 
-        if (MX::mapDownloadInProgress){
+        if (MX::mapDownloadInProgress) {
             UI::Text("\\$f70" + Icons::Download + " \\$zDownloading map...");
             m_isLoading = true;
         } else {
@@ -546,19 +540,19 @@ class MapTab : Tab
             if (!m_mapDownloaded) {
                 if (UI::PurpleButton(Icons::Download + " Download Map")) {
                     UI::ShowNotification("Downloading map...", Text::OpenplanetFormatCodes(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
-                    MX::mapToDL = m_map.MapId;
+                    startnew(CoroutineFunc(m_map.DownloadMap));
                     m_mapDownloaded = true;
                 }
             } else {
                 UI::Text("\\$0f0" + Icons::Download + " \\$zMap downloaded");
                 UI::PushStyleColor(UI::Col::Text, UI::GetStyleColor(UI::Col::TextDisabled));
-                UI::TextWrapped("to " + "Maps\\Downloaded\\"+pluginName+"\\" + m_map.MapId + " - " + Path::SanitizeFileName(m_map.Name) + ".Map.Gbx");
+                UI::TextWrapped("to Maps\\Downloaded\\" + pluginName + "\\" + m_map.MapId + " - " + Path::SanitizeFileName(m_map.Name) + ".Map.Gbx");
                 UI::PopStyleColor();
                 if (UI::RoseButton(Icons::FolderOpen + " Open Containing Folder")) OpenExplorerPath(IO::FromUserGameFolder("Maps/Downloaded/"+pluginName));
             }
         }
 
-        if (!m_isMapOnPlayLater){
+        if (!m_isMapOnPlayLater) {
 #if TMNEXT
             if (Permissions::PlayLocalMap() && UI::GreenButton(Icons::Check + " Add to Play later")) {
 #else
@@ -586,7 +580,7 @@ class MapTab : Tab
         }
 
 #if DEPENDENCY_NADEOSERVICES
-        if (!m_isMapOnFavorite){
+        if (!m_isMapOnFavorite) {
             UI::BeginDisabled(!m_isMapOnNadeoServices);
 #if TMNEXT
             if (Permissions::PlayLocalMap() && UI::GreenButton(Icons::Heart + " Add to Favorites")) {
@@ -659,7 +653,7 @@ class MapTab : Tab
 
         UI::BeginTabBar("MapTabs");
 
-        if(UI::BeginTabItem("Description")){
+        if (UI::BeginTabItem("Description")) {
             UI::BeginChild("MapDescriptionChild");
             UI::Markdown(m_map.AuthorComments);
             UI::EndChild();
@@ -668,7 +662,7 @@ class MapTab : Tab
         if (UI::BeginTabItem(shortMXName + " Leaderboard")) {
             UI::BeginChild("MapMXLeaderboardChild");
 
-            if (UI::GreenButton(Icons::ExternalLink + " Submit")) OpenBrowserURL("https://"+MXURL+"/replayupload/"+m_map.MapId);
+            if (UI::GreenButton(Icons::ExternalLink + " Submit")) OpenBrowserURL(MXURL + "/replayupload/"+m_map.MapId);
 
             if (m_map.ReplayCount == 0) {
                 UI::Text("No records found for this map. Be the first!");
@@ -676,9 +670,7 @@ class MapTab : Tab
                 CheckMXReplaysRequest();
 
                 if (m_MXReplaysRequest !is null && !m_MXReplaysRequest.Finished()) {
-                    int HourGlassValue = Time::Stamp % 3;
-                    string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-                    UI::Text(Hourglass + " Loading...");
+                    UI::Text(Icons::AnimatedHourglass + " Loading...");
                 } else if (m_replaysError) {
                     UI::Text("\\$f00" + Icons::Times + "\\$z Error while loading leaderboard");
                 } else {
@@ -698,7 +690,7 @@ class MapTab : Tab
                         UI::TableHeadersRow();
                         PopTabStyle();
                         UI::ListClipper clipper(m_replays.Length);
-                        while(clipper.Step()) {
+                        while (clipper.Step()) {
                             for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
                                 UI::TableNextRow();
                                 MX::MapReplay@ entry = m_replays[i];
@@ -729,7 +721,7 @@ class MapTab : Tab
                                     UI::Text(Time::Format(entry.ReplayTime));
                                 }
 
-                                if (i != 0){
+                                if (i != 0) {
                                     UI::SameLine();
                                     if (m_map.GameMode == MX::GameModes::Stunt) {
                                         UI::Text("\\$f00(− " + (m_replays[0].ReplayPoints - entry.ReplayPoints) + ")");
@@ -759,21 +751,19 @@ class MapTab : Tab
             UI::EndTabItem();
         }
 
-        // CommentCount is usually innacurate
+        // CommentCount is usually inaccurate
         if (UI::BeginTabItem("Comments")) {
             UI::BeginChild("MapMXCommentsChild");
 
             CheckMXCommentsRequest();
 
             if (m_MXCommentsRequest !is null && !m_MXCommentsRequest.Finished()) {
-                int HourGlassValue = Time::Stamp % 3;
-                string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-                UI::Text(Hourglass + " Loading...");
+                UI::Text(Icons::AnimatedHourglass + " Loading...");
             } else if (m_commentsError) {
                 UI::AlignTextToFramePadding();
                 UI::Text("\\$f00" + Icons::Times + "\\$z Error while loading comments");
             } else {
-                if (UI::GreenButton(Icons::Plus + " Post comment")) OpenBrowserURL("https://"+MXURL+"/commentupdate/"+m_map.MapId);
+                if (UI::GreenButton(Icons::Plus + " Post comment")) OpenBrowserURL(MXURL + "/commentupdate/"+m_map.MapId);
 
                 UI::SameLine();
 
@@ -821,7 +811,7 @@ class MapTab : Tab
 #if TMNEXT
         UI::BeginDisabled(!m_map.SupportsLeaderboard);
 
-        if(UI::BeginTabItem("Online Leaderboard")){
+        if (UI::BeginTabItem("Online Leaderboard")) {
             UI::BeginChild("MapLeaderboardChild");
 
             CheckTMIORequest();
@@ -835,14 +825,14 @@ class MapTab : Tab
                 }
             }
 
-            if (m_TMIOerror){
+            if (m_TMIOerror) {
                 UI::AlignTextToFramePadding();
-                UI::Text("\\$f00" + Icons::Times + "\\$z "+ m_TMIOerrorMsg);
+                UI::Text("\\$f00" + Icons::Times + "\\$z " + m_TMIOerrorMsg);
             } else {
                 UI::AlignTextToFramePadding();
-                UI::Text(Icons::Heartbeat + " The leaderboard is fetched directly from Trackmania.io (Nadeo Services)");
+                UI::Text(Icons::Heartbeat + " The leaderboard is fetched directly from Trackmania.io");
                 UI::SameLine();
-                if (UI::Button(Icons::Refresh)){
+                if (UI::Button(Icons::Refresh)) {
                     m_leaderboard.RemoveRange(0, m_leaderboard.Length);
                     if (!m_TMIOrequestStarted) m_TMIOrequestStart = true;
                     m_TMIOstopleaderboard = false;
@@ -853,9 +843,7 @@ class MapTab : Tab
                         UI::Text("No online records found for this map. Be the first!");
                     } else {
                         if (!m_TMIOrequestStarted) m_TMIOrequestStart = true;
-                        int HourGlassValue = Time::Stamp % 3;
-                        string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-                        UI::Text(Hourglass + " Loading...");
+                        UI::Text(Icons::AnimatedHourglass + " Loading...");
                     }
                 } else {
                     if (UI::BeginTable("LeaderboardList", 3, UI::TableFlags::RowBg)) {
@@ -867,7 +855,7 @@ class MapTab : Tab
                         UI::TableHeadersRow();
                         PopTabStyle();
                         UI::ListClipper clipper(m_leaderboard.Length);
-                        while(clipper.Step()) {
+                        while (clipper.Step()) {
                             for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
                                 UI::TableNextRow();
                                 TMIO::Leaderboard@ entry = m_leaderboard[i];
@@ -882,17 +870,17 @@ class MapTab : Tab
 
                                 UI::TableNextColumn();
                                 UI::Text(Time::Format(entry.time));
-                                if (i != 0){
+                                if (i != 0) {
                                     UI::SameLine();
                                     UI::Text("\\$f00(+ " + Time::Format(entry.time - m_leaderboard[0].time) + ")");
                                 }
                             }
                         }
                         UI::EndTable();
-                        if (!m_TMIOrequestStarted && !m_TMIOstopleaderboard && UI::GreenButton("Load more")){
+                        if (!m_TMIOrequestStarted && !m_TMIOstopleaderboard && UI::GreenButton("Load more")) {
                             m_TMIOrequestStart = true;
                         }
-                        if (m_TMIOrequestStarted && !m_TMIOstopleaderboard){
+                        if (m_TMIOrequestStarted && !m_TMIOstopleaderboard) {
                             UI::Text(Icons::HourglassEnd + " Loading...");
                         }
                     }
@@ -905,14 +893,12 @@ class MapTab : Tab
         if (!m_map.SupportsLeaderboard) UI::SetItemTooltip("\\$f00" + Icons::Times + " \\$zThis map doesn't support online records");
 #endif
 
-        if(m_map.EmbeddedObjectsCount > 0 && UI::BeginTabItem("Embedded objects (" + m_map.EmbeddedObjectsCount + ")")){
+        if (m_map.EmbeddedObjectsCount > 0 && UI::BeginTabItem("Embedded objects (" + m_map.EmbeddedObjectsCount + ")")) {
             UI::BeginChild("MapEmbeddedObjectsChild");
 
             CheckMXEmbeddedRequest();
             if (m_MXEmbedObjRequest !is null && m_mapEmbeddedObjects.Length == 0) {
-                int HourGlassValue = Time::Stamp % 3;
-                string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-                UI::Text(Hourglass + " Loading...");
+                UI::Text(Icons::AnimatedHourglass + " Loading...");
             } else if (m_mapEmbeddedObjectsError) {
                 UI::AlignTextToFramePadding();
                 UI::Text("\\$f00" + Icons::Times + "\\$z Error while loading embedded objects");
@@ -927,7 +913,7 @@ class MapTab : Tab
                     UI::TableHeadersRow();
                     PopTabStyle();
                     UI::ListClipper clipper(m_mapEmbeddedObjects.Length);
-                    while(clipper.Step()) {
+                    while (clipper.Step()) {
                         for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
                             UI::TableNextRow();
                             MX::MapEmbeddedObject@ object = m_mapEmbeddedObjects[i];
@@ -941,12 +927,12 @@ class MapTab : Tab
                             if (object.Username.Length == 0) UI::TextDisabled(object.ObjectAuthor);
                             else UI::Text(object.Username);
                             if (object.UserId > 0) {
-                                UI::SetItemTooltip("Click to see "+(object.Username.Length > 0 ? (object.Username+"'s") : "user")+" profile");
+                                UI::SetItemTooltip("Click to see " + (object.Username.Length > 0 ? (object.Username+"'s") : "user") + " profile");
                                 if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(object.UserId), true);
                             }
 
                             UI::TableNextColumn();
-                            if (object.ID != 0){
+                            if (object.ID != 0) {
                                 if (object.ID == -1) {
                                     UI::BeginDisabled();
                                     UI::YellowButton(Icons::Times);

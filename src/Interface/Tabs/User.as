@@ -46,16 +46,17 @@ class UserTab : Tab
     string GetLabel() override {
         if (m_isYourProfileTab) {
             return Icons::User;
-        } else {
-            if (m_error) {
-                return "\\$f00"+Icons::Times+" \\$zError";
-            }
-            if (m_user is null)
-                return Icons::User + " Loading...";
-            else {
-                return Icons::User + " " + m_user.Name;
-            }
         }
+
+        if (m_error) {
+            return "\\$f00" + Icons::Times + "\\$z Error";
+        }
+
+        if (m_user is null) {
+            return Icons::User + " Loading...";
+        }
+
+        return Icons::User + " " + m_user.Name;
     }
 
     string GetTooltip() override {
@@ -77,7 +78,7 @@ class UserTab : Tab
         params.Set("id", tostring(m_userId));
         string userUrlParams = MX::DictToApiParams(params);
 
-        string url = "https://"+MXURL+"/api/users" + userUrlParams;
+        string url = MXURL + "/api/users" + userUrlParams;
         Logging::Debug("UserTab::StartRequest (MX): "+url);
         @m_MXUserInfoRequest = API::Get(url);
     }
@@ -125,7 +126,7 @@ class UserTab : Tab
         params.Set("id", tostring(m_user.FeaturedTrackID));
         string mapUrlParams = MX::DictToApiParams(params);
 
-        string url = "https://"+MXURL+"/api/maps" + mapUrlParams;
+        string url = MXURL + "/api/maps" + mapUrlParams;
         Logging::Debug("UserTab::FeaturedMap::StartRequest (MX): "+url);
         @m_MXUserFeaturedMapRequest = API::Get(url);
     }
@@ -159,7 +160,7 @@ class UserTab : Tab
 
     void StartMXLeaderboardRequest() // TODO doesn't exist yet
     {
-        string url = "https://"+MXURL+"/api/leaderboard/season/"+m_selectedLeaderboardId+"/user/"+m_userId;
+        string url = MXURL + "/api/leaderboard/season/"+m_selectedLeaderboardId+"/user/"+m_userId;
 
         Logging::Debug("UserTab::Leaderboard::StartRequest: " + url);
         @m_MXUserLeaderboardRequest = API::Get(url);
@@ -216,7 +217,7 @@ class UserTab : Tab
 
         string urlParams = MX::DictToApiParams(params);
 
-        string url = "https://"+MXURL+"/api/maps" + urlParams;
+        string url = MXURL + "/api/maps" + urlParams;
 
         Logging::Debug("UserTab::CreatedMaps::StartRequest: " + url);
         @m_MXUserMapsCreatedRequest = API::Get(url);
@@ -282,7 +283,7 @@ class UserTab : Tab
 
         string urlParams = MX::DictToApiParams(params);
 
-        string url = "https://"+MXURL+"/api/maps" + urlParams;
+        string url = MXURL + "/api/maps" + urlParams;
 
         Logging::Debug("UserTab::AwardedMaps::StartRequest: " + url);
         @m_MXUserMapsAwardedRequest = API::Get(url);
@@ -348,7 +349,7 @@ class UserTab : Tab
 
         string urlParams = MX::DictToApiParams(params);
 
-        string url = "https://"+MXURL+"/api/mappacks" + urlParams;
+        string url = MXURL + "/api/mappacks" + urlParams;
 
         Logging::Debug("UserTab::MapPacks::StartRequest: " + url);
         @m_MXUserMapPacksRequest = API::Get(url);
@@ -407,9 +408,7 @@ class UserTab : Tab
         }
 
         if (m_user is null) {
-            int HourGlassValue = Time::Stamp % 3;
-            string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-            UI::Text(Hourglass + " Loading...");
+            UI::Text(Icons::AnimatedHourglass + " Loading...");
             return;
         }
 
@@ -427,15 +426,13 @@ class UserTab : Tab
             if (UI::Button(Icons::Refresh)) StartMXRequest();
             UI::SetItemTooltip("Refresh User info");
         } else {
-            int HourGlassValue = Time::Stamp % 3;
-            string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-            UI::Text(Hourglass);
+            UI::Text(Icons::AnimatedHourglass);
             UI::SetItemTooltip("Loading...");
         }
 
         auto img = Images::CachedFromURL("https://account.mania.exchange/account/avatar/"+m_userId);
 
-        if (img.m_texture !is null){
+        if (img.m_texture !is null) {
             vec2 thumbSize = img.m_texture.GetSize();
             UI::Image(img.m_texture, vec2(
                 width,
@@ -444,13 +441,11 @@ class UserTab : Tab
 
             UI::MXThumbnailTooltip(img, 0.3);
         } else if (!img.m_error) {
-            int HourGlassValue = Time::Stamp % 3;
-            string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-            UI::Text(Hourglass + " Loading Avatar...");
+            UI::Text(Icons::AnimatedHourglass + " Loading Avatar...");
         } else if (img.m_unsupportedFormat) {
-            UI::Text(Icons::FileImageO + " \\$zUnsupported file format WEBP");
+            UI::Text(Icons::FileImageO + "\\$z Unsupported file format WEBP");
         } else if (img.m_notFound) {
-            UI::Text("\\$fc0"+Icons::ExclamationTriangle+" \\$Avatar not found");
+            UI::Text("\\$fc0" + Icons::ExclamationTriangle + "\\$ Avatar not found");
         } else {
             UI::Text(Icons::Times+" \\$zError while loading avatar");
         }
@@ -477,7 +472,7 @@ class UserTab : Tab
             UI::ShowNotification(Icons::Clipboard + " User ID copied to clipboard");
         }
 
-        if (UI::CyanButton(Icons::ExternalLink + " View on "+shortMXName)) OpenBrowserURL("https://"+MXURL+"/usershow/"+m_userId);
+        if (UI::CyanButton(Icons::ExternalLink + " View on "+shortMXName)) OpenBrowserURL(MXURL + "/usershow/"+m_userId);
         if (m_isYourProfileTab && UI::PurpleButton(Icons::ExternalLink + " Manage your account")) OpenBrowserURL("https://account.mania.exchange/account");
 
         if (!m_isYourProfileTab && Setting_Tab_YourProfile_UserID == 0) {
@@ -507,15 +502,13 @@ class UserTab : Tab
                 if (m_featuredMapError) {
                     UI::Text("\\$f00" + Icons::Times + " \\$zError while loading featured map");
                 } else if (m_MXUserFeaturedMapRequest !is null && m_featuredMap is null) {
-                    int HourGlassValue = Time::Stamp % 3;
-                    string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-                    UI::Text(Hourglass + " Loading...");
+                    UI::Text(Icons::AnimatedHourglass + " Loading...");
                 } else {
                     float featuredMapwidth = Draw::GetWidth() * 0.10;
                     UI::BeginChild("UserFeaturedMapImageChild", vec2(featuredMapwidth + 20, 0));
-                    auto featuredMapImg = Images::CachedFromURL("https://"+MXURL+"/mapimage/"+m_featuredMap.MapId+"/1?hq=true");
+                    auto featuredMapImg = Images::CachedFromURL(MXURL + "/mapimage/" + m_featuredMap.MapId + "/1?hq=true");
 
-                    if (featuredMapImg.m_texture !is null){
+                    if (featuredMapImg.m_texture !is null) {
                         vec2 thumbSize = featuredMapImg.m_texture.GetSize();
                         UI::Image(featuredMapImg.m_texture, vec2(
                             featuredMapwidth,
@@ -524,15 +517,13 @@ class UserTab : Tab
 
                         UI::MXThumbnailTooltip(featuredMapImg, 0.3);
                     } else if (!featuredMapImg.m_error) {
-                        int HourGlassValue = Time::Stamp % 3;
-                        string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-                        UI::Text(Hourglass + " Loading thumbnail...");
+                        UI::Text(Icons::AnimatedHourglass + " Loading thumbnail...");
                     } else if (featuredMapImg.m_unsupportedFormat) {
-                        UI::Text(Icons::FileImageO + " \\$zUnsupported file format WEBP");
+                        UI::Text(Icons::FileImageO + "\\$z Unsupported file format WEBP");
                     } else if (featuredMapImg.m_notFound) {
-                        UI::Text("\\$fc0"+Icons::ExclamationTriangle+" \\$Thumbnail not found");
+                        UI::Text("\\$fc0" + Icons::ExclamationTriangle + "\\$ Thumbnail not found");
                     } else {
-                        UI::Text(Icons::Times+" \\$zError while loading thumbnail");
+                        UI::Text(Icons::Times + "\\$z Error while loading thumbnail");
                     }
                     UI::EndChild();
                     UI::SetCursorPos(posTop + vec2(featuredMapwidth + 28, 20));
@@ -548,9 +539,8 @@ class UserTab : Tab
                     if (UI::Button(Icons::InfoCircle)) mxMenu.AddTab(MapTab(m_featuredMap), true);
                     UI::SameLine();
                     if (UI::GreenButton(Icons::Play)) {
-                        if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
                         UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(m_featuredMap.GbxMapName) + "\\$z\\$s by " + m_featuredMap.Username);
-                        MX::mapToLoad = m_featuredMap.MapId;
+                        startnew(CoroutineFunc(m_featuredMap.PlayMap));
                     }
                     UI::EndChild();
                 }
@@ -590,9 +580,7 @@ class UserTab : Tab
                 if (m_leaderboardError) {
                     UI::Text("\\$f00" + Icons::Times + " \\$z"+m_leaderboardErrorMessage);
                 } else {
-                    int HourGlassValue = Time::Stamp % 3;
-                    string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-                    UI::Text(Hourglass + " Loading...");
+                    UI::Text(Icons::AnimatedHourglass + " Loading...");
                 }
             } else {
                 UI::Text(Icons::Kenney::ButtonCircle + " Position: \\$f77"+tostring(m_leaderboard.Position));
@@ -616,9 +604,7 @@ class UserTab : Tab
             UI::BeginChild("UserMapsCreatedChild");
             CheckMXCreatedMapsRequest();
             if (m_MXUserMapsCreatedRequest !is null && m_mapsCreated.Length == 0) {
-                int HourGlassValue = Time::Stamp % 3;
-                string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-                UI::Text(Hourglass + " Loading...");
+                UI::Text(Icons::AnimatedHourglass + " Loading...");
             } else if (m_createdMapsError) {
                 UI::AlignTextToFramePadding();
                 UI::Text("\\$f00" + Icons::Times + "\\$z Error while loading created maps");
@@ -645,8 +631,8 @@ class UserTab : Tab
                     PopTabStyle();
 
                     UI::ListClipper clipper(m_mapsCreated.Length);
-                    while(clipper.Step()) {
-                        for(int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++)
+                    while (clipper.Step()) {
+                        for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++)
                         {
                             UI::PushID("ResMap"+i);
                             MX::MapInfo@ map = m_mapsCreated[i];
@@ -661,7 +647,7 @@ class UserTab : Tab
                         UI::Text(Icons::HourglassEnd + " Loading...");
                     }
                     UI::EndTable();
-                    if (m_MXUserMapsCreatedRequest is null && m_moreItemsCreatedMaps && UI::GreenButton("Load more")){
+                    if (m_MXUserMapsCreatedRequest is null && m_moreItemsCreatedMaps && UI::GreenButton("Load more")) {
                         StartMXCreatedMapsRequest();
                     }
                 }
@@ -674,9 +660,7 @@ class UserTab : Tab
             UI::BeginChild("UserMapsAwardedChild");
             CheckMXAwardedMapsRequest();
             if (m_MXUserMapsAwardedRequest !is null && m_mapsAwardsGiven.Length == 0) {
-                int HourGlassValue = Time::Stamp % 3;
-                string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-                UI::Text(Hourglass + " Loading...");
+                UI::Text(Icons::AnimatedHourglass + " Loading...");
             } else if (m_awardedMapsError) {
                 UI::AlignTextToFramePadding();
                 UI::Text("\\$f00" + Icons::Times + "\\$z Error while loading awarded maps");
@@ -703,8 +687,8 @@ class UserTab : Tab
                     PopTabStyle();
 
                     UI::ListClipper clipper(m_mapsAwardsGiven.Length);
-                    while(clipper.Step()) {
-                        for(int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++)
+                    while (clipper.Step()) {
+                        for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++)
                         {
                             UI::PushID("ResMap"+i);
                             MX::MapInfo@ map = m_mapsAwardsGiven[i];
@@ -719,7 +703,7 @@ class UserTab : Tab
                         UI::Text(Icons::HourglassEnd + " Loading...");
                     }
                     UI::EndTable();
-                    if (m_MXUserMapsCreatedRequest is null && m_moreItemsAwardsGiven && UI::GreenButton("Load more")){
+                    if (m_MXUserMapsCreatedRequest is null && m_moreItemsAwardsGiven && UI::GreenButton("Load more")) {
                         StartMXAwardedMapsRequest();
                     }
                 }
@@ -732,9 +716,7 @@ class UserTab : Tab
             UI::BeginChild("UserMapPacksChild");
             CheckMXMapPacksRequest();
             if (m_MXUserMapPacksRequest !is null && m_mapsAwardsGiven.Length == 0) {
-                int HourGlassValue = Time::Stamp % 3;
-                string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-                UI::Text(Hourglass + " Loading...");
+                UI::Text(Icons::AnimatedHourglass + " Loading...");
             } else if (m_mapPacksError) {
                 UI::AlignTextToFramePadding();
                 UI::Text("\\$f00" + Icons::Times + "\\$z Error while loading mappacks");
@@ -751,8 +733,8 @@ class UserTab : Tab
                     PopTabStyle();
 
                     UI::ListClipper clipper(m_mapPacks.Length);
-                    while(clipper.Step()) {
-                        for(int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++)
+                    while (clipper.Step()) {
+                        for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++)
                         {
                             UI::PushID("ResMap"+i);
                             MX::MapPackInfo@ mapPack = m_mapPacks[i];
@@ -767,7 +749,7 @@ class UserTab : Tab
                         UI::Text(Icons::HourglassEnd + " Loading...");
                     }
                     UI::EndTable();
-                    if (m_MXUserMapPacksRequest is null && m_moreItemsMapPacks && UI::GreenButton("Load more")){
+                    if (m_MXUserMapPacksRequest is null && m_moreItemsMapPacks && UI::GreenButton("Load more")) {
                         StartMXMapPacksRequest();
                     }
                 }

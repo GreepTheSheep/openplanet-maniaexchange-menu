@@ -63,7 +63,7 @@ namespace MXNadeoServicesGlobal
             for (uint i = 0; i < res["mapList"].Length; i++) {
                 string mapName = res["mapList"][i]["name"];
                 string mapUid = res["mapList"][i]["uid"];
-                Logging::Trace("Loading favorite map #"+i+": " + Text::StripFormatCodes(mapName) + " (" + mapUid + ")");
+                Logging::Trace("Loading favorite map #" + i + ": " + Text::StripFormatCodes(mapName) + " (" + mapUid + ")");
                 NadeoServices::MapInfo@ map = NadeoServices::MapInfo(res["mapList"][i]);
                 g_favoriteMaps.InsertLast(map);
             }
@@ -86,7 +86,7 @@ namespace MXNadeoServicesGlobal
                 for (uint i = 0; i < res["mapList"].Length; i++) {
                     string mapName = res["mapList"][i]["name"];
                     string mapUid = res["mapList"][i]["uid"];
-                    Logging::Trace("Loading favorite map #"+i+": " + Text::StripFormatCodes(mapName) + " (" + mapUid + ")");
+                    Logging::Trace("Loading favorite map #" + i + ": " + Text::StripFormatCodes(mapName) + " (" + mapUid + ")");
                     NadeoServices::MapInfo@ map = NadeoServices::MapInfo(res["mapList"][i]);
                     g_favoriteMaps.InsertLast(map);
                 }
@@ -111,9 +111,9 @@ namespace MXNadeoServicesGlobal
                 string mapUidsPartString = string::Join(mapUidsPart, ",");
 
                 // we do + 10 in case multiple maps have the same UID, which can happen
-                string mxUrl = "https://"+MXURL+"/api/maps?fields=" + MX::mapFields + "&count=" + (MX::maxMapsRequest + 10) + "&uid=" +mapUidsPartString;
-                Logging::Debug("NadeoServices - Loading map MX infos: " + mxUrl);
-                Net::HttpRequest@ mxReq = API::Get(mxUrl);
+                string reqUrl = MXURL + "/api/maps?fields=" + MX::mapFields + "&count=" + (MX::maxMapsRequest + 10) + "&uid=" +mapUidsPartString;
+                Logging::Debug("NadeoServices - Loading map MX infos: " + reqUrl);
+                Net::HttpRequest@ mxReq = API::Get(reqUrl);
                 while (!mxReq.Finished()) {
                     yield();
                 }

@@ -45,7 +45,7 @@ namespace ManiaExchange
         params.Set("id", tostring(mapID));
         string urlParams = MX::DictToApiParams(params);
 
-        string url = "https://"+MXURL+"/api/maps" + urlParams;
+        string url = MXURL + "/api/maps" + urlParams;
         Logging::Debug("Exports::GetMapInfoAsync::StartRequest : "+url);
         Json::Value mxRes = API::GetAsync(url);
         if (mxRes.GetType() == Json::Type::Null || mxRes.Length == 0 || !mxRes.HasKey("Results")) {
@@ -66,7 +66,7 @@ namespace ManiaExchange
         params.Set("uid", MapUID);
         string urlParams = MX::DictToApiParams(params);
 
-        string url = "https://"+MXURL+"/api/maps" + urlParams;
+        string url = MXURL + "/api/maps" + urlParams;
         Logging::Debug("Exports::GetMapInfoAsync::StartRequest : " + url);
 
         Json::Value mxRes = API::GetAsync(url);

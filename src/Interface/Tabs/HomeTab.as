@@ -16,7 +16,7 @@ class HomePageTab : Tab {
 #else
         auto logo = Images::CachedFromURL("https://images.mania.exchange/logos/mx/square_sm.png");
 #endif
-        if (logo.m_texture !is null){
+        if (logo.m_texture !is null) {
             vec2 logoSize = logo.m_texture.GetSize();
             UI::Image(logo.m_texture, vec2(
                 width,
@@ -40,30 +40,29 @@ class HomePageTab : Tab {
         UI::SameLine();
         UI::TextDisabled(Icons::ExternalLink);
         UI::SetItemTooltip("Click to open the website");
-        if (UI::IsItemClicked()) OpenBrowserURL("https://"+MXURL);
+        if (UI::IsItemClicked()) OpenBrowserURL(MXURL);
 #if MP4
-        UI::TextDisabled("Current repository: " + MXURL + "    " + Icons::InfoCircle);
-        if (UI::BeginItemTooltip()) {
-            UI::Text("You can change the repository on the plugin settings.");
-            UI::EndTooltip();
-        }
+        UI::TextDisabled("Current repository: " + MXURL);
+        UI::SameLine();
+        UI::Text(Icons::InfoCircle);
+        UI::SetItemTooltip("You can change the repository in the plugin settings.");
 #endif
         UI::Separator();
 
         UI::BeginTabBar("HomePageTabs");
-        if(UI::BeginTabItem(Icons::Home + " Welcome!")){
+        if (UI::BeginTabItem(Icons::Home + " Welcome!")) {
             UI::BeginChild("HomeChild");
             HomePageTabRender::Home();
             UI::EndChild();
             UI::EndTabItem();
         }
-        if(UI::BeginTabItem(Icons::InfoCircle + " About")){
+        if (UI::BeginTabItem(Icons::InfoCircle + " About")) {
             UI::BeginChild("AboutChild");
             HomePageTabRender::About();
             UI::EndChild();
             UI::EndTabItem();
         }
-        if(UI::BeginTabItem(Icons::Tags + " Changelogs")){
+        if (UI::BeginTabItem(Icons::Tags + " Changelogs")) {
             UI::BeginChild("ChangelogsChild");
             HomePageTabRender::Changelog();
             UI::EndChild();

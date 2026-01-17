@@ -92,6 +92,6 @@ namespace Format {
             text = text.Replace(formatCodes[0], formatCodes[0].Replace(" ", ""));
         }
 
-        return text;
+        return text.Trim();
     }
 }

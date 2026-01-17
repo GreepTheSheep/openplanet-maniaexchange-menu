@@ -57,4 +57,24 @@ namespace UI
 
         return UI::IsItemClicked();
     }
+
+    vec2 MeasureButton(const string &in label) {
+        vec2 text = Draw::MeasureString(label);
+        vec2 padding = UI::GetStyleVarVec2(UI::StyleVar::FramePadding);
+
+        return text + padding * 2;
+    }
+
+    void RightAlignButton(float buttonWidth, int buttonCount = 1) {
+        vec2 region = UI::GetContentRegionAvail();
+        vec2 pos = UI::GetCursorPos();
+        float itemSpacing = UI::GetStyleVarVec2(UI::StyleVar::ItemSpacing).x;
+        int spacingCount = buttonCount - 1;
+        float newPos = Math::Max(region.x - buttonWidth - (itemSpacing * spacingCount), 0.0);
+        UI::SetCursorPosX(pos.x + newPos);
+    }
+
+    void RightAlignButtons(float buttonsWidth, int buttonCount) {
+        RightAlignButton(buttonsWidth, buttonCount);
+    }
 }

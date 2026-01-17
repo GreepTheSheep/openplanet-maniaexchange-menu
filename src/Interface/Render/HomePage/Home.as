@@ -7,9 +7,7 @@ namespace HomePageTabRender {
                 startnew(MX::CheckForAPILoaded);
             }
             if (MX::APIRefresh) {
-                int HourGlassValue = Time::Stamp % 3;
-                string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-                UI::Text(Hourglass + " Refreshing...");
+                UI::Text(Icons::AnimatedHourglass + " Refreshing...");
             }
         } else {
             UI::PushFont(Fonts::Header);

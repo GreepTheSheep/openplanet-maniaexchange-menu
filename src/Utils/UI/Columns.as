@@ -4,10 +4,7 @@ class MapColumns {
     float enviVehicle;
 
     void Update(array<MX::MapInfo@> maps) {
-        if (maps.IsEmpty()) {
-            Reset();
-            return;
-        }
+        Reset();
 
         for (uint i = 0; i < maps.Length; i++) {
             MX::MapInfo@ map = maps[i];

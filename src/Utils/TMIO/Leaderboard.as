@@ -8,7 +8,7 @@ namespace TMIO
         string playerName;
         string playerID;
 
-        Leaderboard(Json::Value leaderboard){
+        Leaderboard(Json::Value leaderboard) {
             try {
                 position = leaderboard["position"];
                 time = leaderboard["time"];

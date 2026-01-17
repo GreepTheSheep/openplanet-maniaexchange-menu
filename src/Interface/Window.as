@@ -8,7 +8,7 @@ class Window{
     Tab@ m_homePageTab;
     Tab@ m_YourProfileTab;
 
-    Window(){
+    Window() {
         @m_homePageTab = HomePageTab();
         AddTab(m_homePageTab);
         if (Setting_Tab_YourProfile_UserID != 0) {
@@ -23,7 +23,7 @@ class Window{
         AddTab(MapListTab());
     }
 
-    void AddTab(Tab@ tab, bool select = false, int index = -1){
+    void AddTab(Tab@ tab, bool select = false, int index = -1) {
         if (index == -1) tabs.InsertLast(tab);
         else tabs.InsertAt(index, tab);
         if (select) {
@@ -31,13 +31,13 @@ class Window{
         }
     }
 
-    void RemoveTab(Tab@ tab){
+    void RemoveTab(Tab@ tab) {
         tabs.RemoveAt(tabs.FindByRef(tab));
     }
 
-    void Render(){
+    void Render() {
         isOpened = Setting_ShowMenu;
-        if(!isOpened) return;
+        if (!isOpened) return;
 
         if (Setting_Tab_YourProfile_UserID != 0 && Setting_Tab_YourProfile_UserID != Tab_YourProfile_UserID_Old) {
             if (m_YourProfileTab !is null) {
@@ -60,7 +60,7 @@ class Window{
         UI::PushStyleVar(UI::StyleVar::WindowTitleAlign, vec2(.5, .5));
         UI::PushStyleVar(UI::StyleVar::CellPadding, UI::GetStyleVarVec2(UI::StyleVar::CellPadding) + vec2(7, 1));
         UI::SetNextWindowSize(820, 500, UI::Cond::FirstUseEver);
-        if(UI::Begin(nameMenu + " \\$666v"+Meta::ExecutingPlugin().Version+"###ManiaExchange Menu", Setting_ShowMenu)){
+        if (UI::Begin(nameMenu + " \\$666v"+Meta::ExecutingPlugin().Version+"###ManiaExchange Menu", Setting_ShowMenu)) {
             // Push the last active tab style so that the separator line is colored (this is drawn in BeginTabBar)
             auto lastActiveTab = c_lastActiveTab;
             if (lastActiveTab !is null) {
@@ -68,7 +68,7 @@ class Window{
             }
             UI::BeginTabBar("Tabs", UI::TabBarFlags::TabListPopupButton);
 
-            for(uint i = 0; i < tabs.Length; i++){
+            for (uint i = 0; i < tabs.Length; i++) {
                 auto tab = tabs[i];
                 if (!tab.IsVisible() || (MX::APIDown && tab !is m_homePageTab)) continue;
 
@@ -82,11 +82,11 @@ class Window{
 
                 tab.PushTabStyle();
 
-                if (tab.CanClose()){
+                if (tab.CanClose()) {
                     bool open = true;
                     bool beginTabClosable = UI::BeginTabItem(tab.GetLabel()+(tab.GetTooltip().Length > 0 ? "###"+tab.GetTooltip() : ""), open, flags);
                     if (tab.GetTooltip().Length > 0) UI::SetItemTooltip(tab.GetTooltip());
-                    if (beginTabClosable){
+                    if (beginTabClosable) {
                         @c_lastActiveTab = tab;
 
                         UI::BeginChild("Tab");
@@ -96,13 +96,13 @@ class Window{
 
                         UI::EndTabItem();
                     }
-                    if (!open){
+                    if (!open) {
                         tabs.RemoveAt(i--);
                     }
                 } else {
                     bool beginTab = UI::BeginTabItem(tab.GetLabel()+(tab.GetTooltip().Length > 0 ? "###"+tab.GetTooltip() : ""), flags);
                     if (tab.GetTooltip().Length > 0) UI::SetItemTooltip(tab.GetTooltip());
-                    if (beginTab){
+                    if (beginTab) {
                         @c_lastActiveTab = tab;
 
                         UI::BeginChild("Tab");

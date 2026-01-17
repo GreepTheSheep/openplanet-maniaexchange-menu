@@ -28,7 +28,7 @@ namespace IfaceRender
 
         UI::TableNextColumn();
         if (map.Tags.Length == 0) UI::Text("No tags");
-        else{
+        else {
             for (uint i = 0; i < map.Tags.Length; i++) {
                 IfaceRender::MapTag(map.Tags[i]);
                 UI::SameLine();
@@ -54,9 +54,8 @@ namespace IfaceRender
         if (isMapTypeSupported) {
 #endif
             if (UI::GreenButton(Icons::Play)) {
-                if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
                 UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(map.GbxMapName) + "\\$z\\$s by " + map.Username);
-                MX::mapToLoad = map.MapId;
+                startnew(CoroutineFunc(map.PlayMap));
             }
 
 #if TMNEXT
@@ -65,10 +64,9 @@ namespace IfaceRender
         } else if (!isMapTypeSupported && Setting_ShowPlayOnAllMaps) {
 #endif
             if (UI::OrangeButton(Icons::Play)) {
-                if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
                 UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(map.GbxMapName) + "\\$z\\$s by " + map.Username);
                 UI::ShowNotification(Icons::ExclamationTriangle + " Warning", "The map type is not supported for direct play, it can crash your game or returns you to the menu", UI::HSV(0.11, 1.0, 1.0), 15000);
-                MX::mapToLoad = map.MapId;
+                startnew(CoroutineFunc(map.PlayMap));
             }
             if (UI::BeginItemTooltip()) {
                 UI::Text(Icons::ExclamationTriangle + " The map type is not supported for direct play, it can crash your game or returns you to the menu");

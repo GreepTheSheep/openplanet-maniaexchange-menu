@@ -45,7 +45,7 @@ class MapListTab : Tab
 
         string urlParams = MX::DictToApiParams(params);
 
-        string url = "https://"+MXURL+"/api/maps" + urlParams;
+        string url = MXURL + "/api/maps" + urlParams;
 
         Logging::Debug("MapListTab::StartRequest: " + url);
         @m_request = API::Get(url);
@@ -121,7 +121,7 @@ class MapListTab : Tab
 
         string mapUrlParams = MX::DictToApiParams(params);
 
-        string url = "https://"+MXURL+"/api/maps" + mapUrlParams;
+        string url = MXURL + "/api/maps" + mapUrlParams;
         Logging::Debug("MapListTab::StartRandomRequest: " + url);
         @m_randomRequest = API::Get(url);
     }
@@ -240,7 +240,7 @@ class MapListTab : Tab
 
         UI::BeginDisabled(m_randomRequest !is null);
 
-        if (UI::GreenButton(Icons::Random + " Random result")){
+        if (UI::GreenButton(Icons::Random + " Random result")) {
             StartRandomRequest();
         }
 
@@ -284,9 +284,7 @@ class MapListTab : Tab
         RenderHeader();
 
         if (m_request !is null && maps.Length == 0) {
-            int HourGlassValue = Time::Stamp % 3;
-            string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-            UI::Text(Hourglass + " Loading...");
+            UI::Text(Icons::AnimatedHourglass + " Loading...");
         } else {
             if (MX::APIDown) {
                 UI::Text("API is down, please try again later.");
@@ -323,9 +321,8 @@ class MapListTab : Tab
                 PopTabStyle();
 
                 UI::ListClipper clipper(maps.Length);
-                while(clipper.Step()) {
-                    for(int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++)
-                    {
+                while (clipper.Step()) {
+                    for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
                         UI::PushID("ResMap"+i);
                         MX::MapInfo@ map = maps[i];
                         IfaceRender::MapResult(map);
@@ -339,7 +336,7 @@ class MapListTab : Tab
                     UI::Text(Icons::HourglassEnd + " Loading...");
                 }
                 UI::EndTable();
-                if (m_request is null && moreItems && UI::GreenButton("Load more")){
+                if (m_request is null && moreItems && UI::GreenButton("Load more")) {
                     StartRequest();
                 }
             }

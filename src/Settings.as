@@ -4,7 +4,7 @@ bool Setting_ShowMenu = false;
 [Setting name="Use colored map name" category="UI"]
 bool Setting_ColoredMapName = true;
 
-[Setting name="Close Openplanet overlay when loading a map" category="UI"]
+[Setting name="Hide Openplanet overlay when loading a map" category="UI"]
 bool Setting_CloseOverlayOnLoad = true;
 
 [Setting name="Show Play Button on all map types" category="UI" description="If you try to load other maps than supported types, the game will crash or return you to the main menu."]
@@ -61,8 +61,8 @@ void RenderMP4RepoSelectSettings()
                 if (repo != MP4mxRepos(i)) {
                     repo = MP4mxRepos(i);
 
-                    if (repo == MP4mxRepos::Trackmania) MXURL = "tm.mania.exchange";
-                    else if (repo == MP4mxRepos::Shootmania) MXURL = "sm.mania.exchange";
+                    if (repo == MP4mxRepos::Trackmania) MXURL = "https://tm.mania.exchange";
+                    else if (repo == MP4mxRepos::Shootmania) MXURL = "https://sm.mania.exchange";
                     Logging::Info("Changed repository to " + tostring(repo) + " (" + MXURL + "), reloading...");
                     startnew(MX::CheckForAPILoaded);
 

@@ -41,7 +41,7 @@ namespace MX
             try {
                 MapId = json["MapId"];
                 MapUid = json["MapUid"];
-                Name = string(json["Name"]).Trim();
+                Name = Format::GbxText(json["Name"]);
                 if (json["OnlineMapId"].GetType() != Json::Type::Null) OnlineMapId = json["OnlineMapId"];
                 MapType = json["MapType"];
                 UploadedAt = json["UploadedAt"];

@@ -33,13 +33,14 @@ class MapPackTab : Tab
             m_isLoading = false;
             return "\\$f00" + Icons::Times + " \\$zError";
         }
+
         if (m_mapPack is null) {
             m_isLoading = true;
             return Icons::Inbox + " Loading...";
-        } else {
-            m_isLoading = false;
-            return Icons::Inbox + " " + m_mapPack.Name;
         }
+
+        m_isLoading = false;
+        return Icons::Inbox + " " + m_mapPack.Name;
     }
 
     void GetRequestParams(dictionary@ params)
@@ -54,7 +55,7 @@ class MapPackTab : Tab
         GetRequestParams(params);
         string urlParams = MX::DictToApiParams(params);
 
-        string url = "https://"+MXURL+"/api/mappacks" + urlParams;
+        string url = MXURL + "/api/mappacks" + urlParams;
         Logging::Debug("MapPackTab::StartRequest (MX): "+url);
         @m_MXrequest = API::Get(url);
     }
@@ -114,7 +115,7 @@ class MapPackTab : Tab
 
         string mapUrlParams = MX::DictToApiParams(mapParams);
 
-        string url = "https://"+MXURL+"/api/maps" + mapUrlParams;
+        string url = MXURL + "/api/maps" + mapUrlParams;
         Logging::Debug("MapPackTab::StartRequest (Map List): "+url);
         @m_MXMapsRequest = API::Get(url);
     }
@@ -172,9 +173,7 @@ class MapPackTab : Tab
         }
 
         if (m_mapPack is null) {
-            int HourGlassValue = Time::Stamp % 3;
-            string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-            UI::Text(Hourglass + " Loading...");
+            UI::Text(Icons::AnimatedHourglass + " Loading...");
             return;
         }
 
@@ -185,8 +184,8 @@ class MapPackTab : Tab
 
         UI::BeginChild("Summary", vec2(width,0));
 
-        auto thumb = Images::CachedFromURL("https://"+MXURL+"/mappackthumb/"+m_mapPack.MappackId);
-        if (thumb.m_texture !is null){
+        auto thumb = Images::CachedFromURL(MXURL + "/mappackthumb/"+m_mapPack.MappackId);
+        if (thumb.m_texture !is null) {
             vec2 thumbSize = thumb.m_texture.GetSize();
             UI::Image(thumb.m_texture, vec2(
                 width,
@@ -226,7 +225,7 @@ class MapPackTab : Tab
             UI::SetItemTooltip("Edited date");
         }
 
-        if (UI::CyanButton(Icons::ExternalLink + " View on "+pluginName)) OpenBrowserURL("https://"+MXURL+"/mappackshow/"+m_mapPack.MappackId);
+        if (UI::CyanButton(Icons::ExternalLink + " View on "+pluginName)) OpenBrowserURL(MXURL + "/mappackshow/"+m_mapPack.MappackId);
 
 #if TMNEXT
         if (!m_mapListError && mapPack_maps.Length != 0 && Permissions::PlayLocalMap() && UI::GreenButton(Icons::Check + " Add to Play later")) {
@@ -236,7 +235,7 @@ class MapPackTab : Tab
             Renderables::Add(MapPackActionWarn(MapPackActions::AddPlayLater, mapPack_maps));
         }
 
-        if (MX::mapDownloadInProgress){
+        if (MX::mapDownloadInProgress) {
             UI::Text("\\$f70" + Icons::Download + " \\$zDownloading maps...");
             m_isLoading = true;
         } else {
@@ -268,13 +267,13 @@ class MapPackTab : Tab
 
         UI::BeginTabBar("MapPackTabs");
 
-        if(UI::BeginTabItem("Description")){
+        if (UI::BeginTabItem("Description")) {
             UI::BeginChild("MapPackDescriptionChild");
             UI::Markdown(m_mapPack.Description);
             UI::EndChild();
             UI::EndTabItem();
         }
-        if(UI::BeginTabItem("Maps")){
+        if (UI::BeginTabItem("Maps")) {
             UI::BeginChild("MapListChild");
 
             if (m_mapListError) {
@@ -282,9 +281,7 @@ class MapPackTab : Tab
             } else if (m_mapPack.MapCount == 0) {
                 UI::Text("Map list for this pack is empty.");
             } else if (m_MXMapsRequest !is null && mapPack_maps.Length == 0) {
-                int HourGlassValue = Time::Stamp % 3;
-                string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-                UI::Text(Hourglass + " Loading...");
+                UI::Text(Icons::AnimatedHourglass + " Loading...");
             } else {
 #if MP4
                 int columns = 7;
@@ -308,8 +305,8 @@ class MapPackTab : Tab
                     PopTabStyle();
 
                     UI::ListClipper clipper(mapPack_maps.Length);
-                    while(clipper.Step()) {
-                        for(int j = clipper.DisplayStart; j < clipper.DisplayEnd; j++)
+                    while (clipper.Step()) {
+                        for (int j = clipper.DisplayStart; j < clipper.DisplayEnd; j++)
                         {
                             UI::PushID("ResMap"+j);
                             MX::MapInfo@ map = mapPack_maps[j];

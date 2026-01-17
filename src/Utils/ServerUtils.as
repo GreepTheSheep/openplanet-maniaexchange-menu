@@ -1,79 +1,114 @@
 namespace TMNext
 {
-
-    bool isCheckingRoom = false;
-    string roomCheckErrorCode = "";
+    bool g_checkingRoom = false;
     string roomCheckError = "";
     NadeoServices::ClubRoom@ foundRoom;
-    bool AddMapToServer_PlayMapNow = false;
 
     [Setting hidden]
     int AddMapToServer_ClubId = 0;
     [Setting hidden]
     int AddMapToServer_RoomId = 0;
 
-    string AddMapToServer_MapUid = "";
-    int AddMapToServer_MapMXId;
-    string AddMapToServer_MapType = "";
+    bool get_IsCheckingRoom() {
+        return g_checkingRoom;
+    }
 
     void CheckNadeoRoomAsync() {
-#if DEPENDENCY_NADEOSERVICES && TMNEXT
-        // Step 1: Check if we can access to the room
-        isCheckingRoom = true;
-        roomCheckErrorCode = "";
+#if DEPENDENCY_NADEOSERVICES
+        g_checkingRoom = true;
         roomCheckError = "";
-        Net::HttpRequest@ req = NadeoServices::Get("NadeoLiveServices", NadeoServices::BaseURLLive()+"/api/token/club/"+AddMapToServer_ClubId+"/room/"+AddMapToServer_RoomId);
+
+        string url = NadeoServices::BaseURLLive() + "/api/token/club/" + AddMapToServer_ClubId + "/room/" + AddMapToServer_RoomId;
+
+        Net::HttpRequest@ req = NadeoServices::Get("NadeoLiveServices", url);
         req.Start();
         while (!req.Finished()) {
             yield();
         }
-        auto res = req.Json();
-        isCheckingRoom = false;
 
+        g_checkingRoom = false;
+
+        auto res = req.Json();
         Logging::Trace("NadeoServices - Check server: " + req.String());
 
-        if (res.GetType() == Json::Type::Array) {
-            roomCheckErrorCode = res[0];
-            if (roomCheckErrorCode.Contains("notFound")) roomCheckError = "Room is not Found";
-            else roomCheckError = "Unknown error";
-            return;
-        }
+        switch (res.GetType()) {
+            case Json::Type::Object:
+                @foundRoom = NadeoServices::ClubRoom(res);
+                break;
+            case Json::Type::Array:
+                if (string(res[0]).Contains("notFound")) {
+                    roomCheckError = "Failed to find room";
+                } else {
+                    roomCheckError = res[0];
+                }
 
-        if (res.GetType() == Json::Type::Object)
-            @foundRoom = NadeoServices::ClubRoom(res);
+                break;
+            default:
+                roomCheckError = "Unexpected API response";
+                break;
+        }
 #endif
     }
 
-    void UploadMapToNadeoServices() {
-        MX::DownloadMap(AddMapToServer_MapMXId, "", AddMapToServer_MapUid);
+    void UploadMapToNadeoServices(MX::MapInfo@ map) {
 #if TMNEXT
+        MX::DownloadMap(map.MapId, "", map.MapUid);
+
         auto app = cast<CGameManiaPlanet>(GetApp());
         auto cma = app.MenuManager.MenuCustom_CurrentManiaApp;
         auto dfm = cma.DataFileMgr;
         auto userId = cma.UserMgr.Users[0].Id;
+
         yield();
-        auto regScript = dfm.Map_NadeoServices_Register(userId, AddMapToServer_MapUid);
+
+        auto regScript = dfm.Map_NadeoServices_Register(userId, map.MapUid);
+
         while (regScript.IsProcessing) yield();
-        if (regScript.HasFailed)
-            Logging::Error("Uploading map failed: " + regScript.ErrorType + ", " + regScript.ErrorCode + ", " + regScript.ErrorDescription);
-        else if (regScript.HasSucceeded)
-            Logging::Debug("UploadMapFromLocal: Map uploaded: " + AddMapToServer_MapUid);
+
+        if (regScript.HasFailed) {
+            Logging::Error("[UploadMapToNadeoServices] Map upload failed: " + regScript.ErrorType + ", " + regScript.ErrorCode + ", " + regScript.ErrorDescription);
+        } else if (regScript.HasSucceeded) {
+            Logging::Trace("[UploadMapToNadeoServices] Map uploaded: " +  map.MapUid);
+        }
+
         dfm.TaskResult_Release(regScript.Id);
+
+        string mapLocation = IO::FromUserGameFolder("Maps/Downloaded/" + pluginName) + "/" + map.MapUid + ".Map.Gbx";
+
+        if (IO::FileExists(mapLocation)) {
+            IO::Delete(mapLocation);
+        }
 #endif
-        string downloadedMapFolder = IO::FromUserGameFolder("Maps/Downloaded");
-        string mxDLFolder = downloadedMapFolder + "/" + pluginName;
-        IO::Delete(mxDLFolder + "/" + AddMapToServer_MapUid + ".Map.Gbx");
     }
 
-    void PlayMapInRoom() {
+    void AddMapToRoom(ref@ mapRef) {
+        auto map = cast<MX::MapInfo>(mapRef);
+
+        if (map !is null) {
+            UpdateRoomMaps(map);
+        }
+    }
+
+    void PlayMapInRoom(ref@ mapRef) {
+        auto map = cast<MX::MapInfo>(mapRef);
+
+        if (map !is null) {
+            UpdateRoomMaps(map, true);
+        }
+    }
+
+    void UpdateRoomMaps(MX::MapInfo@ map, bool switchToMap = false) {
 #if DEPENDENCY_NADEOSERVICES
-        if (!MXNadeoServicesGlobal::CheckIfMapExistsAsync(AddMapToServer_MapUid))
-            UploadMapToNadeoServices();
+        if (!MXNadeoServicesGlobal::CheckIfMapExistsAsync(map.MapUid)) {
+            UploadMapToNadeoServices(map);
+        }
 
-        Logging::Trace("Adding map '" + AddMapToServer_MapUid + "' to Nadeo Room #"+AddMapToServer_ClubId+"-"+AddMapToServer_RoomId);
+        Logging::Trace("Adding map '" + map.MapUid + "' to Nadeo Room #" + AddMapToServer_ClubId + "-" + AddMapToServer_RoomId);
 
-        if (foundRoom.room.maps.Length > 0) {
-            const string mapUid = foundRoom.room.currentMapUid.Length > 0 ? foundRoom.room.currentMapUid : foundRoom.room.maps[0];
+        array<string> mapList = foundRoom.room.maps;
+
+        if (mapList.Length > 0) {
+            const string mapUid = foundRoom.room.currentMapUid.Length > 0 ? foundRoom.room.currentMapUid : mapList[0];
             Json::Value mapInfo = MXNadeoServicesGlobal::GetMapInfoAsync(mapUid);
 
             if (mapInfo is null) {
@@ -82,7 +117,7 @@ namespace TMNext
             } else {
                 string serverMapType = CleanMapType(string(mapInfo["mapType"]));
 
-                if (serverMapType != AddMapToServer_MapType) {
+                if (serverMapType != map.MapType) {
                     Logging::Error("Map type doesn't match the room's current game mode", true);
                     return;
                 }
@@ -90,65 +125,58 @@ namespace TMNext
         }
 
         Json::Value bodyJson = Json::Object();
-        if (AddMapToServer_PlayMapNow) {
-            if (foundRoom.room.maps.Length > 0) {
-                for (uint i = 0; i < foundRoom.room.maps.Length; i++) {
-                    if (foundRoom.room.maps[i] == foundRoom.room.currentMapUid)
-                        foundRoom.room.maps[i] = AddMapToServer_MapUid;
-                    else
-                        foundRoom.room.maps.InsertLast(AddMapToServer_MapUid);
+
+        if (switchToMap && !mapList.IsEmpty()) {
+            for (uint i = 0; i < mapList.Length; i++) {
+                if (mapList[i] == foundRoom.room.currentMapUid) {
+                    mapList[i] = map.MapUid;
                     break;
                 }
-            } else foundRoom.room.maps.InsertLast(AddMapToServer_MapUid);
-        } else foundRoom.room.maps.InsertLast(AddMapToServer_MapUid);
 
-        Json::Value bodyJsonMaps = Json::Array();
-        for (uint j = 0; j < foundRoom.room.maps.Length; j++) {
-            bodyJsonMaps.Add(foundRoom.room.maps[j]);
+                if (i == mapList.Length - 1) {
+                    mapList.InsertLast(map.MapUid);
+                }
+            }
+        } else {
+            mapList.InsertLast(map.MapUid);
         }
 
-        bodyJson["maps"] = bodyJsonMaps;
+        bodyJson["maps"] = mapList.ToJson();
 
-        if (AddMapToServer_PlayMapNow) {
-            Json::Value bodyJsonSettingTimeLimit = Json::Object();
-            bodyJsonSettingTimeLimit["key"] = "S_TimeLimit";
-            bodyJsonSettingTimeLimit["value"] = "1";
-            bodyJsonSettingTimeLimit["type"] = "integer";
+        if (switchToMap) {
+            Json::Value timeJson = Json::Object();
+            timeJson["key"] = "S_TimeLimit";
+            timeJson["value"] = "1";
+            timeJson["type"] = "integer";
 
-            Json::Value bodyJsonSettings = Json::Array();
-            bodyJsonSettings.Add(bodyJsonSettingTimeLimit);
+            Json::Value roomSettings = Json::Array();
+            roomSettings.Add(timeJson);
 
-            bodyJson["settings"] = bodyJsonSettings;
+            bodyJson["settings"] = roomSettings;
         }
 
-        Net::HttpRequest@ req = NadeoServices::Post("NadeoLiveServices", NadeoServices::BaseURLLive()+"/api/token/club/"+AddMapToServer_ClubId+"/room/"+AddMapToServer_RoomId+"/edit", Json::Write(bodyJson));
+        string roomUrl = NadeoServices::BaseURLLive() + "/api/token/club/" + AddMapToServer_ClubId + "/room/" + AddMapToServer_RoomId + "/edit";
+
+        Net::HttpRequest@ req = NadeoServices::Post("NadeoLiveServices", roomUrl, Json::Write(bodyJson));
         req.Start();
         while (!req.Finished()) yield();
-        Logging::Trace("NadeoServices::UpdateRoom - "+req.String());
 
-        if (AddMapToServer_PlayMapNow) {
-            if (UI::IsOverlayShown() && Setting_CloseOverlayOnLoad) UI::HideOverlay();
-            // revert time limit to its user-set (else set to 0)
+        Logging::Trace("NadeoServices::UpdateRoom - " + req.String());
+
+        if (switchToMap) {
             sleep(1500);
-            Json::Value bodyJsonSettingTimeLimit = Json::Object();
-            bodyJsonSettingTimeLimit["key"] = "S_TimeLimit";
-            bodyJsonSettingTimeLimit["type"] = "integer";
-            if (Text::ParseInt(foundRoom.room.timeLimit) > 60)
-                bodyJsonSettingTimeLimit["value"] = foundRoom.room.timeLimit;
-            else
-                bodyJsonSettingTimeLimit["value"] = "0";
 
-            Json::Value bodyJsonSettings = Json::Array();
-            bodyJsonSettings.Add(bodyJsonSettingTimeLimit);
+            // revert time limit to its user-set (else set to 0)
+            if (Text::ParseInt(foundRoom.room.timeLimit) > 10) {
+                bodyJson["settings"][0]["value"] = foundRoom.room.timeLimit;
+            } else {
+                bodyJson["settings"][0]["value"] = "0";
+            }
 
-            bodyJson = Json::Object();
-            bodyJson["settings"] = bodyJsonSettings;
-
-            @req = NadeoServices::Post("NadeoLiveServices", NadeoServices::BaseURLLive()+"/api/token/club/"+AddMapToServer_ClubId+"/room/"+AddMapToServer_RoomId+"/edit", Json::Write(bodyJson));
+            @req = NadeoServices::Post("NadeoLiveServices", roomUrl, Json::Write(bodyJson));
             req.Start();
             while (!req.Finished()) yield();
-            Logging::Trace("NadeoServices::UpdateRoom (reset S_TimeLimit to 0) - "+req.String());
-            AddMapToServer_PlayMapNow = false;
+            Logging::Trace("NadeoServices::UpdateRoom (reset S_TimeLimit) - " + req.String());
         }
 #endif
     }

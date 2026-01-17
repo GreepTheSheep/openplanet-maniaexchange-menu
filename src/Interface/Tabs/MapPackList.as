@@ -42,7 +42,7 @@ class MapPackListTab : Tab
         GetRequestParams(params);
         string urlParams = MX::DictToApiParams(params);
 
-        string url = "https://"+MXURL+"/api/mappacks" + urlParams;
+        string url = MXURL + "/api/mappacks" + urlParams;
 
         Logging::Debug("MapPackListTab::StartRequest: " + url);
         @m_request = API::Get(url);
@@ -115,7 +115,7 @@ class MapPackListTab : Tab
 
         string urlParams = MX::DictToApiParams(params);
 
-        string url = "https://"+MXURL+"/api/mappacks" + urlParams;
+        string url = MXURL + "/api/mappacks" + urlParams;
         Logging::Debug("MapPackListTab::StartRandomRequest: " + url);
         @m_randomRequest = API::Get(url);
     }
@@ -224,7 +224,7 @@ class MapPackListTab : Tab
 
         UI::BeginDisabled(m_randomRequest !is null);
 
-        if (UI::GreenButton(Icons::Random + " Random result")){
+        if (UI::GreenButton(Icons::Random + " Random result")) {
             StartRandomRequest();
         }
 
@@ -266,9 +266,7 @@ class MapPackListTab : Tab
         RenderHeader();
 
         if (m_request !is null && mapPacks.Length == 0) {
-            int HourGlassValue = Time::Stamp % 3;
-            string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-            UI::Text(Hourglass + " Loading...");
+            UI::Text(Icons::AnimatedHourglass + " Loading...");
         } else {
             if (MX::APIDown) {
                 UI::Text("API is down, please try again later.");
@@ -294,8 +292,8 @@ class MapPackListTab : Tab
                 PopTabStyle();
 
                 UI::ListClipper clipper(mapPacks.Length);
-                while(clipper.Step()) {
-                    for(int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++)
+                while (clipper.Step()) {
+                    for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++)
                     {
                         UI::PushID("ResMap"+i);
                         MX::MapPackInfo@ mapPack = mapPacks[i];
@@ -310,7 +308,7 @@ class MapPackListTab : Tab
                     UI::Text(Icons::HourglassEnd + " Loading...");
                 }
                 UI::EndTable();
-                if (m_request is null && moreItems && UI::GreenButton("Load more")){
+                if (m_request is null && moreItems && UI::GreenButton("Load more")) {
                     StartRequest();
                 }
             }

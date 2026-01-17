@@ -5,7 +5,7 @@ namespace UI
         if (UI::BeginItemTooltip()) {
             float width = Draw::GetWidth() * resize;
 
-            if (img.m_texture !is null){
+            if (img.m_texture !is null) {
                 vec2 thumbSize = img.m_texture.GetSize();
                 UI::Image(img.m_texture, vec2(
                     width,
@@ -13,15 +13,13 @@ namespace UI
                 ));
             } else {
                 if (!img.m_error) {
-                    int HourGlassValue = Time::Stamp % 3;
-                    string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-                    UI::Text(Hourglass + " Loading Thumbnail...");
+                    UI::Text(Icons::AnimatedHourglass + " Loading Thumbnail...");
                 } else if (img.m_unsupportedFormat) {
-                    UI::Text(Icons::FileImageO + " \\$zUnsupported file format WEBP");
+                    UI::Text(Icons::FileImageO + "\\$z Unsupported file format WEBP");
                 } else if (img.m_notFound) {
-                    UI::Text("\\$fc0"+Icons::ExclamationTriangle+" \\$zThumbnail not found");
+                    UI::Text("\\$fc0" + Icons::ExclamationTriangle + "\\$z Thumbnail not found");
                 } else {
-                    UI::Text("\\$f00"+Icons::Times+" \\$zError while loading thumbnail");
+                    UI::Text("\\$f00" + Icons::Times + "\\$z Error while loading thumbnail");
                 }
             }
             UI::EndTooltip();
@@ -31,7 +29,7 @@ namespace UI
     void MXMapThumbnailTooltip(const int &in mapId, const int &in position = 1, float resize = 0.25)
     {
         if (UI::IsItemHovered(UI::HoveredFlags::DelayShort | UI::HoveredFlags::NoSharedDelay)) {
-            auto mapThumb = Images::CachedFromURL("https://" + MXURL + "/mapimage/" + mapId + "/" + position + "?hq=true");
+            auto mapThumb = Images::CachedFromURL(MXURL + "/mapimage/" + mapId + "/" + position + "?hq=true");
             MXThumbnailTooltip(mapThumb, resize);
         }
     }
@@ -39,7 +37,7 @@ namespace UI
     void MXMapPackThumbnailTooltip(const int &in mapPackID, float resize = 0.25)
     {
         if (UI::IsItemHovered(UI::HoveredFlags::DelayShort | UI::HoveredFlags::NoSharedDelay)) {
-            auto mappackThumb = Images::CachedFromURL("https://" + MXURL + "/mappackthumb/" + mapPackID);
+            auto mappackThumb = Images::CachedFromURL(MXURL + "/mappackthumb/" + mapPackID);
             MXThumbnailTooltip(mappackThumb, resize);
         }
     }

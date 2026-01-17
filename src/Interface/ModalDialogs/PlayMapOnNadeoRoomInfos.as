@@ -1,28 +1,27 @@
-class PlayMapOnNadeoRoomInfos : ModalDialog
+class PlayMapInRoom : ModalDialog
 {
-    int m_stage = 0;
-    int m_prevStage = 0;
+    bool m_showHelp;
     UI::Texture@ clubIdTex;
     UI::Texture@ roomIdTex;
+    MX::MapInfo@ m_newMap;
 
-    PlayMapOnNadeoRoomInfos() {
-        super(Icons::InfoCircle + " \\$zPlay Map On a Nadeo-hosted Room###PlayMapOnNadeoRoomInfos");
-        m_size = vec2(1200, 800);
+    PlayMapInRoom(MX::MapInfo@ map) {
+        super(Icons::Map + " \\$zAdd Map to Room###PlayMapInRoom");
+        m_size = vec2(900, 500);
+
         @clubIdTex = UI::LoadTexture("src/Interface/Assets/help_clubId.png");
         @roomIdTex = UI::LoadTexture("src/Interface/Assets/help_roomId.png");
+        @m_newMap = map;
     }
 
-    bool CanClose() override {return false;}
+    void RenderHelp() {
+        UI::BeginChild("Content", vec2(0, -35));
 
-    void RenderIdHelp()
-    {
-        UI::Text("\\$f60Finding your Club and Room ID");
-        UI::NewLine();
+        UI::PaddedHeaderSeparator("Finding your Club and Room ID");
+
         UI::Markdown(
-            "To find your club and room ID, go to [Trackmania.io](https://trackmania.io/#/clubs) and search for your club.\n\n" +
-            "Once on it, look up for the club ID, and paste this value on its appropriate input.\n\n" +
-            "In the club page on Trackmania.io, go to Activities and find your room.\n\n" +
-            "Once on it, look up for the room ID, and paste this value on its appropriate input."
+            "To find your club ID, go to [Trackmania.io](https://trackmania.io/#/clubs) and search for your club. " +
+            "Once there, copy the ID number and paste it in the \"Club ID\" field."
         );
 
         vec2 imgSize = clubIdTex.GetSize();
@@ -30,116 +29,109 @@ class PlayMapOnNadeoRoomInfos : ModalDialog
             m_size.x-20,
             imgSize.y / (imgSize.x / (m_size.x-20))
         ));
+
+        UI::NewLine();
+
+        UI::Markdown(
+            "In the club page on Trackmania.io, go to Activities and find your room. There, copy the room ID" +
+            " and paste it in the \"Room ID\" field."
+        );
+
+        UI::NewLine();
+
         UI::Image(roomIdTex, vec2(
             m_size.x-20,
             imgSize.y / (imgSize.x / (m_size.x-20))
         ));
+
+        UI::EndChild();
+
+        if (UI::Button(Icons::ArrowLeft + " Back")) {
+            m_showHelp = false;
+        }
     }
 
-    void RenderStep1()
-    {
-        UI::TextWrapped("If you want to play a specific map on a room, you'll need to provide some information.");
+    void RenderSteps() {
+        UI::BeginChild("Content", vec2(0, -35));
+
+        UI::TextWrapped("If you want to play a specific map on a room, you'll have to provide the IDs of the club and room.");
+
+        UI::TextWrapped("You also need to be an admin in the club, and the room needs to be hosted by Nadeo.");
+
         UI::NewLine();
-        UI::TextWrapped("You'll need to have the admin role of the club where the room is hosted, then provide the identifier of the club and the room.");
-        UI::TextWrapped(Icons::LightbulbO + " \\$fb5To see how to get the club and the room identifier, click here");
-        if (UI::IsItemClicked()) {
-            m_prevStage = m_stage;
-            m_stage = 10;
+
+        UI::SetItemText("Club ID:");
+        TMNext::AddMapToServer_ClubId = UI::InputInt("##ClubID", TMNext::AddMapToServer_ClubId, 0);
+
+        UI::SetItemText("Room ID:");
+        TMNext::AddMapToServer_RoomId = UI::InputInt("##RoomID", TMNext::AddMapToServer_RoomId, 0);
+
+        UI::BeginDisabled(TMNext::IsCheckingRoom || TMNext::AddMapToServer_ClubId == 0 || TMNext::AddMapToServer_RoomId == 0);
+
+        if (UI::GreenButton(Icons::Search + " Check room")) {
+            startnew(TMNext::CheckNadeoRoomAsync);
         }
 
-        UI::NewLine();
-        UI::NewLine();
+        UI::EndDisabled();
 
-        UI::Text("Club ID:");
         UI::SameLine();
-        TMNext::AddMapToServer_ClubId = Text::ParseInt(UI::InputText("##PlayMapOnNadeoRoomInfosClubID", tostring(TMNext::AddMapToServer_ClubId), false, UI::InputTextFlags::CharsDecimal));
 
-        UI::Text("Room ID:");
-        UI::SameLine();
-        TMNext::AddMapToServer_RoomId = Text::ParseInt(UI::InputText("##PlayMapOnNadeoRoomInfosRoomID", tostring(TMNext::AddMapToServer_RoomId), false, UI::InputTextFlags::CharsDecimal));
-    }
+        if (UI::GreyButton(Icons::QuestionCircle + " Help")) {
+            m_showHelp = true;
+        }
 
-    void RenderStep2()
-    {
-        if (TMNext::isCheckingRoom) {
-            int HourGlassValue = Time::Stamp % 3;
-            string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-            UI::Text(Hourglass);
+        if (TMNext::IsCheckingRoom) {
             UI::SameLine();
-            UI::Text("Please Wait... Checking in progress");
-            return;
-        }
+            UI::Text(Icons::AnimatedHourglass + " Checking room...");
+        } else if (TMNext::roomCheckError.Length > 0) {
+            UI::Text("\\$f90" + Icons::ExclamationTriangle + "\\$An error occurred while getting the room: " + TMNext::roomCheckError);
+        } else if (TMNext::foundRoom !is null) {
+            UI::PaddedHeaderSeparator("Room");
 
-        if (TMNext::roomCheckErrorCode.Length > 0) {
-            UI::Text("Error: " + TMNext::roomCheckErrorCode);
-            UI::NewLine();
-            UI::Text(TMNext::roomCheckError);
-            return;
-        }
+            UI::Text("Room: " + Text::StripFormatCodes(TMNext::foundRoom.name));
+            UI::Text("Club: " + Text::StripFormatCodes(TMNext::foundRoom.clubName));
 
-        if (TMNext::foundRoom !is null) {
-            UI::Text("Room found:");
-            UI::Text("'"+TMNext::foundRoom.name+"', in club '"+Text::StripFormatCodes(TMNext::foundRoom.clubName)+"'");
+            if (TMNext::foundRoom.room !is null) {
+                UI::Text("Players: " + TMNext::foundRoom.room.playerCount);
+            }
 
             if (!TMNext::foundRoom.nadeo) {
-                UI::Text("\\$f20" + Icons::ExclamationTriangle + " this server is NOT hosted by Nadeo, so you can't add maps from this plugin");
-                UI::Text("\\$f20Refer with your server/club masteradmin.");
-            } else {
-                UI::Text("\\$fb5Are you sure to play this map on your server?");
+                UI::NewLine();
+                UI::Text("\\$f90" + Icons::ExclamationTriangle + "\\$ this server is NOT hosted by Nadeo, so you can't add maps from this plugin");
+                UI::Text("Refer to your server/club masteradmin.");
             }
         }
+
+        UI::EndChild();
+
+        float buttonsWidth = UI::MeasureButton(Icons::Plus + " Add to room map list").x;
+        buttonsWidth += UI::MeasureButton(Icons::Play + " Play map now!").x;
+
+        UI::RightAlignButtons(buttonsWidth, 2);
+
+        UI::BeginDisabled(TMNext::IsCheckingRoom || TMNext::foundRoom is null || !TMNext::foundRoom.nadeo);
+
+        if (UI::GreenButton(Icons::Plus + " Add to room map list")) {
+            Close();
+            startnew(TMNext::AddMapToRoom, m_newMap);
+        }
+
+        UI::SameLine();
+
+        if (UI::GreenButton(Icons::Play + " Play map now!")) {
+            Close();
+            startnew(TMNext::PlayMapInRoom, m_newMap);
+        }
+
+        UI::EndDisabled();
     }
 
     void RenderDialog() override
     {
-        UI::BeginChild("Content", vec2(0, -35));
-        switch (m_stage) {
-            case 0: RenderStep1(); break;
-            case 1: RenderStep2(); break;
-            case 10: RenderIdHelp(); break;
-        }
-        UI::EndChild();
-        if (m_stage > 0) {
-            if (UI::Button(Icons::ArrowLeft + " Back")) {
-                int thisStage = m_stage;
-                m_stage = m_prevStage;
-                m_prevStage = thisStage;
-            }
+        if (m_showHelp) {
+            RenderHelp();
         } else {
-            if (UI::Button(Icons::Times + " Cancel")) {
-                Close();
-            }
-        }
-        UI::SameLine();
-        if (m_stage != 1) {
-            UI::SetCursorPos(vec2(UI::GetWindowSize().x - 85, UI::GetCursorPos().y));
-            UI::BeginDisabled(TMNext::AddMapToServer_ClubId == 0 || TMNext::AddMapToServer_RoomId == 0);
-            if (m_stage == 0 && UI::GreenButton("Next " + Icons::ArrowRight)) {
-                m_prevStage = m_stage;
-                m_stage++;
-                startnew(TMNext::CheckNadeoRoomAsync);
-            }
-            UI::EndDisabled();
-        } else {
-            UI::SetCursorPos(vec2(UI::GetWindowSize().x - (TMNext::isCheckingRoom ? 40 : 320), UI::GetCursorPos().y));
-            if (TMNext::isCheckingRoom) {
-                int HourGlassValue = Time::Stamp % 3;
-                string Hourglass = (HourGlassValue == 0 ? Icons::HourglassStart : (HourGlassValue == 1 ? Icons::HourglassHalf : Icons::HourglassEnd));
-                UI::Text(Hourglass);
-            } else {
-                if (TMNext::foundRoom !is null && TMNext::foundRoom.nadeo) {
-                    if (UI::GreenButton(Icons::Plus + "Add to room map list")) {
-                        Close();
-                        startnew(TMNext::PlayMapInRoom);
-                    }
-                    UI::SameLine();
-                    if (UI::GreenButton("Play map now!" + Icons::Play)) {
-                        Close();
-                        TMNext::AddMapToServer_PlayMapNow = true;
-                        startnew(TMNext::PlayMapInRoom);
-                    }
-                }
-            }
+            RenderSteps();
         }
     }
 }

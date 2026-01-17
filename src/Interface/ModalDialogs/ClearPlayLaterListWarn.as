@@ -10,11 +10,16 @@ class ClearPlayLaterListWarn : ModalDialog
         UI::BeginChild("Content", vec2(0, -35));
         UI::Text("This will clear the Play later list.\n\nAre you sure?");
         UI::EndChild();
+
         if (UI::Button(Icons::Times + " No")) {
             Close();
         }
+
         UI::SameLine();
-        UI::SetCursorPos(vec2(UI::GetWindowSize().x - 85, UI::GetCursorPos().y));
+
+        float buttonWidth = UI::MeasureButton(Icons::TrashO + " Yes").x;
+        UI::RightAlignButton(buttonWidth);
+
         if (UI::RedButton(Icons::TrashO + " Yes")) {
             Close();
             g_PlayLaterMaps.RemoveRange(0, g_PlayLaterMaps.Length);

@@ -110,8 +110,8 @@ namespace MXBetterChat
         }
         string Description()
         {
-            if (m_send) return "Tells the " + MXURL + " page of this map";
-            else return "Opens the " + MXURL + " page of this map";
+            if (m_send) return "Tells the " + shortMXName + " page of this map";
+            else return "Opens the " + shortMXName + " page of this map";
         }
 
         void Run(const string &in text)
@@ -131,8 +131,8 @@ namespace MXBetterChat
                 }
             } else
             {
-                if (m_send) BetterChat::SendChatMessage("$l[https://"+MXURL+"/mapshow/"+currentMapInfo.MapId+"]\"" + currentMapInfo.Name + "\" on " + pluginName + "$l");
-                else OpenBrowserURL("https://"+MXURL+"/mapshow/"+currentMapInfo.MapId);
+                if (m_send) BetterChat::SendChatMessage("$l[" + MXURL + "/mapshow/" + currentMapInfo.MapId + "]\"" + currentMapInfo.Name + "\" on " + pluginName + "$l");
+                else OpenBrowserURL(MXURL + "/mapshow/" + currentMapInfo.MapId);
             }
         }
     }
@@ -144,7 +144,7 @@ namespace MXBetterChat
 
         void Run(const string &in text)
         {
-            BetterChat::SendChatMessage(Icons::ManiaExchange + " I'm using the "+ pluginName +" plugin for Openplanet! You can access to your favorite maps directly from this plugin, including packs and more! $l[https://openplanet.dev/plugin/154]Get it here!$l");
+            BetterChat::SendChatMessage(Icons::ManiaExchange + " I'm using the " + pluginName + " plugin for Openplanet! You can access to your favorite maps directly from this plugin, including packs and more! $l[https://openplanet.dev/plugin/154]Get it here!$l");
         }
     }
 }
