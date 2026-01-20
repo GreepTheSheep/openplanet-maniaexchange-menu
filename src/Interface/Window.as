@@ -19,6 +19,7 @@ class Window{
         AddTab(FeaturedMapsTab());
         AddTab(TOTDTab());
         AddTab(PersonalListsTab());
+        AddTab(UserListTab());
         AddTab(MapPackListTab());
         AddTab(MapListTab());
     }

@@ -7,6 +7,7 @@ namespace MX
         string IngameLogin;
         string Bio;
         string RegisteredAt;
+        int RegisteredTimestamp;
         int MapCount;
         int MappackCount;
         int ReplayCount;
@@ -19,6 +20,7 @@ namespace MX
         int VideosPostedCount;
         int VideosCreatedCount;
         int FeaturedTrackID;
+        int AchievementCount;
 
         UserInfo(const Json::Value &in json)
         {
@@ -39,7 +41,14 @@ namespace MX
                 VideosReceivedCount = json["VideosReceivedCount"];
                 VideosPostedCount = json["VideosPostedCount"];
                 VideosCreatedCount = json["VideosCreatedCount"];
+                AchievementCount = json["AchievementCount"];
                 // FeaturedTrackID = json["FeaturedTrackID"]; // TODO missing
+
+                try {
+                    RegisteredTimestamp = Time::ParseFormatString("%FT%T", RegisteredAt);
+                } catch {
+                    RegisteredTimestamp = 0;
+                }
             } catch {
                 Logging::Warn("Error parsing user info for user " + Name + ": " + getExceptionInfo(), true);
                 Logging::Debug(Json::Write(ToJson()));
@@ -66,6 +75,7 @@ namespace MX
                 json["VideosReceivedCount"] = VideosReceivedCount;
                 json["VideosPostedCount"] = VideosPostedCount;
                 json["VideosCreatedCount"] = VideosCreatedCount;
+                json["AchievementCount"] = AchievementCount;
                 // json["FeaturedTrackID"] = FeaturedTrackID; // TODO missing
             } catch {
                 Logging::Warn("Error converting user info to json for user " + Name + ": " + getExceptionInfo(), true);

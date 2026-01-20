@@ -96,7 +96,8 @@ namespace MX
         "VideosReceivedCount",
         "VideosPostedCount",
         //"FeaturedTrackID", TODO missing
-        "VideosCreatedCount"
+        "VideosCreatedCount",
+        "AchievementCount"
     };
     const string userFields = string::Join(userFieldsArray, ",");
 

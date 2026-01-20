@@ -37,6 +37,9 @@ bool Setting_Tab_TOTD_Visible = false;
 [Setting name="Personal Lists" category="Display Tabs"]
 bool Setting_Tab_PersonalLists_Visible = true;
 
+[Setting name="Users" category="Display Tabs"]
+bool Setting_Tab_Users_Visible = true;
+
 [Setting name="Map Packs" category="Display Tabs"]
 bool Setting_Tab_MapPacks_Visible = true;
 

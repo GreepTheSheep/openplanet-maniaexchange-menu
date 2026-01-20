@@ -41,6 +41,11 @@ class UserTab : Tab
         m_isYourProfileTab = yourProfile;
     }
 
+    UserTab(MX::UserInfo@ user) {
+        @m_user = user;
+        m_userId = user.UserId;
+    }
+
     bool CanClose() override { return !m_isYourProfileTab; }
 
     string GetLabel() override {

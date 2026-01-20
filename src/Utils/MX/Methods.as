@@ -124,6 +124,27 @@ namespace MX
         }
     }
 
+    void GetUserSearchOrders()
+    {
+        string url = MXURL + "/api/meta/userorders";
+        Logging::Debug("Loading user search orders: " + url);
+        Json::Value resNet = API::GetAsync(url);
+
+        try {
+            for (uint i = 0; i < resNet.Length; i++)
+            {
+                int orderKey = resNet[i]["Key"];
+                string orderName = resNet[i]["Name"];
+
+                m_userSortingOrders.InsertLast(SortingOrder(resNet[i]));
+            }
+
+            Logging::Info(m_userSortingOrders.Length + " user sorting orders loaded");
+        } catch {
+            throw("Error while loading user sorting orders: " + getExceptionInfo());
+        }
+    }
+
     void GetTitlepacks()
     {
         string url = MXURL + "/api/meta/titlepacks";
@@ -207,6 +228,8 @@ namespace MX
             GetMapSearchOrders();
             if (m_mappackSortingOrders.Length > 0) m_mappackSortingOrders.RemoveRange(0, m_mappackSortingOrders.Length);
             GetMapPackSearchOrders();
+            if (m_userSortingOrders.Length > 0) m_userSortingOrders.RemoveRange(0, m_userSortingOrders.Length);
+            GetUserSearchOrders();
             if (m_maptypes.Length > 0) m_maptypes.RemoveRange(0, m_maptypes.Length);
             GetMapTypes();
 #if MP4

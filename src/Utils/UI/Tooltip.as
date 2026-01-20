@@ -41,4 +41,12 @@ namespace UI
             MXThumbnailTooltip(mappackThumb, resize);
         }
     }
+
+    void MXUserAvatarTooltip(const int &in userID, float resize = 0.25)
+    {
+        if (UI::IsItemHovered(UI::HoveredFlags::DelayShort | UI::HoveredFlags::NoSharedDelay)) {
+            auto userAvatar = Images::CachedFromURL("https://account.mania.exchange/account/avatar/" + userID);
+            MXThumbnailTooltip(userAvatar, resize);
+        }
+    }
 }
