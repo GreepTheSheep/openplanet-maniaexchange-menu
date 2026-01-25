@@ -258,7 +258,6 @@ void Main() {
     await(startnew(MX::CheckForAPILoaded));
 
     g_PlayLaterMaps = LoadPlayLater();
-    Presets::LoadPresets();
 
 #if DEPENDENCY_NADEOSERVICES
     startnew(MXNadeoServicesGlobal::LoadNadeoLiveServices);
