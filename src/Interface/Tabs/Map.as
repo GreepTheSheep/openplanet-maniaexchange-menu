@@ -455,6 +455,9 @@ class MapTab : Tab
         if (repo == MP4mxRepos::Trackmania) {
             UI::Text(Icons::Tree + " \\$f77" + m_map.EnvironmentName);
             UI::SetItemTooltip("Environment");
+#else
+            UI::Text(Icons::Tree + " \\$f77" + m_map.EnvironmentName);
+            UI::SetItemTooltip("Vista");
 #endif
             UI::Text(Icons::Car + " \\$f77" + m_map.VehicleName);
             UI::SetItemTooltip("Vehicle");

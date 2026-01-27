@@ -195,6 +195,10 @@ namespace MX
     {
 #if TMNEXT
         m_environments.InsertLast(MapEnvironment(1, "Stadium"));
+        m_environments.InsertLast(MapEnvironment(2, "Red Island"));
+        m_environments.InsertLast(MapEnvironment(3, "Green Coast"));
+        m_environments.InsertLast(MapEnvironment(4, "Blue Bay"));
+        m_environments.InsertLast(MapEnvironment(5, "White Shore"));
 #else
         if (repo == MP4mxRepos::Trackmania) {
             m_environments.InsertLast(MapEnvironment(0, "Custom"));

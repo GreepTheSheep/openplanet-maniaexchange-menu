@@ -298,11 +298,15 @@ class MapFilters : ModalDialog
         if (repo == MP4mxRepos::Trackmania) {
             UI::PaddedHeaderSeparator("Environment / Vehicle");
 #else
-            UI::PaddedHeaderSeparator("Vehicle");
+            UI::PaddedHeaderSeparator("Vistas / Vehicle");
 #endif
 
             if (MX::m_environments.Length > 1) {
+#if MP4
                 UI::SetItemText("Environment:");
+#else
+                UI::SetItemText("Vistas:");
+#endif
 
                 string enviText;
                 switch (m_selectedEnvironments.Length) {
@@ -504,7 +508,6 @@ class MapFilters : ModalDialog
         }
 
         // Environment / Vehicle
-#if MP4
         if (m_selectedEnvironments.Length > 0) {
             array<string> enviIds;
 
@@ -514,7 +517,6 @@ class MapFilters : ModalDialog
 
             params.Set("environment", string::Join(enviIds, ","));
         }
-#endif
 
         if (m_selectedVehicles.Length > 0) {
             params.Set("vehicle", string::Join(m_selectedVehicles, ","));
