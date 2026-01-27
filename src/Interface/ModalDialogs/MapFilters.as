@@ -82,7 +82,7 @@ class MapFilters : ModalDialog
         switch (m_selectedDifficulties.Length) {
             case 0: difficultyText = "Any"; break;
             case 1: difficultyText = tostring(m_selectedDifficulties[0]); break;
-            default: difficultyText = tostring(m_selectedDifficulties.Length) + " difficulties"; break;
+            default: difficultyText = tostring(m_selectedDifficulties.Length) + " selected"; break;
         }
 
         if (UI::BeginCombo("###DifficultyFilter", difficultyText)) {
@@ -185,7 +185,7 @@ class MapFilters : ModalDialog
         switch (m_includedTags.Length) {
             case 0: includeText = "No tags"; break;
             case 1: includeText = m_includedTags[0].Name; break;
-            default: includeText = tostring(m_includedTags.Length) + " tags"; break;
+            default: includeText = tostring(m_includedTags.Length) + " selected"; break;
         }
 
         if (UI::BeginCombo("###TagsIncludeCombo", includeText)) {
@@ -231,7 +231,7 @@ class MapFilters : ModalDialog
         switch (m_excludedTags.Length) {
             case 0: excludeText = "No tags"; break;
             case 1: excludeText = m_excludedTags[0].Name; break;
-            default: excludeText = tostring(m_excludedTags.Length) + " tags"; break;
+            default: excludeText = tostring(m_excludedTags.Length) + " selected"; break;
         }
 
         if (UI::BeginCombo("###TagsExcludeCombo", excludeText)) {
@@ -308,7 +308,7 @@ class MapFilters : ModalDialog
                 switch (m_selectedEnvironments.Length) {
                     case 0: enviText = "Any"; break;
                     case 1: enviText = m_selectedEnvironments[0].Name; break;
-                    default: enviText = tostring(m_selectedEnvironments.Length) + " environments"; break;
+                    default: enviText = tostring(m_selectedEnvironments.Length) + " selected"; break;
                 }
 
                 if (UI::BeginCombo("###EnviFilter", enviText)) {
@@ -357,7 +357,7 @@ class MapFilters : ModalDialog
                 switch (m_selectedVehicles.Length) {
                     case 0: vehicleText = "Any"; break;
                     case 1: vehicleText = m_selectedVehicles[0]; break;
-                    default: vehicleText = tostring(m_selectedVehicles.Length) + " vehicles"; break;
+                    default: vehicleText = tostring(m_selectedVehicles.Length) + " selected"; break;
                 }
 
                 if (UI::BeginCombo("##VehicleFilter", vehicleText)) {
