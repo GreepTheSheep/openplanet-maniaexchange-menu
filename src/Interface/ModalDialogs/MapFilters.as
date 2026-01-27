@@ -279,7 +279,7 @@ class MapFilters : ModalDialog
         UI::PaddedHeaderSeparator("Date");
 
         UI::SetItemText("From:");
-        m_fromDate = UI::InputText("##FromDateFilter", m_fromDate, UI::InputTextFlags::AutoSelectAll | UI::InputTextFlags::CharsDecimal | UI::InputTextFlags::CallbackAlways | UI::InputTextFlags::CallbackCharFilter, UI::InputTextCallback(UI::DateCallback));
+        m_fromDate = UI::InputText("##FromDateFilter", m_fromDate, UI::InputTextFlags::AutoSelectAll | UI::InputTextFlags::CharsDecimal | UI::InputTextFlags::CallbackAlways | UI::InputTextFlags::CallbackCharFilter, UI::DateCallback);
         UI::SetItemTooltip("Minimum date when the map was uploaded to " + shortMXName + ", formatted as YYYY-MM-DD.\n\n\\$f90" + Icons::ExclamationTriangle + "\\$z Different formats won't work / will give unexpected results!");
 
         if (m_fromDate != "" && UI::ResetButton()) {
@@ -287,7 +287,7 @@ class MapFilters : ModalDialog
         }
 
         UI::SetCenteredItemText("To:");
-        m_toDate = UI::InputText("##ToDateFilter", m_toDate, UI::InputTextFlags::AutoSelectAll | UI::InputTextFlags::CharsDecimal | UI::InputTextFlags::CallbackAlways | UI::InputTextFlags::CallbackCharFilter, UI::InputTextCallback(UI::DateCallback));
+        m_toDate = UI::InputText("##ToDateFilter", m_toDate, UI::InputTextFlags::AutoSelectAll | UI::InputTextFlags::CharsDecimal | UI::InputTextFlags::CallbackAlways | UI::InputTextFlags::CallbackCharFilter, UI::DateCallback);
         UI::SetItemTooltip("Maximum date when the map was uploaded to " + shortMXName + ", formatted as YYYY-MM-DD.\n\n\\$f90" + Icons::ExclamationTriangle + "\\$z Different formats won't work / will give unexpected results!");
 
         if (m_toDate != "" && UI::ResetButton()) {

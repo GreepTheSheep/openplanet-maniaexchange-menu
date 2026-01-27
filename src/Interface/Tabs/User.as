@@ -509,7 +509,7 @@ class UserTab : Tab
                 } else if (m_MXUserFeaturedMapRequest !is null && m_featuredMap is null) {
                     UI::Text(Icons::AnimatedHourglass + " Loading...");
                 } else {
-                    float featuredMapwidth = Draw::GetWidth() * 0.10;
+                    float featuredMapwidth = Display::GetWidth() * 0.10;
                     UI::BeginChild("UserFeaturedMapImageChild", vec2(featuredMapwidth + 20, 0));
                     auto featuredMapImg = Images::CachedFromURL(MXURL + "/mapimage/" + m_featuredMap.MapId + "/1?hq=true");
 

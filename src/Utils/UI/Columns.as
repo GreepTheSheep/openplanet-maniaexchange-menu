@@ -9,15 +9,15 @@ class MapColumns {
         for (uint i = 0; i < maps.Length; i++) {
             MX::MapInfo@ map = maps[i];
 
-            author = Math::Max(author, Draw::MeasureString(map.Username).x);
+            author = Math::Max(author, UI::MeasureString(map.Username).x);
 #if MP4
-            titlepack = Math::Max(titlepack, Draw::MeasureString(map.TitlePack).x);
+            titlepack = Math::Max(titlepack, UI::MeasureString(map.TitlePack).x);
 
             string envi = map.EnvironmentName.Length == 0 ? "Unknown" : map.EnvironmentName;
             string car = map.VehicleName.Length == 0 ? "Unknown" : map.VehicleName;
             string enviVehicleStr = envi + "/" + car;
 
-            enviVehicle = Math::Max(enviVehicle, Draw::MeasureString(enviVehicleStr).x);
+            enviVehicle = Math::Max(enviVehicle, UI::MeasureString(enviVehicleStr).x);
 #endif
         }
     }

@@ -57,7 +57,7 @@ class UserFilters : ModalDialog
         }
 
         UI::SetCenteredItemText("Favorite User ID:");
-        m_favId = UI::InputText("##FavIdFilter", m_favId, UI::InputTextFlags::CharsDecimal | UI::InputTextFlags::CallbackCharFilter | UI::InputTextFlags::CallbackAlways, UI::InputTextCallback(UI::MXIdCallback));
+        m_favId = UI::InputText("##FavIdFilter", m_favId, UI::InputTextFlags::CharsDecimal | UI::InputTextFlags::CallbackCharFilter | UI::InputTextFlags::CallbackAlways, UI::MXIdCallback);
         UI::SetItemTooltip("The ID of one of the accounts this user has favorited.\n\nE.g., to filter by users who have Ubisoft Nadeo as one of\nits favorite users, set this to 21.");
 
         if (m_favId != "" && UI::ResetButton()) {
@@ -129,7 +129,7 @@ class UserFilters : ModalDialog
         UI::PaddedHeaderSeparator("Registered at");
 
         UI::SetItemText("From:");
-        m_fromDate = UI::InputText("##FromDateFilter", m_fromDate, UI::InputTextFlags::AutoSelectAll | UI::InputTextFlags::CharsDecimal | UI::InputTextFlags::CallbackAlways | UI::InputTextFlags::CallbackCharFilter, UI::InputTextCallback(UI::DateCallback));
+        m_fromDate = UI::InputText("##FromDateFilter", m_fromDate, UI::InputTextFlags::AutoSelectAll | UI::InputTextFlags::CharsDecimal | UI::InputTextFlags::CallbackAlways | UI::InputTextFlags::CallbackCharFilter, UI::DateCallback);
         UI::SetItemTooltip("Minimum date when the account was registered, formatted as YYYY-MM-DD.\n\n\\$f90" + Icons::ExclamationTriangle + "\\$z Different formats won't work / will give unexpected results!");
 
         if (m_fromDate != "" && UI::ResetButton()) {
@@ -137,7 +137,7 @@ class UserFilters : ModalDialog
         }
 
         UI::SetCenteredItemText("To:");
-        m_toDate = UI::InputText("##ToDateFilter", m_toDate, UI::InputTextFlags::AutoSelectAll | UI::InputTextFlags::CharsDecimal | UI::InputTextFlags::CallbackAlways | UI::InputTextFlags::CallbackCharFilter, UI::InputTextCallback(UI::DateCallback));
+        m_toDate = UI::InputText("##ToDateFilter", m_toDate, UI::InputTextFlags::AutoSelectAll | UI::InputTextFlags::CharsDecimal | UI::InputTextFlags::CallbackAlways | UI::InputTextFlags::CallbackCharFilter, UI::DateCallback);
         UI::SetItemTooltip("Maximum date when the account was registered, formatted as YYYY-MM-DD.\n\n\\$f90" + Icons::ExclamationTriangle + "\\$z Different formats won't work / will give unexpected results!");
 
         if (m_toDate != "" && UI::ResetButton()) {

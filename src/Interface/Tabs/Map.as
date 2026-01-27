@@ -792,7 +792,7 @@ class MapTab : Tab
                             IfaceRender::MapComment(comment.Replies[r]);
 
                             vec4 rect = UI::GetItemRect();
-                            float middle = rect.y + Draw::MeasureString(comment.Username).y;
+                            float middle = rect.y + UI::MeasureString(comment.Username).y;
 
                             dl.AddLine(vec2(pos.x, middle), vec2(pos.x + 15, middle), vec4(0.5, 0.5, 0.5, 1), 5.0f);
 

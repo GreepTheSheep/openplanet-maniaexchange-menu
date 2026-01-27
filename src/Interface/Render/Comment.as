@@ -28,7 +28,7 @@ namespace IfaceRender
         vec2 cursor = UI::GetCursorPos();
         vec2 region = UI::GetContentRegionAvail();
         string timeFormatted = Time::FormatString("%d %b %Y at %R", comment.PostedAt);
-        UI::SetCursorPos(cursor + vec2(region.x - Draw::MeasureString(timeFormatted).x, 0));
+        UI::SetCursorPos(cursor + vec2(region.x - UI::MeasureString(timeFormatted).x, 0));
         UI::Text(timeFormatted);
 
         UI::Separator();

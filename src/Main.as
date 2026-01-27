@@ -32,7 +32,7 @@ void RenderMenuMain() {
 
                 if (UI::BeginMenu(pluginColor + Icons::ICursor + "\\$z Enter map ID")) {
                     bool pressedEnter = false;
-                    inputMapID = UI::InputText("##InputMapId", inputMapID, pressedEnter, UI::InputTextFlags::EnterReturnsTrue | UI::InputTextFlags::CharsDecimal | UI::InputTextFlags::CallbackCharFilter | UI::InputTextFlags::CallbackAlways, UI::InputTextCallback(UI::MXIdCallback));
+                    inputMapID = UI::InputText("##InputMapId", inputMapID, pressedEnter, UI::InputTextFlags::EnterReturnsTrue | UI::InputTextFlags::CharsDecimal | UI::InputTextFlags::CallbackCharFilter | UI::InputTextFlags::CallbackAlways, UI::MXIdCallback);
 
                     if (inputMapID != "") {
                         if (pressedEnter || UI::MenuItem(Icons::Play + " Play map")) {

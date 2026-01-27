@@ -176,7 +176,7 @@ class MappackFilters : ModalDialog
         UI::PaddedHeaderSeparator("Date");
 
         UI::SetItemText("From:");
-        t_fromDate = UI::InputText("##FromDateFilter", t_fromDate, UI::InputTextFlags::AutoSelectAll | UI::InputTextFlags::CharsDecimal | UI::InputTextFlags::CallbackAlways | UI::InputTextFlags::CallbackCharFilter, UI::InputTextCallback(UI::DateCallback));
+        t_fromDate = UI::InputText("##FromDateFilter", t_fromDate, UI::InputTextFlags::AutoSelectAll | UI::InputTextFlags::CharsDecimal | UI::InputTextFlags::CallbackAlways | UI::InputTextFlags::CallbackCharFilter, UI::DateCallback);
         UI::SetItemTooltip("Minimum date when the mappack was created, formatted as YYYY-MM-DD.\n\n\\$f90" + Icons::ExclamationTriangle + "\\$z Different formats won't work / will give unexpected results!");
 
         if (t_fromDate != "" && UI::ResetButton()) {
@@ -184,7 +184,7 @@ class MappackFilters : ModalDialog
         }
 
         UI::SetCenteredItemText("To:");
-        t_toDate = UI::InputText("##ToDateFilter", t_toDate, UI::InputTextFlags::AutoSelectAll | UI::InputTextFlags::CharsDecimal | UI::InputTextFlags::CallbackAlways | UI::InputTextFlags::CallbackCharFilter, UI::InputTextCallback(UI::DateCallback));
+        t_toDate = UI::InputText("##ToDateFilter", t_toDate, UI::InputTextFlags::AutoSelectAll | UI::InputTextFlags::CharsDecimal | UI::InputTextFlags::CallbackAlways | UI::InputTextFlags::CallbackCharFilter, UI::DateCallback);
         UI::SetItemTooltip("Maximum date when the mappack was created, formatted as YYYY-MM-DD.\n\n\\$f90" + Icons::ExclamationTriangle + "\\$z Different formats won't work / will give unexpected results!");
 
         if (t_toDate != "" && UI::ResetButton()) {
