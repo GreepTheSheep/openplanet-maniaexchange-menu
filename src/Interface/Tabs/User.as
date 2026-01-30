@@ -447,8 +447,6 @@ class UserTab : Tab
             UI::MXThumbnailTooltip(img, 0.3);
         } else if (!img.m_error) {
             UI::Text(Icons::AnimatedHourglass + " Loading Avatar...");
-        } else if (img.m_unsupportedFormat) {
-            UI::Text(Icons::FileImageO + "\\$z Unsupported file format WEBP");
         } else if (img.m_notFound) {
             UI::Text("\\$fc0" + Icons::ExclamationTriangle + "\\$ Avatar not found");
         } else {
@@ -523,8 +521,6 @@ class UserTab : Tab
                         UI::MXThumbnailTooltip(featuredMapImg, 0.3);
                     } else if (!featuredMapImg.m_error) {
                         UI::Text(Icons::AnimatedHourglass + " Loading thumbnail...");
-                    } else if (featuredMapImg.m_unsupportedFormat) {
-                        UI::Text(Icons::FileImageO + "\\$z Unsupported file format WEBP");
                     } else if (featuredMapImg.m_notFound) {
                         UI::Text("\\$fc0" + Icons::ExclamationTriangle + "\\$ Thumbnail not found");
                     } else {

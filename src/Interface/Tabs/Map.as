@@ -372,8 +372,6 @@ class MapTab : Tab
                     UI::MXThumbnailTooltip(img, 0.3);
                 } else if (!img.m_error) {
                     UI::Text(Icons::AnimatedHourglass + " Loading");
-                } else if (img.m_unsupportedFormat) {
-                    UI::Text(Icons::FileImageO + " \\$zUnsupported file format WEBP");
                 } else if (img.m_notFound) {
                     UI::Text("\\$fc0" + Icons::ExclamationTriangle + "\\$ Image not found");
                 } else {
@@ -395,8 +393,6 @@ class MapTab : Tab
                 UI::MXThumbnailTooltip(thumb, 0.3);
             } else if (!thumb.m_error) {
                 UI::Text(Icons::AnimatedHourglass + " Loading");
-            } else if (thumb.m_unsupportedFormat) {
-                UI::Text(Icons::FileImageO + "\\$z Unsupported file format WEBP");
             } else if (thumb.m_notFound) {
                 UI::Text("\\$fc0" + Icons::ExclamationTriangle + "\\$z Thumbnail not found");
             } else {
