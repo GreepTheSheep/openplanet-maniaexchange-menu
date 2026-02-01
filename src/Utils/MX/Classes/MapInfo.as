@@ -33,6 +33,11 @@ namespace MX
         array<MapAuthorInfo@> Authors;
         array<MapTag@> Tags;
 
+        // Leaderboard
+        array<NadeoServices::LeaderboardRecord@> Records;
+        bool m_loadingRecords;
+        bool m_fetchedRecords;
+
         string MapPackName;
         Json::Value@ jsonCache;
 
@@ -206,6 +211,48 @@ namespace MX
         {
             MX::DownloadMap(MapId, MapPackName);
         }
+
+        void FetchRecords() {
+            if (FetchedRecords || LoadingRecords) {
+                return;
+            }
+
+            m_fetchedRecords = true;
+
+            m_loadingRecords = true;
+#if DEPENDENCY_NADEOSERVICES
+            Records = NadeoServices::GetMapRecords(MapUid);
+#endif
+            m_loadingRecords = false;
+        }
+
+        void LoadMoreRecords() {
+            if (!HasMoreRecords || LoadingRecords) {
+                return;
+            }
+
+            m_loadingRecords = true;
+
+#if DEPENDENCY_NADEOSERVICES
+            array<NadeoServices::LeaderboardRecord@> times = NadeoServices::GetMapRecords(MapUid, Records.Length);
+
+            for (uint i = 0; i < times.Length; i++) {
+                Records.InsertLast(times[i]);
+            }
+#endif
+
+            m_loadingRecords = false;
+        }
+
+        bool get_HasMoreRecords() {
+            // if Records is not a multiply of 100, there's no more records, since API returns 100 at a time
+            return Records.Length % 100 == 0;
+        }
+
+        bool get_LoadingRecords() { return m_loadingRecords; }
+
+        bool get_FetchedRecords() { return m_fetchedRecords; }
+        void set_FetchedRecords(bool b) { m_fetchedRecords = b; }
 
         string get_DifficultyName() {
             return tostring(Difficulties(Difficulty));
