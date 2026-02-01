@@ -4,6 +4,7 @@ namespace MXNadeoServicesGlobal
     bool APIRefresh = false;
     array<NadeoServices::MapInfo@> g_favoriteMaps;
     int g_totalFavoriteMaps;
+    array<string> uploadedMaps;
 
 #if DEPENDENCY_NADEOSERVICES
     void LoadNadeoLiveServices()
@@ -194,6 +195,10 @@ namespace MXNadeoServicesGlobal
 
     bool CheckIfMapExistsAsync(const string &in mapUid)
     {
+        if (uploadedMaps.Find(mapUid) != -1) {
+            return true;
+        }
+
         string url = NadeoServices::BaseURLLive()+"/api/token/map/"+mapUid;
         Logging::Debug("NadeoServices - Check if map exists: " + url);
         Net::HttpRequest@ req = NadeoServices::Get("NadeoLiveServices", url);
@@ -213,8 +218,8 @@ namespace MXNadeoServicesGlobal
         }
 
         try {
-            string resMapUid = res["uid"];
-            return resMapUid == mapUid;
+            uploadedMaps.InsertLast(res["uid"]);
+            return res["uid"] == mapUid;
         } catch {
             return false;
         }

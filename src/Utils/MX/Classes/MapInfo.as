@@ -231,7 +231,25 @@ namespace MX
 
         bool get_SupportsLeaderboard() {
             // Whether the map type supports online records (TMNEXT only)
-            return (GameMode != GameModes::Platform && GameMode != GameModes::Royal && GameMode != GameModes::Puzzle);
+            return GameMode == GameModes::Race || GameMode == GameModes::Stunt;
+        }
+
+        bool get_InPlayLater() {
+            return g_PlayLaterMaps.Find(this) > -1;
+        }
+
+        bool get_InFavorites() {
+            foreach (NadeoServices::MapInfo@ map : MXNadeoServicesGlobal::g_favoriteMaps) {
+                if (MapUid == map.uid) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        bool opEquals(MapInfo@ b) {
+            return MapId == b.MapId || MapUid == b.MapUid;
         }
     }
 }

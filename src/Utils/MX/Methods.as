@@ -335,7 +335,7 @@ namespace MX
 
             MX::MapInfo@ map = MX::MapInfo(json["Results"][0]);
 
-            string path = IO::FromUserGameFolder("Maps/Downloaded/" + pluginName);
+            string path = DownloadsFolder;
             if (mapPackName.Length > 0) {
                 path += "/Packs" + Path::SanitizeFileName(mapPackName);
             }

@@ -8,7 +8,6 @@ class MapPackTab : Tab
     int m_lastIdMapList = 0;
     array<MX::MapInfo@> mapPack_maps;
     bool m_moreItemsMapList = false;
-    bool m_isLoading = false;
     bool m_error = false;
     bool m_mapListError = false;
     string m_errorMessage = "";
@@ -26,20 +25,17 @@ class MapPackTab : Tab
         if (m_mapPack.MapCount > 0) StartMXMapListRequest();
     }
 
-    bool CanClose() override { return !m_isLoading; }
+    bool CanClose() override { return m_mapPack !is null || m_error; }
 
     string GetLabel() override {
         if (m_error) {
-            m_isLoading = false;
             return "\\$f00" + Icons::Times + " \\$zError";
         }
 
         if (m_mapPack is null) {
-            m_isLoading = true;
             return Icons::Inbox + " Loading...";
         }
 
-        m_isLoading = false;
         return Icons::Inbox + " " + m_mapPack.Name;
     }
 
@@ -237,16 +233,14 @@ class MapPackTab : Tab
 
         if (MX::mapDownloadInProgress) {
             UI::Text("\\$f70" + Icons::Download + " \\$zDownloading maps...");
-            m_isLoading = true;
         } else {
-            m_isLoading = false;
             if (!m_mapDownloaded) {
                 if (!m_mapListError && mapPack_maps.Length != 0 && UI::PurpleButton(Icons::Download + " Download Pack")) {
                     Renderables::Add(MapPackActionWarn(MapPackActions::Download, mapPack_maps));
                 }
             } else {
                 UI::Text("\\$0f0" + Icons::Download + " \\$zMap pack downloaded");
-                if (UI::RoseButton(Icons::FolderOpen + " Open Containing Folder")) OpenExplorerPath(IO::FromUserGameFolder("Maps/Downloaded/"+pluginName));
+                if (UI::RoseButton(Icons::FolderOpen + " Open Containing Folder")) OpenExplorerPath(DownloadsFolder);
             }
         }
 

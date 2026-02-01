@@ -17,6 +17,7 @@ const bool hasPermissions = OpenplanetHasPaidPermissions();
 
 #endif
 
+string DownloadsFolder = IO::FromUserGameFolder("Maps/Downloaded/" + pluginName + "/");
 string nameMenu = pluginColor + Icons::ManiaExchange + " \\$z"+ pluginName;
 array<MX::MapInfo@> g_PlayLaterMaps;
 string PlayLaterJSON = IO::FromStorageFolder("PlayLater.json");

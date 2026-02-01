@@ -73,7 +73,7 @@ namespace TMNext
 
         dfm.TaskResult_Release(regScript.Id);
 
-        string mapLocation = IO::FromUserGameFolder("Maps/Downloaded/" + pluginName) + "/" + map.MapUid + ".Map.Gbx";
+        string mapLocation = DownloadsFolder + map.MapUid + ".Map.Gbx";
 
         if (IO::FileExists(mapLocation)) {
             IO::Delete(mapLocation);

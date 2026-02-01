@@ -12,10 +12,7 @@ class MapTab : Tab
     int m_mapId;
     string m_mapUid = "";
     bool m_isMapOnNadeoServices = false;
-    bool m_isLoading = false;
     bool m_mapDownloaded = false;
-    bool m_isMapOnPlayLater = false;
-    bool m_isMapOnFavorite = false;
     bool m_error = false;
     bool m_TMIOrequestStart = false;
     bool m_TMIOrequestStarted = false;
@@ -48,33 +45,28 @@ class MapTab : Tab
 #endif
     }
 
-    bool CanClose() override { return !m_isLoading; }
+    bool CanClose() override { return m_map !is null || m_error; }
 
     string GetLabel() override {
         if (m_error) {
-            m_isLoading = false;
             return "\\$f00" + Icons::Times + "\\$z Error";
         }
 
         if (m_map is null) {
-            m_isLoading = true;
             return Icons::Map + " Loading...";
-
         }
-
-        m_isLoading = false;
 
         if (Setting_ColoredMapName) {
             return Icons::Map + " " + Text::OpenplanetFormatCodes(m_map.GbxMapName);
         }
 
-        return Icons::Map + " " + Text::OpenplanetFormatCodes(m_map.GbxMapName);
+        return Icons::Map + " " + m_map.Name;
     }
 
 #if DEPENDENCY_NADEOSERVICES
     void CheckIfMapExistsNadeoServices()
     {
-        m_isMapOnNadeoServices = MXNadeoServicesGlobal::CheckIfMapExistsAsync(m_map.MapUid);
+        m_isMapOnNadeoServices = m_map.OnlineMapId != "" || MXNadeoServicesGlobal::CheckIfMapExistsAsync(m_map.MapUid);
     }
 #endif
 
@@ -325,30 +317,6 @@ class MapTab : Tab
             return;
         }
 
-        // Check if the map is already on the play later list
-        for (uint i = 0; i < g_PlayLaterMaps.Length; i++) {
-            MX::MapInfo@ playLaterMap = g_PlayLaterMaps[i];
-            if (playLaterMap.MapId != m_map.MapId) {
-                m_isMapOnPlayLater = false;
-            } else {
-                m_isMapOnPlayLater = true;
-                break;
-            }
-        }
-
-#if DEPENDENCY_NADEOSERVICES
-        // Check if the map is already on the favorites list
-        for (uint i = 0; i < MXNadeoServicesGlobal::g_favoriteMaps.Length; i++) {
-            NadeoServices::MapInfo@ favoriteMap = MXNadeoServicesGlobal::g_favoriteMaps[i];
-            if (favoriteMap.uid != m_map.MapUid) {
-                m_isMapOnFavorite = false;
-            } else {
-                m_isMapOnFavorite = true;
-                break;
-            }
-        }
-#endif
-
         float width = UI::GetWindowSize().x*0.3;
         vec2 posTop = UI::GetCursorPos();
 
@@ -356,11 +324,9 @@ class MapTab : Tab
 
         UI::BeginTabBar("MapImages");
 
-        for (uint i = 0; i < m_map.Images.Length; i++) {
-            MX::MapImage@ currImage = m_map.Images[i];
-
+        foreach (MX::MapImage@ currImage : m_map.Images) {
             if (UI::BeginTabItem(tostring(currImage.Position))) {
-                auto img = Images::CachedFromURL(MXURL + "/mapimage/"+m_map.MapId+"/"+currImage.Position+"?hq=true");
+                auto img = Images::CachedFromURL(MXURL + "/mapimage/" + m_map.MapId + "/" + currImage.Position + "?hq=true");
 
                 if (img.m_texture !is null) {
                     vec2 thumbSize = img.m_texture.GetSize();
@@ -533,9 +499,7 @@ class MapTab : Tab
 
         if (MX::mapDownloadInProgress) {
             UI::Text("\\$f70" + Icons::Download + " \\$zDownloading map...");
-            m_isLoading = true;
         } else {
-            m_isLoading = false;
             if (!m_mapDownloaded) {
                 if (UI::PurpleButton(Icons::Download + " Download Map")) {
                     UI::ShowNotification("Downloading map...", Text::OpenplanetFormatCodes(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
@@ -545,20 +509,19 @@ class MapTab : Tab
             } else {
                 UI::Text("\\$0f0" + Icons::Download + " \\$zMap downloaded");
                 UI::PushStyleColor(UI::Col::Text, UI::GetStyleColor(UI::Col::TextDisabled));
-                UI::TextWrapped("to Maps\\Downloaded\\" + pluginName + "\\" + m_map.MapId + " - " + Path::SanitizeFileName(m_map.Name) + ".Map.Gbx");
+                UI::TextWrapped("to " + DownloadsFolder + m_map.MapId + " - " + Path::SanitizeFileName(m_map.Name) + ".Map.Gbx");
                 UI::PopStyleColor();
-                if (UI::RoseButton(Icons::FolderOpen + " Open Containing Folder")) OpenExplorerPath(IO::FromUserGameFolder("Maps/Downloaded/"+pluginName));
+                if (UI::RoseButton(Icons::FolderOpen + " Open Containing Folder")) OpenExplorerPath(DownloadsFolder);
             }
         }
 
-        if (!m_isMapOnPlayLater) {
+        if (!m_map.InPlayLater) {
 #if TMNEXT
             if (Permissions::PlayLocalMap() && UI::GreenButton(Icons::Check + " Add to Play later")) {
 #else
             if (UI::GreenButton(Icons::Check + " Add to Play later")) {
 #endif
                 g_PlayLaterMaps.InsertAt(0, m_map);
-                m_isMapOnPlayLater = true;
                 SavePlayLater(g_PlayLaterMaps);
             }
         } else {
@@ -571,38 +534,33 @@ class MapTab : Tab
                     MX::MapInfo@ playLaterMap = g_PlayLaterMaps[i];
                     if (playLaterMap.MapId == m_map.MapId) {
                         g_PlayLaterMaps.RemoveAt(i);
-                        m_isMapOnPlayLater = false;
                         SavePlayLater(g_PlayLaterMaps);
                     }
                 }
             }
         }
 
-#if DEPENDENCY_NADEOSERVICES
-        if (!m_isMapOnFavorite) {
-            UI::BeginDisabled(!m_isMapOnNadeoServices);
-#if TMNEXT
-            if (Permissions::PlayLocalMap() && UI::GreenButton(Icons::Heart + " Add to Favorites")) {
-#else
-            if (UI::GreenButton(Icons::Heart + " Add to Favorites")) {
-#endif
-                startnew(MXNadeoServicesGlobal::AddMapToFavoritesAsync, m_map);
-            }
-            UI::EndDisabled();
-            if (!m_isMapOnNadeoServices) UI::SetItemTooltip(Icons::ExclamationTriangle + " This map is not on Nadeo Services, can't add it to your favorites");
-        } else {
-#if TMNEXT
-            if (Permissions::PlayLocalMap() && UI::RedButton(Icons::Heart + " Remove from Favorites")) {
-#else
-            if (UI::RedButton(Icons::Heart + " Remove from Favorites")) {
-#endif
-                for (uint i = 0; i < MXNadeoServicesGlobal::g_favoriteMaps.Length; i++) {
-                    NadeoServices::MapInfo@ favoriteMap = MXNadeoServicesGlobal::g_favoriteMaps[i];
-                    if (favoriteMap.uid == m_map.MapUid) {
-                        startnew(MXNadeoServicesGlobal::RemoveMapFromFavoritesAsync, favoriteMap);
-                        break;
+#if TMNEXT && DEPENDENCY_NADEOSERVICES
+        if (Permissions::PlayLocalMap()) {
+            if (m_map.InFavorites) {
+                if (UI::RedButton(Icons::Heart + " Remove from Favorites")) {
+                    foreach (NadeoServices::MapInfo@ favoriteMap : MXNadeoServicesGlobal::g_favoriteMaps) {
+                        if (favoriteMap.uid == m_map.MapUid) {
+                            startnew(MXNadeoServicesGlobal::RemoveMapFromFavoritesAsync, favoriteMap);
+                            break;
+                        }
                     }
                 }
+            } else {
+                UI::BeginDisabled(!m_isMapOnNadeoServices);
+
+                if (UI::GreenButton(Icons::Heart + " Add to Favorites")) {
+                    startnew(MXNadeoServicesGlobal::AddMapToFavoritesAsync, m_map);
+                }
+
+                UI::EndDisabled();
+
+                if (!m_isMapOnNadeoServices) UI::SetItemTooltip(Icons::ExclamationTriangle + " This map is not on Nadeo Services, can't add it to your favorites");
             }
         }
 #endif
@@ -778,9 +736,7 @@ class MapTab : Tab
                 } else {
                     UI::DrawList@ dl = UI::GetWindowDrawList();
 
-                    for (uint i = 0; i < m_comments.Length; i++) {
-                        MX::MapComment@ comment = m_comments[i];
-
+                    foreach (MX::MapComment@ comment : m_comments) {
                         IfaceRender::MapComment(comment);
 
                         vec2 pos = UI::GetCursorScreenPos();

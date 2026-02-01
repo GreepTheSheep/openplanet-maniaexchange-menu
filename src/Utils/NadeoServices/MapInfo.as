@@ -92,5 +92,9 @@ namespace NadeoServices
 
             return json;
         }
+
+        bool opEquals(MapInfo@ b) {
+            return uid == b.uid;
+        }
     }
 }
