@@ -32,17 +32,21 @@ namespace MX
         array<MapImage@> Images;
         array<MapAuthorInfo@> Authors;
         array<MapTag@> Tags;
+        bool m_IsUploaded;
 
         // Leaderboard
         array<NadeoServices::LeaderboardRecord@> Records;
         bool m_loadingRecords;
         bool m_fetchedRecords;
 
+        // Download
+        bool m_downloading;
+        bool m_downloaded;
+
         string MapPackName;
         Json::Value@ jsonCache;
 
-        MapInfo(const Json::Value &in json)
-        {
+        MapInfo(const Json::Value &in json) {
             try {
                 MapId = json["MapId"];
                 MapUid = json["MapUid"];
@@ -126,10 +130,11 @@ namespace MX
             }
         }
 
-        Json::Value ToJson()
-        {
+        Json::Value ToJson() {
             if (jsonCache !is null) return jsonCache;
+
             Json::Value json = Json::Object();
+
             try {
                 json["MapId"] = MapId;
                 json["MapUid"] = MapUid;
@@ -194,23 +199,29 @@ namespace MX
             } catch {
                 Logging::Warn("Error converting map info to json for map " + Name + ": " + getExceptionInfo());
             }
+
             return json;
         }
 
-        void PlayMap()
-        {
+        void PlayMap() {
             MX::LoadMap(MapId);
         }
 
-        void EditMap()
-        {
+        void EditMap() {
             MX::LoadMap(MapId, true);
         }
 
-        void DownloadMap()
-        {
-            MX::DownloadMap(MapId, MapPackName);
+        void DownloadMap() {
+            m_downloading = true;
+
+            MX::DownloadMap(this, MapPackName);
+
+            m_downloading = false;
+            m_downloaded = true;
         }
+
+        bool get_Downloading() { return m_downloading; }
+        bool get_Downloaded()  { return m_downloaded; }
 
         void FetchRecords() {
             if (FetchedRecords || LoadingRecords) {
@@ -294,6 +305,19 @@ namespace MX
 
             return false;
         }
+
+#if DEPENDENCY_NADEOSERVICES
+        void CheckIfUploaded() {
+            if (OnlineMapId != "") {
+                m_IsUploaded = true;
+                return;
+            }
+
+            m_IsUploaded = MXNadeoServicesGlobal::CheckIfMapExistsAsync(MapUid);
+        }
+#endif
+
+        bool get_IsUploadedToServers() { return m_IsUploaded; }
 
         bool opEquals(MapInfo@ b) {
             return MapId == b.MapId || MapUid == b.MapUid;

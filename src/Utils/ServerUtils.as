@@ -52,7 +52,7 @@ namespace TMNext
 
     void UploadMapToNadeoServices(MX::MapInfo@ map) {
 #if TMNEXT
-        MX::DownloadMap(map.MapId, "", map.MapUid);
+        MX::DownloadMap(map, "", map.MapUid);
 
         auto app = cast<CGameManiaPlanet>(GetApp());
         auto cma = app.MenuManager.MenuCustom_CurrentManiaApp;
@@ -99,7 +99,7 @@ namespace TMNext
 
     void UpdateRoomMaps(MX::MapInfo@ map, bool switchToMap = false) {
 #if DEPENDENCY_NADEOSERVICES
-        if (!MXNadeoServicesGlobal::CheckIfMapExistsAsync(map.MapUid)) {
+        if (!map.IsUploadedToServers) {
             UploadMapToNadeoServices(map);
         }
 

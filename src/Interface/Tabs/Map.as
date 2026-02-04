@@ -9,8 +9,6 @@ class MapTab : Tab
     array<MX::MapComment@> m_comments;
     int m_mapId;
     string m_mapUid = "";
-    bool m_isMapOnNadeoServices = false;
-    bool m_mapDownloaded = false;
     bool m_error = false;
     array<MX::MapEmbeddedObject@> m_mapEmbeddedObjects;
     bool m_mapEmbeddedObjectsError = false;
@@ -33,7 +31,7 @@ class MapTab : Tab
         @m_map = map;
 
 #if DEPENDENCY_NADEOSERVICES
-        startnew(CoroutineFunc(CheckIfMapExistsNadeoServices));
+        startnew(CoroutineFunc(m_map.CheckIfUploaded));
 #endif
     }
 
@@ -54,13 +52,6 @@ class MapTab : Tab
 
         return Icons::Map + " " + m_map.Name;
     }
-
-#if DEPENDENCY_NADEOSERVICES
-    void CheckIfMapExistsNadeoServices()
-    {
-        m_isMapOnNadeoServices = m_map.OnlineMapId != "" || MXNadeoServicesGlobal::CheckIfMapExistsAsync(m_map.MapUid);
-    }
-#endif
 
     void StartMXRequest()
     {
@@ -106,7 +97,7 @@ class MapTab : Tab
             // Handle the response
             @m_map = MX::MapInfo(json["Results"][0]);
 #if DEPENDENCY_NADEOSERVICES
-            startnew(CoroutineFunc(CheckIfMapExistsNadeoServices));
+            startnew(CoroutineFunc(m_map.CheckIfUploaded));
 #endif
         }
     }
@@ -395,7 +386,7 @@ class MapTab : Tab
                     startnew(CoroutineFunc(m_map.PlayMap));
                 }
 #if TMNEXT && DEPENDENCY_NADEOSERVICES
-                if (isMapTypeSupported && Permissions::CreateAndUploadMap() && IsInServer()) {
+                if (isMapTypeSupported && IsInServer()) {
                     CTrackMania@ app = cast<CTrackMania>(GetApp());
 
                     if (app.RootMap !is null) {
@@ -433,71 +424,53 @@ class MapTab : Tab
         }
 #endif
 
-        if (MX::mapDownloadInProgress) {
-            UI::Text("\\$f70" + Icons::Download + " \\$zDownloading map...");
-        } else {
-            if (!m_mapDownloaded) {
-                if (UI::PurpleButton(Icons::Download + " Download Map")) {
-                    UI::ShowNotification("Downloading map...", Text::OpenplanetFormatCodes(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
-                    startnew(CoroutineFunc(m_map.DownloadMap));
-                    m_mapDownloaded = true;
-                }
-            } else {
-                UI::Text("\\$0f0" + Icons::Download + " \\$zMap downloaded");
-                UI::PushStyleColor(UI::Col::Text, UI::GetStyleColor(UI::Col::TextDisabled));
-                UI::TextWrapped("to " + DownloadsFolder + m_map.MapId + " - " + Path::SanitizeFileName(m_map.Name) + ".Map.Gbx");
-                UI::PopStyleColor();
-                if (UI::RoseButton(Icons::FolderOpen + " Open Containing Folder")) OpenExplorerPath(DownloadsFolder);
+        if (m_map.Downloaded) {
+            UI::Text("\\$0f0" + Icons::CheckCircle + " \\$zMap downloaded");
+
+            if (UI::RoseButton(Icons::FolderOpen + " Open Containing Folder")) {
+                OpenExplorerPath(DownloadsFolder);
             }
+        } else if (m_map.Downloading) {
+            UI::Text(Icons::AnimatedHourglass + " Downloading map...");
+        } else if (UI::PurpleButton(Icons::Download + " Download Map")) {
+            UI::ShowNotification("Downloading map...", Text::OpenplanetFormatCodes(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
+            startnew(CoroutineFunc(m_map.DownloadMap));
         }
 
         if (!m_map.InPlayLater) {
-#if TMNEXT
-            if (Permissions::PlayLocalMap() && UI::GreenButton(Icons::Check + " Add to Play later")) {
-#else
             if (UI::GreenButton(Icons::Check + " Add to Play later")) {
-#endif
-                g_PlayLaterMaps.InsertAt(0, m_map);
+                g_PlayLaterMaps.InsertLast(m_map);
                 SavePlayLater(g_PlayLaterMaps);
             }
-        } else {
-#if TMNEXT
-            if (Permissions::PlayLocalMap() && UI::RedButton(Icons::Times + " Remove from Play later")) {
-#else
-            if (UI::RedButton(Icons::Times + " Remove from Play later")) {
-#endif
-                for (uint i = 0; i < g_PlayLaterMaps.Length; i++) {
-                    MX::MapInfo@ playLaterMap = g_PlayLaterMaps[i];
-                    if (playLaterMap.MapId == m_map.MapId) {
-                        g_PlayLaterMaps.RemoveAt(i);
-                        SavePlayLater(g_PlayLaterMaps);
-                    }
-                }
+        } else if (UI::RedButton(Icons::Times + " Remove from Play later")) {
+            int mapIndex = g_PlayLaterMaps.Find(m_map);
+            
+            if (mapIndex > -1) {
+                g_PlayLaterMaps.RemoveAt(mapIndex);
+                SavePlayLater(g_PlayLaterMaps);
             }
         }
 
 #if TMNEXT && DEPENDENCY_NADEOSERVICES
-        if (Permissions::PlayLocalMap()) {
-            if (m_map.InFavorites) {
-                if (UI::RedButton(Icons::Heart + " Remove from Favorites")) {
-                    foreach (NadeoServices::MapInfo@ favoriteMap : MXNadeoServicesGlobal::g_favoriteMaps) {
-                        if (favoriteMap.uid == m_map.MapUid) {
-                            startnew(MXNadeoServicesGlobal::RemoveMapFromFavoritesAsync, favoriteMap);
-                            break;
-                        }
+        if (m_map.InFavorites) {
+            if (UI::RedButton(Icons::Heart + " Remove from Favorites")) {
+                foreach (NadeoServices::MapInfo@ favoriteMap : MXNadeoServicesGlobal::g_favoriteMaps) {
+                    if (favoriteMap.uid == m_map.MapUid) {
+                        startnew(MXNadeoServicesGlobal::RemoveMapFromFavoritesAsync, favoriteMap);
+                        break;
                     }
                 }
-            } else {
-                UI::BeginDisabled(!m_isMapOnNadeoServices);
-
-                if (UI::GreenButton(Icons::Heart + " Add to Favorites")) {
-                    startnew(MXNadeoServicesGlobal::AddMapToFavoritesAsync, m_map);
-                }
-
-                UI::EndDisabled();
-
-                if (!m_isMapOnNadeoServices) UI::SetItemTooltip(Icons::ExclamationTriangle + " This map is not on Nadeo Services, can't add it to your favorites");
             }
+        } else {
+            UI::BeginDisabled(!m_map.IsUploadedToServers);
+
+            if (UI::GreenButton(Icons::Heart + " Add to Favorites")) {
+                startnew(MXNadeoServicesGlobal::AddMapToFavoritesAsync, m_map);
+            }
+
+            UI::EndDisabled();
+
+            if (!m_map.IsUploadedToServers) UI::SetItemTooltip(Icons::ExclamationTriangle + " This map is not on Nadeo Services, can't add it to your favorites");
         }
 #endif
 

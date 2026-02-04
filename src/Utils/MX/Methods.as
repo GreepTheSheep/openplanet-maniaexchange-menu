@@ -323,18 +323,9 @@ namespace MX
         }
     }
 
-    void DownloadMap(int mapId, const string &in mapPackName = "", string _fileName = "")
+    void DownloadMap(MX::MapInfo@ map, const string &in mapPackName = "", string _fileName = "")
     {
         try {
-            auto json = API::GetAsync(MXURL + "/api/maps?fields=" + mapFields + "&id=" +mapId);
-
-            if (json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
-                Logging::Error("Failed to download map: Track not found.", true);
-                return;
-            }
-
-            MX::MapInfo@ map = MX::MapInfo(json["Results"][0]);
-
             string path = DownloadsFolder;
             if (mapPackName.Length > 0) {
                 path += "/Packs" + Path::SanitizeFileName(mapPackName);
@@ -342,17 +333,13 @@ namespace MX
 
             if (!IO::FolderExists(path)) IO::CreateFolder(path);
 
-            Net::HttpRequest@ gbxReq = API::Get(MXURL + "/mapgbx/" + mapId);
+            Net::HttpRequest@ gbxReq = API::Get(MXURL + "/mapgbx/" + map.MapId);
 
-            mapDownloadInProgress = true;
-
-            Logging::Debug("Started downloading map " + map.Name + " (" + mapId + ") to " + path);
+            Logging::Debug("Started downloading map " + map.Name + " (" + map.MapId + ") to " + path);
 
             while (!gbxReq.Finished()) {
                 yield();
             }
-
-            mapDownloadInProgress = false;
 
             if (_fileName.Length == 0) {
                 _fileName = map.MapId + " - " + map.Name;

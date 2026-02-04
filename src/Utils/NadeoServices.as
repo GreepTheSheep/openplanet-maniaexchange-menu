@@ -4,7 +4,7 @@ namespace MXNadeoServicesGlobal
     bool APIRefresh = false;
     array<NadeoServices::MapInfo@> g_favoriteMaps;
     int g_totalFavoriteMaps;
-    array<string> uploadedMaps;
+    dictionary checkedMaps;
 
 #if DEPENDENCY_NADEOSERVICES
     void LoadNadeoLiveServices()
@@ -195,32 +195,42 @@ namespace MXNadeoServicesGlobal
 
     bool CheckIfMapExistsAsync(const string &in mapUid)
     {
-        if (uploadedMaps.Find(mapUid) != -1) {
-            return true;
+        if (checkedMaps.Exists(mapUid)) {
+            return bool(checkedMaps[mapUid]);
         }
 
-        string url = NadeoServices::BaseURLLive()+"/api/token/map/"+mapUid;
+        string url = NadeoServices::BaseURLLive() + "/api/token/map/" + mapUid;
         Logging::Debug("NadeoServices - Check if map exists: " + url);
+
         Net::HttpRequest@ req = NadeoServices::Get("NadeoLiveServices", url);
         req.Start();
+
         while (!req.Finished()) {
             yield();
         }
+
         auto res = req.Json();
 
         if (res.GetType() != Json::Type::Object) {
             if (res.GetType() == Json::Type::Array && res[0].GetType() == Json::Type::String) {
                 string errorMsg = res[0];
-                if (errorMsg.Contains("notFound")) return false;
+
+                if (errorMsg.Contains("notFound")) {
+                    checkedMaps.Set(mapUid, false);
+                    return false;
+                }
             }
+
             Logging::Error("NadeoServices - Error checking if map exists: " + req.String());
+            checkedMaps.Set(mapUid, false);
             return false;
         }
 
         try {
-            uploadedMaps.InsertLast(res["uid"]);
+            checkedMaps.Set(res["uid"], res["uid"] == mapUid);
             return res["uid"] == mapUid;
         } catch {
+            checkedMaps.Set(mapUid, false);
             return false;
         }
     }

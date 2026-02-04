@@ -12,8 +12,6 @@ namespace MX
 
     Net::HttpRequest@ req;
 
-    bool mapDownloadInProgress = false;
-
     bool APIDown = false;
     bool APIRefresh = true;
 }
