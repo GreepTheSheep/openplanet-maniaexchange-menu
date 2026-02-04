@@ -1,18 +1,10 @@
 class MapPackTab : Tab
 {
     Net::HttpRequest@ m_MXrequest;
-    Net::HttpRequest@ m_MXMapsRequest;
     MX::MapPackInfo@ m_mapPack;
-
     int m_mapPackId;
-    int m_lastIdMapList = 0;
-    array<MX::MapInfo@> mapPack_maps;
-    bool m_moreItemsMapList = false;
     bool m_error = false;
-    bool m_mapListError = false;
-    string m_errorMessage = "";
-    bool m_mapDownloaded = false;
-    MapColumns@ columnWidths = MapColumns();
+    string m_errorMessage;
 
     MapPackTab(int packId) {
         m_mapPackId = packId;
@@ -22,7 +14,7 @@ class MapPackTab : Tab
     MapPackTab(MX::MapPackInfo@ mapPack) {
         @m_mapPack = mapPack;
         m_mapPackId = mapPack.MappackId;
-        if (m_mapPack.MapCount > 0) StartMXMapListRequest();
+        startnew(CoroutineFunc(m_mapPack.FetchMaps));
     }
 
     bool CanClose() override { return m_mapPack !is null || m_error; }
@@ -86,10 +78,9 @@ class MapPackTab : Tab
                 return;
             }
 
-            // Handle the response
             @m_mapPack = MX::MapPackInfo(json);
 
-            if (m_mapPack.MapCount > 0) StartMXMapListRequest();
+            startnew(CoroutineFunc(m_mapPack.FetchMaps));
         }
     }
 
@@ -97,66 +88,6 @@ class MapPackTab : Tab
     {
         m_error = true;
         m_errorMessage = errorMessage;
-    }
-
-    void StartMXMapListRequest()
-    {
-        dictionary mapParams;
-        mapParams.Set("fields", MX::mapFields);
-        mapParams.Set("mappackid", tostring(m_mapPackId));
-
-        if (m_moreItemsMapList && m_lastIdMapList != 0) {
-            mapParams.Set("after", tostring(m_lastIdMapList));
-        }
-
-        string mapUrlParams = MX::DictToApiParams(mapParams);
-
-        string url = MXURL + "/api/maps" + mapUrlParams;
-        Logging::Debug("MapPackTab::StartRequest (Map List): "+url);
-        @m_MXMapsRequest = API::Get(url);
-    }
-
-    void CheckMXMapListRequest()
-    {
-        // If there's a request, check if it has finished
-        if (m_MXMapsRequest !is null && m_MXMapsRequest.Finished()) {
-            // Parse the response
-            string res = m_MXMapsRequest.String();
-            int resCode = m_MXMapsRequest.ResponseCode();
-            auto json = m_MXMapsRequest.Json();
-            @m_MXMapsRequest = null;
-
-            Logging::Debug("MapPackTab::CheckRequest (Map List): " + res);
-
-            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
-                Logging::Info("MapPackTab::CheckRequest (Map List): Error parsing response");
-                m_mapListError = true;
-                return;
-            } else if (json["Results"].Length == 0) {
-                Logging::Error("MapPackTab::CheckRequest (Map List): API returned 0 maps! Expected " + m_mapPack.MapCount);
-                m_mapListError = true;
-                return;
-            }
-
-            // Handle the response
-            m_moreItemsMapList = json["More"];
-            HandleMXMapListResponse(json["Results"]);
-        }
-    }
-
-    void HandleMXMapListResponse(const Json::Value &in json)
-    {
-        for (uint i = 0; i < json.Length; i++) {
-            MX::MapInfo@ map = MX::MapInfo(json[i]);
-            map.MapPackName = m_mapPack.Name;
-            mapPack_maps.InsertLast(map);
-
-            if (m_moreItemsMapList && i == json.Length - 1) {
-                m_lastIdMapList = json[i]["MapId"];
-            }
-        }
-
-        columnWidths.Update(mapPack_maps);
     }
 
     void Render() override
@@ -172,8 +103,6 @@ class MapPackTab : Tab
             UI::Text(Icons::AnimatedHourglass + " Loading...");
             return;
         }
-
-        CheckMXMapListRequest();
 
         float width = UI::GetWindowSize().x*0.3;
         vec2 posTop = UI::GetCursorPos();
@@ -221,28 +150,29 @@ class MapPackTab : Tab
             UI::SetItemTooltip("Edited date");
         }
 
-        if (UI::CyanButton(Icons::ExternalLink + " View on "+pluginName)) OpenBrowserURL(MXURL + "/mappackshow/"+m_mapPack.MappackId);
-
-#if TMNEXT
-        if (!m_mapListError && mapPack_maps.Length != 0 && Permissions::PlayLocalMap() && UI::GreenButton(Icons::Check + " Add to Play later")) {
-#else
-        if (!m_mapListError && mapPack_maps.Length != 0 && UI::GreenButton(Icons::Check + " Add to Play later")) {
-#endif
-            Renderables::Add(MapPackActionWarn(MapPackActions::AddPlayLater, mapPack_maps));
+        if (UI::CyanButton(Icons::ExternalLink + " View on " + pluginName)) {
+            OpenBrowserURL(MXURL + "/mappackshow/" + m_mapPack.MappackId);
         }
 
-        if (MX::mapDownloadInProgress) {
-            UI::Text("\\$f70" + Icons::Download + " \\$zDownloading maps...");
-        } else {
-            if (!m_mapDownloaded) {
-                if (!m_mapListError && mapPack_maps.Length != 0 && UI::PurpleButton(Icons::Download + " Download Pack")) {
-                    Renderables::Add(MapPackActionWarn(MapPackActions::Download, mapPack_maps));
-                }
-            } else {
-                UI::Text("\\$0f0" + Icons::Download + " \\$zMap pack downloaded");
-                if (UI::RoseButton(Icons::FolderOpen + " Open Containing Folder")) OpenExplorerPath(DownloadsFolder);
+        UI::BeginDisabled(m_mapPack.MapCount == 0);
+
+        if (UI::GreenButton(Icons::Check + " Add to Play later")) {
+            Renderables::Add(MapPackActionWarn(MapPackActions::AddPlayLater, m_mapPack));
+        }
+
+        if (m_mapPack.Downloaded) {
+            UI::Text("\\$0f0" + Icons::CheckCircle + " \\$zMappack downloaded");
+
+            if (UI::RoseButton(Icons::FolderOpen + " Open Containing Folder")) {
+                OpenExplorerPath(DownloadsFolder);
             }
+        } else if (m_mapPack.Downloading) {
+            UI::Text(Icons::AnimatedHourglass + " Downloading maps...");
+        } else if (UI::PurpleButton(Icons::Download + " Download Pack")) {
+            Renderables::Add(MapPackActionWarn(MapPackActions::Download, m_mapPack));
         }
+
+        UI::EndDisabled();
 
         UI::EndChild();
 
@@ -270,11 +200,11 @@ class MapPackTab : Tab
         if (UI::BeginTabItem("Maps")) {
             UI::BeginChild("MapListChild");
 
-            if (m_mapListError) {
+            if (m_mapPack.ListError) {
                 UI::Text("\\$f00" + Icons::Times + " \\$zError while loading mappack map list.");
             } else if (m_mapPack.MapCount == 0) {
                 UI::Text("Map list for this pack is empty.");
-            } else if (m_MXMapsRequest !is null && mapPack_maps.Length == 0) {
+            } else if (m_mapPack.Loading && m_mapPack.Maps.IsEmpty()) {
                 UI::Text(Icons::AnimatedHourglass + " Loading...");
             } else {
 #if MP4
@@ -286,11 +216,11 @@ class MapPackTab : Tab
                     UI::TableSetupScrollFreeze(0, 1);
                     PushTabStyle();
                     UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
-                    UI::TableSetupColumn("Created by", UI::TableColumnFlags::WidthFixed, columnWidths.author);
+                    UI::TableSetupColumn("Created by", UI::TableColumnFlags::WidthFixed, m_mapPack.columnWidths.author);
 #if MP4
-                    UI::TableSetupColumn("Envi/Vehicle", UI::TableColumnFlags::WidthFixed, columnWidths.enviVehicle);
+                    UI::TableSetupColumn("Envi/Vehicle", UI::TableColumnFlags::WidthFixed, m_mapPack.columnWidths.enviVehicle);
                     UI::TableSetColumnEnabled(2, repo == MP4mxRepos::Trackmania);
-                    UI::TableSetupColumn("Title pack", UI::TableColumnFlags::WidthFixed, columnWidths.titlepack);
+                    UI::TableSetupColumn("Title pack", UI::TableColumnFlags::WidthFixed, m_mapPack.columnWidths.titlepack);
 #endif
                     UI::TableSetupColumn("Style", UI::TableColumnFlags::WidthStretch);
                     UI::TableSetupColumn(Icons::Trophy, UI::TableColumnFlags::WidthFixed);
@@ -298,18 +228,17 @@ class MapPackTab : Tab
                     UI::TableHeadersRow();
                     PopTabStyle();
 
-                    UI::ListClipper clipper(mapPack_maps.Length);
+                    UI::ListClipper clipper(m_mapPack.Maps.Length);
                     while (clipper.Step()) {
-                        for (int j = clipper.DisplayStart; j < clipper.DisplayEnd; j++)
-                        {
+                        for (int j = clipper.DisplayStart; j < clipper.DisplayEnd; j++) {
                             UI::PushID("ResMap"+j);
-                            MX::MapInfo@ map = mapPack_maps[j];
+                            MX::MapInfo@ map = m_mapPack.Maps[j];
                             IfaceRender::MapResult(map);
                             UI::PopID();
                         }
                     }
 
-                    if (m_MXMapsRequest !is null && m_moreItemsMapList) {
+                    if (m_mapPack.Loading && m_mapPack.MoreMaps) {
                         UI::TableNextRow();
                         UI::TableNextColumn();
                         UI::AlignTextToFramePadding();
@@ -318,8 +247,8 @@ class MapPackTab : Tab
 
                     UI::EndTable();
 
-                    if (m_MXMapsRequest is null && m_moreItemsMapList && UI::GreenButton("Load more")) {
-                        StartMXMapListRequest();
+                    if (!m_mapPack.Loading && m_mapPack.MoreMaps && UI::GreenButton("Load more")) {
+                        startnew(CoroutineFunc(m_mapPack.LoadMore));
                     }
                 }
             }

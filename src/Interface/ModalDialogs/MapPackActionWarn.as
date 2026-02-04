@@ -6,13 +6,13 @@ enum MapPackActions {
 class MapPackActionWarn : ModalDialog
 {
     MapPackActions m_action;
-    array<MX::MapInfo@> m_mapPack_maps;
+     MX::MapPackInfo@ m_mapPack;
 
-    MapPackActionWarn(MapPackActions action, array<MX::MapInfo@> maps) {
+    MapPackActionWarn(MapPackActions action, MX::MapPackInfo@ pack) {
         super("\\$f90" + Icons::ExclamationTriangle + " \\$zWarning###MapPackActionWarn");
         m_size = vec2(400, 140);
         m_action = action;
-        m_mapPack_maps = maps;
+        @m_mapPack = pack;
     }
 
     void RenderDialog() override
@@ -21,10 +21,10 @@ class MapPackActionWarn : ModalDialog
 
         switch (m_action) {
             case MapPackActions::AddPlayLater:
-                UI::Text("This will add " + m_mapPack_maps.Length + " maps to the Play later list.\n\nAre you sure?");
+                UI::Text("This will add " + m_mapPack.Maps.Length + " maps to the Play later list.\n\nAre you sure?");
                 break;
             case MapPackActions::Download:
-                UI::Text("This will download " + m_mapPack_maps.Length + " maps to your Downloaded Maps folder.\n\nAre you sure?");
+                UI::Text("This will download " + m_mapPack.Maps.Length + " maps to your Downloaded Maps folder.\n\nAre you sure?");
                 break;
             default:
                 Close();
@@ -47,18 +47,10 @@ class MapPackActionWarn : ModalDialog
 
             switch (m_action) {
                 case MapPackActions::AddPlayLater:
-                    for (uint i = 0; i < m_mapPack_maps.Length; i++) {
-                        g_PlayLaterMaps.InsertAt(g_PlayLaterMaps.Length, m_mapPack_maps[i]);
-                    }
-                    SavePlayLater(g_PlayLaterMaps);
-                    UI::ShowNotification(pluginName, Icons::Check + " Succesfully added " + m_mapPack_maps.Length + " maps to the Play Later list", UI::HSV(0.33, 0.7, 0.65));
+                    startnew(CoroutineFunc(m_mapPack.AddToPlayLater));
                     break;
                 case MapPackActions::Download:
-                    for (uint i = 0; i < m_mapPack_maps.Length; i++) {
-                        MX::MapInfo@ map = m_mapPack_maps[i];
-                        startnew(CoroutineFunc(map.DownloadMap));
-                    }
-                    UI::ShowNotification(pluginName, Icons::Check+" Succesfully downloaded " + m_mapPack_maps.Length + " maps to your Downloaded Maps folder", UI::HSV(0.33, 0.7, 0.65));
+                    startnew(CoroutineFunc(m_mapPack.DownloadMaps));
                     break;
             }
         }

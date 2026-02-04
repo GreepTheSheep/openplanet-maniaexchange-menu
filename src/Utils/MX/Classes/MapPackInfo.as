@@ -14,8 +14,19 @@ namespace MX
         bool MaplistReleased;
         bool Downloadable;
         bool IsRequest;
-        int MapCount;
+        uint MapCount;
         array<MapTag@> Tags;
+
+        // Map list
+        array<MapInfo@> Maps;
+        MapColumns@ columnWidths = MapColumns();
+        bool m_more;
+        bool m_listError;
+        bool m_loading;
+
+        // Download
+        bool m_downloading;
+        bool m_downloaded;
 
         MapPackInfo(const Json::Value &in json)
         {
@@ -102,6 +113,142 @@ namespace MX
 
         string get_TypeName() {
             return tostring(MappackTypes(Type));
+        }
+
+        int get_LastId() {
+            if (Maps.IsEmpty()) {
+                return 0;
+            }
+
+            return Maps[Maps.Length - 1].MapId;
+        }
+
+        bool get_MoreMaps()  { return m_more; }
+        bool get_Loading()   { return m_loading; }
+        bool get_ListError() { return m_listError; }
+
+        void FetchMaps() {
+            if (MapCount == 0) {
+                return;
+            }
+
+            dictionary mapParams;
+            mapParams.Set("fields", MX::mapFields);
+            mapParams.Set("mappackid", tostring(MappackId));
+            mapParams.Set("count", "1000");
+
+            if (MoreMaps && LastId != 0) {
+                mapParams.Set("after", tostring(LastId));
+            }
+
+            string mapUrlParams = MX::DictToApiParams(mapParams);
+
+            string url = MXURL + "/api/maps" + mapUrlParams;
+            Logging::Debug("[MappackInfo::FetchMaps] Request URL: " + url);
+
+            m_loading = true;
+
+            Net::HttpRequest@ request = API::Get(url);
+
+            while (!request.Finished()) {
+                yield();
+            }
+
+            m_loading = false;
+
+            auto json = request.Json();
+
+            Logging::Debug("[MappackInfo::FetchMaps] " + request.String());
+
+            if (request.ResponseCode() >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
+                Logging::Info("[MappackInfo::FetchMaps] Error parsing response.");
+                m_listError = true;
+                return;
+            }
+            
+            if (json["Results"].Length == 0) {
+                Logging::Error("[MappackInfo::FetchMaps] API returned 0 maps! Expected " + MapCount);
+                m_listError = true;
+                return;
+            }
+
+            m_more = json["More"];
+
+            for (uint i = 0; i < json["Results"].Length; i++) {
+                MX::MapInfo@ map = MX::MapInfo(json["Results"][i]);
+                map.MapPackName = Name;
+                Maps.InsertLast(map);
+            }
+
+            columnWidths.Update(Maps);
+        }
+
+        void LoadMore() {
+            if (MapCount == 0 || !MoreMaps) {
+                return;
+            }
+
+            Logging::Debug("[MappackInfo::LoadMore] Fetching more maps for mappack ID #" + MappackId);
+            FetchMaps();
+        }
+
+        bool get_Downloading() { return m_downloading; }
+        bool get_Downloaded()  { return m_downloaded; }
+
+        void DownloadMaps() {
+            if (MapCount == 0 || Downloading) {
+                return;
+            }
+
+            Logging::Info("Downloading " + Maps.Length + " maps to your Downloaded folder", true);
+
+            m_downloading = true;
+
+            if (Maps.IsEmpty()) {
+                FetchMaps();
+            }
+
+            while (MoreMaps && MapCount < Maps.Length) {
+                LoadMore();
+                sleep(100);
+            }
+
+            foreach (MapInfo@ map : Maps) {
+                map.DownloadMap();
+                sleep(100);
+            }
+
+            m_downloading = false;
+            m_downloaded = true;
+
+            UI::ShowNotification(pluginName, Icons::Check + " Succesfully downloaded " + Maps.Length + " maps to your Downloaded Maps folder", UI::HSV(0.33, 0.7, 0.65));
+        }
+
+        void AddToPlayLater() {
+            if (MapCount == 0) {
+                return;
+            }
+
+            Logging::Info("Adding " + Maps.Length + " maps to the Play Later list", true);
+
+            if (Maps.IsEmpty()) {
+                FetchMaps();
+            }
+
+            while (MoreMaps && MapCount < Maps.Length) {
+                LoadMore();
+                sleep(100);
+            }
+
+            foreach (MapInfo@ map : Maps) {
+                if (g_PlayLaterMaps.Find(map) == -1) {
+                    g_PlayLaterMaps.InsertLast(map);
+                    yield();
+                }
+            }
+
+            SavePlayLater(g_PlayLaterMaps);
+            UI::ShowNotification(pluginName, Icons::Check + " Succesfully added " + Maps.Length + " maps to the Play Later list", UI::HSV(0.33, 0.7, 0.65));
         }
     }
 }
