@@ -760,6 +760,7 @@ class MapTab : Tab
             UI::BeginChild("MapEmbeddedObjectsChild");
 
             CheckMXEmbeddedRequest();
+
             if (m_MXEmbedObjRequest !is null && m_mapEmbeddedObjects.Length == 0) {
                 UI::Text(Icons::AnimatedHourglass + " Loading...");
             } else if (m_mapEmbeddedObjectsError) {
@@ -767,6 +768,7 @@ class MapTab : Tab
                 UI::Text("\\$f00" + Icons::Times + "\\$z Error while loading embedded objects");
             } else {
                 UI::Text(m_mapEmbeddedObjects.Length + " objects found, with a total size of " + (m_map.EmbeddedItemsSize / 1024) + " KB");
+
                 if (UI::BeginTable("EmbeddedObjectsList", 3, UI::TableFlags::RowBg)) {
                     UI::TableSetupScrollFreeze(0, 1);
                     PushTabStyle();
@@ -775,7 +777,9 @@ class MapTab : Tab
                     UI::TableSetupColumn("Action", UI::TableColumnFlags::WidthFixed);
                     UI::TableHeadersRow();
                     PopTabStyle();
+
                     UI::ListClipper clipper(m_mapEmbeddedObjects.Length);
+
                     while (clipper.Step()) {
                         for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
                             UI::TableNextRow();
@@ -787,38 +791,49 @@ class MapTab : Tab
                             UI::Text(object.Name);
 
                             UI::TableNextColumn();
-                            if (object.Username.Length == 0) UI::TextDisabled(object.ObjectAuthor);
-                            else UI::Text(object.Username);
-                            if (object.UserId > 0) {
-                                UI::SetItemTooltip("Click to see " + (object.Username.Length > 0 ? (object.Username+"'s") : "user") + " profile");
-                                if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(object.UserId), true);
+
+                            if (object.Username != "") {
+                                UI::Text(object.Username);
+
+                                if (object.UserId > 0) {
+                                    UI::SetItemTooltip("Click to see " + object.Username+ "'s profile");
+                                    if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(object.UserId), true);
+                                }
+                            } else {
+                                UI::TextDisabled(object.ObjectAuthor);
                             }
 
                             UI::TableNextColumn();
-                            if (object.ID != 0) {
-                                if (object.ID == -1) {
+
+                            if (object.IsOnItemExchange) {
+                                if (object.IsLoading || object.LoadingError || object.Skipped) {
                                     UI::BeginDisabled();
-                                    UI::YellowButton(Icons::Times);
+
+                                    if (object.IsLoading) {
+                                        UI::YellowButton(Icons::AnimatedHourglass);
+                                    } else if (object.LoadingError) {
+                                        UI::YellowButton(Icons::Times);
+                                        UI::SetItemTooltip("Error while fetching this object on item.exchange");
+                                    } else {
+                                        UI::YellowButton(Icons::ExclamationTriangle);
+                                        UI::SetItemTooltip("The list of embedded objects is too long for this map.");
+                                    }
+
                                     UI::EndDisabled();
-                                    UI::SetItemTooltip("Error while fetching this object on item.exchange");
-                                } else if (object.ID == -2) {
-                                    UI::BeginDisabled();
-                                    UI::YellowButton(Icons::ExclamationTriangle);
-                                    UI::EndDisabled();
-                                    UI::SetItemTooltip("The list of embedded objects is too long for this map.");
                                 } else {
 #if DEPENDENCY_ITEMEXCHANGE
                                     if (UI::YellowButton(Icons::ItemExchange)) ItemExchange::ShowItemInfo(object.ID);
 #else
-                                    if (UI::YellowButton(Icons::ExternalLink)) OpenBrowserURL("https://item.exchange/item/view/"+object.ID);
+                                    if (UI::YellowButton(Icons::ExternalLink)) OpenBrowserURL("https://item.exchange/item/view/" + object.ID);
 #endif
                                 }
                             } else {
                                 UI::BeginDisabled();
                                 UI::YellowButton(Icons::Times);
                                 UI::EndDisabled();
-                                UI::SetItemTooltip("This object is not published on item.exchange");
+                                UI::SetItemTooltip("This object is not published on ItemExchange");
                             }
+
                             UI::PopID();
                         }
                     }
