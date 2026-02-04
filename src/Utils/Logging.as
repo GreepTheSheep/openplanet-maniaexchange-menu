@@ -13,7 +13,7 @@ namespace Logging {
     void Error(const string &in msg, bool showNotification = false) {
         if (Setting_LogLevel >= LogLevel::Error) {
             if (showNotification) {                
-                UI::ShowNotification(Icons::Kenney::ButtonTimes + " " + pluginName + " - Error", msg, ERROR_COLOR, 8000);
+                UI::ShowNotification(Icons::ManiaExchange + " " + pluginName + " - Error", msg, ERROR_COLOR, 8000);
             }
 
             error("[ERROR] " + msg);
@@ -23,15 +23,19 @@ namespace Logging {
     void Warn(const string &in msg, bool showNotification = false) {
         if (Setting_LogLevel >= LogLevel::Warn) {
             if (showNotification) {
-                UI::ShowNotification(Icons::Kenney::ButtonTimes + " " + pluginName + " - Warning", msg, WARN_COLOR, 5000);
+                UI::ShowNotification(Icons::ManiaExchange + " " + pluginName + " - Warning", msg, WARN_COLOR, 5000);
             }
 
             warn("[WARN] " + msg);
         }
     }
 
-    void Info(const string &in msg) {
+    void Info(const string &in msg, bool showNotification = false) {
         if (Setting_LogLevel >= LogLevel::Info) {
+            if (showNotification) {
+                UI::ShowNotification(Icons::ManiaExchange + " " + pluginName + " - Information", msg);
+            }
+
             print("[INFO] " + msg);
         }
     }
