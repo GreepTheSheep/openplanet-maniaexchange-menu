@@ -6,8 +6,13 @@ class MapColumns {
     void Update(array<MX::MapInfo@> maps) {
         Reset();
 
-        for (uint i = 0; i < maps.Length; i++) {
-            MX::MapInfo@ map = maps[i];
+        uint start = Time::Now;
+
+        foreach (MX::MapInfo@ map : maps) {
+            if (Time::Now > start + 50) {
+                start = Time::Now;
+                yield();
+            }
 
             author = Math::Max(author, UI::MeasureString(map.Username).x);
 #if MP4
