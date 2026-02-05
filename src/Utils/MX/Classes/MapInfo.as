@@ -43,6 +43,12 @@ namespace MX
         bool m_downloading;
         bool m_downloaded;
 
+        // Replays
+        array<MapReplay@> Replays;
+        bool m_loadingReplays;
+        bool m_fetchedReplays;
+        bool m_replaysError;
+
         string MapPackName;
         Json::Value@ jsonCache;
 
@@ -211,6 +217,8 @@ namespace MX
             MX::LoadMap(MapId, true);
         }
 
+        // Download
+
         void DownloadMap() {
             m_downloading = true;
 
@@ -222,6 +230,8 @@ namespace MX
 
         bool get_Downloading() { return m_downloading; }
         bool get_Downloaded()  { return m_downloaded; }
+
+        // Records
 
         void FetchRecords() {
             if (FetchedRecords || LoadingRecords) {
@@ -264,6 +274,29 @@ namespace MX
 
         bool get_FetchedRecords() { return m_fetchedRecords; }
         void set_FetchedRecords(bool b) { m_fetchedRecords = b; }
+
+        void FetchReplays() {
+            if (FetchedReplays || LoadingReplays) {
+                return;
+            }
+
+            m_fetchedReplays = true;
+
+            m_loadingReplays = true;
+            Replays = MX::GetMapReplays(MapId);
+
+            if (Replays.Length == 0 && ReplayCount > 0) {
+                m_replaysError = true;
+            }
+
+            m_loadingReplays = false;
+        }
+
+        bool get_LoadingReplays() { return m_loadingReplays; }
+        bool get_ReplaysError() { return m_replaysError; }
+
+        bool get_FetchedReplays() { return m_fetchedReplays; }
+        void set_FetchedReplays(bool b) { m_fetchedReplays = b; }
 
         string get_DifficultyName() {
             return tostring(Difficulties(Difficulty));

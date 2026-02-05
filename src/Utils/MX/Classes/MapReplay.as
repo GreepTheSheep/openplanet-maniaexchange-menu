@@ -38,8 +38,12 @@ namespace MX
             }
         }
 
-        bool get_IsValid() const {
+        bool get_IsValid() {
             return Position >= 0; // TODO change to 1 when Position gets fixed
+        }
+
+        bool get_IsLocalUser() {
+            return Setting_Tab_YourProfile_UserID == UserId;
         }
     }
 }
