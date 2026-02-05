@@ -144,7 +144,7 @@ namespace MXBetterChat
 
         void Run(const string &in text)
         {
-            BetterChat::SendChatMessage(Icons::ManiaExchange + " I'm using the " + pluginName + " plugin for Openplanet! You can access to your favorite maps directly from this plugin, including packs and more! $l[https://openplanet.dev/plugin/154]Get it here!$l");
+            BetterChat::SendChatMessage(Icons::ManiaExchange + " I'm using the " + pluginName + " plugin for Openplanet! You can access your favorite maps directly from this plugin, including packs and more! $l[https://openplanet.dev/plugin/154]Get it here!$l");
         }
     }
 }

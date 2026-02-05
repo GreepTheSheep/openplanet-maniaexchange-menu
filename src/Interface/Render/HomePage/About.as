@@ -8,7 +8,7 @@ namespace HomePageTabRender {
         UI::AlignTextToFramePadding();
         UI::Text("Follow the ManiaExchange network on");
         UI::SameLine();
-        if (UI::MenuItem("Bluesky")) OpenBrowserURL("https://bsky.app/profile/maniaexchange.bsky.social");
+        if (UI::Button("Bluesky")) OpenBrowserURL("https://bsky.app/profile/maniaexchange.bsky.social");
         UI::SameLine();
         if (UI::Button(Icons::Facebook + " Facebook")) OpenBrowserURL("https://facebook.com/maniaexchange/");
         UI::SameLine();

@@ -256,12 +256,12 @@ class MapTab : Tab
 #if MP4
         if (repo == MP4mxRepos::Trackmania) {
 #endif
-        UI::Text(Icons::Hourglass + " \\$f77" + Time::Format(m_map.Length));
-        UI::SetItemTooltip("Length");
-        if (m_map.Laps >= 1) {
-            UI::Text(Icons::Refresh+ " \\$f77" + m_map.Laps);
-            UI::SetItemTooltip("Laps");
-        }
+            UI::Text(Icons::Hourglass + " \\$f77" + Time::Format(m_map.Length));
+            UI::SetItemTooltip("Length");
+            if (m_map.Laps >= 1) {
+                UI::Text(Icons::Refresh+ " \\$f77" + m_map.Laps);
+                UI::SetItemTooltip("Laps");
+            }
 #if MP4
         }
 #endif
@@ -320,7 +320,7 @@ class MapTab : Tab
 
             bool isMapTypeSupported = MX::ModesFromMapType.Exists(m_map.MapType);
             if (!isMapTypeSupported) {
-                UI::Text("\\$f70" + Icons::ExclamationTriangle + " \\$zThe map type is not supported for direct play\nit can crash your game or returns you to the menu");
+                UI::TextWrapped("\\$f70" + Icons::ExclamationTriangle + " \\$zThe map type is not supported for direct play\nit can crash your game or returns you to the menu");
                 if (!Setting_ShowPlayOnAllMaps) {
                     UI::SetItemTooltip("If you still want to play this map, check the box \"Show Play Button on all map types\" in the plugin settings");
                 } else if (UI::OrangeButton(Icons::Play + " Play Map Anyway")) {
@@ -353,7 +353,7 @@ class MapTab : Tab
             }
 #if TMNEXT
         } else {
-            UI::Text("\\$f00" + Icons::Times + "\\$z You do not have permissions to play");
+            UI::Text("\\$f00" + Icons::Times + "\\$z You do not have permissions to play community maps.");
             UI::Text("Consider buying club access of the game.");
         }
 #endif
@@ -367,8 +367,7 @@ class MapTab : Tab
             }
 #if TMNEXT
         } else {
-            UI::Text("\\$f00" + Icons::Times + " \\$zYou do not have permissions to edit maps");
-            UI::Text("Consider buying at least club access of the game.");
+            UI::Text("\\$f00" + Icons::Times + " \\$zYou do not have permissions to edit maps.");
         }
 #endif
 
@@ -428,7 +427,13 @@ class MapTab : Tab
         UI::BeginChild("Description");
 
         UI::PushFont(Fonts::BigBold);
-        UI::TextWrapped(Text::OpenplanetFormatCodes(m_map.GbxMapName));
+
+        if (Setting_ColoredMapName) {
+            UI::TextWrapped(Text::OpenplanetFormatCodes(m_map.GbxMapName));
+        } else {
+            UI::TextWrapped(m_map.Name);
+        }
+
         UI::PopFont();
 
         if (m_map.Authors.Length > 0) {

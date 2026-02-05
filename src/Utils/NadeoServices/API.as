@@ -19,7 +19,7 @@ namespace NadeoServices {
         auto res = req.Json();
 
         if (res.GetType() != Json::Type::Object) {
-            Logging::Error("[GetMapRecords] Error when getting map records: API didn't return an object!");
+            Logging::Error("[GetMapRecords] Error when getting map records: API didn't return an object!", true);
             return {};
         }
 
@@ -48,7 +48,7 @@ namespace NadeoServices {
             Logging::Trace("[GetMapRecords] Found " + leaderboard.Length + " records for map UID " + mapUid);
             return leaderboard;
         } catch {
-            Logging::Error("[GetMapRecords] Failed to get map records: " + getExceptionInfo());
+            Logging::Error("[GetMapRecords] Failed to get map records: " + getExceptionInfo(), true);
             return {};
         }
     }
