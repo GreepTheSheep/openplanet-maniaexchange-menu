@@ -49,6 +49,18 @@ namespace MX
         bool m_fetchedReplays;
         bool m_replaysError;
 
+        // Comments
+        array<MapComment@> Comments;
+        bool m_loadingComments;
+        bool m_fetchedComments;
+        bool m_commentsError;
+
+        // Objects
+        array<MapEmbeddedObject@> Objects;
+        bool m_loadingObjects;
+        bool m_fetchedObjects;
+        bool m_objectsError;
+
         string MapPackName;
         Json::Value@ jsonCache;
 
@@ -275,6 +287,8 @@ namespace MX
         bool get_FetchedRecords() { return m_fetchedRecords; }
         void set_FetchedRecords(bool b) { m_fetchedRecords = b; }
 
+        // Replays
+
         void FetchReplays() {
             if (FetchedReplays || LoadingReplays) {
                 return;
@@ -285,7 +299,7 @@ namespace MX
             m_loadingReplays = true;
             Replays = MX::GetMapReplays(MapId);
 
-            if (Replays.Length == 0 && ReplayCount > 0) {
+            if (Replays.IsEmpty() && ReplayCount > 0) {
                 m_replaysError = true;
             }
 
@@ -297,6 +311,56 @@ namespace MX
 
         bool get_FetchedReplays() { return m_fetchedReplays; }
         void set_FetchedReplays(bool b) { m_fetchedReplays = b; }
+
+        // Comments
+
+        void FetchComments() {
+            if (FetchedComments || LoadingComments) {
+                return;
+            }
+
+            m_fetchedComments = true;
+
+            m_loadingComments = true;
+            Comments = MX::GetMapComments(MapId);
+
+            if (Comments.IsEmpty() && CommentCount > 0) {
+                m_commentsError = true;
+            }
+
+            m_loadingComments = false;
+        }
+
+        bool get_LoadingComments() { return m_loadingComments; }
+        bool get_CommentsError() { return m_commentsError; }
+
+        bool get_FetchedComments() { return m_fetchedComments; }
+        void set_FetchedComments(bool b) { m_fetchedComments = b; }
+
+        // Objects
+
+        void FetchObjects() {
+            if (FetchedObjects || LoadingObjects) {
+                return;
+            }
+
+            m_fetchedObjects = true;
+
+            m_loadingObjects = true;
+            Objects = MX::GetMapObjects(MapId);
+
+            if (Objects.IsEmpty() && EmbeddedObjectsCount > 0) {
+                m_objectsError = true;
+            }
+
+            m_loadingObjects = false;
+        }
+
+        bool get_LoadingObjects() { return m_loadingObjects; }
+        bool get_ObjectsError() { return m_objectsError; }
+
+        bool get_FetchedObjects() { return m_fetchedObjects; }
+        void set_FetchedObjects(bool b) { m_fetchedObjects = b; }
 
         string get_DifficultyName() {
             return tostring(Difficulties(Difficulty));

@@ -1,17 +1,10 @@
 class MapTab : Tab
 {
     Net::HttpRequest@ m_MXrequest;
-    Net::HttpRequest@ m_MXEmbedObjRequest;
-    Net::HttpRequest@ m_MXCommentsRequest;
     MX::MapInfo@ m_map;
-    array<MX::MapComment@> m_comments;
     int m_mapId;
     string m_mapUid = "";
     bool m_error = false;
-    array<MX::MapEmbeddedObject@> m_mapEmbeddedObjects;
-    bool m_mapEmbeddedObjectsError = false;
-    bool m_commentsStopRequest = false;
-    bool m_commentsError = false;
 
     MapTab(int trackId) {
         m_mapId = trackId;
@@ -98,86 +91,6 @@ class MapTab : Tab
         }
     }
 
-    void StartMXEmbeddedRequest()
-    {
-        string url = MXURL + "/api/maps/objects?trackId=" + m_map.MapId + "&count=" + m_map.EmbeddedObjectsCount;
-        Logging::Debug("MapTab::StartRequest (Embedded): "+url);
-        @m_MXEmbedObjRequest = API::Get(url);
-    }
-
-    void CheckMXEmbeddedRequest()
-    {
-        if (!MX::APIDown && m_mapEmbeddedObjects.Length != m_map.EmbeddedObjectsCount && !m_mapEmbeddedObjectsError && m_MXEmbedObjRequest is null && UI::IsWindowAppearing()) {
-            StartMXEmbeddedRequest();
-        }
-        // If there's a request, check if it has finished
-        if (m_MXEmbedObjRequest !is null && m_MXEmbedObjRequest.Finished()) {
-            // Parse the response
-            string res = m_MXEmbedObjRequest.String();
-            int resCode = m_MXEmbedObjRequest.ResponseCode();
-            auto json = m_MXEmbedObjRequest.Json();
-            @m_MXEmbedObjRequest = null;
-
-            Logging::Debug("MapTab::CheckRequest (Embedded): " + res);
-
-            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
-                Logging::Info("MapTab::CheckRequest (Embedded): Error parsing response");
-                m_mapEmbeddedObjectsError = true;
-                return;
-            } else if (json["Results"].Length == 0) {
-                Logging::Error("MapTab::CheckRequest (Embedded): API returned 0 embedded objects! Expected " + m_map.EmbeddedObjectsCount);
-                m_mapEmbeddedObjectsError = true;
-                return;
-            }
-
-            // Handle the response
-            Json::Value@ mapObjects = json["Results"];
-
-            for (uint i = 0; i < mapObjects.Length; i++) {
-                MX::MapEmbeddedObject@ object = MX::MapEmbeddedObject(mapObjects[i], int(i) < Setting_EmbeddedObjectsLimit);
-                m_mapEmbeddedObjects.InsertLast(object);
-            }
-        }
-    }
-
-    void StartMXCommentsRequest()
-    {
-        string url = MXURL + "/api/maps/comments?trackId=" + m_map.MapId + "&count=50&fields=" + MX::commentFields;
-        Logging::Debug("MapTab::StartRequest (Comments): " + url);
-        @m_MXCommentsRequest = API::Get(url);
-    }
-
-    void CheckMXCommentsRequest()
-    {
-        if (!MX::APIDown && !m_commentsStopRequest && !m_commentsError && m_MXCommentsRequest is null && UI::IsWindowAppearing()) {
-            StartMXCommentsRequest();
-        }
-
-        if (m_MXCommentsRequest !is null && m_MXCommentsRequest.Finished()) {
-            string res = m_MXCommentsRequest.String();
-            int resCode = m_MXCommentsRequest.ResponseCode();
-            auto json = m_MXCommentsRequest.Json();
-            @m_MXCommentsRequest = null;
-
-            Logging::Debug("MapTab::CheckRequest (Comments): " + res);
-
-            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
-                Logging::Info("MapTab::CheckRequest (Comments): Error parsing response");
-                m_commentsError = true;
-                return;
-            }
-
-            // Handle the response
-            Json::Value@ mapComments = json["Results"];
-
-            for (uint i = 0; i < mapComments.Length; i++) {
-                MX::MapComment@ comment = MX::MapComment(mapComments[i]);
-                m_comments.InsertLast(comment);
-            }
-
-            m_commentsStopRequest = true;
-        }
-    }
     void Render() override
     {
         CheckMXRequest();
@@ -587,54 +500,52 @@ class MapTab : Tab
         if (UI::BeginTabItem("Comments")) {
             UI::BeginChild("MapMXCommentsChild");
 
-            CheckMXCommentsRequest();
+            if (UI::GreenButton(Icons::Plus + " Post comment")) {
+                OpenBrowserURL(MXURL + "/commentupdate/" + m_map.MapId);
+            }
 
-            if (m_MXCommentsRequest !is null && !m_MXCommentsRequest.Finished()) {
-                UI::Text(Icons::AnimatedHourglass + " Loading...");
-            } else if (m_commentsError) {
-                UI::AlignTextToFramePadding();
-                UI::Text("\\$f00" + Icons::Times + "\\$z Error while loading comments");
-            } else {
-                if (UI::GreenButton(Icons::Plus + " Post comment")) OpenBrowserURL(MXURL + "/commentupdate/"+m_map.MapId);
+            UI::SameLine();
 
-                UI::SameLine();
+            if (UI::Button(Icons::Refresh)) {
+                m_map.Comments.RemoveRange(0, m_map.Comments.Length);
+                m_map.FetchedComments = false;
+            }
 
-                if (UI::Button(Icons::Refresh)) {
-                    m_comments.RemoveRange(0, m_comments.Length);
-                    m_commentsStopRequest = false;
-                    StartMXCommentsRequest();
-                }
-
-                if (m_comments.Length == 0) {
-                    UI::AlignTextToFramePadding();
-                    UI::Text("No comments found for this map. Be the first!");
+            if (m_map.Comments.IsEmpty()) {
+                if (!m_map.FetchedComments) {
+                    startnew(CoroutineFunc(m_map.FetchComments));
+                } else if (m_map.LoadingComments) {
+                    UI::Text(Icons::AnimatedHourglass + " Loading...");
                 } else {
-                    UI::DrawList@ dl = UI::GetWindowDrawList();
+                    UI::Text("No comments found for this map. Be the first!");
+                }
+            } else {
+                UI::DrawList@ dl = UI::GetWindowDrawList();
 
-                    foreach (MX::MapComment@ comment : m_comments) {
-                        IfaceRender::MapComment(comment);
+                foreach (MX::MapComment@ comment : m_map.Comments) {
+                    IfaceRender::MapComment(comment);
 
-                        vec2 pos = UI::GetCursorScreenPos();
+                    vec2 pos = UI::GetCursorScreenPos();
 
-                        UI::Indent();
+                    UI::Indent();
 
-                        for (uint r = 0; r < comment.Replies.Length; r++) {
-                            IfaceRender::MapComment(comment.Replies[r]);
+                    for (uint r = 0; r < comment.Replies.Length; r++) {
+                        IfaceRender::MapComment(comment.Replies[r]);
 
-                            vec4 rect = UI::GetItemRect();
-                            float middle = rect.y + UI::MeasureString(comment.Username).y;
+                        vec4 rect = UI::GetItemRect();
+                        float middle = rect.y + UI::MeasureString(comment.Username).y;
 
-                            dl.AddLine(vec2(pos.x, middle), vec2(pos.x + 15, middle), vec4(0.5, 0.5, 0.5, 1), 5.0f);
+                        dl.AddLine(vec2(pos.x, middle), vec2(pos.x + 15, middle), vec4(0.5, 0.5, 0.5, 1), 5.0f);
 
-                            if (r == comment.Replies.Length - 1) {
-                                dl.AddLine(pos, vec2(pos.x, middle), vec4(0.5, 0.5, 0.5, 1), 7.0f);
-                            }
+                        if (r == comment.Replies.Length - 1) {
+                            dl.AddLine(pos, vec2(pos.x, middle), vec4(0.5, 0.5, 0.5, 1), 7.0f);
                         }
-
-                        UI::Unindent();
                     }
+
+                    UI::Unindent();
                 }
             }
+
             UI::EndChild();
             UI::EndTabItem();
         }
@@ -725,15 +636,16 @@ class MapTab : Tab
         if (m_map.EmbeddedObjectsCount > 0 && UI::BeginTabItem("Embedded objects (" + m_map.EmbeddedObjectsCount + ")")) {
             UI::BeginChild("MapEmbeddedObjectsChild");
 
-            CheckMXEmbeddedRequest();
-
-            if (m_MXEmbedObjRequest !is null && m_mapEmbeddedObjects.Length == 0) {
-                UI::Text(Icons::AnimatedHourglass + " Loading...");
-            } else if (m_mapEmbeddedObjectsError) {
-                UI::AlignTextToFramePadding();
-                UI::Text("\\$f00" + Icons::Times + "\\$z Error while loading embedded objects");
+            if (m_map.Objects.IsEmpty()) {
+                if (!m_map.FetchedObjects) {
+                    startnew(CoroutineFunc(m_map.FetchObjects));
+                } else if (m_map.LoadingObjects) {
+                    UI::Text(Icons::AnimatedHourglass + " Loading...");
+                } else if (m_map.ObjectsError) {
+                    UI::Text("\\$f00" + Icons::Times + "\\$z Error while loading embedded objects");
+                }
             } else {
-                UI::Text(m_mapEmbeddedObjects.Length + " objects found, with a total size of " + (m_map.EmbeddedItemsSize / 1024) + " KB");
+                UI::Text(m_map.Objects.Length + " objects found, with a total size of " + (m_map.EmbeddedItemsSize / 1024) + " KB");
 
                 if (UI::BeginTable("EmbeddedObjectsList", 3, UI::TableFlags::RowBg)) {
                     UI::TableSetupScrollFreeze(0, 1);
@@ -744,12 +656,12 @@ class MapTab : Tab
                     UI::TableHeadersRow();
                     PopTabStyle();
 
-                    UI::ListClipper clipper(m_mapEmbeddedObjects.Length);
+                    UI::ListClipper clipper(m_map.Objects.Length);
 
                     while (clipper.Step()) {
                         for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
                             UI::TableNextRow();
-                            MX::MapEmbeddedObject@ object = m_mapEmbeddedObjects[i];
+                            MX::MapEmbeddedObject@ object = m_map.Objects[i];
                             UI::PushID("EmbeddedObject" + i);
 
                             UI::TableNextColumn();
@@ -803,9 +715,11 @@ class MapTab : Tab
                             UI::PopID();
                         }
                     }
+
                     UI::EndTable();
                 }
             }
+
             UI::EndChild();
             UI::EndTabItem();
         }
