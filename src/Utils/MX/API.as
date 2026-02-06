@@ -1,4 +1,42 @@
 namespace MX {
+    MapInfo@ GetMapById(int mapId) {
+        if (MX::APIDown) {
+            return null;
+        }
+
+        dictionary params;
+        params.Set("fields", MX::mapFields);
+        params.Set("id", tostring(mapId));
+
+        string urlParams = MX::DictToApiParams(params);
+
+        string url = MXURL + "/api/maps" + urlParams;
+        Logging::Debug("[MX::GetMapById] URL: " + url);
+
+        Net::HttpRequest@ req = API::Get(url);
+
+        while (!req.Finished()) {
+            yield();
+        }
+
+        int resCode = req.ResponseCode();
+        auto json = req.Json();
+
+        Logging::Debug("[MX::GetMapById] API response: " + req.String());
+
+        if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
+            Logging::Error("[MX::GetMapById] Error parsing response");
+            return null;
+        }
+        
+        if (json["Results"].Length == 0) {
+            Logging::Error("[MX::GetMapById] Failed to get a map with ID " + mapId);
+            return null;
+        }
+
+        return MapInfo(json["Results"][0]);
+    }
+
     array<MapReplay@> GetMapReplays(int mapId) {
         if (MX::APIDown) {
             return {};

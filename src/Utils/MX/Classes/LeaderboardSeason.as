@@ -19,6 +19,12 @@ namespace MX
             }
         }
 
+        LeaderboardSeason(int id, const string &in name)
+        {
+            SeasonID = id;
+            Name = name;
+        }
+
         Json::Value ToJSON()
         {
             Json::Value json = Json::Object();

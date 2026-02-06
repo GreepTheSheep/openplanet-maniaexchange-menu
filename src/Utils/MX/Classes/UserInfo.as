@@ -22,6 +22,12 @@ namespace MX
         int FeaturedTrackID;
         int AchievementCount;
 
+        // Featured map
+        MapInfo@ FeaturedMap;
+        bool m_featuredError;
+        bool m_loadingFeatured;
+        bool m_fetchedFeatured;
+
         UserInfo(const Json::Value &in json)
         {
             try {
@@ -81,6 +87,30 @@ namespace MX
                 Logging::Warn("Error converting user info to json for user " + Name + ": " + getExceptionInfo(), true);
             }
             return json;
+        }
+
+        bool get_HasFeaturedMap() {
+            return FeaturedTrackID > 0;
+        }
+
+        bool get_FeaturedMapError()   { return m_featuredError; }
+        bool get_LoadingFeaturedMap() { return m_loadingFeatured; }
+        bool get_FetchedFeaturedMap() { return m_fetchedFeatured; }
+        void set_FetchedFeaturedMap(bool b) { m_fetchedFeatured = b; }
+
+        void FetchFeaturedMap() {
+            if (!HasFeaturedMap || FetchedFeaturedMap) {
+                return;
+            }
+
+            m_fetchedFeatured = true;
+            m_loadingFeatured = true;
+            @FeaturedMap = MX::GetMapById(FeaturedTrackID);
+            m_loadingFeatured = false;
+
+            if (FeaturedMap is null) {
+                m_featuredError = true;
+            }
         }
     }
 }

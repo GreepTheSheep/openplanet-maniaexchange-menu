@@ -56,6 +56,8 @@ namespace MX
         Logging::Debug("Loading seasons: " + url);
         Json::Value resNet = API::GetAsync(url);
 
+        m_leaderboardSeasons.InsertLast(LeaderboardSeason(-1, "Cumulative"));
+
         try {
             for (uint i = 0; i < resNet.Length; i++)
             {
