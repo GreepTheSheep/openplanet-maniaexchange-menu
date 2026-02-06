@@ -1,19 +1,18 @@
 class MapTab : Tab
 {
-    Net::HttpRequest@ m_MXrequest;
     MX::MapInfo@ m_map;
     int m_mapId;
-    string m_mapUid = "";
-    bool m_error = false;
+    string m_mapUid;
+    bool m_error;
 
     MapTab(int trackId) {
         m_mapId = trackId;
-        StartMXRequest();
+        startnew(CoroutineFunc(FetchMap));
     }
 
     MapTab(const string &in trackUid) {
         m_mapUid = trackUid;
-        StartMXRequest();
+        startnew(CoroutineFunc(FetchMap));
     }
 
     MapTab(MX::MapInfo@ map) {
@@ -42,7 +41,7 @@ class MapTab : Tab
         return Icons::Map + " " + m_map.Name;
     }
 
-    void StartMXRequest()
+    void FetchMap()
     {
         dictionary params;
         params.Set("fields", MX::mapFields);
@@ -56,45 +55,41 @@ class MapTab : Tab
         string urlParams = MX::DictToApiParams(params);
 
         string url = MXURL + "/api/maps" + urlParams;
-        Logging::Debug("MapTab::StartRequest (MX): "+url);
-        @m_MXrequest = API::Get(url);
-    }
+        Logging::Debug("MapTab::StartRequest (MX): " + url);
 
-    void CheckMXRequest()
-    {
-        // If there's a request, check if it has finished
-        if (m_MXrequest !is null && m_MXrequest.Finished()) {
-            // Parse the response
-            string res = m_MXrequest.String();
-            int resCode = m_MXrequest.ResponseCode();
-            auto json = m_MXrequest.Json();
-            @m_MXrequest = null;
+        Net::HttpRequest@ req = API::Get(url);
 
-            Logging::Debug("MapTab::CheckRequest (MX): " + res);
-
-            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
-                Logging::Error("MapTab::CheckRequest (MX): Error parsing response");
-                m_error = true;
-                return;
-            } else if (json["Results"].Length == 0) {
-                // This should be impossible
-                string reqId = m_mapUid != "" ? m_mapUid : tostring(m_mapId);
-                Logging::Error("MapTab::CheckRequest (MX): Failed to find a map with UID/ID " + reqId);
-                m_error = true;
-                return;
-            }
-            // Handle the response
-            @m_map = MX::MapInfo(json["Results"][0]);
-#if DEPENDENCY_NADEOSERVICES
-            startnew(CoroutineFunc(m_map.CheckIfUploaded));
-#endif
+        while (!req.Finished()) {
+            yield();
         }
+
+        int resCode = req.ResponseCode();
+        auto json = req.Json();
+
+        Logging::Debug("MapTab::CheckRequest (MX): " + req.String());
+
+        if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
+            Logging::Error("MapTab::CheckRequest (MX): Error parsing response");
+            m_error = true;
+            return;
+        }
+        
+        if (json["Results"].Length == 0) {
+            // This should be impossible
+            string reqId = m_mapUid != "" ? m_mapUid : tostring(m_mapId);
+            Logging::Error("MapTab::CheckRequest (MX): Failed to find a map with UID/ID " + reqId);
+            m_error = true;
+            return;
+        }
+
+        @m_map = MX::MapInfo(json["Results"][0]);
+#if DEPENDENCY_NADEOSERVICES
+        startnew(CoroutineFunc(m_map.CheckIfUploaded));
+#endif
     }
 
     void Render() override
     {
-        CheckMXRequest();
-
         if (m_error) {
             UI::Text("\\$f00" + Icons::Times + " \\$zMap not found");
             return;
@@ -258,8 +253,12 @@ class MapTab : Tab
                             Renderables::Add(PlayMapInRoom(m_map));
                         }
                         UI::EndDisabled();
-                        if (!sameMapType) UI::SetItemTooltip(Icons::Times + " Map type doesn't match the current room's game mode");
-                        else if (m_map.ServerSizeExceeded) UI::SetItemTooltip(Icons::Times + " Map size exceeds the server limit of 7MB");
+
+                        if (!sameMapType) {
+                            UI::SetItemTooltip(Icons::Times + " Map type doesn't match the current room's game mode");
+                        } else if (m_map.ServerSizeExceeded) {
+                            UI::SetItemTooltip(Icons::Times + " Map size exceeds the server limit of 7MB");
+                        }
                     }
                 }
 #endif
@@ -330,7 +329,9 @@ class MapTab : Tab
 
             UI::EndDisabled();
 
-            if (!m_map.IsUploadedToServers) UI::SetItemTooltip(Icons::ExclamationTriangle + " This map is not on Nadeo Services, can't add it to your favorites");
+            if (!m_map.IsUploadedToServers) {
+                UI::SetItemTooltip(Icons::ExclamationTriangle + " This map is not on Nadeo Services, can't add it to your favorites");
+            }
         }
 #endif
 
@@ -391,7 +392,8 @@ class MapTab : Tab
             UI::EndChild();
             UI::EndTabItem();
         }
-        if (UI::BeginTabItem(shortMXName + " Leaderboard")) {
+
+        if (UI::BeginTabItem(shortMXName + " Leaderboard (" + m_map.ReplayCount + ")")) {
             UI::BeginChild("MapMXLeaderboardChild");
 
             if (UI::GreenButton(Icons::ExternalLink + " Submit")) {
@@ -630,10 +632,14 @@ class MapTab : Tab
 
         UI::EndDisabled();
 
-        if (!m_map.SupportsLeaderboard) UI::SetItemTooltip("\\$f00" + Icons::Times + " \\$zThis map doesn't support online records");
+        if (!m_map.SupportsLeaderboard) {
+            UI::SetItemTooltip("\\$f00" + Icons::Times + " \\$zThis map doesn't support online records");
+        }
 #endif
 
-        if (m_map.EmbeddedObjectsCount > 0 && UI::BeginTabItem("Embedded objects (" + m_map.EmbeddedObjectsCount + ")")) {
+        UI::BeginDisabled(m_map.EmbeddedObjectsCount == 0);
+
+        if (UI::BeginTabItem("Embedded objects (" + m_map.EmbeddedObjectsCount + ")")) {
             UI::BeginChild("MapEmbeddedObjectsChild");
 
             if (m_map.Objects.IsEmpty()) {
@@ -646,6 +652,17 @@ class MapTab : Tab
                 }
             } else {
                 UI::Text(m_map.Objects.Length + " objects found, with a total size of " + (m_map.EmbeddedItemsSize / 1024) + " KB");
+
+                float buttonWidth = UI::MeasureButton(Icons::ExternalLink + " Get items on ItemExchange").x;
+                UI::RightAlignButton(buttonWidth);
+
+                if (UI::Button(Icons::ExternalLink + " Get items on ItemExchange")) {
+#if MP4
+                    OpenBrowserURL("https://item.exchange/set/map/" + int(repo) + "/" + m_map.MapId);
+#else
+                    OpenBrowserURL("https://item.exchange/set/map/2/" + m_map.MapId);
+#endif
+                }
 
                 if (UI::BeginTable("EmbeddedObjectsList", 3, UI::TableFlags::RowBg)) {
                     UI::TableSetupScrollFreeze(0, 1);
@@ -721,7 +738,13 @@ class MapTab : Tab
             }
 
             UI::EndChild();
-            UI::EndTabItem();
+            UI::EndTabItem();  
+        }
+
+        UI::EndDisabled();
+
+        if (m_map.EmbeddedObjectsCount == 0) {
+            UI::SetItemTooltip("Map has no embedded objects.");
         }
 
         UI::EndTabBar();

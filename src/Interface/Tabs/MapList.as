@@ -2,7 +2,7 @@ class MapListTab : Tab
 {
     Net::HttpRequest@ m_request;
     array<MX::MapInfo@> maps;
-    bool moreItems = false;
+    bool moreItems;
     Net::HttpRequest@ m_randomRequest;
     int lastId = 0;
     MapFilters@ filters;

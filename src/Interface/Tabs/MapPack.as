@@ -1,19 +1,17 @@
 class MapPackTab : Tab
 {
-    Net::HttpRequest@ m_MXrequest;
     MX::MapPackInfo@ m_mapPack;
     int m_mapPackId;
-    bool m_error = false;
+    bool m_error;
     string m_errorMessage;
 
     MapPackTab(int packId) {
         m_mapPackId = packId;
-        StartMXRequest();
+        startnew(CoroutineFunc(FetchMappack));
     }
 
     MapPackTab(MX::MapPackInfo@ mapPack) {
         @m_mapPack = mapPack;
-        m_mapPackId = mapPack.MappackId;
         startnew(CoroutineFunc(m_mapPack.FetchMaps));
     }
 
@@ -37,65 +35,56 @@ class MapPackTab : Tab
         params.Set("id", tostring(m_mapPackId));
     }
 
-    void StartMXRequest()
-    {
+    void FetchMappack() {
         dictionary params;
         GetRequestParams(params);
         string urlParams = MX::DictToApiParams(params);
 
         string url = MXURL + "/api/mappacks" + urlParams;
-        Logging::Debug("MapPackTab::StartRequest (MX): "+url);
-        @m_MXrequest = API::Get(url);
-    }
+        Logging::Debug("MapPackTab::StartRequest (MX): " + url);
+        Net::HttpRequest@ req = API::Get(url);
 
-    void CheckMXRequest()
-    {
-        // If there's a request, check if it has finished
-        if (m_MXrequest !is null && m_MXrequest.Finished()) {
-            // Parse the response
-            string res = m_MXrequest.String();
-            int resCode = m_MXrequest.ResponseCode();
-            auto json = m_MXrequest.Json();
-            @m_MXrequest = null;
-
-            Logging::Debug("MapPackTab::CheckRequest (MX): " + res);
-
-            if (resCode >= 400) {
-                string errorMsg = json.Get("title", "Unknown error");
-                Logging::Error("MapPackTab::CheckRequest (MX): Error " + resCode + " - " + errorMsg);
-                HandleMXResponseError(errorMsg);
-                return;
-            }
-
-            if (json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
-                Logging::Error("MapPackTab::CheckRequest (MX): Error while loading mappack");
-                HandleMXResponseError("Empty response");
-                return;
-            } else if (json["Results"].Length == 0) {
-                // This should be impossible
-                Logging::Error("MapPackTab::CheckRequest (MX): Failed to find a mappack with ID " + m_mapPackId);
-                HandleMXResponseError("Failed to find mappack");
-                return;
-            }
-
-            @m_mapPack = MX::MapPackInfo(json);
-
-            startnew(CoroutineFunc(m_mapPack.FetchMaps));
+        while (!req.Finished()) {
+            yield();
         }
-    }
 
-    void HandleMXResponseError(const string &in errorMessage = "")
-    {
-        m_error = true;
-        m_errorMessage = errorMessage;
+        int resCode = req.ResponseCode();
+        auto json = req.Json();
+
+        Logging::Debug("MapPackTab::CheckRequest (MX): " + req.String());
+
+        if (resCode >= 400) {
+            string errorMsg = json.Get("title", "Unknown error");
+            Logging::Error("MapPackTab::CheckRequest (MX): Error " + resCode + " - " + errorMsg);
+            m_error = true;
+            m_errorMessage = errorMsg;
+            return;
+        }
+
+        if (json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
+            Logging::Error("MapPackTab::CheckRequest (MX): Error while loading mappack");
+            m_error = true;
+            m_errorMessage = "Empty response";
+            return;
+        }
+        
+        if (json["Results"].Length == 0) {
+            // This should be impossible
+            Logging::Error("MapPackTab::CheckRequest (MX): Failed to find a mappack with ID " + m_mapPackId);
+            m_error = true;
+            m_errorMessage = "Failed to find mappack";
+            return;
+        }
+
+        @m_mapPack = MX::MapPackInfo(json);
+
+        startnew(CoroutineFunc(m_mapPack.FetchMaps));
     }
 
     void Render() override
     {
-        CheckMXRequest();
-
         if (m_error) {
-            UI::Text("\\$f00" + Icons::Times + " \\$z"+m_errorMessage);
+            UI::Text("\\$f00" + Icons::Times + " \\$z" + m_errorMessage);
             return;
         }
 
@@ -197,7 +186,8 @@ class MapPackTab : Tab
             UI::EndChild();
             UI::EndTabItem();
         }
-        if (UI::BeginTabItem("Maps")) {
+
+        if (UI::BeginTabItem("Maps (" + m_mapPack.MapCount + ")")) {
             UI::BeginChild("MapListChild");
 
             if (m_mapPack.ListError) {
@@ -252,6 +242,7 @@ class MapPackTab : Tab
                     }
                 }
             }
+
             UI::EndChild();
             UI::EndTabItem();
         }

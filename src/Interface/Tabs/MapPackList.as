@@ -3,7 +3,7 @@ class MapPackListTab : Tab
     Net::HttpRequest@ m_request;
     Net::HttpRequest@ m_randomRequest;
     array<MX::MapPackInfo@> mapPacks;
-    bool moreItems = false;
+    bool moreItems;
     int lastId = 0;
 
     MappackFilters@ filters;
