@@ -1,10 +1,10 @@
 class UserListTab : Tab
 {
     Net::HttpRequest@ m_request;
-    Net::HttpRequest@ m_randomRequest;
     array<MX::UserInfo@> users;
-    bool moreItems = false;
+    bool moreItems;
     int lastId = 0;
+    bool m_loadingRandom;
 
     UserFilters@ filters;
     uint64 u_typingStart;
@@ -107,42 +107,24 @@ class UserListTab : Tab
         }
     }
 
-    void StartRandomRequest()
+    void GetRandomUser()
     {
-        dictionary params;
-        params.Set("random", "1");
-        params.Set("count", "1");
+        dictionary params = {
+            { "random", "1" },
+            { "count", "1" }
+        };
         GetRequestParams(params);
 
-        string urlParams = MX::DictToApiParams(params);
+        m_loadingRandom = true;
+        array<MX::UserInfo@> users = MX::GetUsers(params);
 
-        string url = MXURL + "/api/users" + urlParams;
-        Logging::Debug("UserListTab::StartRandomRequest: " + url);
-        @m_randomRequest = API::Get(url);
-    }
-
-    void CheckRandomRequest()
-    {
-        if (m_randomRequest !is null && m_randomRequest.Finished()) {
-            string res = m_randomRequest.String();
-            int resCode = m_randomRequest.ResponseCode();
-            auto json = m_randomRequest.Json();
-            @m_randomRequest = null;
-
-            Logging::Debug("UserListTab::CheckRandomRequest: " + res);
-
-            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
-                Logging::Error("UserListTab::CheckRandomRequest: Error while getting random user");
-                return;
-            } else if (json["Results"].Length == 0) {
-                Logging::Warn("UserListTab::CheckRandomRequest: Failed to get a random user", true);
-                return;
-            }
-
-            MX::UserInfo@ user = MX::UserInfo(json["Results"][0]);
-
-            mxMenu.AddTab(UserTab(user), true);
+        if (users.IsEmpty()) {
+            Logging::Warn("UserListTab::GetRandomUser: Failed to get a random user", true);
+        } else {
+            mxMenu.AddTab(UserTab(users[0]), true);
         }
+
+        m_loadingRandom = false;
     }
 
     void RenderSearchBar()
@@ -197,10 +179,10 @@ class UserListTab : Tab
 
         UI::SameLine();
 
-        UI::BeginDisabled(m_randomRequest !is null);
+        UI::BeginDisabled(m_loadingRandom);
 
         if (UI::GreenButton(Icons::Random + " Random result")) {
-            StartRandomRequest();
+            startnew(CoroutineFunc(GetRandomUser));
         }
 
         UI::EndDisabled();
@@ -235,7 +217,6 @@ class UserListTab : Tab
     void Render() override
     {
         CheckRequest();
-        CheckRandomRequest();
 
         RenderSearchBar();
         RenderHeader();

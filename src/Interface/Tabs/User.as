@@ -1,34 +1,15 @@
 class UserTab : Tab
 {
     Net::HttpRequest@ m_MXUserLeaderboardRequest;
-    Net::HttpRequest@ m_MXUserMapsCreatedRequest;
-    Net::HttpRequest@ m_MXUserMapsAwardedRequest;
-    Net::HttpRequest@ m_MXUserMapPacksRequest;
     int m_userId;
     bool m_isYourProfileTab;
     MX::UserInfo@ m_user;
-    array<MX::MapInfo@> m_mapsCreated;
-    bool m_moreItemsCreatedMaps;
-    array<MX::MapInfo@> m_mapsAwardsGiven;
-    bool m_moreItemsAwardsGiven;
-    array<MX::MapPackInfo@> m_mapPacks;
-    bool m_moreItemsMapPacks;
     bool m_error;
-    bool m_createdMapsError;
-    bool m_awardedMapsError;
-    bool m_mapPacksError;
 
     MX::UserLeaderboard@ m_leaderboard;
     MX::LeaderboardSeason@ m_selectedLeaderboard = MX::LeaderboardSeason(-1, "Cumulative");
     bool m_leaderboardError;
     string m_leaderboardErrorMessage;
-
-    int m_lastIdCreatedMaps = 0;
-    int m_lastIdAwardedMaps = 0;
-    int m_lastIdMapPacks = 0;
-
-    MapColumns@ createdWidths = MapColumns();
-    MapColumns@ awardedWidths = MapColumns();
 
     UserTab(const int &in userId, bool yourProfile = false) {
         m_userId = userId;
@@ -156,185 +137,6 @@ class UserTab : Tab
         }
     }
 
-    void StartMXCreatedMapsRequest()
-    {
-        dictionary params;
-        params.Set("fields", MX::mapFields);
-        params.Set("count", "100");
-        params.Set("authoruserid", tostring(m_userId));
-
-        if (m_moreItemsCreatedMaps && m_lastIdCreatedMaps != 0) {
-            params.Set("after", tostring(m_lastIdCreatedMaps));
-        }
-
-        string urlParams = MX::DictToApiParams(params);
-
-        string url = MXURL + "/api/maps" + urlParams;
-
-        Logging::Debug("UserTab::CreatedMaps::StartRequest: " + url);
-        @m_MXUserMapsCreatedRequest = API::Get(url);
-    }
-
-    void CheckMXCreatedMapsRequest()
-    {
-        if (!MX::APIDown && m_mapsCreated.Length == 0 && !m_createdMapsError && m_MXUserMapsCreatedRequest is null && UI::IsWindowAppearing()) {
-            StartMXCreatedMapsRequest();
-        }
-        // If there's a request, check if it has finished
-        if (m_MXUserMapsCreatedRequest !is null && m_MXUserMapsCreatedRequest.Finished()) {
-            // Parse the response
-            string res = m_MXUserMapsCreatedRequest.String();
-            int resCode = m_MXUserMapsCreatedRequest.ResponseCode();
-            auto json = m_MXUserMapsCreatedRequest.Json();
-            @m_MXUserMapsCreatedRequest = null;
-
-            Logging::Debug("UserTab::CreatedMaps::CheckRequest (MX): " + res);
-
-            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json.HasKey("title")) {
-                Logging::Error("UserTab::CreatedMaps::CheckRequest (MX): Error while loading created maps list");
-                m_createdMapsError = true;
-                return;
-            } else if (json["Results"].Length == 0) {
-                Logging::Error("UserTab::CreatedMaps::CheckRequest (MX): API returned 0 created maps! Expected " + m_user.MapCount);
-                m_createdMapsError = true;
-                return;
-            }
-
-            // Handle the response
-            m_moreItemsCreatedMaps = json["More"];
-            auto items = json["Results"];
-            for (uint i = 0; i < items.Length; i++) {
-                m_mapsCreated.InsertLast(MX::MapInfo(items[i]));
-
-                if (m_moreItemsCreatedMaps && i == items.Length - 1) {
-                    m_lastIdCreatedMaps = items[i]["MapId"];
-                }
-            }
-
-            createdWidths.Update(m_mapsCreated);
-        }
-    }
-
-    void StartMXAwardedMapsRequest()
-    {
-        dictionary params;
-        params.Set("fields", MX::mapFields);
-        params.Set("count", "100");
-
-        if (m_moreItemsAwardsGiven && m_lastIdAwardedMaps != 0) {
-            params.Set("after", tostring(m_lastIdAwardedMaps));
-        }
-
-        params.Set("awardedby", m_user.Name);
-        params.Set("order1", "24");
-
-        string urlParams = MX::DictToApiParams(params);
-
-        string url = MXURL + "/api/maps" + urlParams;
-
-        Logging::Debug("UserTab::AwardedMaps::StartRequest: " + url);
-        @m_MXUserMapsAwardedRequest = API::Get(url);
-    }
-
-    void CheckMXAwardedMapsRequest()
-    {
-        if (!MX::APIDown && m_mapsAwardsGiven.Length == 0 && !m_awardedMapsError && m_MXUserMapsAwardedRequest is null && UI::IsWindowAppearing()) {
-            StartMXAwardedMapsRequest();
-        }
-        // If there's a request, check if it has finished
-        if (m_MXUserMapsAwardedRequest !is null && m_MXUserMapsAwardedRequest.Finished()) {
-            // Parse the response
-            string res = m_MXUserMapsAwardedRequest.String();
-            int resCode = m_MXUserMapsAwardedRequest.ResponseCode();
-            auto json = m_MXUserMapsAwardedRequest.Json();
-            @m_MXUserMapsAwardedRequest = null;
-
-            Logging::Debug("UserTab::AwardedMaps::CheckRequest (MX): " + res);
-
-            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json.HasKey("title")) {
-                Logging::Error("UserTab::AwardedMaps::CheckRequest (MX): Error while loading awarded maps list");
-                m_awardedMapsError = true;
-                return;
-            } else if (json["Results"].Length == 0) {
-                Logging::Error("UserTab::AwardedMaps::CheckRequest (MX): API returned 0 awarded maps! Expected " + m_user.AwardsGivenCount);
-                m_awardedMapsError = true;
-                return;
-            }
-
-            // Handle the response
-            m_moreItemsAwardsGiven = json["More"];
-            auto items = json["Results"];
-            for (uint i = 0; i < items.Length; i++) {
-                m_mapsAwardsGiven.InsertLast(MX::MapInfo(items[i]));
-
-                if (m_moreItemsAwardsGiven && i == items.Length - 1) {
-                    m_lastIdAwardedMaps = items[i]["MapId"];
-                }
-            }
-
-            awardedWidths.Update(m_mapsAwardsGiven);
-        }
-    }
-
-    void StartMXMapPacksRequest()
-    {
-        dictionary params;
-        params.Set("fields", MX::mapPackFields);
-        params.Set("count", "100");
-
-        if (m_moreItemsMapPacks && m_lastIdMapPacks != 0) {
-            params.Set("after", tostring(m_lastIdMapPacks));
-        }
-
-        params.Set("owneruserid", tostring(m_userId));
-        params.Set("order1", "3");
-
-        string urlParams = MX::DictToApiParams(params);
-
-        string url = MXURL + "/api/mappacks" + urlParams;
-
-        Logging::Debug("UserTab::MapPacks::StartRequest: " + url);
-        @m_MXUserMapPacksRequest = API::Get(url);
-    }
-
-    void CheckMXMapPacksRequest()
-    {
-        if (!MX::APIDown && m_mapPacks.Length == 0 && !m_mapPacksError && m_MXUserMapPacksRequest is null && UI::IsWindowAppearing()) {
-            StartMXMapPacksRequest();
-        }
-        // If there's a request, check if it has finished
-        if (m_MXUserMapPacksRequest !is null && m_MXUserMapPacksRequest.Finished()) {
-            // Parse the response
-            string res = m_MXUserMapPacksRequest.String();
-            int resCode = m_MXUserMapPacksRequest.ResponseCode();
-            auto json = m_MXUserMapPacksRequest.Json();
-            @m_MXUserMapPacksRequest = null;
-
-            Logging::Debug("UserTab::MapPacks::CheckRequest (MX): " + res);
-
-            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results") || json.HasKey("title")) {
-                Logging::Error("UserTab::MapPacks::CheckRequest (MX): Error while loading mappack list");
-                m_mapPacksError = true;
-                return;
-            } else if (json["Results"].Length == 0) {
-                Logging::Error("UserTab::MapPacks::CheckRequest (MX): API returned 0 user mappacks! Expected " + m_user.MappackCount);
-                m_mapPacksError = true;
-                return;
-            }
-
-            // Handle the response
-            m_moreItemsMapPacks = json["More"];
-            auto items = json["Results"];
-            for (uint i = 0; i < items.Length; i++) {
-                m_mapPacks.InsertLast(MX::MapPackInfo(items[i]));
-
-                if (m_moreItemsMapPacks && i == items.Length - 1) {
-                    m_lastIdMapPacks = items[i]["MappackId"];
-                }
-            }
-        }
-    }
-
     void Render() override
     {
         if (m_error) {
@@ -427,12 +229,12 @@ class UserTab : Tab
                 UI::Text(pluginColor + Icons::Map + " \\$zFeatured Map:");
 
                 if (m_user.FeaturedMap is null) {
-                    if (!m_user.FetchedFeaturedMap) {
-                        startnew(CoroutineFunc(m_user.FetchFeaturedMap));
-                    } else if (m_user.FeaturedMapError) {
+                    if (m_user.FeaturedMapError) {
                         UI::Text("\\$f00" + Icons::Times + " \\$zError while loading featured map");
                     } else if (m_user.LoadingFeaturedMap) {
                         UI::Text(Icons::AnimatedHourglass + " Loading...");
+                    } else if (!m_user.FetchedFeaturedMap) {
+                        startnew(CoroutineFunc(m_user.FetchFeaturedMap));
                     }
                 } else {
                     float featuredMapwidth = Display::GetWidth() * 0.10;
@@ -542,12 +344,15 @@ class UserTab : Tab
 
         if (UI::BeginTabItem(Icons::Map + " Created (" + m_user.MapCount + ")")) {
             UI::BeginChild("UserMapsCreatedChild");
-            CheckMXCreatedMapsRequest();
-            if (m_MXUserMapsCreatedRequest !is null && m_mapsCreated.Length == 0) {
-                UI::Text(Icons::AnimatedHourglass + " Loading...");
-            } else if (m_createdMapsError) {
-                UI::AlignTextToFramePadding();
-                UI::Text("\\$f00" + Icons::Times + "\\$z Error while loading created maps");
+
+            if (m_user.CreatedMaps.IsEmpty()) {
+                if (m_user.LoadingCreatedMaps) {
+                    UI::Text(Icons::AnimatedHourglass + " Loading...");
+                } else if (m_user.CreatedMapsError) {
+                    UI::Text("\\$f00" + Icons::Times + "\\$z Error while loading created maps");
+                } else if (!m_user.FetchedCreatedMaps) {
+                    startnew(CoroutineFunc(m_user.FetchCreatedMaps));
+                }
             } else {
 #if MP4
                 int columns = 7;
@@ -558,11 +363,11 @@ class UserTab : Tab
                     UI::TableSetupScrollFreeze(0, 1);
                     PushTabStyle();
                     UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
-                    UI::TableSetupColumn("Created by", UI::TableColumnFlags::WidthFixed, createdWidths.author);
+                    UI::TableSetupColumn("Created by", UI::TableColumnFlags::WidthFixed, m_user.createdWidths.author);
 #if MP4
-                    UI::TableSetupColumn("Envi/Vehicle", UI::TableColumnFlags::WidthFixed, createdWidths.enviVehicle);
+                    UI::TableSetupColumn("Envi/Vehicle", UI::TableColumnFlags::WidthFixed, m_user.createdWidths.enviVehicle);
                     UI::TableSetColumnEnabled(2, repo == MP4mxRepos::Trackmania);
-                    UI::TableSetupColumn("Title pack", UI::TableColumnFlags::WidthFixed, createdWidths.titlepack);
+                    UI::TableSetupColumn("Title pack", UI::TableColumnFlags::WidthFixed, m_user.createdWidths.titlepack);
 #endif
                     UI::TableSetupColumn("Style", UI::TableColumnFlags::WidthStretch);
                     UI::TableSetupColumn(Icons::Trophy, UI::TableColumnFlags::WidthFixed);
@@ -570,28 +375,32 @@ class UserTab : Tab
                     UI::TableHeadersRow();
                     PopTabStyle();
 
-                    UI::ListClipper clipper(m_mapsCreated.Length);
+                    UI::ListClipper clipper(m_user.CreatedMaps.Length);
+
                     while (clipper.Step()) {
-                        for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++)
-                        {
+                        for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
                             UI::PushID("ResMap"+i);
-                            MX::MapInfo@ map = m_mapsCreated[i];
+                            MX::MapInfo@ map = m_user.CreatedMaps[i];
                             IfaceRender::MapResult(map);
                             UI::PopID();
                         }
                     }
-                    if (m_MXUserMapsCreatedRequest !is null && m_moreItemsCreatedMaps) {
+
+                    if (m_user.LoadingCreatedMaps && m_user.MoreCreatedItems) {
                         UI::TableNextRow();
                         UI::TableNextColumn();
                         UI::AlignTextToFramePadding();
                         UI::Text(Icons::HourglassEnd + " Loading...");
                     }
+
                     UI::EndTable();
-                    if (m_MXUserMapsCreatedRequest is null && m_moreItemsCreatedMaps && UI::GreenButton("Load more")) {
-                        StartMXCreatedMapsRequest();
+
+                    if (!m_user.LoadingCreatedMaps && m_user.MoreCreatedItems && UI::GreenButton("Load more")) {
+                        startnew(CoroutineFunc(m_user.LoadMoreCreated));
                     }
                 }
             }
+
             UI::EndChild();
             UI::EndTabItem();
         }
@@ -606,12 +415,15 @@ class UserTab : Tab
 
         if (UI::BeginTabItem(Icons::Trophy + " Awarded (" + m_user.AwardsGivenCount + ")")) {
             UI::BeginChild("UserMapsAwardedChild");
-            CheckMXAwardedMapsRequest();
-            if (m_MXUserMapsAwardedRequest !is null && m_mapsAwardsGiven.Length == 0) {
-                UI::Text(Icons::AnimatedHourglass + " Loading...");
-            } else if (m_awardedMapsError) {
-                UI::AlignTextToFramePadding();
-                UI::Text("\\$f00" + Icons::Times + "\\$z Error while loading awarded maps");
+
+            if (m_user.AwardedMaps.IsEmpty()) {
+                if (m_user.LoadingAwardedMaps) {
+                    UI::Text(Icons::AnimatedHourglass + " Loading...");
+                } else if (m_user.AwardedMapsError) {
+                    UI::Text("\\$f00" + Icons::Times + "\\$z Error while loading awarded maps");
+                } else if (!m_user.FetchedAwardedMaps) {
+                    startnew(CoroutineFunc(m_user.FetchAwardedMaps));
+                }
             } else {
 #if MP4
                 int columns = 7;
@@ -622,11 +434,11 @@ class UserTab : Tab
                     UI::TableSetupScrollFreeze(0, 1);
                     PushTabStyle();
                     UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
-                    UI::TableSetupColumn("Created by", UI::TableColumnFlags::WidthFixed, awardedWidths.author);
+                    UI::TableSetupColumn("Created by", UI::TableColumnFlags::WidthFixed, m_user.awardedWidths.author);
 #if MP4
-                    UI::TableSetupColumn("Envi/Vehicle", UI::TableColumnFlags::WidthFixed, awardedWidths.enviVehicle);
+                    UI::TableSetupColumn("Envi/Vehicle", UI::TableColumnFlags::WidthFixed, m_user.awardedWidths.enviVehicle);
                     UI::TableSetColumnEnabled(2, repo == MP4mxRepos::Trackmania);
-                    UI::TableSetupColumn("Title pack", UI::TableColumnFlags::WidthFixed, awardedWidths.titlepack);
+                    UI::TableSetupColumn("Title pack", UI::TableColumnFlags::WidthFixed, m_user.awardedWidths.titlepack);
 #endif
                     UI::TableSetupColumn("Style", UI::TableColumnFlags::WidthStretch);
                     UI::TableSetupColumn(Icons::Trophy, UI::TableColumnFlags::WidthFixed);
@@ -634,25 +446,28 @@ class UserTab : Tab
                     UI::TableHeadersRow();
                     PopTabStyle();
 
-                    UI::ListClipper clipper(m_mapsAwardsGiven.Length);
+                    UI::ListClipper clipper(m_user.AwardedMaps.Length);
+
                     while (clipper.Step()) {
-                        for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++)
-                        {
+                        for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
                             UI::PushID("ResMap"+i);
-                            MX::MapInfo@ map = m_mapsAwardsGiven[i];
+                            MX::MapInfo@ map = m_user.AwardedMaps[i];
                             IfaceRender::MapResult(map);
                             UI::PopID();
                         }
                     }
-                    if (m_MXUserMapsCreatedRequest !is null && m_moreItemsAwardsGiven) {
+
+                    if (m_user.LoadingAwardedMaps && m_user.MoreAwardedItems) {
                         UI::TableNextRow();
                         UI::TableNextColumn();
                         UI::AlignTextToFramePadding();
                         UI::Text(Icons::HourglassEnd + " Loading...");
                     }
+
                     UI::EndTable();
-                    if (m_MXUserMapsCreatedRequest is null && m_moreItemsAwardsGiven && UI::GreenButton("Load more")) {
-                        StartMXAwardedMapsRequest();
+
+                    if (!m_user.LoadingAwardedMaps && m_user.MoreAwardedItems && UI::GreenButton("Load more")) {
+                        startnew(CoroutineFunc(m_user.LoadMoreAwarded));
                     }
                 }
             }
@@ -671,46 +486,51 @@ class UserTab : Tab
 
         if (UI::BeginTabItem(Icons::Inbox + " Map Packs (" + m_user.MappackCount + ")")) {
             UI::BeginChild("UserMapPacksChild");
-            CheckMXMapPacksRequest();
-            if (m_MXUserMapPacksRequest !is null && m_mapsAwardsGiven.Length == 0) {
-                UI::Text(Icons::AnimatedHourglass + " Loading...");
-            } else if (m_mapPacksError) {
-                UI::AlignTextToFramePadding();
-                UI::Text("\\$f00" + Icons::Times + "\\$z Error while loading mappacks");
-            } else {
-                if (UI::BeginTable("UserMapPacksList", 5, UI::TableFlags::RowBg)) {
-                    UI::TableSetupScrollFreeze(0, 1);
-                    PushTabStyle();
-                    UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
-                    UI::TableSetupColumn("Created by", UI::TableColumnFlags::WidthStretch);
-                    UI::TableSetupColumn("Tags", UI::TableColumnFlags::WidthStretch);
-                    UI::TableSetupColumn("Tracks", UI::TableColumnFlags::WidthFixed);
-                    UI::TableSetupColumn("Actions", UI::TableColumnFlags::WidthFixed);
-                    UI::TableHeadersRow();
-                    PopTabStyle();
 
-                    UI::ListClipper clipper(m_mapPacks.Length);
-                    while (clipper.Step()) {
-                        for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++)
-                        {
-                            UI::PushID("ResMap"+i);
-                            MX::MapPackInfo@ mapPack = m_mapPacks[i];
-                            IfaceRender::MapPackResult(mapPack);
-                            UI::PopID();
-                        }
-                    }
-                    if (m_MXUserMapPacksRequest !is null && m_moreItemsMapPacks) {
-                        UI::TableNextRow();
-                        UI::TableNextColumn();
-                        UI::AlignTextToFramePadding();
-                        UI::Text(Icons::HourglassEnd + " Loading...");
-                    }
-                    UI::EndTable();
-                    if (m_MXUserMapPacksRequest is null && m_moreItemsMapPacks && UI::GreenButton("Load more")) {
-                        StartMXMapPacksRequest();
+            if (m_user.Mappacks.IsEmpty()) {
+                if (m_user.LoadingMappacks) {
+                    UI::Text(Icons::AnimatedHourglass + " Loading...");
+                } else if (m_user.MappacksError) {
+                    UI::Text("\\$f00" + Icons::Times + "\\$z Error while loading mappacks");
+                } else if (!m_user.FetchedMappacks) {
+                    startnew(CoroutineFunc(m_user.FetchMappacks));
+                }
+            } else if (UI::BeginTable("UserMapPacksList", 5, UI::TableFlags::RowBg)) {
+                UI::TableSetupScrollFreeze(0, 1);
+                PushTabStyle();
+                UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
+                UI::TableSetupColumn("Created by", UI::TableColumnFlags::WidthStretch);
+                UI::TableSetupColumn("Tags", UI::TableColumnFlags::WidthStretch);
+                UI::TableSetupColumn("Tracks", UI::TableColumnFlags::WidthFixed);
+                UI::TableSetupColumn("Actions", UI::TableColumnFlags::WidthFixed);
+                UI::TableHeadersRow();
+                PopTabStyle();
+
+                UI::ListClipper clipper(m_user.Mappacks.Length);
+
+                while (clipper.Step()) {
+                    for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
+                        UI::PushID("ResMap"+i);
+                        MX::MapPackInfo@ mapPack = m_user.Mappacks[i];
+                        IfaceRender::MapPackResult(mapPack);
+                        UI::PopID();
                     }
                 }
+
+                if (m_user.LoadingMappacks && m_user.MoreMappacksItems) {
+                    UI::TableNextRow();
+                    UI::TableNextColumn();
+                    UI::AlignTextToFramePadding();
+                    UI::Text(Icons::HourglassEnd + " Loading...");
+                }
+
+                UI::EndTable();
+
+                if (!m_user.LoadingMappacks && m_user.MoreMappacksItems && UI::GreenButton("Load more")) {
+                    startnew(CoroutineFunc(m_user.LoadMoreMappacks));
+                }
             }
+
             UI::EndChild();
             UI::EndTabItem();
         }

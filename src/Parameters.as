@@ -21,5 +21,14 @@ string DownloadsFolder = IO::FromUserGameFolder("Maps/Downloaded/" + pluginName 
 string nameMenu = pluginColor + Icons::ManiaExchange + " \\$z"+ pluginName;
 array<MX::MapInfo@> g_PlayLaterMaps;
 string PlayLaterJSON = IO::FromStorageFolder("PlayLater.json");
+string PresetsLocation = IO::FromStorageFolder("Presets.json");
+Json::Value g_Presets = Json::Object();
 string repoName = "GreepTheSheep/openplanet-maniaexchange-menu";
 string repoURL = "https://github.com/"+repoName;
+
+enum Status {
+	Not_Started,
+	Loading,
+	Completed,
+	Error
+};

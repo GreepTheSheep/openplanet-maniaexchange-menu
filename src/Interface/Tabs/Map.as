@@ -411,12 +411,12 @@ class MapTab : Tab
                 }
 
                 if (m_map.Replays.IsEmpty()) {
-                    if (!m_map.FetchedReplays) {
-                        startnew(CoroutineFunc(m_map.FetchReplays));
-                    } else if (m_map.LoadingReplays) {
+                    if (m_map.LoadingReplays) {
                         UI::Text(Icons::AnimatedHourglass + " Loading...");
                     } else if (m_map.ReplaysError) {
                         UI::Text("\\$f00" + Icons::Times + "\\$z Error while loading leaderboard");
+                    } else if (!m_map.FetchedReplays) {
+                        startnew(CoroutineFunc(m_map.FetchReplays));
                     }
                 } else if (UI::BeginTable("MXLeaderboardList", 4, UI::TableFlags::RowBg)) {
                     UI::TableSetupScrollFreeze(0, 1);
@@ -514,10 +514,10 @@ class MapTab : Tab
             }
 
             if (m_map.Comments.IsEmpty()) {
-                if (!m_map.FetchedComments) {
-                    startnew(CoroutineFunc(m_map.FetchComments));
-                } else if (m_map.LoadingComments) {
+                if (m_map.LoadingComments) {
                     UI::Text(Icons::AnimatedHourglass + " Loading...");
+                } else if (!m_map.FetchedComments) {
+                    startnew(CoroutineFunc(m_map.FetchComments));
                 } else {
                     UI::Text("No comments found for this map. Be the first!");
                 }
@@ -571,10 +571,10 @@ class MapTab : Tab
             UI::SetItemTooltip("View leaderboard on Trackmania.io");
 
             if (m_map.Records.IsEmpty()) {
-                if (!m_map.FetchedRecords) {
-                    startnew(CoroutineFunc(m_map.FetchRecords));
-                } else if (m_map.LoadingRecords) {
+                if (m_map.LoadingRecords) {
                     UI::Text(Icons::AnimatedHourglass + " Loading...");
+                } else if (!m_map.FetchedRecords) {
+                    startnew(CoroutineFunc(m_map.FetchRecords));
                 } else {
                     UI::Text("No online records found for this map. Be the first!");
                 }
@@ -643,12 +643,12 @@ class MapTab : Tab
             UI::BeginChild("MapEmbeddedObjectsChild");
 
             if (m_map.Objects.IsEmpty()) {
-                if (!m_map.FetchedObjects) {
-                    startnew(CoroutineFunc(m_map.FetchObjects));
-                } else if (m_map.LoadingObjects) {
+                if (m_map.LoadingObjects) {
                     UI::Text(Icons::AnimatedHourglass + " Loading...");
                 } else if (m_map.ObjectsError) {
                     UI::Text("\\$f00" + Icons::Times + "\\$z Error while loading embedded objects");
+                } else if (!m_map.FetchedObjects) {
+                    startnew(CoroutineFunc(m_map.FetchObjects));
                 }
             } else {
                 UI::Text(m_map.Objects.Length + " objects found, with a total size of " + (m_map.EmbeddedItemsSize / 1024) + " KB");

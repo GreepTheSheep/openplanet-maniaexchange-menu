@@ -3,7 +3,7 @@ class MapListTab : Tab
     Net::HttpRequest@ m_request;
     array<MX::MapInfo@> maps;
     bool moreItems;
-    Net::HttpRequest@ m_randomRequest;
+    bool m_loadingRandom;
     int lastId = 0;
     MapFilters@ filters;
     int m_sortingKey = 0;
@@ -112,42 +112,24 @@ class MapListTab : Tab
         columnWidths.Update(maps);
     }
 
-    void StartRandomRequest()
+    void GetRandomMap()
     {
-        dictionary params;
-        params.Set("random", "1");
-        params.Set("count", "1");
+        dictionary params = {
+            { "random", "1" },
+            { "count", "1" }
+        };
         GetRequestParams(params);
 
-        string mapUrlParams = MX::DictToApiParams(params);
+        m_loadingRandom = true;
+        array<MX::MapInfo@> results = MX::GetMaps(params);
 
-        string url = MXURL + "/api/maps" + mapUrlParams;
-        Logging::Debug("MapListTab::StartRandomRequest: " + url);
-        @m_randomRequest = API::Get(url);
-    }
-
-    void CheckRandomRequest()
-    {
-        if (m_randomRequest !is null && m_randomRequest.Finished()) {
-            string res = m_randomRequest.String();
-            int resCode = m_randomRequest.ResponseCode();
-            auto json = m_randomRequest.Json();
-            @m_randomRequest = null;
-
-            Logging::Debug("MapListTab::CheckRandomRequest: " + res);
-
-            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
-                Logging::Error("MapListTab::CheckRandomRequest: Error while getting random map");
-                return;
-            } else if (json["Results"].Length == 0) {
-                Logging::Warn("MapListTab::CheckRandomRequest: Failed to get a random map", true);
-                return;
-            }
-
-            MX::MapInfo@ map = MX::MapInfo(json["Results"][0]);
-
-            mxMenu.AddTab(MapTab(map), true);
+        if (results.IsEmpty()) {
+            Logging::Warn("MapListTab::GetRandomMap: Failed to get a random map", true);
+        } else {
+            mxMenu.AddTab(MapTab(results[0]), true);
         }
+
+        m_loadingRandom = false;
     }
 
     void RenderSearchBar()
@@ -238,10 +220,10 @@ class MapListTab : Tab
 
         UI::BeginDisabled(m_request !is null);
 
-        UI::BeginDisabled(m_randomRequest !is null);
+        UI::BeginDisabled(m_loadingRandom);
 
         if (UI::GreenButton(Icons::Random + " Random result")) {
-            StartRandomRequest();
+            startnew(CoroutineFunc(GetRandomMap));
         }
 
         UI::EndDisabled();
@@ -277,7 +259,6 @@ class MapListTab : Tab
     void Render() override
     {
         CheckRequest();
-        CheckRandomRequest();
 
         RenderSearchBar();
 

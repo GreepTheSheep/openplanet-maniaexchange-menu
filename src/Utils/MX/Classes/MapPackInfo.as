@@ -20,13 +20,13 @@ namespace MX
         // Map list
         array<MapInfo@> Maps;
         MapColumns@ columnWidths = MapColumns();
-        bool m_more;
-        bool m_listError;
-        bool m_loading;
+        Status m_listStatus = Status::Not_Started;
 
         // Download
-        bool m_downloading;
-        bool m_downloaded;
+        Status m_downloadStatus = Status::Not_Started;
+
+        // For pagination
+        bool LastItem;
 
         MapPackInfo(const Json::Value &in json)
         {
@@ -123,59 +123,43 @@ namespace MX
             return Maps[Maps.Length - 1].MapId;
         }
 
-        bool get_MoreMaps()  { return m_more; }
-        bool get_Loading()   { return m_loading; }
-        bool get_ListError() { return m_listError; }
+        bool get_MoreMaps() {
+            if (Maps.IsEmpty()) {
+                return true;
+            }
+
+            return !Maps[Maps.Length - 1].LastItem;
+        }
+
+        bool get_Loading()   { return m_listStatus == Status::Loading; }
+        bool get_ListError() { return m_listStatus == Status::Error; }
 
         void FetchMaps() {
-            if (MapCount == 0) {
+            if (MapCount == 0 || Loading) {
                 return;
             }
 
-            dictionary mapParams;
-            mapParams.Set("fields", MX::mapFields);
-            mapParams.Set("mappackid", tostring(MappackId));
-            mapParams.Set("count", "1000");
+            dictionary mapParams = {
+                { "fields", MX::mapFields },
+                { "mappackid", tostring(MappackId) },
+                { "count", "1000"}
+            };
 
             if (MoreMaps && LastId != 0) {
                 mapParams.Set("after", tostring(LastId));
             }
 
-            string mapUrlParams = MX::DictToApiParams(mapParams);
-
-            string url = MXURL + "/api/maps" + mapUrlParams;
-            Logging::Debug("[MappackInfo::FetchMaps] Request URL: " + url);
-
-            m_loading = true;
-
-            Net::HttpRequest@ request = API::Get(url);
-
-            while (!request.Finished()) {
-                yield();
-            }
-
-            m_loading = false;
-
-            auto json = request.Json();
-
-            Logging::Debug("[MappackInfo::FetchMaps] " + request.String());
-
-            if (request.ResponseCode() >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
-                Logging::Info("[MappackInfo::FetchMaps] Error parsing response.");
-                m_listError = true;
-                return;
-            }
+            m_listStatus = Status::Loading;
+            array<MapInfo@> mapList = GetMaps(mapParams);
+            m_listStatus = Status::Completed;
             
-            if (json["Results"].Length == 0) {
+            if (mapList.IsEmpty()) {
                 Logging::Error("[MappackInfo::FetchMaps] API returned 0 maps! Expected " + MapCount);
-                m_listError = true;
+                m_listStatus = Status::Error;
                 return;
             }
 
-            m_more = json["More"];
-
-            for (uint i = 0; i < json["Results"].Length; i++) {
-                MX::MapInfo@ map = MX::MapInfo(json["Results"][i]);
+            foreach (MX::MapInfo@ map : mapList) {
                 map.MapPackName = Name;
                 Maps.InsertLast(map);
             }
@@ -184,7 +168,7 @@ namespace MX
         }
 
         void LoadMore() {
-            if (MapCount == 0 || !MoreMaps) {
+            if (MapCount == 0 || !MoreMaps || Loading) {
                 return;
             }
 
@@ -192,8 +176,8 @@ namespace MX
             FetchMaps();
         }
 
-        bool get_Downloading() { return m_downloading; }
-        bool get_Downloaded()  { return m_downloaded; }
+        bool get_Downloading() { return m_downloadStatus == Status::Loading; }
+        bool get_Downloaded()  { return m_downloadStatus == Status::Completed; }
 
         void DownloadMaps() {
             if (MapCount == 0 || Downloading) {
@@ -202,7 +186,7 @@ namespace MX
 
             Logging::Info("Downloading " + Maps.Length + " maps to your Downloaded folder", true);
 
-            m_downloading = true;
+            m_downloadStatus = Status::Loading;
 
             if (Maps.IsEmpty()) {
                 FetchMaps();
@@ -218,8 +202,7 @@ namespace MX
                 sleep(100);
             }
 
-            m_downloading = false;
-            m_downloaded = true;
+            m_downloadStatus = Status::Completed;
 
             UI::ShowNotification(pluginName, Icons::Check + " Succesfully downloaded " + Maps.Length + " maps to your Downloaded Maps folder", UI::HSV(0.33, 0.7, 0.65));
         }

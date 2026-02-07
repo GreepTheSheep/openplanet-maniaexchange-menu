@@ -32,34 +32,29 @@ namespace MX
         array<MapImage@> Images;
         array<MapAuthorInfo@> Authors;
         array<MapTag@> Tags;
-        bool m_IsUploaded;
+        bool m_isUploaded;
 
         // Leaderboard
         array<NadeoServices::LeaderboardRecord@> Records;
-        bool m_loadingRecords;
-        bool m_fetchedRecords;
+        Status m_recordsStatus;
 
         // Download
-        bool m_downloading;
-        bool m_downloaded;
+        Status m_downloadStatus;
 
         // Replays
         array<MapReplay@> Replays;
-        bool m_loadingReplays;
-        bool m_fetchedReplays;
-        bool m_replaysError;
+        Status m_replaysStatus;
 
         // Comments
         array<MapComment@> Comments;
-        bool m_loadingComments;
-        bool m_fetchedComments;
-        bool m_commentsError;
+        Status m_commentsStatus;
 
         // Objects
         array<MapEmbeddedObject@> Objects;
-        bool m_loadingObjects;
-        bool m_fetchedObjects;
-        bool m_objectsError;
+        Status m_objectsStatus;
+
+        // For pagination
+        bool LastItem;
 
         string MapPackName;
         Json::Value@ jsonCache;
@@ -232,16 +227,15 @@ namespace MX
         // Download
 
         void DownloadMap() {
-            m_downloading = true;
+            m_downloadStatus = Status::Loading;
 
             MX::DownloadMap(this, MapPackName);
 
-            m_downloading = false;
-            m_downloaded = true;
+            m_downloadStatus = Status::Completed;
         }
 
-        bool get_Downloading() { return m_downloading; }
-        bool get_Downloaded()  { return m_downloaded; }
+        bool get_Downloading() { return m_downloadStatus == Status::Loading; }
+        bool get_Downloaded()  { return m_downloadStatus == Status::Completed; }
 
         // Records
 
@@ -250,13 +244,11 @@ namespace MX
                 return;
             }
 
-            m_fetchedRecords = true;
-
-            m_loadingRecords = true;
+            m_recordsStatus = Status::Loading;
 #if DEPENDENCY_NADEOSERVICES
             Records = NadeoServices::GetMapRecords(MapUid);
 #endif
-            m_loadingRecords = false;
+            m_recordsStatus = Status::Completed;
         }
 
         void LoadMoreRecords() {
@@ -264,7 +256,7 @@ namespace MX
                 return;
             }
 
-            m_loadingRecords = true;
+            m_recordsStatus = Status::Loading;
 
 #if DEPENDENCY_NADEOSERVICES
             array<NadeoServices::LeaderboardRecord@> times = NadeoServices::GetMapRecords(MapUid, Records.Length);
@@ -274,7 +266,7 @@ namespace MX
             }
 #endif
 
-            m_loadingRecords = false;
+            m_recordsStatus = Status::Completed;
         }
 
         bool get_HasMoreRecords() {
@@ -282,10 +274,9 @@ namespace MX
             return Records.Length % 100 == 0;
         }
 
-        bool get_LoadingRecords() { return m_loadingRecords; }
-
-        bool get_FetchedRecords() { return m_fetchedRecords; }
-        void set_FetchedRecords(bool b) { m_fetchedRecords = b; }
+        bool get_LoadingRecords() { return m_recordsStatus == Status::Loading; }
+        bool get_FetchedRecords() { return m_recordsStatus == Status::Completed; }
+        void set_FetchedRecords(bool b) { b ? m_recordsStatus = Status::Completed : m_recordsStatus = Status::Not_Started; }
 
         // Replays
 
@@ -294,23 +285,20 @@ namespace MX
                 return;
             }
 
-            m_fetchedReplays = true;
-
-            m_loadingReplays = true;
+            m_replaysStatus = Status::Loading;
             Replays = MX::GetMapReplays(MapId);
 
             if (Replays.IsEmpty() && ReplayCount > 0) {
-                m_replaysError = true;
+                m_replaysStatus = Status::Error;
             }
 
-            m_loadingReplays = false;
+            m_replaysStatus = Status::Completed;
         }
 
-        bool get_LoadingReplays() { return m_loadingReplays; }
-        bool get_ReplaysError() { return m_replaysError; }
-
-        bool get_FetchedReplays() { return m_fetchedReplays; }
-        void set_FetchedReplays(bool b) { m_fetchedReplays = b; }
+        bool get_LoadingReplays() { return m_replaysStatus == Status::Loading; }
+        bool get_ReplaysError() { return m_replaysStatus == Status::Error; }
+        bool get_FetchedReplays() { return m_replaysStatus == Status::Completed; }
+        void set_FetchedReplays(bool b) { b ? m_replaysStatus = Status::Completed : m_replaysStatus = Status::Not_Started; }
 
         // Comments
 
@@ -319,23 +307,20 @@ namespace MX
                 return;
             }
 
-            m_fetchedComments = true;
-
-            m_loadingComments = true;
+            m_commentsStatus = Status::Loading;
             Comments = MX::GetMapComments(MapId);
 
             if (Comments.IsEmpty() && CommentCount > 0) {
-                m_commentsError = true;
+                m_commentsStatus = Status::Error;
             }
 
-            m_loadingComments = false;
+            m_commentsStatus = Status::Completed;
         }
 
-        bool get_LoadingComments() { return m_loadingComments; }
-        bool get_CommentsError() { return m_commentsError; }
-
-        bool get_FetchedComments() { return m_fetchedComments; }
-        void set_FetchedComments(bool b) { m_fetchedComments = b; }
+        bool get_LoadingComments() { return m_commentsStatus == Status::Loading; }
+        bool get_CommentsError() { return m_commentsStatus == Status::Error; }
+        bool get_FetchedComments() { return m_commentsStatus == Status::Completed; }
+        void set_FetchedComments(bool b) { b ? m_commentsStatus = Status::Completed : m_commentsStatus = Status::Not_Started; }
 
         // Objects
 
@@ -344,23 +329,20 @@ namespace MX
                 return;
             }
 
-            m_fetchedObjects = true;
-
-            m_loadingObjects = true;
+            m_objectsStatus = Status::Loading;
             Objects = MX::GetMapObjects(MapId);
 
             if (Objects.IsEmpty() && EmbeddedObjectsCount > 0) {
-                m_objectsError = true;
+                m_objectsStatus = Status::Error;
             }
 
-            m_loadingObjects = false;
+            m_objectsStatus = Status::Completed;
         }
 
-        bool get_LoadingObjects() { return m_loadingObjects; }
-        bool get_ObjectsError() { return m_objectsError; }
-
-        bool get_FetchedObjects() { return m_fetchedObjects; }
-        void set_FetchedObjects(bool b) { m_fetchedObjects = b; }
+        bool get_LoadingObjects() { return m_objectsStatus == Status::Loading; }
+        bool get_ObjectsError() { return m_objectsStatus == Status::Error; }
+        bool get_FetchedObjects() { return m_objectsStatus == Status::Completed; }
+        void set_FetchedObjects(bool b) { b ? m_objectsStatus = Status::Completed : m_objectsStatus = Status::Not_Started; }
 
         string get_DifficultyName() {
             return tostring(Difficulties(Difficulty));
@@ -406,15 +388,15 @@ namespace MX
 #if DEPENDENCY_NADEOSERVICES
         void CheckIfUploaded() {
             if (OnlineMapId != "") {
-                m_IsUploaded = true;
+                m_isUploaded = true;
                 return;
             }
 
-            m_IsUploaded = MXNadeoServicesGlobal::CheckIfMapExistsAsync(MapUid);
+            m_isUploaded = MXNadeoServicesGlobal::CheckIfMapExistsAsync(MapUid);
         }
 #endif
 
-        bool get_IsUploadedToServers() { return m_IsUploaded; }
+        bool get_IsUploadedToServers() { return m_isUploaded; }
 
         bool opEquals(MapInfo@ b) {
             return MapId == b.MapId || MapUid == b.MapUid;

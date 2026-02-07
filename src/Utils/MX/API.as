@@ -1,17 +1,21 @@
 namespace MX {
-    MapInfo@ GetMapById(int mapId) {
+    array<MapInfo@> GetMaps(dictionary parameters) {
         if (MX::APIDown) {
-            return null;
+            return {};
         }
 
-        dictionary params;
-        params.Set("fields", MX::mapFields);
-        params.Set("id", tostring(mapId));
+        if (!parameters.Exists("fields")) {
+            parameters.Set("fields", MX::mapFields);
+        }
 
-        string urlParams = MX::DictToApiParams(params);
+        if (!parameters.Exists("count")) {
+            parameters.Set("count", "100");
+        }
+
+        string urlParams = MX::DictToApiParams(parameters);
 
         string url = MXURL + "/api/maps" + urlParams;
-        Logging::Debug("[MX::GetMapById] URL: " + url);
+        Logging::Debug("[MX::GetMaps] URL: " + url);
 
         Net::HttpRequest@ req = API::Get(url);
 
@@ -22,19 +26,159 @@ namespace MX {
         int resCode = req.ResponseCode();
         auto json = req.Json();
 
-        Logging::Debug("[MX::GetMapById] API response: " + req.String());
+        Logging::Debug("[MX::GetMaps] API response: " + req.String());
 
         if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
-            Logging::Error("[MX::GetMapById] Error parsing response");
-            return null;
+            Logging::Error("[MX::GetMaps] Error parsing response");
+            return {};
         }
-        
-        if (json["Results"].Length == 0) {
+
+        Json::Value@ results = json["Results"];
+        bool moreItems = json["More"];
+        array<MapInfo@> maps;
+
+        for (uint i = 0; i < results.Length; i++) {
+            auto map = MX::MapInfo(results[i]);
+            maps.InsertLast(map);
+        }
+
+        if (!maps.IsEmpty() && !moreItems) {
+            maps[maps.Length - 1].LastItem = true;
+        }
+
+        return maps;
+    }
+
+    MapInfo@ GetMapById(int mapId) {
+        dictionary parameters = {
+            { "id", tostring(mapId) },
+            { "fields", MX::mapFields }
+        };
+
+        array<MapInfo@> maps = GetMaps(parameters);
+
+        if (maps.IsEmpty()) {
             Logging::Error("[MX::GetMapById] Failed to get a map with ID " + mapId);
             return null;
         }
 
-        return MapInfo(json["Results"][0]);
+        return maps[0];
+    }
+
+    MapInfo@ GetMapByUid(const string &in mapUid) {
+        dictionary parameters = {
+            { "uid", mapUid },
+            { "fields", MX::mapFields }
+        };
+
+        array<MapInfo@> maps = GetMaps(parameters);
+
+        if (maps.IsEmpty()) {
+            Logging::Error("[MX::GetMapByUid] Failed to get a map with UID " + mapUid);
+            return null;
+        }
+
+        return maps[0];
+    }
+
+    array<MapPackInfo@> GetMappacks(dictionary parameters) {
+        if (MX::APIDown) {
+            return {};
+        }
+
+        if (!parameters.Exists("fields")) {
+            parameters.Set("fields", MX::mapPackFields);
+        }
+
+        if (!parameters.Exists("count")) {
+            parameters.Set("count", "100");
+        }
+
+        string urlParams = MX::DictToApiParams(parameters);
+
+        string url = MXURL + "/api/mappacks" + urlParams;
+        Logging::Debug("[MX::GetMappacks] URL: " + url);
+
+        Net::HttpRequest@ req = API::Get(url);
+
+        while (!req.Finished()) {
+            yield();
+        }
+
+        int resCode = req.ResponseCode();
+        auto json = req.Json();
+
+        Logging::Debug("[MX::GetMappacks] API response: " + req.String());
+
+        if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
+            Logging::Error("[MX::GetMappacks] Error parsing response");
+            return {};
+        }
+
+        Json::Value@ results = json["Results"];
+        bool moreItems = json["More"];
+        array<MapPackInfo@> mappacks;
+
+        for (uint i = 0; i < results.Length; i++) {
+            auto pack = MX::MapPackInfo(results[i]);
+            mappacks.InsertLast(pack);
+        }
+
+        if (!mappacks.IsEmpty() && !moreItems) {
+            mappacks[mappacks.Length - 1].LastItem = true;
+        }
+
+        return mappacks;
+    }
+
+    array<UserInfo@> GetUsers(dictionary parameters) {
+        if (MX::APIDown) {
+            return {};
+        }
+
+        if (!parameters.Exists("fields")) {
+            parameters.Set("fields", MX::userFields);
+        }
+
+        if (!parameters.Exists("count")) {
+            parameters.Set("count", "100");
+        }
+
+        string urlParams = MX::DictToApiParams(parameters);
+
+        string url = MXURL + "/api/users" + urlParams;
+        Logging::Debug("[MX::GetUsers] URL: " + url);
+
+        Net::HttpRequest@ req = API::Get(url);
+
+        while (!req.Finished()) {
+            yield();
+        }
+
+        int resCode = req.ResponseCode();
+        auto json = req.Json();
+
+        Logging::Debug("[MX::GetUsers] API response: " + req.String());
+
+        if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
+            Logging::Error("[MX::GetUsers] Error parsing response");
+            return {};
+        }
+
+        Json::Value@ results = json["Results"];
+        bool moreItems = json["More"];
+        array<UserInfo@> users;
+
+        for (uint i = 0; i < results.Length; i++) {
+            auto user = MX::UserInfo(results[i]);
+            users.InsertLast(user);
+        }
+
+        if (!users.IsEmpty() && !moreItems) {
+            users[users.Length - 1].LastItem = true;
+        }
+
+        return users;
     }
 
     array<MapReplay@> GetMapReplays(int mapId) {

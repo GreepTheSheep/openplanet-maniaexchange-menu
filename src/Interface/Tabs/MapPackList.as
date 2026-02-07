@@ -1,10 +1,10 @@
 class MapPackListTab : Tab
 {
     Net::HttpRequest@ m_request;
-    Net::HttpRequest@ m_randomRequest;
     array<MX::MapPackInfo@> mapPacks;
     bool moreItems;
     int lastId = 0;
+    bool m_loadingRandom;
 
     MappackFilters@ filters;
     uint64 u_typingStart;
@@ -106,42 +106,24 @@ class MapPackListTab : Tab
         }
     }
 
-    void StartRandomRequest()
+    void GetRandomMappack()
     {
-        dictionary params;
-        params.Set("random", "1");
-        params.Set("count", "1");
+        dictionary params = {
+            { "random", "1" },
+            { "count", "1" }
+        };
         GetRequestParams(params);
 
-        string urlParams = MX::DictToApiParams(params);
+        m_loadingRandom = true;
+        array<MX::MapPackInfo@> packs = MX::GetMappacks(params);
 
-        string url = MXURL + "/api/mappacks" + urlParams;
-        Logging::Debug("MapPackListTab::StartRandomRequest: " + url);
-        @m_randomRequest = API::Get(url);
-    }
-
-    void CheckRandomRequest()
-    {
-        if (m_randomRequest !is null && m_randomRequest.Finished()) {
-            string res = m_randomRequest.String();
-            int resCode = m_randomRequest.ResponseCode();
-            auto json = m_randomRequest.Json();
-            @m_randomRequest = null;
-
-            Logging::Debug("MapPackListTab::CheckRandomRequest: " + res);
-
-            if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
-                Logging::Error("MapPackListTab::CheckRandomRequest: Error while getting random mappack");
-                return;
-            } else if (json["Results"].Length == 0) {
-                Logging::Warn("MapPackListTab::CheckRandomRequest: Failed to get a random mappack", true);
-                return;
-            }
-
-            MX::MapPackInfo@ mappack = MX::MapPackInfo(json["Results"][0]);
-
-            mxMenu.AddTab(MapPackTab(mappack), true);
+        if (packs.IsEmpty()) {
+            Logging::Warn("MapPackListTab::GetRandomMappack: Failed to get a random mappack", true);
+        } else {
+            mxMenu.AddTab(MapPackTab(packs[0]), true);
         }
+
+        m_loadingRandom = false;
     }
 
     void RenderSearchBar()
@@ -222,10 +204,10 @@ class MapPackListTab : Tab
 
         UI::SameLine();
 
-        UI::BeginDisabled(m_randomRequest !is null);
+        UI::BeginDisabled(m_loadingRandom);
 
         if (UI::GreenButton(Icons::Random + " Random result")) {
-            StartRandomRequest();
+            startnew(CoroutineFunc(GetRandomMappack));
         }
 
         UI::EndDisabled();
@@ -260,7 +242,6 @@ class MapPackListTab : Tab
     void Render() override
     {
         CheckRequest();
-        CheckRandomRequest();
 
         RenderSearchBar();
         RenderHeader();
