@@ -352,23 +352,36 @@ class MapTab : Tab
 
         if (m_map.Authors.Length > 0) {
             UI::TextDisabled("By: ");
+
             UI::SameLine();
+
             for (uint i = 0; i < m_map.Authors.Length; i++) {
                 MX::MapAuthorInfo@ author = m_map.Authors[i];
+
+                if (UI::MeasureString(author.Name).x > UI::GetContentRegionAvail().x) {
+                    UI::NewLine();
+                }
+
                 UI::TextDisabled(author.Name + (i == m_map.Authors.Length - 1 ? "" : ", "));
+
                 if (UI::BeginItemTooltip()) {
                     if (author.Uploader) {
                         UI::Text(Icons::CloudUpload + " Uploader");
                         UI::Separator();
                     }
+
                     if (author.Role != "") {
-                        UI::Text(author.Role);
+                        UI::Text("Role: " + author.Role);
                         UI::Separator();
                     }
+
                     UI::TextDisabled("Click to see " + author.Name + "'s profile");
+
                     UI::EndTooltip();
                 }
+
                 if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(author.UserId), true);
+
                 if (i < m_map.Authors.Length - 1) UI::SameLine();
             }
         } else {
