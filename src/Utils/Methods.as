@@ -50,6 +50,20 @@ string CurrentTitlePack() {
 #endif
 }
 
+string GetFileNameFromHeader(dictionary headers) {
+    if (!headers.Exists("Content-Disposition")) {
+        return "";
+    }
+
+    array<string> matches = Regex::Search(string(headers["Content-Disposition"]), "filename=\"?(.*?)\"?(?:; ?|;?$)");
+
+    if (matches.IsEmpty()) {
+        return "";
+    }
+
+    return matches[1];
+}
+
 array<MX::MapInfo@> LoadPlayLater() {
     array<MX::MapInfo@> m_maps;
     Json::Value FileData = Json::FromFile(PlayLaterJSON);

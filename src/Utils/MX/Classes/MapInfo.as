@@ -249,6 +249,10 @@ namespace MX
             Records = NadeoServices::GetMapRecords(MapUid);
 #endif
             m_recordsStatus = Status::Completed;
+
+#if DEPENDENCY_NADEOSERVICES
+            NadeoServices::GetRecordsData(Records, OnlineMapId, GameMode);
+#endif
         }
 
         void LoadMoreRecords() {
@@ -267,6 +271,10 @@ namespace MX
 #endif
 
             m_recordsStatus = Status::Completed;
+
+#if DEPENDENCY_NADEOSERVICES
+            NadeoServices::GetRecordsData(times, OnlineMapId, GameMode);
+#endif
         }
 
         bool get_HasMoreRecords() {

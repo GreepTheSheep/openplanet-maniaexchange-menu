@@ -260,7 +260,7 @@ void Main() {
     g_PlayLaterMaps = LoadPlayLater();
 
 #if DEPENDENCY_NADEOSERVICES
-    startnew(MXNadeoServicesGlobal::LoadNadeoLiveServices);
+    startnew(MXNadeoServicesGlobal::LoadNadeoServices);
 #endif
 
 #if DEPENDENCY_BETTERCHAT

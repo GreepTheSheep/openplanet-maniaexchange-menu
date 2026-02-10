@@ -52,5 +52,63 @@ namespace NadeoServices {
             return {};
         }
     }
+
+    void GetRecordsData(array<LeaderboardRecord@> records, const string &in mapId, MX::GameModes mapMode) {
+        while (!NadeoServices::IsAuthenticated("NadeoServices")) {
+            yield();
+        }
+
+        array<string> accountIds;
+
+        foreach (LeaderboardRecord@ record : records) {
+            if (record.Url == "") {
+                accountIds.InsertLast(record.AccountId);
+            }
+        }
+
+        if (accountIds.IsEmpty()) {
+            return;
+        }
+        
+        string gameMode;
+
+        if (mapMode == MX::GameModes::Stunt) {
+            gameMode = "Stunt";
+        } else {
+            gameMode = "TimeAttack";
+        }
+
+        string url = NadeoServices::BaseURLCore() + "/v2/mapRecords/by-account/?accountIdList=" + string::Join(accountIds, ",") + "&mapId=" + mapId + "&gameMode=" + gameMode;
+
+        Net::HttpRequest@ req = NadeoServices::Get("NadeoServices", url);
+        req.Start();
+
+        while (!req.Finished()) {
+            yield();
+        }
+
+        Logging::Trace("[GetRecordsData] Response: " + req.String());
+        Json::Value@ res = req.Json();
+
+        if (res.GetType() != Json::Type::Array) {
+            Logging::Error("[GetRecordsData] Error when getting records data: API didn't return an array!");
+            return;
+        }
+
+        for (uint i = 0; i < res.Length; i++) {
+            Json::Value@ data = res[i];
+
+            int index = accountIds.Find(data["accountId"]);
+            if (index == -1) continue;
+
+            LeaderboardRecord@ record = records[index];
+
+            // Nadeo API calls them replays despite being ghosts
+            record.FileName = Path::GetFileName(data["filename"]).Replace(".replay", ".Ghost");
+            record.RecordId = data["mapRecordId"];
+            record.Medal = int(data["medal"]);
+            record.Url = data["url"];
+        }
+    }
 #endif
 }

@@ -418,13 +418,15 @@ class MapTab : Tab
                     } else if (!m_map.FetchedReplays) {
                         startnew(CoroutineFunc(m_map.FetchReplays));
                     }
-                } else if (UI::BeginTable("MXLeaderboardList", 4, UI::TableFlags::RowBg)) {
+                } else if (UI::BeginTable("MXLeaderboardList", 6, UI::TableFlags::RowBg)) {
                     UI::TableSetupScrollFreeze(0, 1);
                     PushTabStyle();
                     UI::TableSetupColumn("Position", UI::TableColumnFlags::WidthFixed, 40);
                     UI::TableSetupColumn("Player", UI::TableColumnFlags::WidthStretch);
                     UI::TableSetupColumn("Time", UI::TableColumnFlags::WidthStretch);
                     UI::TableSetupColumn("Score", UI::TableColumnFlags::WidthStretch);
+                    UI::TableSetupColumn("Date", UI::TableColumnFlags::WidthFixed);
+                    UI::TableSetupColumn("", UI::TableColumnFlags::WidthFixed);
                     UI::TableHeadersRow();
                     PopTabStyle();
 
@@ -434,6 +436,7 @@ class MapTab : Tab
                         for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
                             UI::TableNextRow();
                             MX::MapReplay@ entry = m_map.Replays[i];
+                            UI::PushID("Replay" + i);
 
                             UI::TableNextColumn();
                             UI::AlignTextToFramePadding();
@@ -487,6 +490,22 @@ class MapTab : Tab
                                     UI::Text("\\$a66(" + (entry.Score - m_map.Replays[0].Score) + ")");
                                 }
                             }
+
+                            UI::TableNextColumn();
+
+                            UI::Text(Time::FormatString("%d %b %Y at %R", entry.Timestamp));
+
+                            UI::TableNextColumn();
+
+                            UI::BeginDisabled(entry.Downloading);
+
+                            if (UI::PurpleButton(Icons::Download)) {
+                                startnew(CoroutineFunc(entry.Download));
+                            }
+
+                            UI::EndDisabled();
+
+                            UI::PopID();
                         }
                     }
 
@@ -578,13 +597,15 @@ class MapTab : Tab
                 } else {
                     UI::Text("No online records found for this map. Be the first!");
                 }
-            } else if (UI::BeginTable("LeaderboardList", 3, UI::TableFlags::RowBg)) {
+            } else if (UI::BeginTable("LeaderboardList", 5, UI::TableFlags::RowBg)) {
                 UI::TableSetupScrollFreeze(0, 1);
                 PushTabStyle();
 
                 UI::TableSetupColumn("Position", UI::TableColumnFlags::WidthFixed, 40);
                 UI::TableSetupColumn("Player", UI::TableColumnFlags::WidthStretch);
                 UI::TableSetupColumn("Time", UI::TableColumnFlags::WidthStretch);
+                UI::TableSetupColumn("Date", UI::TableColumnFlags::WidthFixed);
+                UI::TableSetupColumn("", UI::TableColumnFlags::WidthFixed);
                 UI::TableHeadersRow();
 
                 PopTabStyle();
@@ -595,6 +616,7 @@ class MapTab : Tab
                     for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
                         UI::TableNextRow();
                         NadeoServices::LeaderboardRecord@ record = m_map.Records[i];
+                        UI::PushID("Record" + i);
 
                         UI::TableNextColumn();
                         UI::AlignTextToFramePadding();
@@ -607,6 +629,11 @@ class MapTab : Tab
                             UI::Text(record.DisplayName);
                         }
 
+                        UI::SetItemTooltip("Click to see " + record.DisplayName + "'s profile on Trackmania.io");
+                        if (UI::IsItemClicked()) {
+                            OpenBrowserURL("https://trackmania.io/#/player/" + record.AccountId);
+                        }
+
                         UI::TableNextColumn();
                         UI::Text(Time::Format(record.Score));
 
@@ -614,6 +641,23 @@ class MapTab : Tab
                             UI::SameLine();
                             UI::Text("\\$f00(+ " + Time::Format(record.Score - m_map.Records[0].Score) + ")");
                         }
+
+                        UI::TableNextColumn();
+                        UI::Text(Time::FormatString("%d %b %Y at %R", record.Timestamp));
+
+                        UI::TableNextColumn();
+
+                        UI::BeginDisabled(record.Url == "" || record.Downloading);
+
+                        if (record.Downloading) {
+                            UI::PurpleButton(Icons::AnimatedHourglass);
+                        } else if (UI::PurpleButton(Icons::Download)) {
+                            startnew(CoroutineFunc(record.Download));
+                        }
+
+                        UI::EndDisabled();
+
+                        UI::PopID();
                     }
                 }
 

@@ -7,7 +7,7 @@ namespace MXNadeoServicesGlobal
     dictionary checkedMaps;
 
 #if DEPENDENCY_NADEOSERVICES
-    void LoadNadeoLiveServices()
+    void LoadNadeoServices()
     {
         try {
             APIRefresh = true;
@@ -23,7 +23,7 @@ namespace MXNadeoServicesGlobal
 
             startnew(RefreshFavoriteMapsLoop);
         } catch {
-            Logging::Error("Failed to load NadeoLiveServices: " + getExceptionInfo());
+            Logging::Error("Failed to load NadeoServices: " + getExceptionInfo());
             APIDown = true;
         }
     }
@@ -31,10 +31,11 @@ namespace MXNadeoServicesGlobal
     void CheckAuthentication()
     {
         NadeoServices::AddAudience("NadeoLiveServices");
-        while (!NadeoServices::IsAuthenticated("NadeoLiveServices")) {
+        NadeoServices::AddAudience("NadeoServices");
+        while (!NadeoServices::IsAuthenticated("NadeoLiveServices") || !NadeoServices::IsAuthenticated("NadeoServices")) {
             yield();
         }
-        Logging::Debug("NadeoLiveServices authenticated");
+        Logging::Debug("NadeoServices audiences authenticated");
     }
 
     void GetFavoriteMapsAsync()
