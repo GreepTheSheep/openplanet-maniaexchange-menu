@@ -217,11 +217,11 @@ namespace MX
         }
 
         void PlayMap() {
-            MX::LoadMap(MapId);
+            MX::LoadMap(this);
         }
 
         void EditMap() {
-            MX::LoadMap(MapId, true);
+            MX::LoadMap(this, true);
         }
 
         // Download

@@ -268,8 +268,35 @@ namespace MX
         LoadMap(mapId);
     }
 
-    void LoadMap(int mapId, bool intoEditor = false)
-    {
+    void LoadMap(int mapId, bool intoEditor = false) {
+#if MP4
+        if (CurrentTitlePack() == "") {
+            Logging::Error("You must select a title pack before opening a map", true);
+            return;
+        }
+#elif TMNEXT
+        if (intoEditor && !Permissions::OpenAdvancedMapEditor()) {
+            Logging::Error("You don't have permission to open the advanced map editor.", true);
+            return;
+        } else if (!intoEditor && !Permissions::PlayLocalMap()) {
+            Logging::Error("You don't have permission to play custom maps.", true);
+            return;
+        }
+#endif
+
+        auto json = API::GetAsync(MXURL + "/api/maps?fields=" + mapFields + "&id=" + mapId);
+
+        if (json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
+            Logging::Error("Track not found.", true);
+            return;
+        }
+
+        MX::MapInfo@ map = MX::MapInfo(json["Results"][0]);
+
+        LoadMap(map, intoEditor);
+    }
+
+    void LoadMap(MX::MapInfo@ map, bool intoEditor = false) {
         try {
 #if MP4
             if (CurrentTitlePack() == "") {
@@ -284,29 +311,23 @@ namespace MX
                 Logging::Error("You don't have permission to play custom maps.", true);
                 return;
             }
-#endif
 
-            auto json = API::GetAsync(MXURL + "/api/maps?fields=" + mapFields + "&id=" +mapId);
-            if (json.GetType() == Json::Type::Null || !json.HasKey("Results") || json["Results"].Length == 0) {
-                Logging::Error("Track not found.", true);
-                return;
-            }
-            MX::MapInfo@ map = MX::MapInfo(json["Results"][0]);
-
-#if TMNEXT
             ClosePauseMenu();
 #endif
+
             if (Setting_CloseOverlayOnLoad && UI::IsOverlayShown()) {
                 UI::HideOverlay();
             }
 
             CTrackMania@ app = cast<CTrackMania>(GetApp());
             app.BackToMainMenu(); // If we're on a map, go back to the main menu else we'll get stuck on the current map
+
             while (!app.ManiaTitleControlScriptAPI.IsReady) {
-                yield(); // Wait until the ManiaTitleControlScriptAPI is ready for loading the next map
+                yield();
             }
+
             if (intoEditor) {
-                app.ManiaTitleControlScriptAPI.EditMap(MXURL + "/mapgbx/"+mapId+"?t="+map.UpdatedAt, "", "");
+                app.ManiaTitleControlScriptAPI.EditMap(MXURL + "/mapgbx/" + map.MapId + "?t=" + map.UpdatedAt, "", "");
             } else {
                 string Mode = "";
                 MX::ModesFromMapType.Get(map.MapType, Mode);
@@ -318,7 +339,7 @@ namespace MX
                 }
 #endif
 
-                app.ManiaTitleControlScriptAPI.PlayMap(MXURL + "/mapgbx/"+mapId+"?t="+map.UpdatedAt, Mode, "");
+                app.ManiaTitleControlScriptAPI.PlayMap(MXURL + "/mapgbx/" + map.MapId + "?t=" + map.UpdatedAt, Mode, "");
             }
         } catch {
             Logging::Error("Error while loading map: " + getExceptionInfo(), true);
