@@ -407,7 +407,6 @@ class MapTab : Tab
         }
 
         if (UI::BeginTabItem(shortMXName + " Leaderboard (" + m_map.ReplayCount + ")")) {
-            UI::BeginChild("MapMXLeaderboardChild");
 
             if (UI::GreenButton(Icons::ExternalLink + " Submit")) {
                 OpenBrowserURL(MXURL + "/replayupload/" + m_map.MapId);
@@ -422,6 +421,8 @@ class MapTab : Tab
                     m_map.Replays.RemoveRange(0, m_map.Replays.Length);
                     m_map.FetchedReplays = false;
                 }
+
+                UI::BeginChild("MapMXLeaderboardChild");
 
                 if (m_map.Replays.IsEmpty()) {
                     if (m_map.LoadingReplays) {
@@ -524,15 +525,15 @@ class MapTab : Tab
 
                     UI::EndTable();
                 }
+
+                UI::EndChild();
             }
 
-            UI::EndChild();
             UI::EndTabItem();
         }
 
         // CommentCount is usually inaccurate
-        if (UI::BeginTabItem("Comments")) {
-            UI::BeginChild("MapMXCommentsChild");
+        if (UI::BeginTabItem("Comments (" + m_map.CommentCount + ")")) {
 
             if (UI::GreenButton(Icons::Plus + " Post comment")) {
                 OpenBrowserURL(MXURL + "/commentupdate/" + m_map.MapId);
@@ -544,6 +545,8 @@ class MapTab : Tab
                 m_map.Comments.RemoveRange(0, m_map.Comments.Length);
                 m_map.FetchedComments = false;
             }
+
+            UI::BeginChild("MapMXCommentsChild");
 
             if (m_map.Comments.IsEmpty()) {
                 if (m_map.LoadingComments) {
@@ -587,8 +590,6 @@ class MapTab : Tab
         UI::BeginDisabled(!m_map.SupportsLeaderboard);
 
         if (UI::BeginTabItem("Online Leaderboard")) {
-            UI::BeginChild("MapLeaderboardChild");
-
             if (UI::Button(Icons::Refresh)) {
                 m_map.Records.RemoveRange(0, m_map.Records.Length);
                 m_map.FetchedRecords = false;
@@ -601,6 +602,8 @@ class MapTab : Tab
             }
 
             UI::SetItemTooltip("View leaderboard on Trackmania.io");
+
+            UI::BeginChild("MapLeaderboardChild");
 
             if (m_map.Records.IsEmpty()) {
                 if (m_map.LoadingRecords) {
@@ -697,8 +700,6 @@ class MapTab : Tab
         UI::BeginDisabled(m_map.EmbeddedObjectsCount == 0);
 
         if (UI::BeginTabItem("Embedded objects (" + m_map.EmbeddedObjectsCount + ")")) {
-            UI::BeginChild("MapEmbeddedObjectsChild");
-
             if (m_map.Objects.IsEmpty()) {
                 if (m_map.LoadingObjects) {
                     UI::Text(Icons::AnimatedHourglass + " Loading...");
@@ -708,7 +709,10 @@ class MapTab : Tab
                     startnew(CoroutineFunc(m_map.FetchObjects));
                 }
             } else {
+                UI::AlignTextToFramePadding();
                 UI::Text(m_map.Objects.Length + " objects found, with a total size of " + (m_map.EmbeddedItemsSize / 1024) + " KB");
+
+                UI::SameLine();
 
                 float buttonWidth = UI::MeasureButton(Icons::ExternalLink + " Get items on ItemExchange").x;
                 UI::RightAlignButton(buttonWidth);
@@ -720,6 +724,8 @@ class MapTab : Tab
                     OpenBrowserURL("https://item.exchange/set/map/2/" + m_map.MapId);
 #endif
                 }
+
+                UI::BeginChild("MapEmbeddedObjectsChild");
 
                 if (UI::BeginTable("EmbeddedObjectsList", 3, UI::TableFlags::RowBg)) {
                     UI::TableSetupScrollFreeze(0, 1);
@@ -792,9 +798,10 @@ class MapTab : Tab
 
                     UI::EndTable();
                 }
+
+                UI::EndChild();
             }
 
-            UI::EndChild();
             UI::EndTabItem();  
         }
 
