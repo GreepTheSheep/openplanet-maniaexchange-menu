@@ -84,53 +84,49 @@ void RenderMP4RepoSelectSettings()
 
 #if DEPENDENCY_NADEOSERVICES
 
-enum NadeoServicesFavoriteMapListSort {
+enum FavoritesSorting {
     Date,
     Name
 }
 
-enum NadeoServicesFavoriteMapListSortOrder {
+enum FavoritesSortOrder {
     Ascending,
     Descending
 }
 
 [Setting hidden]
-int Setting_NadeoServices_FavoriteMaps_RefreshDelay = 30;
+int Setting_FavoritesRefreshDelay = 60;
 
 [Setting hidden]
-NadeoServicesFavoriteMapListSort Setting_NadeoServices_FavoriteMaps_Sort = NadeoServicesFavoriteMapListSort::Date;
+FavoritesSorting Setting_FavoritesSort = FavoritesSorting::Date;
 
 [Setting hidden]
-NadeoServicesFavoriteMapListSortOrder Setting_NadeoServices_FavoriteMaps_SortOrder = NadeoServicesFavoriteMapListSortOrder::Descending;
+FavoritesSortOrder Setting_FavoritesSortOrder = FavoritesSortOrder::Descending;
 
 [SettingsTab name="Favorite Maps" icon="Star" order=3]
 void RenderNadeoServicesSettings()
 {
     if (UI::Button(Icons::Refresh + " Refresh Favorite Maps")) {
         startnew(MXNadeoServicesGlobal::ReloadFavoriteMapsAsync);
-        for (uint i = 0; i < mxMenu.tabs.Length; i++) {
-            if (mxMenu.tabs[i] !is null) {
-                mxMenu.tabs[i].Reload();
-            }
-        }
     }
-    Setting_NadeoServices_FavoriteMaps_RefreshDelay = UI::SliderInt("Favorite Maps refresh delay (in minutes)", Setting_NadeoServices_FavoriteMaps_RefreshDelay, 10, 60);
 
-    if (UI::BeginCombo("Favorites map list Sorting", tostring(Setting_NadeoServices_FavoriteMaps_Sort))) {
+    Setting_FavoritesRefreshDelay = UI::SliderInt("Favorites refresh delay (in minutes)", Setting_FavoritesRefreshDelay, 10, 120);
+
+    if (UI::BeginCombo("Favorites map list Sorting", tostring(Setting_FavoritesSort))) {
         for (int i = 0; i < 2; i++) {
-            if (UI::Selectable(tostring(NadeoServicesFavoriteMapListSort(i)), false)) {
-                Setting_NadeoServices_FavoriteMaps_Sort = NadeoServicesFavoriteMapListSort(i);
-                startnew(MXNadeoServicesGlobal::ReloadFavoriteMapsAsync);
+            if (UI::Selectable(tostring(FavoritesSorting(i)), Setting_FavoritesSort == FavoritesSorting(i))) {
+                Setting_FavoritesSort = FavoritesSorting(i);
+                startnew(MXNadeoServicesGlobal::SortFavorites);
             }
         }
         UI::EndCombo();
     }
 
-    if (UI::BeginCombo("Favorites map list Sorting Order", tostring(Setting_NadeoServices_FavoriteMaps_SortOrder))) {
+    if (UI::BeginCombo("Favorites map list Sorting Order", tostring(Setting_FavoritesSortOrder))) {
         for (int i = 0; i < 2; i++) {
-            if (UI::Selectable(tostring(NadeoServicesFavoriteMapListSortOrder(i)), false)) {
-                Setting_NadeoServices_FavoriteMaps_SortOrder = NadeoServicesFavoriteMapListSortOrder(i);
-                startnew(MXNadeoServicesGlobal::ReloadFavoriteMapsAsync);
+            if (UI::Selectable(tostring(FavoritesSortOrder(i)), Setting_FavoritesSortOrder == FavoritesSortOrder(i))) {
+                Setting_FavoritesSortOrder = FavoritesSortOrder(i);
+                startnew(MXNadeoServicesGlobal::SortFavorites);
             }
         }
         UI::EndCombo();

@@ -2,6 +2,7 @@ string inputMapID = "";
 int currentMapID = -4;
 MX::MapInfo@ currentMapInfo;
 Window mxMenu;
+bool openedMainMenu;
 
 void RenderMenu()
 {
@@ -22,6 +23,8 @@ void RenderMenuMain() {
     if (!hasPermissions) return;
 #endif
     if (UI::BeginMenu(nameMenu + Icons::APIStatus + "###" + pluginName + "Menu")) {
+        openedMainMenu = true;
+
         if (!MX::APIDown) {
             if (MX::APIRefresh) {
                 UI::Text(Icons::AnimatedHourglass + " Please wait...");
@@ -142,7 +145,7 @@ void RenderMenuMain() {
 
 #if DEPENDENCY_NADEOSERVICES
         // TODO: Add in-game favorites list from NadeoServices
-        if (UI::BeginMenu(pluginColor + Icons::Heart + " \\$zFavorites (" + MXNadeoServicesGlobal::g_totalFavoriteMaps + ")")) {
+        if (UI::BeginMenu(pluginColor + Icons::Heart + " \\$zFavorites (" + MXNadeoServicesGlobal::g_favoriteMaps.Length + ")")) {
             if (MXNadeoServicesGlobal::g_favoriteMaps.Length > 0) {
                 for (uint i = 0; i < MXNadeoServicesGlobal::g_favoriteMaps.Length; i++) {
                     NadeoServices::MapInfo@ mapNadeo = MXNadeoServicesGlobal::g_favoriteMaps[i];
@@ -167,7 +170,7 @@ void RenderMenuMain() {
                             UI::EndMenu();
                         }
                     } else {
-                        if (UI::BeginMenu((Setting_ColoredMapName ? Text::OpenplanetFormatCodes(mapNadeo.name) : Text::StripFormatCodes(mapNadeo.name)) + "\\$z" + (mapNadeo.authorUsername.Length > 0 ? (" by " + mapNadeo.authorUsername) : ""))) {
+                        if (UI::BeginMenu((Setting_ColoredMapName ? Text::OpenplanetFormatCodes(mapNadeo.GbxName) : mapNadeo.Name) + "\\$z by " + mapNadeo.Author)) {
                             UI::TextDisabled(Icons::Times + " This map is not available on " + pluginName);
 
                             if (UI::MenuItem("\\$f00" + Icons::TrashO + " Remove map")) {
@@ -259,15 +262,21 @@ void Main() {
 
     g_PlayLaterMaps = LoadPlayLater();
 
-#if DEPENDENCY_NADEOSERVICES
-    startnew(MXNadeoServicesGlobal::LoadNadeoServices);
-#endif
-
 #if DEPENDENCY_BETTERCHAT
     startnew(BetterChatRegisterCommands);
 #endif
 
     startnew(MapChecker);
+
+#if DEPENDENCY_NADEOSERVICES
+    startnew(MXNadeoServicesGlobal::LoadNadeoServices);
+
+    while (!mxMenu.isOpened && !openedMainMenu) {
+        yield();
+    }
+
+    startnew(MXNadeoServicesGlobal::RefreshFavoriteMapsLoop);
+#endif
 }
 
 void MapChecker() {

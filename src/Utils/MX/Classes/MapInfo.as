@@ -385,7 +385,7 @@ namespace MX
 
         bool get_InFavorites() {
             foreach (NadeoServices::MapInfo@ map : MXNadeoServicesGlobal::g_favoriteMaps) {
-                if (MapUid == map.uid) {
+                if (MapUid == map.Uid) {
                     return true;
                 }
             }

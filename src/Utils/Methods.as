@@ -170,3 +170,27 @@ void SavePlayLater(array<MX::MapInfo@> maps) {
     }
     Json::ToFile(PlayLaterJSON, FileData);
 }
+
+array<array<string>> Chunks(array<string> arr, uint maxLength) {
+    if (maxLength == 0) {
+        return {};
+    }
+
+    if (arr.Length <= maxLength) {
+        return { arr };
+    }
+
+    array<array<string>> arrayChunks;
+
+    for (uint i = 0; i < arr.Length; i += maxLength) {
+        array<string> chunk;
+
+        for (uint j = i; j < i + maxLength && j < arr.Length; j++) {
+            chunk.InsertLast(arr[j]);
+        }
+
+        arrayChunks.InsertLast(chunk);
+    }
+
+    return arrayChunks;
+}

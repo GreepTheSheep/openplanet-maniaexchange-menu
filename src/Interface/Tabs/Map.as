@@ -314,7 +314,7 @@ class MapTab : Tab
         if (m_map.InFavorites) {
             if (UI::RedButton(Icons::Heart + " Remove from Favorites")) {
                 foreach (NadeoServices::MapInfo@ favoriteMap : MXNadeoServicesGlobal::g_favoriteMaps) {
-                    if (favoriteMap.uid == m_map.MapUid) {
+                    if (favoriteMap.Uid == m_map.MapUid) {
                         startnew(MXNadeoServicesGlobal::RemoveMapFromFavoritesAsync, favoriteMap);
                         break;
                     }

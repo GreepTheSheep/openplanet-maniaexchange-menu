@@ -68,11 +68,12 @@ class PersonalListsTab : MapListTab
             UI::BeginDisabled(MXNadeoServicesGlobal::APIRefresh);
 
             UI::SetNextItemWidth(90);
-            if (UI::BeginCombo("##FavoritesSorting", tostring(Setting_NadeoServices_FavoriteMaps_Sort))) {
+            if (UI::BeginCombo("##FavoritesSorting", tostring(Setting_FavoritesSort))) {
                 for (int i = 0; i < 2; i++) {
-                    if (UI::Selectable(tostring(NadeoServicesFavoriteMapListSort(i)), false)) {
-                        Setting_NadeoServices_FavoriteMaps_Sort = NadeoServicesFavoriteMapListSort(i);
-                        startnew(MXNadeoServicesGlobal::ReloadFavoriteMapsAsync);
+                    if (UI::Selectable(tostring(FavoritesSorting(i)), false)) {
+                        Setting_FavoritesSort = FavoritesSorting(i);
+                        startnew(MXNadeoServicesGlobal::SortFavorites);
+                        Reload();
                     }
                 }
 
@@ -82,11 +83,12 @@ class PersonalListsTab : MapListTab
             UI::SameLine();
 
             UI::SetNextItemWidth(120);
-            if (UI::BeginCombo("##FavoritesSortingOrder", tostring(Setting_NadeoServices_FavoriteMaps_SortOrder))) {
+            if (UI::BeginCombo("##FavoritesSortingOrder", tostring(Setting_FavoritesSortOrder))) {
                 for (int i = 0; i < 2; i++) {
-                    if (UI::Selectable(tostring(NadeoServicesFavoriteMapListSortOrder(i)), false)) {
-                        Setting_NadeoServices_FavoriteMaps_SortOrder = NadeoServicesFavoriteMapListSortOrder(i);
-                        startnew(MXNadeoServicesGlobal::ReloadFavoriteMapsAsync);
+                    if (UI::Selectable(tostring(FavoritesSortOrder(i)), false)) {
+                        Setting_FavoritesSortOrder = FavoritesSortOrder(i);
+                        startnew(MXNadeoServicesGlobal::SortFavorites);
+                        Reload();
                     }
                 }
 

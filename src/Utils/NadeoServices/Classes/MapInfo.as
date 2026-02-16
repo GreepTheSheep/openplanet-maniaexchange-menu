@@ -2,60 +2,54 @@ namespace NadeoServices
 {
     class MapInfo
     {
-        string uid;
-        string mapId;
-        string name;
-        string author;
-        string authorUsername;
-        uint authorTime;
-        uint goldTime;
-        uint silverTime;
-        uint bronzeTime;
-        int nbLaps;
-        bool valid;
-        string downloadUrl;
-        string thumbnailUrl;
-        int uploadTimestamp;
-        int updateTimestamp;
-        int fileSize;
-        bool public;
-        bool favorite;
-        bool playable;
-        string mapStyle;
-        string mapType;
-        string collectionName;
-        int MXId;
+        string Uid;
+        string MapId;
+        string GbxName;
+        string Name;
+        string Author = "Unknown";
+        string AuthorId;
+        uint AuthorScore;
+        uint GoldScore;
+        uint SilverScore;
+        uint BronzeScore;
+        string DownloadUrl;
+        string ThumbnailUrl;
+        int Timestamp;
+        bool HasClones;
+        string MapType;
+        string Vista;
         MX::MapInfo@ MXMapInfo;
         Json::Value@ jsonCache;
 
-        MapInfo(const Json::Value &in json)
+        // to keep the original order in favorites
+        int Position;
+
+        MapInfo(CNadeoServicesMap@ map)
         {
             try {
-                uid = json["uid"];
-                mapId = json["mapId"];
-                name = json["name"];
-                author = json["author"];
-                authorTime = json["authorTime"];
-                goldTime = json["goldTime"];
-                silverTime = json["silverTime"];
-                bronzeTime = json["bronzeTime"];
-                nbLaps = json["nbLaps"];
-                valid = json["valid"];
-                downloadUrl = json["downloadUrl"];
-                thumbnailUrl = json["thumbnailUrl"];
-                uploadTimestamp = json["uploadTimestamp"];
-                updateTimestamp = json["updateTimestamp"];
-                if (json["fileSize"].GetType() != Json::Type::Null) fileSize = json["fileSize"];
-                public = json["public"];
-                favorite = json["favorite"];
-                playable = json["playable"];
-                mapStyle = json["mapStyle"];
-                mapType = json["mapType"];
-                collectionName = json["collectionName"];
+                Uid = map.Uid;
+                MapId = map.Id;
+                GbxName = Format::GbxText(map.Name);
+                Name = Text::StripFormatCodes(GbxName);
+                AuthorId = map.AuthorAccountId;
+                AuthorScore = map.AuthorScore;
+                GoldScore = map.GoldScore;
+                SilverScore = map.SilverScore;
+                BronzeScore = map.BronzeScore;
+                DownloadUrl = map.FileUrl;
+                ThumbnailUrl = map.ThumbnailUrl;
+                Timestamp = map.TimeStamp;
+                HasClones = map.HasClones;
+                MapType = CleanMapType(map.Type);
+                Vista = map.CollectionName;
+
+                if (map.AuthorDisplayName != "") {
+                    Author = map.AuthorDisplayName;
+                }
 
                 @jsonCache = ToJson();
             } catch {
-                Logging::Warn("Error parsing infos for map " + name + ": " + getExceptionInfo());
+                Logging::Warn("Error parsing infos for map " + Name + ": " + getExceptionInfo());
             }
         }
 
@@ -64,37 +58,32 @@ namespace NadeoServices
             if (jsonCache !is null) return jsonCache;
 
             Json::Value json = Json::Object();
+
             try {
-                json["uid"] = uid;
-                json["mapId"] = mapId;
-                json["name"] = name;
-                json["author"] = author;
-                json["authorTime"] = authorTime;
-                json["goldTime"] = goldTime;
-                json["silverTime"] = silverTime;
-                json["bronzeTime"] = bronzeTime;
-                json["nbLaps"] = nbLaps;
-                json["valid"] = valid;
-                json["downloadUrl"] = downloadUrl;
-                json["thumbnailUrl"] = thumbnailUrl;
-                json["uploadTimestamp"] = uploadTimestamp;
-                json["updateTimestamp"] = updateTimestamp;
-                json["fileSize"] = fileSize;
-                json["public"] = public;
-                json["favorite"] = favorite;
-                json["playable"] = playable;
-                json["mapStyle"] = mapStyle;
-                json["mapType"] = mapType;
-                json["collectionName"] = collectionName;
+                json["Uid"] = Uid;
+                json["Id"] = MapId;
+                json["Name"] = GbxName;
+                json["AuthorDisplayName"] = Author;
+                json["AuthorAccountId"] = AuthorId;
+                json["AuthorScore"] = AuthorScore;
+                json["GoldScore"] = GoldScore;
+                json["SilverScore"] = SilverScore;
+                json["BronzeScore"] = BronzeScore;
+                json["FileUrl"] = DownloadUrl;
+                json["ThumbnailUrl"] = ThumbnailUrl;
+                json["TimeStamp"] = Timestamp;
+                json["HasClones"] = HasClones;
+                json["Type"] = MapType;
+                json["CollectionName"] = Vista;
             } catch {
-                Logging::Warn("Error converting map info to json for map " + name + ": " + getExceptionInfo());
+                Logging::Warn("Error converting map info to json for map " + Name + ": " + getExceptionInfo());
             }
 
             return json;
         }
 
         bool opEquals(MapInfo@ b) {
-            return uid == b.uid;
+            return Uid == b.Uid;
         }
     }
 }
