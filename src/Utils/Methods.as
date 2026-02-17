@@ -1,13 +1,12 @@
 bool IsInEditor() {
     CTrackMania@ app = cast<CTrackMania>(GetApp());
-    auto editor = cast<CGameCtnEditorCommon>(app.Editor);
-    return editor !is null;
+    return app.Editor !is null;
 }
 
 bool IsInServer() {
     CTrackManiaNetwork@ Network = cast<CTrackManiaNetwork>(GetApp().Network);
     CGameCtnNetServerInfo@ ServerInfo = cast<CGameCtnNetServerInfo>(Network.ServerInfo);
-    return  ServerInfo.JoinLink != "";
+    return ServerInfo.JoinLink != "";
 }
 
 void ClosePauseMenu() {

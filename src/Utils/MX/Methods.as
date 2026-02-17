@@ -244,8 +244,8 @@ namespace MX
 
             if (repo == MP4mxRepos::Trackmania) {
 #endif
-            if (m_leaderboardSeasons.Length > 0) m_leaderboardSeasons.RemoveRange(0, m_leaderboardSeasons.Length);
-            GetAllLeaderboardSeasons();
+            // if (m_leaderboardSeasons.Length > 0) m_leaderboardSeasons.RemoveRange(0, m_leaderboardSeasons.Length);
+            // GetAllLeaderboardSeasons();
 #if MP4
             }
 #endif

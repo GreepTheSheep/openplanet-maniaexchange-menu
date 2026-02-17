@@ -52,7 +52,10 @@ namespace TMNext
 
     void UploadMapToNadeoServices(MX::MapInfo@ map) {
 #if TMNEXT
-        MX::DownloadMap(map, "", map.MapUid);
+        if (!Permissions::CreateAndUploadMap()) {
+            Logging::Error("You don't have permission to upload maps.", true);
+            return;
+        }
 
         auto app = cast<CGameManiaPlanet>(GetApp());
         auto cma = app.MenuManager.MenuCustom_CurrentManiaApp;
@@ -72,12 +75,6 @@ namespace TMNext
         }
 
         dfm.TaskResult_Release(regScript.Id);
-
-        string mapLocation = DownloadsFolder + map.MapUid + ".Map.Gbx";
-
-        if (IO::FileExists(mapLocation)) {
-            IO::Delete(mapLocation);
-        }
 #endif
     }
 
