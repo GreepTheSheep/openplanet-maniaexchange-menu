@@ -1,52 +1,9 @@
-bool IsInEditor() {
-    CTrackMania@ app = cast<CTrackMania>(GetApp());
-    return app.Editor !is null;
-}
-
-bool IsInServer() {
-    CTrackManiaNetwork@ Network = cast<CTrackManiaNetwork>(GetApp().Network);
-    CGameCtnNetServerInfo@ ServerInfo = cast<CGameCtnNetServerInfo>(Network.ServerInfo);
-    return ServerInfo.JoinLink != "";
-}
-
-void ClosePauseMenu() {
-    if (IsPauseMenuDisplayed()) {
-        CSmArenaClient@ playground = cast<CSmArenaClient>(GetApp().CurrentPlayground);
-        if (playground !is null) {
-            playground.Interface.ManialinkScriptHandler.CloseInGameMenu(CGameScriptHandlerPlaygroundInterface::EInGameMenuResult::Resume);
-        }
-    }
-}
-
-bool IsPauseMenuDisplayed() {
-    CTrackMania@ app = cast<CTrackMania>(GetApp());
-    return app.ManiaPlanetScriptAPI.ActiveContext_InGameMenuDisplayed;
-}
-
-CGameCtnChallenge@ GetCurrentMap() {
-    CTrackMania@ g_app = cast<CTrackMania>(GetApp());
-    return g_app.RootMap;
-}
-
 string CleanMapType(const string &in mapType) {
     const int slashIndex = mapType.IndexOf("\\");
 
     if (slashIndex == -1) return mapType;
 
     return mapType.SubStr(slashIndex+1);
-}
-
-string CurrentTitlePack() {
-    CTrackMania@ app = cast<CTrackMania>(GetApp());
-    if (app.LoadedManiaTitle is null) return "";
-
-    string titleId = app.LoadedManiaTitle.TitleId;
-
-#if MP4
-    return titleId.SubStr(0, titleId.IndexOf("@"));
-#else
-    return titleId;
-#endif
 }
 
 string GetFileNameFromHeader(dictionary headers) {

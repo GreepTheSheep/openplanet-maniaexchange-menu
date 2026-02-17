@@ -285,7 +285,7 @@ void MapChecker() {
     while (true) {
         yield();
 
-        if (IsInEditor()) {
+        if (TM::IsInEditor()) {
             currentMapID = -5;
             continue;
         }

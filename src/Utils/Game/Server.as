@@ -1,5 +1,4 @@
-namespace TMNext
-{
+namespace TM {
     bool g_checkingRoom = false;
     string roomCheckError = "";
     TM::ClubRoom@ foundRoom;

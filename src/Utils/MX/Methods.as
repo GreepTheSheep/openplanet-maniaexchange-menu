@@ -270,7 +270,7 @@ namespace MX
 
     void LoadMap(int mapId, bool intoEditor = false) {
 #if MP4
-        if (CurrentTitlePack() == "") {
+        if (TM::CurrentTitlePack() == "") {
             Logging::Error("You must select a title pack before opening a map", true);
             return;
         }
@@ -299,7 +299,7 @@ namespace MX
     void LoadMap(MX::MapInfo@ map, bool intoEditor = false) {
         try {
 #if MP4
-            if (CurrentTitlePack() == "") {
+            if (TM::CurrentTitlePack() == "") {
                 Logging::Error("You must select a title pack before opening a map", true);
                 return;
             }
@@ -312,7 +312,7 @@ namespace MX
                 return;
             }
 
-            ClosePauseMenu();
+            TM::ClosePauseMenu();
 #endif
 
             if (Setting_CloseOverlayOnLoad && UI::IsOverlayShown()) {
@@ -334,7 +334,7 @@ namespace MX
 
 #if MP4
                 if (Mode == "" && repo == MP4mxRepos::Trackmania) {
-                    const string loadedTP = CurrentTitlePack();
+                    const string loadedTP = TM::CurrentTitlePack();
                     MX::ModesFromTitlePack.Get(loadedTP, Mode);
                 }
 #endif
@@ -387,11 +387,11 @@ namespace MX
      * -5 = In Map Editor
     */
     int GetCurrentMapMXID() {
-        if (IsInEditor()) {
+        if (TM::IsInEditor()) {
             return -5;
         }
 
-        auto currentMap = GetCurrentMap();
+        auto currentMap = TM::GetCurrentMap();
 
         if (currentMap is null) {
             return -4;

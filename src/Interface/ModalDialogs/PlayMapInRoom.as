@@ -61,15 +61,15 @@ class PlayMapInRoom : ModalDialog
         UI::NewLine();
 
         UI::SetItemText("Club ID:");
-        TMNext::AddMapToServer_ClubId = UI::InputInt("##ClubID", TMNext::AddMapToServer_ClubId, 0);
+        TM::AddMapToServer_ClubId = UI::InputInt("##ClubID", TM::AddMapToServer_ClubId, 0);
 
         UI::SetItemText("Room ID:");
-        TMNext::AddMapToServer_RoomId = UI::InputInt("##RoomID", TMNext::AddMapToServer_RoomId, 0);
+        TM::AddMapToServer_RoomId = UI::InputInt("##RoomID", TM::AddMapToServer_RoomId, 0);
 
-        UI::BeginDisabled(TMNext::IsCheckingRoom || TMNext::AddMapToServer_ClubId == 0 || TMNext::AddMapToServer_RoomId == 0);
+        UI::BeginDisabled(TM::IsCheckingRoom || TM::AddMapToServer_ClubId == 0 || TM::AddMapToServer_RoomId == 0);
 
         if (UI::GreenButton(Icons::Search + " Check room")) {
-            startnew(TMNext::CheckNadeoRoomAsync);
+            startnew(TM::CheckNadeoRoomAsync);
         }
 
         UI::EndDisabled();
@@ -80,22 +80,22 @@ class PlayMapInRoom : ModalDialog
             m_showHelp = true;
         }
 
-        if (TMNext::IsCheckingRoom) {
+        if (TM::IsCheckingRoom) {
             UI::SameLine();
             UI::Text(Icons::AnimatedHourglass + " Checking room...");
-        } else if (TMNext::roomCheckError.Length > 0) {
-            UI::Text("\\$f90" + Icons::ExclamationTriangle + "\\$An error occurred while getting the room: " + TMNext::roomCheckError);
-        } else if (TMNext::foundRoom !is null) {
+        } else if (TM::roomCheckError.Length > 0) {
+            UI::Text("\\$f90" + Icons::ExclamationTriangle + "\\$An error occurred while getting the room: " + TM::roomCheckError);
+        } else if (TM::foundRoom !is null) {
             UI::PaddedHeaderSeparator("Room");
 
-            UI::Text("Room: " + Text::StripFormatCodes(TMNext::foundRoom.name));
-            UI::Text("Club: " + Text::StripFormatCodes(TMNext::foundRoom.clubName));
+            UI::Text("Room: " + Text::StripFormatCodes(TM::foundRoom.name));
+            UI::Text("Club: " + Text::StripFormatCodes(TM::foundRoom.clubName));
 
-            if (TMNext::foundRoom.room !is null) {
-                UI::Text("Players: " + TMNext::foundRoom.room.playerCount);
+            if (TM::foundRoom.room !is null) {
+                UI::Text("Players: " + TM::foundRoom.room.playerCount);
             }
 
-            if (!TMNext::foundRoom.nadeo) {
+            if (!TM::foundRoom.nadeo) {
                 UI::NewLine();
                 UI::Text("\\$f90" + Icons::ExclamationTriangle + "\\$ this server is NOT hosted by Nadeo, so you can't add maps from this plugin");
                 UI::Text("Refer to your server/club masteradmin.");
@@ -109,18 +109,18 @@ class PlayMapInRoom : ModalDialog
 
         UI::RightAlignButtons(buttonsWidth, 2);
 
-        UI::BeginDisabled(TMNext::IsCheckingRoom || TMNext::foundRoom is null || !TMNext::foundRoom.nadeo);
+        UI::BeginDisabled(TM::IsCheckingRoom || TM::foundRoom is null || !TM::foundRoom.nadeo);
 
         if (UI::GreenButton(Icons::Plus + " Add to room map list")) {
             Close();
-            startnew(TMNext::AddMapToRoom, m_newMap);
+            startnew(TM::AddMapToRoom, m_newMap);
         }
 
         UI::SameLine();
 
         if (UI::GreenButton(Icons::Play + " Play map now!")) {
             Close();
-            startnew(TMNext::PlayMapInRoom, m_newMap);
+            startnew(TM::PlayMapInRoom, m_newMap);
         }
 
         UI::EndDisabled();

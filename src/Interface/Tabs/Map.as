@@ -242,7 +242,7 @@ class MapTab : Tab
                     startnew(CoroutineFunc(m_map.PlayMap));
                 }
 #if TMNEXT && DEPENDENCY_NADEOSERVICES
-                if (isMapTypeSupported && IsInServer()) {
+                if (isMapTypeSupported && TM::IsInServer()) {
                     CTrackMania@ app = cast<CTrackMania>(GetApp());
 
                     if (app.RootMap !is null) {
