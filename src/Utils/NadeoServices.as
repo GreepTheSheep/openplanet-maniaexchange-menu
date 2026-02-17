@@ -2,7 +2,7 @@ namespace MXNadeoServicesGlobal
 {
     bool APIDown;
     bool APIRefresh;
-    array<NadeoServices::MapInfo@> g_favoriteMaps;
+    array<TM::MapInfo@> g_favoriteMaps;
     dictionary checkedMaps;
     bool g_fetchedFavorites;
 
@@ -73,7 +73,7 @@ namespace MXNadeoServicesGlobal
                 CNadeoServicesMap@ nadeoMap = favoriteMaps[i];
                 Logging::Trace("[GetFavoriteMapsAsync] Loading favorite map #" + i + ": " + nadeoMap.Name + " (" + nadeoMap.Uid + ")");
 
-                auto map = NadeoServices::MapInfo(nadeoMap);
+                auto map = TM::MapInfo(nadeoMap);
                 map.Position = i;
     
                 g_favoriteMaps.InsertLast(map);
@@ -207,7 +207,7 @@ namespace MXNadeoServicesGlobal
             return bool(checkedMaps[mapUid]);
         }
 
-        NadeoServices::MapInfo@ map = GetMapInfoAsync(mapUid);
+        TM::MapInfo@ map = GetMapInfoAsync(mapUid);
 
         if (map is null) {
             checkedMaps.Set(mapUid, false);
@@ -223,7 +223,7 @@ namespace MXNadeoServicesGlobal
         }
     }
 
-    NadeoServices::MapInfo@ GetMapInfoAsync(const string &in mapUid)
+    TM::MapInfo@ GetMapInfoAsync(const string &in mapUid)
     {
         Logging::Debug("[GetMapInfoAsync] Getting map information for UID " + mapUid);
 
@@ -242,7 +242,7 @@ namespace MXNadeoServicesGlobal
             return null;
         }
 
-        auto mapInfo = NadeoServices::MapInfo(res.Map);
+        auto mapInfo = TM::MapInfo(res.Map);
         menu.DataFileMgr.TaskResult_Release(res.Id);
 
         return mapInfo;
@@ -278,7 +278,7 @@ namespace MXNadeoServicesGlobal
 
     void RemoveMapFromFavoritesAsync(ref@ mapData)
     {
-        NadeoServices::MapInfo@ map = cast<NadeoServices::MapInfo>(mapData);
+        TM::MapInfo@ map = cast<TM::MapInfo>(mapData);
 
         string url = NadeoServices::BaseURLLive() + "/api/token/map/favorite/" + map.Uid + "/remove";
         Logging::Debug("[RemoveMapFromFavoritesAsync] URL: " + url);

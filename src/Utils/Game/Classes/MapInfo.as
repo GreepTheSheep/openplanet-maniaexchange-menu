@@ -1,7 +1,5 @@
-namespace NadeoServices
-{
-    class MapInfo
-    {
+namespace TM {
+    class MapInfo {
         string Uid;
         string MapId;
         string GbxName;
@@ -24,8 +22,7 @@ namespace NadeoServices
         // to keep the original order in favorites
         int Position;
 
-        MapInfo(CNadeoServicesMap@ map)
-        {
+        MapInfo(CNadeoServicesMap@ map) {
             try {
                 Uid = map.Uid;
                 MapId = map.Id;
@@ -53,8 +50,7 @@ namespace NadeoServices
             }
         }
 
-        Json::Value ToJson()
-        {
+        Json::Value ToJson() {
             if (jsonCache !is null) return jsonCache;
 
             Json::Value json = Json::Object();

@@ -1,6 +1,6 @@
-namespace NadeoServices {
-#if DEPENDENCY_NADEOSERVICES
+namespace TM {
     array<LeaderboardRecord@> GetMapRecords(const string &in mapUid, int offset = 0) {
+#if DEPENDENCY_NADEOSERVICES
         while (!NadeoServices::IsAuthenticated("NadeoLiveServices")) {
             yield();
         }
@@ -51,9 +51,13 @@ namespace NadeoServices {
             Logging::Error("[GetMapRecords] Failed to get map records: " + getExceptionInfo(), true);
             return {};
         }
+#else
+        return {};
+#endif
     }
 
     void GetRecordsData(array<LeaderboardRecord@> records, const string &in mapId, MX::GameModes mapMode) {
+#if DEPENDENCY_NADEOSERVICES
         while (!NadeoServices::IsAuthenticated("NadeoServices")) {
             yield();
         }
@@ -109,6 +113,6 @@ namespace NadeoServices {
             record.Medal = int(data["medal"]);
             record.Url = data["url"];
         }
-    }
 #endif
+    }
 }

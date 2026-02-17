@@ -313,7 +313,7 @@ class MapTab : Tab
 #if TMNEXT && DEPENDENCY_NADEOSERVICES
         if (m_map.InFavorites) {
             if (UI::RedButton(Icons::Heart + " Remove from Favorites")) {
-                foreach (NadeoServices::MapInfo@ favoriteMap : MXNadeoServicesGlobal::g_favoriteMaps) {
+                foreach (TM::MapInfo@ favoriteMap : MXNadeoServicesGlobal::g_favoriteMaps) {
                     if (favoriteMap.Uid == m_map.MapUid) {
                         startnew(MXNadeoServicesGlobal::RemoveMapFromFavoritesAsync, favoriteMap);
                         break;
@@ -631,7 +631,7 @@ class MapTab : Tab
                 while (clipper.Step()) {
                     for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
                         UI::TableNextRow();
-                        NadeoServices::LeaderboardRecord@ record = m_map.Records[i];
+                        TM::LeaderboardRecord@ record = m_map.Records[i];
                         UI::PushID("Record" + i);
 
                         UI::TableNextColumn();

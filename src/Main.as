@@ -148,7 +148,7 @@ void RenderMenuMain() {
         if (UI::BeginMenu(pluginColor + Icons::Heart + " \\$zFavorites (" + MXNadeoServicesGlobal::g_favoriteMaps.Length + ")")) {
             if (MXNadeoServicesGlobal::g_favoriteMaps.Length > 0) {
                 for (uint i = 0; i < MXNadeoServicesGlobal::g_favoriteMaps.Length; i++) {
-                    NadeoServices::MapInfo@ mapNadeo = MXNadeoServicesGlobal::g_favoriteMaps[i];
+                    TM::MapInfo@ mapNadeo = MXNadeoServicesGlobal::g_favoriteMaps[i];
 
                     if (mapNadeo.MXMapInfo !is null) {
                         MX::MapInfo@ map = mapNadeo.MXMapInfo;

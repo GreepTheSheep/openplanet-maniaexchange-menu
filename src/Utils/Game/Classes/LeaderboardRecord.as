@@ -1,4 +1,4 @@
-namespace NadeoServices {
+namespace TM {
     class LeaderboardRecord {
         uint Position;
         uint Score;

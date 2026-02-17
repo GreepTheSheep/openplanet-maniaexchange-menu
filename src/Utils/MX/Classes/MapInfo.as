@@ -35,7 +35,7 @@ namespace MX
         bool m_isUploaded;
 
         // Leaderboard
-        array<NadeoServices::LeaderboardRecord@> Records;
+        array<TM::LeaderboardRecord@> Records;
         Status m_recordsStatus;
 
         // Download
@@ -246,12 +246,12 @@ namespace MX
 
             m_recordsStatus = Status::Loading;
 #if DEPENDENCY_NADEOSERVICES
-            Records = NadeoServices::GetMapRecords(MapUid);
+            Records = TM::GetMapRecords(MapUid);
 #endif
             m_recordsStatus = Status::Completed;
 
 #if DEPENDENCY_NADEOSERVICES
-            NadeoServices::GetRecordsData(Records, OnlineMapId, GameMode);
+            TM::GetRecordsData(Records, OnlineMapId, GameMode);
 #endif
         }
 
@@ -263,7 +263,7 @@ namespace MX
             m_recordsStatus = Status::Loading;
 
 #if DEPENDENCY_NADEOSERVICES
-            array<NadeoServices::LeaderboardRecord@> times = NadeoServices::GetMapRecords(MapUid, Records.Length);
+            array<TM::LeaderboardRecord@> times = TM::GetMapRecords(MapUid, Records.Length);
 
             for (uint i = 0; i < times.Length; i++) {
                 Records.InsertLast(times[i]);
@@ -273,7 +273,7 @@ namespace MX
             m_recordsStatus = Status::Completed;
 
 #if DEPENDENCY_NADEOSERVICES
-            NadeoServices::GetRecordsData(times, OnlineMapId, GameMode);
+            TM::GetRecordsData(times, OnlineMapId, GameMode);
 #endif
         }
 
@@ -384,7 +384,7 @@ namespace MX
         }
 
         bool get_InFavorites() {
-            foreach (NadeoServices::MapInfo@ map : MXNadeoServicesGlobal::g_favoriteMaps) {
+            foreach (TM::MapInfo@ map : MXNadeoServicesGlobal::g_favoriteMaps) {
                 if (MapUid == map.Uid) {
                     return true;
                 }

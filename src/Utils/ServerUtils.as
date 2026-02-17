@@ -2,7 +2,7 @@ namespace TMNext
 {
     bool g_checkingRoom = false;
     string roomCheckError = "";
-    NadeoServices::ClubRoom@ foundRoom;
+    TM::ClubRoom@ foundRoom;
 
     [Setting hidden]
     int AddMapToServer_ClubId = 0;
@@ -33,7 +33,7 @@ namespace TMNext
 
         switch (res.GetType()) {
             case Json::Type::Object:
-                @foundRoom = NadeoServices::ClubRoom(res);
+                @foundRoom = TM::ClubRoom(res);
                 break;
             case Json::Type::Array:
                 if (string(res[0]).Contains("notFound")) {

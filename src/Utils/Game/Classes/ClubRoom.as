@@ -1,7 +1,5 @@
-namespace NadeoServices
-{
-    class ClubRoom
-    {
+namespace TM {
+    class ClubRoom {
         int id;
         int clubId;
         string clubName;
@@ -17,16 +15,13 @@ namespace NadeoServices
         uint creationTimestamp;
         bool password;
 
-        ClubRoom(const Json::Value &in json)
-        {
+        ClubRoom(const Json::Value &in json) {
             try {
                 id = json["id"];
                 clubId = json["clubId"];
                 clubName = json["clubName"];
                 nadeo = json["nadeo"];
                 roomId = json["roomId"];
-                if (json["campaignId"].GetType() != Json::Type::Null) campaignId = json["campaignId"];
-                if (json["playerServerLogin"].GetType() != Json::Type::Null) playerServerLogin = json["playerServerLogin"];
                 activityId = json["activityId"];
                 mediaUrl = json["mediaUrl"];
                 name = json["name"];
@@ -34,14 +29,21 @@ namespace NadeoServices
                 popularityLevel = json["popularityLevel"];
                 creationTimestamp = json["creationTimestamp"];
                 password = json["password"];
+
+                if (json["campaignId"].GetType() != Json::Type::Null) {
+                    campaignId = json["campaignId"];
+                }
+
+                if (json["playerServerLogin"].GetType() != Json::Type::Null) {
+                    playerServerLogin = json["playerServerLogin"];
+                }
             } catch {
                 Logging::Warn("Failed to parse Club Room " + id + " - " + getExceptionInfo());
             }
         }
     }
 
-    class ClubRoomInfo
-    {
+    class ClubRoomInfo {
         int id;
         string name;
         string region;
@@ -51,14 +53,12 @@ namespace NadeoServices
         array<string> maps;
         string script;
         bool scalable;
-        // scriptSettings
         string timeLimit;
         string joinLink;
         string currentMapUid;
         bool starting;
 
-        ClubRoomInfo(const Json::Value &in json)
-        {
+        ClubRoomInfo(const Json::Value &in json) {
             try {
                 id = json["id"];
                 name = json["name"];
@@ -68,7 +68,10 @@ namespace NadeoServices
                 playerCount = json["playerCount"];
                 script = json["script"];
                 scalable = json["scalable"];
-                if (json["scriptSettings"].HasKey("S_TimeLimit")) timeLimit = json["scriptSettings"]["S_TimeLimit"]["value"];
+
+                if (json["scriptSettings"].HasKey("S_TimeLimit")) {
+                    timeLimit = json["scriptSettings"]["S_TimeLimit"]["value"];
+                }
 
                 if (json["serverInfo"].GetType() != Json::Type::Null) {
                     joinLink = json["serverInfo"]["joinLink"];
@@ -76,8 +79,9 @@ namespace NadeoServices
                     starting = json["serverInfo"]["starting"];
                 }
 
-                for (uint i = 0; i < json["maps"].Length; i++)
+                for (uint i = 0; i < json["maps"].Length; i++) {
                     maps.InsertLast(json["maps"][i]);
+                }
             } catch {
                 Logging::Warn("Failed to parse Club Room Info " + id + " - " + getExceptionInfo());
             }
