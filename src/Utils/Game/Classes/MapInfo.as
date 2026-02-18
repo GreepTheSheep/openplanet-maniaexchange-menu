@@ -22,6 +22,7 @@ namespace TM {
         // to keep the original order in favorites
         int Position;
 
+#if TMNEXT
         MapInfo(CNadeoServicesMap@ map) {
             try {
                 Uid = map.Uid;
@@ -49,6 +50,7 @@ namespace TM {
                 Logging::Warn("Error parsing infos for map " + Name + ": " + getExceptionInfo());
             }
         }
+#endif
 
         Json::Value ToJson() {
             if (jsonCache !is null) return jsonCache;
