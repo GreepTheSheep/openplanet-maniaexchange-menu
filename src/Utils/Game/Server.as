@@ -49,34 +49,6 @@ namespace TM {
 #endif
     }
 
-    void UploadMapToNadeoServices(MX::MapInfo@ map) {
-#if TMNEXT
-        if (!Permissions::CreateAndUploadMap()) {
-            Logging::Error("You don't have permission to upload maps.", true);
-            return;
-        }
-
-        auto app = cast<CGameManiaPlanet>(GetApp());
-        auto cma = app.MenuManager.MenuCustom_CurrentManiaApp;
-        auto dfm = cma.DataFileMgr;
-        auto userId = cma.UserMgr.Users[0].Id;
-
-        yield();
-
-        auto regScript = dfm.Map_NadeoServices_Register(userId, map.MapUid);
-
-        while (regScript.IsProcessing) yield();
-
-        if (regScript.HasFailed) {
-            Logging::Error("[UploadMapToNadeoServices] Map upload failed: " + regScript.ErrorType + ", " + regScript.ErrorCode + ", " + regScript.ErrorDescription);
-        } else if (regScript.HasSucceeded) {
-            Logging::Trace("[UploadMapToNadeoServices] Map uploaded: " +  map.MapUid);
-        }
-
-        dfm.TaskResult_Release(regScript.Id);
-#endif
-    }
-
     void AddMapToRoom(ref@ mapRef) {
         auto map = cast<MX::MapInfo>(mapRef);
 
@@ -105,7 +77,7 @@ namespace TM {
 
         if (mapList.Length > 0) {
             const string mapUid = foundRoom.room.currentMapUid.Length > 0 ? foundRoom.room.currentMapUid : mapList[0];
-            Json::Value mapInfo = MXNadeoServicesGlobal::GetMapInfoAsync(mapUid);
+            Json::Value mapInfo = TM::GetMapInfo(mapUid);
 
             if (mapInfo is null) {
                 Logging::Warn("Couldn't find information for map UID " + mapUid, true);

@@ -3,7 +3,6 @@ namespace MXNadeoServicesGlobal
     bool APIDown;
     bool APIRefresh;
     array<TM::MapInfo@> g_favoriteMaps;
-    dictionary checkedMaps;
     bool g_fetchedFavorites;
 
     bool get_FetchedFavorites() {
@@ -199,53 +198,6 @@ namespace MXNadeoServicesGlobal
             Logging::Debug('Refreshing favorite maps...');
             ReloadFavoriteMapsAsync();
         }
-    }
-
-    bool CheckIfMapExistsAsync(const string &in mapUid)
-    {
-        if (checkedMaps.Exists(mapUid)) {
-            return bool(checkedMaps[mapUid]);
-        }
-
-        TM::MapInfo@ map = GetMapInfoAsync(mapUid);
-
-        if (map is null) {
-            checkedMaps.Set(mapUid, false);
-            return false;
-        }
-
-        try {
-            checkedMaps.Set(map.Uid, map.Uid == mapUid);
-            return map.Uid == mapUid;
-        } catch {
-            checkedMaps.Set(mapUid, false);
-            return false;
-        }
-    }
-
-    TM::MapInfo@ GetMapInfoAsync(const string &in mapUid)
-    {
-        Logging::Debug("[GetMapInfoAsync] Getting map information for UID " + mapUid);
-
-        auto app = cast<CGameManiaPlanet>(GetApp());
-        auto menu = app.MenuManager.MenuCustom_CurrentManiaApp;
-        MwId userId = menu.UserMgr.Users[0].Id;
-        auto res = menu.DataFileMgr.Map_NadeoServices_GetFromUid(userId, mapUid);
-
-        while (res.IsProcessing) {
-            yield();
-        }
-
-        if (!res.HasSucceeded || res.HasFailed || res.Map is null) {
-            Logging::Error("[GetMapInfoAsync] Failed to get favorite maps: Error " + res.ErrorCode + " - " + res.ErrorDescription);
-            menu.DataFileMgr.TaskResult_Release(res.Id);
-            return null;
-        }
-
-        auto mapInfo = TM::MapInfo(res.Map);
-        menu.DataFileMgr.TaskResult_Release(res.Id);
-
-        return mapInfo;
     }
 
     void AddMapToFavoritesAsync(ref@ mapData)

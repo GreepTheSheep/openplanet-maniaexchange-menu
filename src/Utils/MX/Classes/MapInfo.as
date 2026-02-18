@@ -217,11 +217,11 @@ namespace MX
         }
 
         void PlayMap() {
-            MX::LoadMap(this);
+            TM::LoadMap(this);
         }
 
         void EditMap() {
-            MX::LoadMap(this, true);
+            TM::LoadMap(this, true);
         }
 
         // Download
@@ -400,7 +400,7 @@ namespace MX
                 return;
             }
 
-            m_isUploaded = MXNadeoServicesGlobal::CheckIfMapExistsAsync(MapUid);
+            m_isUploaded = TM::IsMapUploaded(MapUid);
         }
 #endif
 

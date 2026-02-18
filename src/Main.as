@@ -40,7 +40,7 @@ void RenderMenuMain() {
                     if (inputMapID != "") {
                         if (pressedEnter || UI::MenuItem(Icons::Play + " Play map")) {
                             UI::ShowNotification("Loading map...");
-                            startnew(MX::LoadMapAsync, Text::ParseInt(inputMapID));
+                            startnew(TM::LoadMapAsync, Text::ParseInt(inputMapID));
                         }
 
                         if (UI::MenuItem(Icons::Kenney::InfoCircle + " Open information")) {

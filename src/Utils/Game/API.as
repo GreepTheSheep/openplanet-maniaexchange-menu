@@ -1,4 +1,6 @@
 namespace TM {
+    dictionary g_checkedMaps;
+
     array<LeaderboardRecord@> GetMapRecords(const string &in mapUid, int offset = 0) {
 #if DEPENDENCY_NADEOSERVICES
         while (!NadeoServices::IsAuthenticated("NadeoLiveServices")) {
@@ -113,6 +115,83 @@ namespace TM {
             record.Medal = int(data["medal"]);
             record.Url = data["url"];
         }
+#endif
+    }
+
+    void UploadMapToNadeoServices(MX::MapInfo@ map) {
+#if TMNEXT
+        if (!Permissions::CreateAndUploadMap()) {
+            Logging::Error("You don't have permission to upload maps.", true);
+            return;
+        }
+
+        auto app = cast<CGameManiaPlanet>(GetApp());
+        auto cma = app.MenuManager.MenuCustom_CurrentManiaApp;
+        auto dfm = cma.DataFileMgr;
+        auto userId = cma.UserMgr.Users[0].Id;
+
+        yield();
+
+        auto regScript = dfm.Map_NadeoServices_Register(userId, map.MapUid);
+
+        while (regScript.IsProcessing) yield();
+
+        if (regScript.HasFailed) {
+            Logging::Error("[UploadMapToNadeoServices] Map upload failed: " + regScript.ErrorType + ", " + regScript.ErrorCode + ", " + regScript.ErrorDescription);
+        } else if (regScript.HasSucceeded) {
+            Logging::Trace("[UploadMapToNadeoServices] Map uploaded: " +  map.MapUid);
+        }
+
+        dfm.TaskResult_Release(regScript.Id);
+#endif
+    }
+
+    bool IsMapUploaded(const string &in mapUid) {
+        if (g_checkedMaps.Exists(mapUid)) {
+            return bool(g_checkedMaps[mapUid]);
+        }
+
+        TM::MapInfo@ map = GetMapInfo(mapUid);
+
+        if (map is null) {
+            g_checkedMaps.Set(mapUid, false);
+            return false;
+        }
+
+        try {
+            g_checkedMaps.Set(map.Uid, map.Uid == mapUid);
+            return map.Uid == mapUid;
+        } catch {
+            g_checkedMaps.Set(mapUid, false);
+            return false;
+        }
+    }
+
+    TM::MapInfo@ GetMapInfo(const string &in mapUid) {
+#if TMNEXT
+        Logging::Debug("[GetMapInfo] Getting map information for UID " + mapUid);
+
+        auto app = cast<CGameManiaPlanet>(GetApp());
+        auto menu = app.MenuManager.MenuCustom_CurrentManiaApp;
+        MwId userId = menu.UserMgr.Users[0].Id;
+        auto res = menu.DataFileMgr.Map_NadeoServices_GetFromUid(userId, mapUid);
+
+        while (res.IsProcessing) {
+            yield();
+        }
+
+        if (!res.HasSucceeded || res.HasFailed || res.Map is null) {
+            Logging::Error("[GetMapInfo] Failed to get favorite maps: Error " + res.ErrorCode + " - " + res.ErrorDescription);
+            menu.DataFileMgr.TaskResult_Release(res.Id);
+            return null;
+        }
+
+        auto mapInfo = TM::MapInfo(res.Map);
+        menu.DataFileMgr.TaskResult_Release(res.Id);
+
+        return mapInfo;
+#else
+        return null;
 #endif
     }
 }
