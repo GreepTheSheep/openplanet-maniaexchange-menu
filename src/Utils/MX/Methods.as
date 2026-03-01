@@ -268,19 +268,16 @@ namespace MX
     {
         try {
             string path = DownloadsFolder;
+
             if (mapPackName.Length > 0) {
                 path += "/Packs" + Path::SanitizeFileName(mapPackName);
             }
 
-            if (!IO::FolderExists(path)) IO::CreateFolder(path);
-
-            Net::HttpRequest@ gbxReq = API::Get(MXURL + "/mapgbx/" + map.MapId);
+            if (!IO::FolderExists(path)) {
+                IO::CreateFolder(path);
+            }
 
             Logging::Debug("Started downloading map " + map.Name + " (" + map.MapId + ") to " + path);
-
-            while (!gbxReq.Finished()) {
-                yield();
-            }
 
             if (_fileName.Length == 0) {
                 _fileName = map.MapId + " - " + map.Name;
@@ -288,7 +285,14 @@ namespace MX
 
             _fileName = Path::SanitizeFileName(_fileName);
 
-            gbxReq.SaveToFile(path + "/" + _fileName + ".Map.Gbx");
+            auto gbxReq = Net::HttpRequest(MXURL + "/mapgbx/" + map.MapId);
+
+            gbxReq.StartToFile(path + "/" + _fileName + ".Map.Gbx");
+
+            while (!gbxReq.Finished()) {
+                yield();
+            }
+
             Logging::Info("Map downloaded to " + path + "/" + _fileName + ".Map.Gbx");
         } catch {
             Logging::Error("Error while downloading map: " + getExceptionInfo());
