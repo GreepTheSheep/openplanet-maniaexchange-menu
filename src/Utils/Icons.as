@@ -17,7 +17,7 @@ namespace Icons {
             return " \\$f00" + Icons::Server + "\\$z";
         } 
         
-        if (MX::APIRefresh || MXNadeoServicesGlobal::APIRefresh) {
+        if (MX::APIRefresh || TM::APIRefresh) {
             return " \\$666" + Icons::Refresh + "\\$z";
         } 
         

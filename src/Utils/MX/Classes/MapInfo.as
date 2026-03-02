@@ -384,7 +384,7 @@ namespace MX
         }
 
         bool get_InFavorites() {
-            foreach (TM::MapInfo@ map : MXNadeoServicesGlobal::g_favoriteMaps) {
+            foreach (TM::MapInfo@ map : TM::g_favoriteMaps) {
                 if (MapUid == map.Uid) {
                     return true;
                 }

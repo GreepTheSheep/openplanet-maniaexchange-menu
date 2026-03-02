@@ -313,9 +313,9 @@ class MapTab : Tab
 #if TMNEXT && DEPENDENCY_NADEOSERVICES
         if (m_map.InFavorites) {
             if (UI::RedButton(Icons::Heart + " Remove from Favorites")) {
-                foreach (TM::MapInfo@ favoriteMap : MXNadeoServicesGlobal::g_favoriteMaps) {
+                foreach (TM::MapInfo@ favoriteMap : TM::g_favoriteMaps) {
                     if (favoriteMap.Uid == m_map.MapUid) {
-                        startnew(MXNadeoServicesGlobal::RemoveMapFromFavoritesAsync, favoriteMap);
+                        startnew(TM::RemoveMapFromFavoritesAsync, favoriteMap);
                         break;
                     }
                 }
@@ -324,7 +324,7 @@ class MapTab : Tab
             UI::BeginDisabled(!m_map.IsUploadedToServers);
 
             if (UI::GreenButton(Icons::Heart + " Add to Favorites")) {
-                startnew(MXNadeoServicesGlobal::AddMapToFavoritesAsync, m_map);
+                startnew(TM::AddMapToFavoritesAsync, m_map);
             }
 
             UI::EndDisabled();

@@ -147,10 +147,10 @@ void RenderMenuMain() {
 
 #if DEPENDENCY_NADEOSERVICES
         // TODO: Add in-game favorites list from NadeoServices
-        if (UI::BeginMenu(pluginColor + Icons::Heart + " \\$zFavorites (" + MXNadeoServicesGlobal::g_favoriteMaps.Length + ")")) {
-            if (MXNadeoServicesGlobal::g_favoriteMaps.Length > 0) {
-                for (uint i = 0; i < MXNadeoServicesGlobal::g_favoriteMaps.Length; i++) {
-                    TM::MapInfo@ mapNadeo = MXNadeoServicesGlobal::g_favoriteMaps[i];
+        if (UI::BeginMenu(pluginColor + Icons::Heart + " \\$zFavorites (" + TM::g_favoriteMaps.Length + ")")) {
+            if (TM::g_favoriteMaps.Length > 0) {
+                for (uint i = 0; i < TM::g_favoriteMaps.Length; i++) {
+                    TM::MapInfo@ mapNadeo = TM::g_favoriteMaps[i];
 
                     if (mapNadeo.MXMapInfo !is null) {
                         MX::MapInfo@ map = mapNadeo.MXMapInfo;
@@ -166,7 +166,7 @@ void RenderMenuMain() {
                             }
 
                             if (UI::MenuItem("\\$f00" + Icons::TrashO + " Remove map")) {
-                                startnew(MXNadeoServicesGlobal::RemoveMapFromFavoritesAsync, mapNadeo);
+                                startnew(TM::RemoveMapFromFavoritesAsync, mapNadeo);
                             }
 
                             UI::EndMenu();
@@ -176,7 +176,7 @@ void RenderMenuMain() {
                             UI::TextDisabled(Icons::Times + " This map is not available on " + pluginName);
 
                             if (UI::MenuItem("\\$f00" + Icons::TrashO + " Remove map")) {
-                                startnew(MXNadeoServicesGlobal::RemoveMapFromFavoritesAsync, mapNadeo);
+                                startnew(TM::RemoveMapFromFavoritesAsync, mapNadeo);
                             }
 
                             UI::EndMenu();
@@ -234,8 +234,8 @@ void RenderMenuMain() {
             }
 
 #if DEPENDENCY_NADEOSERVICES
-            if (!MXNadeoServicesGlobal::APIRefresh && UI::MenuItem("\\$850" + Icons::Refresh + " \\$zRefresh favorite maps list")) {
-                startnew(MXNadeoServicesGlobal::ReloadFavoriteMapsAsync);
+            if (!TM::APIRefresh && UI::MenuItem("\\$850" + Icons::Refresh + " \\$zRefresh favorite maps list")) {
+                startnew(TM::ReloadFavoriteMapsAsync);
             }
 #endif
 
@@ -271,13 +271,13 @@ void Main() {
     startnew(MapChecker);
 
 #if DEPENDENCY_NADEOSERVICES
-    startnew(MXNadeoServicesGlobal::LoadNadeoServices);
+    startnew(TM::LoadNadeoServices);
 
     while (!mxMenu.isOpened && !openedMainMenu) {
         yield();
     }
 
-    startnew(MXNadeoServicesGlobal::RefreshFavoriteMapsLoop);
+    startnew(TM::RefreshFavoriteMapsLoop);
 #endif
 }
 

@@ -21,9 +21,9 @@ class PersonalListsTab : MapListTab
         switch (t_selectedList) {
 #if DEPENDENCY_NADEOSERVICES
             case ListTypes::Favorites:
-                for (uint i = 0; i < MXNadeoServicesGlobal::g_favoriteMaps.Length; i++) {
-                    if (MXNadeoServicesGlobal::g_favoriteMaps[i].MXMapInfo !is null) {
-                        maps.InsertLast(MXNadeoServicesGlobal::g_favoriteMaps[i].MXMapInfo);
+                for (uint i = 0; i < TM::g_favoriteMaps.Length; i++) {
+                    if (TM::g_favoriteMaps[i].MXMapInfo !is null) {
+                        maps.InsertLast(TM::g_favoriteMaps[i].MXMapInfo);
                     }
                 }
 
@@ -65,14 +65,14 @@ class PersonalListsTab : MapListTab
 
             UI::SameLine();
 
-            UI::BeginDisabled(MXNadeoServicesGlobal::APIRefresh);
+            UI::BeginDisabled(TM::APIRefresh);
 
             UI::SetNextItemWidth(90);
             if (UI::BeginCombo("##FavoritesSorting", tostring(Setting_FavoritesSort))) {
                 for (int i = 0; i < 2; i++) {
                     if (UI::Selectable(tostring(FavoritesSorting(i)), false)) {
                         Setting_FavoritesSort = FavoritesSorting(i);
-                        startnew(MXNadeoServicesGlobal::SortFavorites);
+                        startnew(TM::SortFavorites);
                         Reload();
                     }
                 }
@@ -87,7 +87,7 @@ class PersonalListsTab : MapListTab
                 for (int i = 0; i < 2; i++) {
                     if (UI::Selectable(tostring(FavoritesSortOrder(i)), false)) {
                         Setting_FavoritesSortOrder = FavoritesSortOrder(i);
-                        startnew(MXNadeoServicesGlobal::SortFavorites);
+                        startnew(TM::SortFavorites);
                         Reload();
                     }
                 }
@@ -97,7 +97,7 @@ class PersonalListsTab : MapListTab
 
             UI::EndDisabled();
 
-            if (MXNadeoServicesGlobal::APIRefresh) {
+            if (TM::APIRefresh) {
                 UI::SameLine();
                 UI::Text(Icons::AnimatedHourglass + " Refreshing favorites...");
                 Reload();
@@ -111,10 +111,10 @@ class PersonalListsTab : MapListTab
             UI::SameLine();
             UI::SetCursorPos(vec2(UI::GetWindowSize().x - 40, UI::GetCursorPos().y));
 
-            UI::BeginDisabled(MXNadeoServicesGlobal::APIRefresh);
+            UI::BeginDisabled(TM::APIRefresh);
 
             if (UI::Button(Icons::Refresh)) {
-                startnew(MXNadeoServicesGlobal::ReloadFavoriteMapsAsync);
+                startnew(TM::ReloadFavoriteMapsAsync);
                 Reload();
             }
 

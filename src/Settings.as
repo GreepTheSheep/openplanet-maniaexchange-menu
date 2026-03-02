@@ -107,7 +107,7 @@ FavoritesSortOrder Setting_FavoritesSortOrder = FavoritesSortOrder::Descending;
 void RenderNadeoServicesSettings()
 {
     if (UI::Button(Icons::Refresh + " Refresh Favorite Maps")) {
-        startnew(MXNadeoServicesGlobal::ReloadFavoriteMapsAsync);
+        startnew(TM::ReloadFavoriteMapsAsync);
     }
 
     Setting_FavoritesRefreshDelay = UI::SliderInt("Favorites refresh delay (in minutes)", Setting_FavoritesRefreshDelay, 10, 120);
@@ -116,7 +116,7 @@ void RenderNadeoServicesSettings()
         for (int i = 0; i < 2; i++) {
             if (UI::Selectable(tostring(FavoritesSorting(i)), Setting_FavoritesSort == FavoritesSorting(i))) {
                 Setting_FavoritesSort = FavoritesSorting(i);
-                startnew(MXNadeoServicesGlobal::SortFavorites);
+                startnew(TM::SortFavorites);
             }
         }
         UI::EndCombo();
@@ -126,7 +126,7 @@ void RenderNadeoServicesSettings()
         for (int i = 0; i < 2; i++) {
             if (UI::Selectable(tostring(FavoritesSortOrder(i)), Setting_FavoritesSortOrder == FavoritesSortOrder(i))) {
                 Setting_FavoritesSortOrder = FavoritesSortOrder(i);
-                startnew(MXNadeoServicesGlobal::SortFavorites);
+                startnew(TM::SortFavorites);
             }
         }
         UI::EndCombo();

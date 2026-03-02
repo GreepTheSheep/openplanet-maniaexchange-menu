@@ -1,4 +1,4 @@
-namespace MXNadeoServicesGlobal
+namespace TM
 {
     bool APIDown;
     bool APIRefresh;
@@ -175,14 +175,14 @@ namespace MXNadeoServicesGlobal
 
     void ReloadFavoriteMapsAsync() {
         try {
-            MXNadeoServicesGlobal::APIRefresh = true;
+            APIRefresh = true;
             if (g_favoriteMaps.Length > 0) g_favoriteMaps.RemoveRange(0, g_favoriteMaps.Length);
             g_fetchedFavorites = false;
             GetFavoriteMapsAsync();
-            MXNadeoServicesGlobal::APIRefresh = false;
+            APIRefresh = false;
         } catch {
             Logging::Error("[ReloadFavoriteMapsAsync] Error reloading favorite maps: " + getExceptionInfo());
-            MXNadeoServicesGlobal::APIRefresh = false;
+            APIRefresh = false;
         }
     }
 
@@ -224,7 +224,7 @@ namespace MXNadeoServicesGlobal
             }
         } else {
             Logging::Debug("[AddMapToFavoritesAsync] Succesfully added map with UID " + map.MapUid + " to your favorites");
-            startnew(MXNadeoServicesGlobal::ReloadFavoriteMapsAsync);
+            startnew(ReloadFavoriteMapsAsync);
         }
     }
 
