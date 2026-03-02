@@ -3,9 +3,9 @@ namespace UI
     // Alignment
 
     void CenterAlign() {
+        vec2 content = UI::GetContentRegionAvail();
         vec2 region = UI::GetWindowSize();
-        vec2 position = UI::GetCursorPos();
-        UI::SetCursorPos(vec2(region.x / 2, position.y));
+        UI::HPadding(int(content.x - region.x / 2));
     }
 
     void SetItemText(const string &in text, int width = 300) {
@@ -33,6 +33,13 @@ namespace UI
 
     void VPadding(float y) {
         UI::Dummy(vec2(0., y));
+    }
+
+    void HPadding(int x) {
+        UI::PushStyleVar(UI::StyleVar::ItemSpacing, vec2(0, 0));
+        UI::Dummy(vec2(x * UI::GetScale(), 0));
+        UI::SameLine();
+        UI::PopStyleVar();
     }
 
     void PaddedSeparator(const string &in text) {
@@ -67,11 +74,10 @@ namespace UI
 
     void RightAlignButton(float buttonWidth, int buttonCount = 1) {
         vec2 region = UI::GetContentRegionAvail();
-        vec2 pos = UI::GetCursorPos();
         float itemSpacing = UI::GetStyleVarVec2(UI::StyleVar::ItemSpacing).x;
         int spacingCount = buttonCount - 1;
         float newPos = Math::Max(region.x - buttonWidth - (itemSpacing * spacingCount), 0.0);
-        UI::SetCursorPosX(pos.x + newPos);
+        UI::HPadding(int(newPos));
     }
 
     void RightAlignButtons(float buttonsWidth, int buttonCount) {

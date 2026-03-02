@@ -109,7 +109,9 @@ class PersonalListsTab : MapListTab
             UI::SetItemTooltip("All favorite maps are displayed in game via the Local menu or via the Openplanet overlay");
 
             UI::SameLine();
-            UI::SetCursorPos(vec2(UI::GetWindowSize().x - 40, UI::GetCursorPos().y));
+
+            float buttonWidth = UI::MeasureButton(Icons::Refresh).x;
+            UI::RightAlignButton(buttonWidth);
 
             UI::BeginDisabled(TM::APIRefresh);
 
@@ -123,7 +125,9 @@ class PersonalListsTab : MapListTab
 #endif
 
         if (t_selectedList == ListTypes::Play_Later) {
-            UI::SetCursorPos(vec2(UI::GetWindowSize().x - 120, UI::GetCursorPos().y));
+            float button1 = UI::MeasureButton(Icons::TrashO + " Clear").x;
+            float button2 = UI::MeasureButton(Icons::Refresh).x;
+            UI::RightAlignButtons(button1 + button2, 2);
 
             UI::BeginDisabled(g_PlayLaterMaps.IsEmpty());
 

@@ -219,7 +219,9 @@ class MapPackListTab : Tab
         }
 
         UI::SameLine();
-        UI::SetCursorPos(vec2(UI::GetWindowSize().x - 40, UI::GetCursorPos().y));
+
+        float buttonWidth = UI::MeasureButton(Icons::Refresh).x;
+        UI::RightAlignButton(buttonWidth);
 
         if (UI::Button(Icons::Refresh)) Reload();
 
