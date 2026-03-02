@@ -320,6 +320,11 @@ namespace MX
         }
 
         string UIDMap = currentMap.IdName;
+
+        if (currentMapInfo !is null && UIDMap == currentMapInfo.MapUid) {
+            return currentMapInfo.MapId;
+        }
+
         string url = MXURL + "/api/maps?fields=" + mapFields + "&uid=" + UIDMap;
 
         if (req is null) {
