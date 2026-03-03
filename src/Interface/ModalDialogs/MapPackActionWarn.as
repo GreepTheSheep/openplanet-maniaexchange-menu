@@ -6,7 +6,7 @@ enum MapPackActions {
 class MapPackActionWarn : ModalDialog
 {
     MapPackActions m_action;
-     MX::MapPackInfo@ m_mapPack;
+    MX::MapPackInfo@ m_mapPack;
 
     MapPackActionWarn(MapPackActions action, MX::MapPackInfo@ pack) {
         super("\\$f90" + Icons::ExclamationTriangle + " \\$zWarning###MapPackActionWarn");

@@ -116,7 +116,7 @@ class PersonalListsTab : MapListTab
             UI::BeginDisabled(TM::APIRefresh);
 
             if (UI::Button(Icons::Refresh)) {
-                startnew(TM::ReloadFavoriteMapsAsync);
+                startnew(TM::ReloadFavorites);
                 Reload();
             }
 

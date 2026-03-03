@@ -315,7 +315,7 @@ class MapTab : Tab
             if (UI::RedButton(Icons::Heart + " Remove from Favorites")) {
                 foreach (TM::MapInfo@ favoriteMap : TM::g_favoriteMaps) {
                     if (favoriteMap.Uid == m_map.MapUid) {
-                        startnew(TM::RemoveMapFromFavoritesAsync, favoriteMap);
+                        startnew(TM::RemoveMapFromFavorites, favoriteMap);
                         break;
                     }
                 }
@@ -324,7 +324,7 @@ class MapTab : Tab
             UI::BeginDisabled(!m_map.IsUploadedToServers);
 
             if (UI::GreenButton(Icons::Heart + " Add to Favorites")) {
-                startnew(TM::AddMapToFavoritesAsync, m_map);
+                startnew(TM::AddMapToFavorites, m_map);
             }
 
             UI::EndDisabled();

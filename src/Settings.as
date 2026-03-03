@@ -107,7 +107,7 @@ FavoritesSortOrder Setting_FavoritesSortOrder = FavoritesSortOrder::Descending;
 void RenderNadeoServicesSettings()
 {
     if (UI::Button(Icons::Refresh + " Refresh Favorite Maps")) {
-        startnew(TM::ReloadFavoriteMapsAsync);
+        startnew(TM::ReloadFavorites);
     }
 
     Setting_FavoritesRefreshDelay = UI::SliderInt("Favorites refresh delay (in minutes)", Setting_FavoritesRefreshDelay, 10, 120);

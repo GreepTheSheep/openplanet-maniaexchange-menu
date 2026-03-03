@@ -1,5 +1,4 @@
-namespace TM
-{
+namespace TM {
     bool APIDown;
     bool APIRefresh;
     array<TM::MapInfo@> g_favoriteMaps;
@@ -35,15 +34,14 @@ namespace TM
         Logging::Debug("NadeoServices audiences authenticated");
     }
 
-    void GetFavoriteMapsAsync()
-    {
+    void GetFavorites() {
         if (FetchedFavorites) {
             return;
         }
 
         g_fetchedFavorites = true;
 
-        Logging::Info("[GetFavoriteMapsAsync] Loading Favorite tracks...");
+        Logging::Info("[GetFavorites] Loading Favorite tracks...");
 
         try {
             auto app = cast<CGameManiaPlanet>(GetApp());
@@ -56,13 +54,13 @@ namespace TM
             }
 
             if (!res.HasSucceeded || res.HasFailed) {
-                Logging::Error("[GetFavoriteMapsAsync] Failed to get favorite maps", true);
-                Logging::Error("[GetFavoriteMapsAsync] Failed to get favorite maps: Error " + res.ErrorCode + " - " + res.ErrorDescription);
+                Logging::Error("[GetFavorites] Failed to get favorite maps", true);
+                Logging::Error("[GetFavorites] Failed to get favorite maps: Error " + res.ErrorCode + " - " + res.ErrorDescription);
                 menu.DataFileMgr.TaskResult_Release(res.Id);
                 return;
             }
 
-            Logging::Trace("[GetFavoriteMapsAsync] Found " + res.MapList.Length + " maps in favorites.");
+            Logging::Trace("[GetFavorites] Found " + res.MapList.Length + " maps in favorites.");
 
             MwFastBuffer<CNadeoServicesMap@> favoriteMaps = res.MapList;
 
@@ -70,7 +68,7 @@ namespace TM
 
             for (uint i = 0; i < favoriteMaps.Length; i++) {
                 CNadeoServicesMap@ nadeoMap = favoriteMaps[i];
-                Logging::Trace("[GetFavoriteMapsAsync] Loading favorite map #" + i + ": " + nadeoMap.Name + " (" + nadeoMap.Uid + ")");
+                Logging::Trace("[GetFavorites] Loading favorite map #" + i + ": " + nadeoMap.Name + " (" + nadeoMap.Uid + ")");
 
                 auto map = TM::MapInfo(nadeoMap);
                 map.Position = i;
@@ -81,11 +79,11 @@ namespace TM
 
             menu.DataFileMgr.TaskResult_Release(res.Id);
 
-            Logging::Debug("[GetFavoriteMapsAsync] Loaded " + favoriteMaps.Length + " favorites.");
+            Logging::Debug("[GetFavorites] Loaded " + favoriteMaps.Length + " favorites.");
 
             if (g_favoriteMaps.IsEmpty()) return;
 
-            Logging::Debug("[GetFavoriteMapsAsync] Checking for favorite maps on MX...");
+            Logging::Debug("[GetFavorites] Checking for favorite maps on MX...");
 
             array<array<string>> uidChunks = Chunks(mapUids, MX::maxMapsRequest);
 
@@ -93,7 +91,7 @@ namespace TM
                 // we do + 10 in case multiple maps have the same UID, which can happen
                 string reqUrl = MXURL + "/api/maps?fields=" + MX::mapFields + "&count=" + (MX::maxMapsRequest + 10) + "&uid=" + string::Join(currentChunk, ",");
 
-                Logging::Debug("[GetFavoriteMapsAsync] Loading map MX infos: " + reqUrl);
+                Logging::Debug("[GetFavorites] Loading map MX infos: " + reqUrl);
 
                 Net::HttpRequest@ mxReq = API::Get(reqUrl);
 
@@ -101,12 +99,12 @@ namespace TM
                     yield();
                 }
 
-                Logging::Debug("[GetFavoriteMapsAsync] Map MX info response: " + mxReq.String());
+                Logging::Debug("[GetFavorites] Map MX info response: " + mxReq.String());
 
                 auto mxJson = mxReq.Json();
 
                 if (mxReq.ResponseCode() >= 400 || mxJson.GetType() == Json::Type::Null || !mxJson.HasKey("Results")) {
-                    Logging::Error("[GetFavoriteMapsAsync] Invalid MX map info response");
+                    Logging::Error("[GetFavorites] Invalid MX map info response");
                     continue;
                 }
 
@@ -114,7 +112,7 @@ namespace TM
                 array<string> foundUids;
 
                 for (uint i = 0; i < mapResults.Length; i++) {
-                    Logging::Trace("[GetFavoriteMapsAsync] Loading map MX info " + currentChunk[i]);
+                    Logging::Trace("[GetFavorites] Loading map MX info " + currentChunk[i]);
 
                     string resMapUid = mapResults[i]["MapUid"];
                     foundUids.InsertLast(resMapUid);
@@ -129,7 +127,7 @@ namespace TM
 
                 for (uint f = 0; f < currentChunk.Length; f++) {
                     if (foundUids.Find(currentChunk[f]) == -1) {
-                        Logging::Trace("[GetFavoriteMapsAsync] Failed to find map with UID " + currentChunk[f] + " on MX. The map will be ignored");
+                        Logging::Trace("[GetFavorites] Failed to find map with UID " + currentChunk[f] + " on MX. The map will be ignored");
                     }
                 }
 
@@ -152,7 +150,7 @@ namespace TM
             }
 
             if (!accountIds.IsEmpty()) {
-                Logging::Trace("[GetFavoriteMapsAsync] Fetching " + accountIds.Length + " missing account names.");
+                Logging::Trace("[GetFavorites] Fetching " + accountIds.Length + " missing account names.");
 
                 dictionary displayNames = NadeoServices::GetDisplayNamesAsync(accountIds);
 
@@ -167,45 +165,45 @@ namespace TM
 
             SortFavorites();
 
-            Logging::Info("[GetFavoriteMapsAsync] Loaded " + g_favoriteMaps.Length + " favorite maps.");
+            Logging::Info("[GetFavorites] Loaded " + g_favoriteMaps.Length + " favorite maps.");
         } catch {
-            Logging::Error("[GetFavoriteMapsAsync] Failed to load favorite maps: " + getExceptionInfo(), true);
+            Logging::Error("[GetFavorites] Failed to load favorite maps: " + getExceptionInfo(), true);
         }
     }
 
-    void ReloadFavoriteMapsAsync() {
+    void ReloadFavorites() {
         try {
             APIRefresh = true;
             if (g_favoriteMaps.Length > 0) g_favoriteMaps.RemoveRange(0, g_favoriteMaps.Length);
             g_fetchedFavorites = false;
-            GetFavoriteMapsAsync();
+            GetFavorites();
             APIRefresh = false;
         } catch {
-            Logging::Error("[ReloadFavoriteMapsAsync] Error reloading favorite maps: " + getExceptionInfo());
+            Logging::Error("[ReloadFavorites] Error reloading favorite maps: " + getExceptionInfo());
             APIRefresh = false;
         }
     }
 
-    void RefreshFavoriteMapsLoop() {
+    void FavoriteMapsLoop() {
         if (g_favoriteMaps.Length > 0) {
             g_favoriteMaps.RemoveRange(0, g_favoriteMaps.Length);
         }
 
-        GetFavoriteMapsAsync();
+        GetFavorites();
 
         while (true) {
             sleep(Setting_FavoritesRefreshDelay * 60 * 1000);
             Logging::Debug('Refreshing favorite maps...');
-            ReloadFavoriteMapsAsync();
+            ReloadFavorites();
         }
     }
 
-    void AddMapToFavoritesAsync(ref@ mapData)
+    void AddMapToFavorites(ref@ mapData)
     {
         MX::MapInfo@ map = cast<MX::MapInfo>(mapData);
 
         string url = NadeoServices::BaseURLLive() + "/api/token/map/favorite/" + map.MapUid + "/add";
-        Logging::Debug("[AddMapToFavoritesAsync] URL: " + url);
+        Logging::Debug("[AddMapToFavorites] URL: " + url);
 
         Net::HttpRequest@ req = NadeoServices::Post("NadeoLiveServices", url);
         req.Start();
@@ -218,22 +216,22 @@ namespace TM
             auto res = req.Json();
 
             if (res.GetType() != Json::Type::Array) {
-                Logging::Error("[AddMapToFavoritesAsync] Error adding map to favorites: " + req.String());
+                Logging::Error("[AddMapToFavorites] Error adding map to favorites: " + req.String());
             } else {
-                Logging::Error("[AddMapToFavoritesAsync] Error adding map to favorites: Failed to find a map with UID " + map.MapUid);
+                Logging::Error("[AddMapToFavorites] Error adding map to favorites: Failed to find a map with UID " + map.MapUid);
             }
         } else {
-            Logging::Debug("[AddMapToFavoritesAsync] Succesfully added map with UID " + map.MapUid + " to your favorites");
-            startnew(ReloadFavoriteMapsAsync);
+            Logging::Debug("[AddMapToFavorites] Succesfully added map with UID " + map.MapUid + " to your favorites");
+            startnew(ReloadFavorites);
         }
     }
 
-    void RemoveMapFromFavoritesAsync(ref@ mapData)
+    void RemoveMapFromFavorites(ref@ mapData)
     {
         TM::MapInfo@ map = cast<TM::MapInfo>(mapData);
 
         string url = NadeoServices::BaseURLLive() + "/api/token/map/favorite/" + map.Uid + "/remove";
-        Logging::Debug("[RemoveMapFromFavoritesAsync] URL: " + url);
+        Logging::Debug("[RemoveMapFromFavorites] URL: " + url);
 
         Net::HttpRequest@ req = NadeoServices::Post("NadeoLiveServices", url);
         req.Start();
@@ -246,17 +244,17 @@ namespace TM
             auto res = req.Json();
 
             if (res.GetType() != Json::Type::Array) {
-                Logging::Error("[RemoveMapFromFavoritesAsync] Error removing map from favorites: " + req.String());
+                Logging::Error("[RemoveMapFromFavorites] Error removing map from favorites: " + req.String());
             } else {
                 string errorText = res[0];
                 if (errorText == "map:error-notFound") {
-                    Logging::Error("[RemoveMapFromFavoritesAsync] Error removing map from favorites: Failed to find a map with UID " + map.Uid);
+                    Logging::Error("[RemoveMapFromFavorites] Error removing map from favorites: Failed to find a map with UID " + map.Uid);
                 } else {
-                    Logging::Error("[RemoveMapFromFavoritesAsync] Error removing map from favorites: A map with UID" + map.Uid + " doesn't exist in your favorites");
+                    Logging::Error("[RemoveMapFromFavorites] Error removing map from favorites: A map with UID" + map.Uid + " doesn't exist in your favorites");
                 }
             }
         } else {
-            Logging::Debug("[RemoveMapFromFavoritesAsync] Succesfully removed map with UID " + map.Uid + " from favorites");
+            Logging::Debug("[RemoveMapFromFavorites] Succesfully removed map with UID " + map.Uid + " from favorites");
             UI::ShowNotification(Text::OpenplanetFormatCodes(map.Name) + "\\$z by " + map.Author + " has been removed from your favorites!");
 
             for (uint i = 0; i < g_favoriteMaps.Length; i++) {

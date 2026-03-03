@@ -166,7 +166,7 @@ void RenderMenuMain() {
                             }
 
                             if (UI::MenuItem("\\$f00" + Icons::TrashO + " Remove map")) {
-                                startnew(TM::RemoveMapFromFavoritesAsync, mapNadeo);
+                                startnew(TM::RemoveMapFromFavorites, mapNadeo);
                             }
 
                             UI::EndMenu();
@@ -176,7 +176,7 @@ void RenderMenuMain() {
                             UI::TextDisabled(Icons::Times + " This map is not available on " + pluginName);
 
                             if (UI::MenuItem("\\$f00" + Icons::TrashO + " Remove map")) {
-                                startnew(TM::RemoveMapFromFavoritesAsync, mapNadeo);
+                                startnew(TM::RemoveMapFromFavorites, mapNadeo);
                             }
 
                             UI::EndMenu();
@@ -235,7 +235,7 @@ void RenderMenuMain() {
 
 #if DEPENDENCY_NADEOSERVICES
             if (!TM::APIRefresh && UI::MenuItem("\\$850" + Icons::Refresh + " \\$zRefresh favorite maps list")) {
-                startnew(TM::ReloadFavoriteMapsAsync);
+                startnew(TM::ReloadFavorites);
             }
 #endif
 
@@ -277,7 +277,7 @@ void Main() {
         yield();
     }
 
-    startnew(TM::RefreshFavoriteMapsLoop);
+    startnew(TM::FavoriteMapsLoop);
 #endif
 }
 
