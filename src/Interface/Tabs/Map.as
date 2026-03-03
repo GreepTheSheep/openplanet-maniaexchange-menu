@@ -406,7 +406,7 @@ class MapTab : Tab
             UI::EndTabItem();
         }
 
-        if (UI::BeginTabItem(shortMXName + " Leaderboard (" + m_map.ReplayCount + ")")) {
+        if (UI::BeginTabItem(shortMXName + " Replays (" + m_map.ReplayCount + ")")) {
 
             if (UI::GreenButton(Icons::ExternalLink + " Submit")) {
                 OpenBrowserURL(MXURL + "/replayupload/" + m_map.MapId);
@@ -422,17 +422,17 @@ class MapTab : Tab
                     m_map.FetchedReplays = false;
                 }
 
-                UI::BeginChild("MapMXLeaderboardChild");
+                UI::BeginChild("MapMXReplaysChild");
 
                 if (m_map.Replays.IsEmpty()) {
                     if (m_map.LoadingReplays) {
                         UI::Text(Icons::AnimatedHourglass + " Loading...");
                     } else if (m_map.ReplaysError) {
-                        UI::Text("\\$f00" + Icons::Times + "\\$z Error while loading leaderboard");
+                        UI::Text("\\$f00" + Icons::Times + "\\$z Error while loading replays");
                     } else if (!m_map.FetchedReplays) {
                         startnew(CoroutineFunc(m_map.FetchReplays));
                     }
-                } else if (UI::BeginTable("MXLeaderboardList", 6, UI::TableFlags::RowBg)) {
+                } else if (UI::BeginTable("MXReplaysList", 6, UI::TableFlags::RowBg)) {
                     UI::TableSetupScrollFreeze(0, 1);
                     PushTabStyle();
                     UI::TableSetupColumn("Position", UI::TableColumnFlags::WidthFixed, 40);
