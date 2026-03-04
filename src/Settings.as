@@ -13,6 +13,9 @@ bool Setting_ShowPlayOnAllMaps = false;
 [Setting name="Colored tags" category="UI" description="When disabled, style tags will use the default gray background color instead of the colors provided by MX"]
 bool Setting_ColoredTags = true;
 
+[Setting name="Show/Hide window hotkey" category="UI" description="Hotkey to show / hide the ManiaExchange window"]
+VirtualKey Setting_WindowHotkey;
+
 // Tabs
 
 [Setting name="Your profile (Your user ID)" category="Display Tabs" description="Set your (or any other) User ID here to get your profile tab" min=0]

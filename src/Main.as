@@ -281,6 +281,23 @@ void Main() {
 #endif
 }
 
+UI::InputBlocking OnKeyPress(bool down, VirtualKey key) {
+#if TMNEXT
+    if (!hasPermissions) return UI::InputBlocking::DoNothing;
+#endif
+
+    if (UI::WantCaptureKeyboard()) {
+        return UI::InputBlocking::DoNothing;
+    }
+
+    if (key == Setting_WindowHotkey) {
+        Setting_ShowMenu = !Setting_ShowMenu;
+        return UI::InputBlocking::Block;
+    }
+
+    return UI::InputBlocking::DoNothing;
+}
+
 void MapChecker() {
     CTrackMania@ app = cast<CTrackMania>(GetApp());
 
