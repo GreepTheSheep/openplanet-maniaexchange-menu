@@ -764,26 +764,8 @@ class MapTab : Tab
                             UI::TableNextColumn();
 
                             if (object.IsOnItemExchange) {
-                                if (object.IsLoading || object.LoadingError || object.Skipped) {
-                                    UI::BeginDisabled();
-
-                                    if (object.IsLoading) {
-                                        UI::YellowButton(Icons::AnimatedHourglass);
-                                    } else if (object.LoadingError) {
-                                        UI::YellowButton(Icons::Times);
-                                        UI::SetItemTooltip("Error while fetching this object on item.exchange");
-                                    } else {
-                                        UI::YellowButton(Icons::ExclamationTriangle);
-                                        UI::SetItemTooltip("The list of embedded objects is too long for this map.");
-                                    }
-
-                                    UI::EndDisabled();
-                                } else {
-#if DEPENDENCY_ITEMEXCHANGE
-                                    if (UI::YellowButton(Icons::ItemExchange)) ItemExchange::ShowItemInfo(object.ID);
-#else
-                                    if (UI::YellowButton(Icons::ExternalLink)) OpenBrowserURL("https://item.exchange/item/view/" + object.ID);
-#endif
+                                if (UI::YellowButton(Icons::ExternalLink)) {
+                                    OpenBrowserURL(object.Url);
                                 }
                             } else {
                                 UI::BeginDisabled();

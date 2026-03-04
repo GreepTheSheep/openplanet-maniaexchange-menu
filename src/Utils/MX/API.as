@@ -289,7 +289,7 @@ namespace MX {
         array<MapEmbeddedObject@> objects;
 
         for (uint i = 0; i < results.Length; i++) {
-            auto object = MX::MapEmbeddedObject(results[i], int(i) < Setting_EmbeddedObjectsLimit);
+            auto object = MX::MapEmbeddedObject(results[i]);
             objects.InsertLast(object);
         }
 

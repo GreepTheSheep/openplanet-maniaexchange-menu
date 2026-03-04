@@ -8,7 +8,7 @@ version = "1.3.6"
 
 [script]
 dependencies = [ "Controls" ]
-optional_dependencies = [ "BetterChat", "ItemExchange", "NadeoServices" ]
+optional_dependencies = [ "BetterChat", "NadeoServices" ]
 
 exports = [ "src/Exports/Exports.as" ]
 timeout = 0
