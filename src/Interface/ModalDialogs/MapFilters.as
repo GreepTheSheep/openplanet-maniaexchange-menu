@@ -457,8 +457,9 @@ class MapFilters : ModalDialog
         vec2 region = UI::GetContentRegionAvail();
         UI::VPadding(region.y - 45 * scale);
 
-        vec2 pos = UI::GetCursorPos();
-        UI::SetCursorPos(vec2(region.x - 175 * scale, pos.y));
+        vec2 searchButton = UI::MeasureButton(Icons::Search + " Search");
+        vec2 resetButton = UI::MeasureButton(Icons::Repeat + " Reset");
+        UI::RightAlignButtons(searchButton.x + resetButton.x, 2);
 
         if (UI::GreenButton(Icons::Search + " Search")) {
             startnew(CoroutineFunc(activeTab.Reload));
