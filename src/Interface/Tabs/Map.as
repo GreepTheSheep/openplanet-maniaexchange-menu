@@ -4,6 +4,7 @@ class MapTab : Tab
     int m_mapId;
     string m_mapUid;
     bool m_error;
+    bool m_itemExchangeOnly;
 
     MapTab(int trackId) {
         m_mapId = trackId;
@@ -726,7 +727,27 @@ class MapTab : Tab
                 }
             } else {
                 UI::AlignTextToFramePadding();
-                UI::Text(m_map.Objects.Length + " objects found, with a total size of " + (m_map.EmbeddedItemsSize / 1024) + " KB");
+                UI::Text(m_map.ObjectsIX.Length + " / " + m_map.Objects.Length + " available on IX");
+
+                UI::SameLine();
+
+                UI::Separator(UI::SeparatorFlags::Vertical);
+
+                UI::SameLine();
+
+                UI::Text("Total size: " + (m_map.EmbeddedItemsSize / 1024) + " KB");
+
+                UI::SameLine();
+
+                UI::Separator(UI::SeparatorFlags::Vertical);
+
+                UI::SameLine();
+
+                UI::BeginDisabled(m_map.ObjectsIX.IsEmpty());
+
+                m_itemExchangeOnly = UI::Checkbox("ItemExchange objects only", m_itemExchangeOnly);
+
+                UI::EndDisabled();
 
                 UI::SameLine();
 
@@ -743,6 +764,8 @@ class MapTab : Tab
 
                 UI::BeginChild("MapEmbeddedObjectsChild");
 
+                array<MX::MapEmbeddedObject@> renderObjects = m_itemExchangeOnly ? m_map.ObjectsIX : m_map.Objects;
+
                 if (UI::BeginTable("EmbeddedObjectsList", 3, UI::TableFlags::RowBg)) {
                     UI::TableSetupScrollFreeze(0, 1);
                     PushTabStyle();
@@ -752,12 +775,12 @@ class MapTab : Tab
                     UI::TableHeadersRow();
                     PopTabStyle();
 
-                    UI::ListClipper clipper(m_map.Objects.Length);
+                    UI::ListClipper clipper(renderObjects.Length);
 
                     while (clipper.Step()) {
                         for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
                             UI::TableNextRow();
-                            MX::MapEmbeddedObject@ object = m_map.Objects[i];
+                            MX::MapEmbeddedObject@ object = renderObjects[i];
                             UI::PushID("EmbeddedObject" + i);
 
                             UI::TableNextColumn();

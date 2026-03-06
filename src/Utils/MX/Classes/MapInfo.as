@@ -54,6 +54,7 @@ namespace MX
 
         // Objects
         array<MapEmbeddedObject@> Objects;
+        array<MapEmbeddedObject@> ObjectsIX;
         Status m_objectsStatus;
 
         // For pagination
@@ -352,6 +353,16 @@ namespace MX
 
             if (Objects.IsEmpty() && EmbeddedObjectsCount > 0) {
                 m_objectsStatus = Status::Error;
+            }
+
+            if (!ObjectsIX.IsEmpty()) {
+                ObjectsIX.RemoveRange(0, ObjectsIX.Length);
+            }
+
+            foreach (MX::MapEmbeddedObject@ obj : Objects) {
+                if (obj.IsOnItemExchange) {
+                    ObjectsIX.InsertLast(obj);
+                }
             }
 
             m_objectsStatus = Status::Completed;
