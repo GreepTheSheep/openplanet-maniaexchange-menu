@@ -94,4 +94,20 @@ namespace Format {
 
         return text.Trim();
     }
+
+    string PlayerCount(int players) {
+        if (players >= 1000000) {
+            return tostring(players / 1000000) + "M";
+        }
+
+        if (players >= 100000) {
+            return tostring(players / 1000) + "K";
+        }
+
+        if (players >= 1000) {
+            return Text::Format("%.1fK", float(players) / 1000);
+        }
+
+        return tostring(players);
+    }
 }

@@ -25,6 +25,7 @@ class MapFilters : ModalDialog
     // Length (milliseconds/respawns/points)
     int m_minLength = 0;
     int m_maxLength = 0;
+    MX::AuthorTimeStatus m_authorTimeStatus = MX::AuthorTimeStatus::Any;
 
     // To search in combos
     string m_searchCombo;
@@ -42,6 +43,7 @@ class MapFilters : ModalDialog
         m_maptype = "Any";
         m_modSearch = "";
         m_titlepack = "Any";
+        m_authorTimeStatus = MX::AuthorTimeStatus::Any;
         m_includedTags.RemoveRange(0, m_includedTags.Length);
         m_excludedTags.RemoveRange(0, m_excludedTags.Length);
         m_tagInclusiveSearch = false;
@@ -432,6 +434,22 @@ class MapFilters : ModalDialog
             UI::Text(Time::Format(m_maxLength));
 
             UI::EndDisabled();
+
+            UI::SetItemText("AT Status:");
+
+            if (UI::BeginCombo("##ATStatus", tostring(m_authorTimeStatus))) {
+                for (int i = -1; i <= MX::AuthorTimeStatus::Beaten; i++) {
+                    MX::AuthorTimeStatus status = MX::AuthorTimeStatus(i);
+
+                    if (UI::Selectable(tostring(status), m_authorTimeStatus == status)) {
+                        m_authorTimeStatus = status;
+                    }
+                }
+
+                UI::EndCombo();
+            }
+
+            UI::SetItemTooltip("The status of the Author Time for the map");
 #if MP4
         }
 #endif
@@ -526,5 +544,9 @@ class MapFilters : ModalDialog
 
         if (m_minLength > 0) params.Set("authortimemin", tostring(m_minLength));
         if (m_maxLength > 0) params.Set("authortimemax", tostring(m_maxLength));
+
+        if (m_authorTimeStatus != MX::AuthorTimeStatus::Any) {
+            params.Set("inauthortimebeaten", tostring(int(m_authorTimeStatus)));
+        }
     }
 }

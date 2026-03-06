@@ -166,6 +166,16 @@ class MapTab : Tab
 #endif
             UI::Text(Icons::Hourglass + " \\$f77" + Time::Format(m_map.Length));
             UI::SetItemTooltip("Length");
+
+            if (m_map.AuthorBeaten) {
+                UI::SameLine();
+                UI::Text("\\$f77(beaten)");
+            } else if (!m_map.AuthorBeatable) {
+                UI::SameLine();
+                UI::Text("\\$f77(unbeatable)");
+                UI::SetItemTooltip("This AT has been deemed unbeatable by the MX Crew");
+            }
+
             if (m_map.Laps >= 1) {
                 UI::Text(Icons::Refresh+ " \\$f77" + m_map.Laps);
                 UI::SetItemTooltip("Laps");
@@ -173,7 +183,13 @@ class MapTab : Tab
 #if MP4
         }
 #endif
-        UI::Text(Icons::LevelUp+ " \\$f77" + m_map.DifficultyName);
+
+#if TMNEXT
+        UI::Text(Icons::ClockO + " \\$f77" + Format::PlayerCount(m_map.PlayerCount));
+        UI::SetItemTooltip("Online records");
+#endif
+
+        UI::Text(Icons::LevelUp + " \\$f77" + m_map.DifficultyName);
         UI::SetItemTooltip("Difficulty");
 
         UI::Text(Icons::Hashtag+ " \\$f77" + m_map.MapId);
@@ -589,7 +605,7 @@ class MapTab : Tab
 #if TMNEXT
         UI::BeginDisabled(!m_map.SupportsLeaderboard);
 
-        if (UI::BeginTabItem("Online Leaderboard")) {
+        if (UI::BeginTabItem("Online Leaderboard (" + Format::PlayerCount(m_map.PlayerCount) + ")")) {
             if (UI::Button(Icons::Refresh)) {
                 m_map.Records.RemoveRange(0, m_map.Records.Length);
                 m_map.FetchedRecords = false;

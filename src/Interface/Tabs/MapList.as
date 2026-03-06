@@ -285,7 +285,7 @@ class MapListTab : Tab
 #if MP4
             int columns = 7;
 #else
-            int columns = 5;
+            int columns = 6;
 #endif
             if (UI::BeginTable("List", columns, UI::TableFlags::RowBg | UI::TableFlags::Hideable)) {
                 UI::TableSetupScrollFreeze(0, 1);
@@ -299,6 +299,9 @@ class MapListTab : Tab
 #endif
                 UI::TableSetupColumn("Style", UI::TableColumnFlags::WidthStretch);
                 UI::TableSetupColumn(Icons::Trophy, UI::TableColumnFlags::WidthFixed);
+#if TMNEXT
+                UI::TableSetupColumn("", UI::TableColumnFlags::WidthFixed, 15);
+#endif
                 UI::TableSetupColumn("Actions", UI::TableColumnFlags::WidthFixed);
                 UI::TableHeadersRow();
                 PopTabStyle();

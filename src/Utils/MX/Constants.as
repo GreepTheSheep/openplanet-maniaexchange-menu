@@ -27,6 +27,12 @@ namespace MX
         Royal
     };
 
+    enum AuthorTimeStatus {
+        Any = -1,
+        Unbeaten,
+        Beaten
+    };
+
     const array<string> mapPackFieldsArray = {
         "MappackId",
         "Owner.Name",
@@ -75,7 +81,12 @@ namespace MX
         "EmbeddedItemsSize",
         "ServerSizeExceeded",
         "Tags",
-        "Authors"
+        "Authors",
+#if TMNEXT
+        "OnlineRecordCount",
+#endif
+        "AuthorBeaten",
+        "AuthorBeatable"
     };
     const string mapFields = string::Join(mapFieldsArray, ",");
 

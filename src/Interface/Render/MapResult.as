@@ -38,6 +38,21 @@ namespace IfaceRender
         UI::TableNextColumn();
         UI::Text(tostring(map.AwardCount));
 
+#if TMNEXT
+        UI::TableNextColumn();
+
+        if (map.AuthorBeaten) {
+            UI::Text("\\$9fc" + Icons::ClockO);
+            UI::SetItemTooltip("Has records, AT beaten");
+        } else if (!map.AuthorBeatable) {
+            UI::Text("\\$f77" + Icons::ClockO);
+            UI::SetItemTooltip("AT unbeatable");
+        } else if (map.PlayerCount > 0) {
+            UI::Text(Icons::ClockO);
+            UI::SetItemTooltip("Has records");
+        }
+#endif
+
         UI::TableNextColumn();
         // buttons
         if (UI::CyanButton(Icons::Kenney::InfoCircle)) {

@@ -22,6 +22,8 @@ namespace MX
         string VehicleName;
         int Length;
         int AuthorTime;
+        bool AuthorBeaten;
+        bool AuthorBeatable = true;
         int TrackValue;
         int AwardCount;
         int ReplayCount;
@@ -29,6 +31,7 @@ namespace MX
         uint EmbeddedObjectsCount;
         int EmbeddedItemsSize;
         bool ServerSizeExceeded;
+        int OnlineRecordCount;
         array<MapImage@> Images;
         array<MapAuthorInfo@> Authors;
         array<MapTag@> Tags;
@@ -122,6 +125,10 @@ namespace MX
                     }
                 }
 
+                OnlineRecordCount = json.Get("OnlineRecordCount", OnlineRecordCount);
+                AuthorBeaten = json.Get("AuthorBeaten", AuthorBeaten);
+                AuthorBeatable = json.Get("AuthorBeatable", AuthorBeatable);
+
                 // Tags is an array of tag objects
                 if (json["Tags"].GetType() != Json::Type::Null) {
                     const Json::Value@ tagObjects = json["Tags"];
@@ -173,6 +180,9 @@ namespace MX
                 json["EmbeddedObjectsCount"] = EmbeddedObjectsCount;
                 json["EmbeddedItemsSize"] = EmbeddedItemsSize;
                 json["ServerSizeExceeded"] = ServerSizeExceeded;
+                json["AuthorBeatable"] = AuthorBeatable;
+                json["AuthorBeaten"] = AuthorBeaten;
+                json["OnlineRecordCount"] = OnlineRecordCount;
 
                 Json::Value uploaderObject = Json::Object();
                 uploaderObject["UserId"] = UserId;
@@ -351,6 +361,14 @@ namespace MX
         bool get_ObjectsError() { return m_objectsStatus == Status::Error; }
         bool get_FetchedObjects() { return m_objectsStatus == Status::Completed; }
         void set_FetchedObjects(bool b) { b ? m_objectsStatus = Status::Completed : m_objectsStatus = Status::Not_Started; }
+
+        int get_PlayerCount() {
+            if (!SupportsLeaderboard) {
+                return 0;
+            }
+
+            return Math::Max(OnlineRecordCount, Records.Length);
+        }
 
         string get_DifficultyName() {
             return tostring(Difficulties(Difficulty));
