@@ -434,10 +434,14 @@ class MapTab : Tab
             } else {
                 UI::SameLine();
 
+                UI::BeginDisabled(m_map.LoadingReplays);
+
                 if (UI::Button(Icons::Refresh)) {
                     m_map.Replays.RemoveRange(0, m_map.Replays.Length);
                     m_map.FetchedReplays = false;
                 }
+
+                UI::EndDisabled();
 
                 UI::BeginChild("MapMXReplaysChild");
 
@@ -558,10 +562,14 @@ class MapTab : Tab
 
             UI::SameLine();
 
+            UI::BeginDisabled(m_map.LoadingComments);
+
             if (UI::Button(Icons::Refresh)) {
                 m_map.Comments.RemoveRange(0, m_map.Comments.Length);
                 m_map.FetchedComments = false;
             }
+
+            UI::EndDisabled();
 
             UI::BeginChild("MapMXCommentsChild");
 
@@ -607,10 +615,14 @@ class MapTab : Tab
         UI::BeginDisabled(!m_map.SupportsLeaderboard);
 
         if (UI::BeginTabItem("Online Leaderboard (" + Format::PlayerCount(m_map.PlayerCount) + ")")) {
+            UI::BeginDisabled(m_map.LoadingRecords);
+
             if (UI::Button(Icons::Refresh)) {
                 m_map.Records.RemoveRange(0, m_map.Records.Length);
                 m_map.FetchedRecords = false;
             }
+
+            UI::EndDisabled();
 
             UI::SameLine();
 
