@@ -1,7 +1,5 @@
-class UserFilters : ModalDialog
+class UserFilters : BaseFilters
 {
-    Tab@ activeTab;
-
     string m_name;
     string m_login;
     string m_favId;
@@ -23,12 +21,21 @@ class UserFilters : ModalDialog
     bool m_crew;
 
     UserFilters(Tab@ tab) {
-        super(Icons::Filter + " \\$zUser filters###UserFilters");
+        super(tab);
         m_size = vec2(800, 550);
-        @activeTab = tab;
     }
 
-    void ResetParameters() {
+    string get_Name() override {
+        return "User filters";
+    }
+
+    Presets::Type get_PresetType() override {
+        return Presets::Type::User;
+    }
+
+    void ResetParameters() override {
+        BaseFilters::ResetParameters();
+
         m_name = "";
         m_favId = "";
         m_login = "";
@@ -44,9 +51,7 @@ class UserFilters : ModalDialog
         m_crew = false;
     }
 
-    void RenderDialog() override {
-        float scale = UI::GetScale();
-
+    void RenderFilters() override {
         UI::PaddedHeaderSeparator("User");
 
         UI::SetItemText("Name:");
@@ -148,27 +153,9 @@ class UserFilters : ModalDialog
 
         m_supporter = UI::Checkbox("Supporter", m_supporter);
         m_crew = UI::Checkbox(shortMXName + " Crew", m_crew);
-
-        vec2 region = UI::GetContentRegionAvail();
-        UI::VPadding(region.y - 45 * scale);
-
-        vec2 searchButton = UI::MeasureButton(Icons::Search + " Search");
-        vec2 resetButton = UI::MeasureButton(Icons::Repeat + " Reset");
-        UI::RightAlignButtons(searchButton.x + resetButton.x, 2);
-
-        if (UI::GreenButton(Icons::Search + " Search")) {
-            startnew(CoroutineFunc(activeTab.Reload));
-            Close();
-        }
-
-        UI::SameLine();
-
-        if (UI::OrangeButton(Icons::Repeat + " Reset")) {
-            ResetParameters();
-        }
     }
 
-    void GetRequestParams(dictionary@ params) {
+    void GetRequestParams(dictionary@ params) override {
         if (m_name != "") params.Set("name", m_name);
         if (m_favId != "") params.Set("favoritetarget", m_favId);
 #if TMNEXT
@@ -196,5 +183,43 @@ class UserFilters : ModalDialog
         if (m_toDate != "" && Date::IsValid(m_toDate)) {
             params.Set("registeredbefore", m_toDate);
         }
+    }
+
+    Json::Value ToJson() override {
+        Json::Value json = Json::Object();
+
+        json["name"]           = m_name;
+        json["login"]          = m_login;
+        json["favId"]          = m_favId;
+        json["minMaps"]        = m_minMaps;
+        json["maxMaps"]        = m_maxMaps;
+        json["minAwards"]      = m_minAwards;
+        json["maxAwards"]      = m_maxAwards;
+        json["minAwardsGiven"] = m_minAwardsGiven;
+        json["maxAwardsGiven"] = m_maxAwardsGiven;
+        json["fromDate"]       = m_fromDate;
+        json["toDate"]         = m_toDate;
+        json["supporter"]      = m_supporter;
+        json["crew"]           = m_crew;
+
+        return json;
+    }
+
+    void LoadPreset(Json::Value@ json) override {
+        ResetParameters();
+
+        m_name           = json["name"];
+        m_login          = json["login"];
+        m_favId          = json["favId"];
+        m_minMaps        = json["minMaps"];
+        m_maxMaps        = json["maxMaps"];
+        m_minAwards      = json["minAwards"];
+        m_maxAwards      = json["maxAwards"];
+        m_minAwardsGiven = json["minAwardsGiven"];
+        m_maxAwardsGiven = json["maxAwardsGiven"];
+        m_fromDate       = json["fromDate"];
+        m_toDate         = json["toDate"];
+        m_supporter      = json["supporter"];
+        m_crew           = json["crew"];
     }
 }

@@ -1,7 +1,5 @@
-class MapFilters : ModalDialog
+class MapFilters : BaseFilters
 {
-    Tab@ activeTab;
-
     string m_name;
     string m_author;
     array<MX::Difficulties> m_selectedDifficulties;
@@ -27,16 +25,22 @@ class MapFilters : ModalDialog
     int m_maxLength = 0;
     MX::AuthorTimeStatus m_authorTimeStatus = MX::AuthorTimeStatus::Any;
 
-    // To search in combos
-    string m_searchCombo;
-
     MapFilters(Tab@ tab) {
-        super(Icons::Filter + " \\$zMap filters###MapFilters");
+        super(tab);
         m_size = vec2(800, 600);
-        @activeTab = tab;
     }
 
-    void ResetParameters() {
+    string get_Name() override {
+        return "Map filters";
+    }
+
+    Presets::Type get_PresetType() override {
+        return Presets::Type::Map;
+    }
+
+    void ResetParameters() override {
+        BaseFilters::ResetParameters();
+
         m_name = "";
         m_author = "";
         m_selectedDifficulties.RemoveRange(0, m_selectedDifficulties.Length);
@@ -53,12 +57,10 @@ class MapFilters : ModalDialog
         m_selectedEnvironments.RemoveRange(0, m_selectedEnvironments.Length);
         m_minLength = 0;
         m_maxLength = 0;
-        m_searchCombo = "";
     }
 
-    void RenderDialog() override {
+    void RenderFilters() override {
         float itemSpacing = UI::GetStyleVarVec2(UI::StyleVar::ItemSpacing).x;
-        float scale = UI::GetScale();
 
         UI::PaddedHeaderSeparator("Map");
 
@@ -453,27 +455,9 @@ class MapFilters : ModalDialog
 #if MP4
         }
 #endif
-
-        vec2 region = UI::GetContentRegionAvail();
-        UI::VPadding(region.y - 45 * scale);
-
-        vec2 searchButton = UI::MeasureButton(Icons::Search + " Search");
-        vec2 resetButton = UI::MeasureButton(Icons::Repeat + " Reset");
-        UI::RightAlignButtons(searchButton.x + resetButton.x, 2);
-
-        if (UI::GreenButton(Icons::Search + " Search")) {
-            startnew(CoroutineFunc(activeTab.Reload));
-            Close();
-        }
-
-        UI::SameLine();
-
-        if (UI::OrangeButton(Icons::Repeat + " Reset")) {
-            ResetParameters();
-        }
     }
 
-    void GetRequestParams(dictionary@ params) {
+    void GetRequestParams(dictionary@ params) override {
         if (m_name != "") params.Set("name", m_name);
         if (m_author != "") params.Set("author", m_author);
         if (m_modSearch != "") params.Set("mod", m_modSearch);
@@ -548,6 +532,110 @@ class MapFilters : ModalDialog
 
         if (m_authorTimeStatus != MX::AuthorTimeStatus::Any) {
             params.Set("inauthortimebeaten", tostring(int(m_authorTimeStatus)));
+        }
+    }
+
+    Json::Value ToJson() override {
+        Json::Value json = Json::Object();
+
+        json["name"]             = m_name;
+        json["author"]           = m_author;
+        json["difficulties"]     = m_selectedDifficulties;
+        json["mod"]              = m_modSearch;
+        json["maptype"]          = m_maptype;
+        json["titlepack"]        = m_titlepack;
+        json["tagInclusive"]     = m_tagInclusiveSearch;
+        json["fromDate"]         = m_fromDate;
+        json["toDate"]           = m_toDate;
+        json["vehicles"]         = m_selectedVehicles;
+        json["minLength"]        = m_minLength;
+        json["maxLength"]        = m_maxLength;
+        json["authorTimeStatus"] = m_authorTimeStatus;
+
+        array<int> enviIds;
+
+        for (uint i = 0; i < m_selectedEnvironments.Length; i++) {
+            enviIds.InsertLast(m_selectedEnvironments[i].ID);
+        }
+
+        json["environments"] = enviIds;
+
+        array<int> tagIds;
+
+        for (uint i = 0; i < m_includedTags.Length; i++) {
+            tagIds.InsertLast(m_includedTags[i].ID);
+        }
+
+        json["includedTags"] = tagIds;
+
+        array<int> etagsIds;
+
+        for (uint i = 0; i < m_excludedTags.Length; i++) {
+            etagsIds.InsertLast(m_excludedTags[i].ID);
+        }
+
+        json["excludedTags"] = etagsIds;
+
+        return json;
+    }
+
+    void LoadPreset(Json::Value@ json) override {
+        ResetParameters();
+
+        m_name               = json["name"];
+        m_author             = json["author"];
+        m_modSearch          = json["mod"];
+        m_maptype            = json["maptype"];
+        m_titlepack          = json["titlepack"];
+        m_tagInclusiveSearch = json["tagInclusive"];
+        m_fromDate           = json["fromDate"];
+        m_toDate             = json["toDate"];
+        m_minLength          = json["minLength"];
+        m_maxLength          = json["maxLength"];
+        m_authorTimeStatus   = MX::AuthorTimeStatus(int(json["authorTimeStatus"]));
+
+        for (uint i = 0; i < json["difficulties"].Length; i++) {
+            MX::Difficulties diff = MX::Difficulties(int(json["difficulties"][i]));
+
+            m_selectedDifficulties.InsertLast(diff);
+        }
+
+        for (uint i = 0; i < json["vehicles"].Length; i++) {
+            string vehicle = json["vehicles"][i];
+
+            m_selectedVehicles.InsertLast(vehicle);
+        }
+
+        array<int> enviIds = JsonToIntArray(json["environments"]);
+        array<int> tagIds = JsonToIntArray(json["includedTags"]);
+        array<int> etagsIds = JsonToIntArray(json["excludedTags"]);
+
+        for (uint i = 0; i < MX::m_environments.Length; i++) {
+            int id = MX::m_environments[i].ID;
+
+            if (enviIds.Find(id) != -1) {
+                m_selectedEnvironments.InsertLast(MX::m_environments[i]);
+            }
+
+            if (m_selectedEnvironments.Length == enviIds.Length) {
+                break;
+            }
+        }
+
+        for (uint i = 0; i < MX::m_mapTags.Length; i++) {
+            MX::MapTag@ tag = MX::m_mapTags[i];
+
+            if (tagIds.Find(tag.ID) != -1) {
+                m_includedTags.InsertLast(tag);
+            }
+
+            if (etagsIds.Find(tag.ID) != -1) {
+                m_excludedTags.InsertLast(tag);
+            }
+
+            if (m_includedTags.Length == tagIds.Length && m_excludedTags.Length == etagsIds.Length) {
+                break;
+            }
         }
     }
 }

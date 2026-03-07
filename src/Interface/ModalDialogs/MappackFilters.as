@@ -1,7 +1,5 @@
-class MappackFilters : ModalDialog
+class MappackFilters : BaseFilters
 {
-    Tab@ activeTab;
-
     string t_name;
     string t_manager;
     MX::MappackTypes t_type = MX::MappackTypes::Any;
@@ -15,16 +13,22 @@ class MappackFilters : ModalDialog
     string t_fromDate;
     string t_toDate;
 
-    // To search in combos
-    string m_searchCombo;
-
     MappackFilters(Tab@ tab) {
-        super(Icons::Filter + " \\$zMappack filters###MappackFilters");
+        super(tab);
         m_size = vec2(800, 500);
-        @activeTab = tab;
     }
 
-    void ResetParameters() {
+    string get_Name() override {
+        return "Mapppack filters";
+    }
+
+    Presets::Type get_PresetType() override {
+        return Presets::Type::Mappack;
+    }
+
+    void ResetParameters() override {
+        BaseFilters::ResetParameters();
+
         t_name = "";
         t_manager = "";
         t_type = MX::MappackTypes::Any;
@@ -33,12 +37,10 @@ class MappackFilters : ModalDialog
         t_tagInclusiveSearch = false;
         t_fromDate = "";
         t_toDate = "";
-        m_searchCombo = "";
     }
 
-    void RenderDialog() override {
+    void RenderFilters() override {
         float itemSpacing = UI::GetStyleVarVec2(UI::StyleVar::ItemSpacing).x;
-        float scale = UI::GetScale();
 
         UI::PaddedHeaderSeparator("Mappack");
 
@@ -190,27 +192,9 @@ class MappackFilters : ModalDialog
         if (t_toDate != "" && UI::ResetButton()) {
             t_toDate = "";
         }
-
-        vec2 region = UI::GetContentRegionAvail();
-        UI::VPadding(region.y - 45 * scale);
-
-        vec2 searchButton = UI::MeasureButton(Icons::Search + " Search");
-        vec2 resetButton = UI::MeasureButton(Icons::Repeat + " Reset");
-        UI::RightAlignButtons(searchButton.x + resetButton.x, 2);
-
-        if (UI::GreenButton(Icons::Search + " Search")) {
-            startnew(CoroutineFunc(activeTab.Reload));
-            Close();
-        }
-
-        UI::SameLine();
-
-        if (UI::OrangeButton(Icons::Repeat + " Reset")) {
-            ResetParameters();
-        }
     }
 
-    void GetRequestParams(dictionary@ params) {
+    void GetRequestParams(dictionary@ params) override {
         if (t_name != "") params.Set("name", t_name);
         if (t_manager != "") params.Set("manager", t_manager);
         if (t_type != MX::MappackTypes::Any) params.Set("primarytype", tostring(int(t_type)));
@@ -247,6 +231,65 @@ class MappackFilters : ModalDialog
 
         if (t_toDate != "" && Date::IsValid(t_toDate)) {
             params.Set("createdbefore", t_toDate);
+        }
+    }
+
+    Json::Value ToJson() override {
+        Json::Value json = Json::Object();
+
+        json["name"]         = t_name;
+        json["manager"]      = t_manager;
+        json["type"]         = t_type;
+        json["fromDate"]     = t_fromDate;
+        json["toDate"]       = t_toDate;
+        json["tagInclusive"] = t_tagInclusiveSearch;
+
+        array<int> tagIds;
+
+        for (uint i = 0; i < t_includedTags.Length; i++) {
+            tagIds.InsertLast(t_includedTags[i].ID);
+        }
+
+        json["includedTags"] = tagIds;
+
+        array<int> etagsIds;
+
+        for (uint i = 0; i < t_excludedTags.Length; i++) {
+            etagsIds.InsertLast(t_excludedTags[i].ID);
+        }
+
+        json["excludedTags"] = etagsIds;
+
+        return json;
+    }
+
+    void LoadPreset(Json::Value@ json) override {
+        ResetParameters();
+
+        t_name               = json["name"];
+        t_manager            = json["manager"];
+        t_fromDate           = json["fromDate"];
+        t_toDate             = json["toDate"];
+        t_type               = MX::MappackTypes(int(json["type"]));
+        t_tagInclusiveSearch = json["tagInclusive"];
+
+        array<int> tagIds = JsonToIntArray(json["includedTags"]);
+        array<int> etagsIds = JsonToIntArray(json["excludedTags"]);
+
+        for (uint i = 0; i < MX::m_mapTags.Length; i++) {
+            MX::MapTag@ tag = MX::m_mapTags[i];
+
+            if (tagIds.Find(tag.ID) != -1) {
+                t_includedTags.InsertLast(tag);
+            }
+
+            if (etagsIds.Find(tag.ID) != -1) {
+                t_excludedTags.InsertLast(tag);
+            }
+
+            if (t_includedTags.Length == tagIds.Length && t_excludedTags.Length == etagsIds.Length) {
+                break;
+            }
         }
     }
 }

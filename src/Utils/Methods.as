@@ -20,6 +20,21 @@ string GetFileNameFromHeader(dictionary headers) {
     return matches[1];
 }
 
+array<int> JsonToIntArray(Json::Value@ json) {
+    if (json.GetType() != Json::Type::Array) {
+        Logging::Error("Received wrong JSON type when converting to array!");
+        return {};
+    }
+
+    array<int> arr;
+
+    for (uint i = 0; i < json.Length; i++) {
+        arr.InsertLast(int(json[i]));
+    }
+
+    return arr;
+}
+
 array<MX::MapInfo@> LoadPlayLater() {
     array<MX::MapInfo@> m_maps;
     Json::Value FileData = Json::FromFile(PlayLaterJSON);

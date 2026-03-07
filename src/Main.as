@@ -255,6 +255,7 @@ void Main() {
 #endif
 
     startnew(Fonts::Load);
+    Presets::LoadPresets();
 
 #if MP4
     if (repo == MP4mxRepos::Trackmania) MXURL = "https://tm.mania.exchange";
