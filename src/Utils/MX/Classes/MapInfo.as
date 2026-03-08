@@ -142,6 +142,10 @@ namespace MX
                             }
                         }
                     }
+
+                    if (Tags.Length > 1) {
+                        Tags.Sort(function(a, b) { return a.Name < b.Name; });
+                    }
                 }
 
                 @jsonCache = ToJson();

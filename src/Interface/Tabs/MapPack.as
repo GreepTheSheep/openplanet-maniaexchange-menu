@@ -110,6 +110,14 @@ class MapPackTab : Tab
         }
 
         for (uint i = 0; i < m_mapPack.Tags.Length; i++) {
+            if (m_mapPack.Tags.Length > 1 && i > 0) {
+                float tagWidth = UI::MeasureButton(m_mapPack.Tags[i].Name).x;
+
+                if (tagWidth >= UI::GetContentRegionAvail().x) {
+                    UI::NewLine();
+                }
+            }
+
             IfaceRender::MapTag(m_mapPack.Tags[i]);
             UI::SameLine();
         }

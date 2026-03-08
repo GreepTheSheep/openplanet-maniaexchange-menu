@@ -155,9 +155,18 @@ class MapTab : Tab
         UI::Separator();
 
         for (uint i = 0; i < m_map.Tags.Length; i++) {
+            if (m_map.Tags.Length > 1 && i > 0) {
+                float tagWidth = UI::MeasureButton(m_map.Tags[i].Name).x;
+
+                if (tagWidth >= UI::GetContentRegionAvail().x) {
+                    UI::NewLine();
+                }
+            }
+
             IfaceRender::MapTag(m_map.Tags[i]);
             UI::SameLine();
         }
+
         UI::NewLine();
 
         UI::Text(Icons::Trophy + " \\$f77" + m_map.AwardCount);
