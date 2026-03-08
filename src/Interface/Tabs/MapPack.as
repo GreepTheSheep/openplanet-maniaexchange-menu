@@ -206,13 +206,13 @@ class MapPackTab : Tab
                     UI::TableSetupScrollFreeze(0, 1);
                     PushTabStyle();
                     UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
-                    UI::TableSetupColumn("Created by", UI::TableColumnFlags::WidthFixed, m_mapPack.columnWidths.author);
+                    UI::TableSetupColumn("Author", UI::TableColumnFlags::WidthFixed, m_mapPack.columnWidths.author);
 #if MP4
                     UI::TableSetupColumn("Envi/Vehicle", UI::TableColumnFlags::WidthFixed, m_mapPack.columnWidths.enviVehicle);
                     UI::TableSetColumnEnabled(2, repo == MP4mxRepos::Trackmania);
                     UI::TableSetupColumn("Title pack", UI::TableColumnFlags::WidthFixed, m_mapPack.columnWidths.titlepack);
 #endif
-                    UI::TableSetupColumn("Style", UI::TableColumnFlags::WidthStretch);
+                    UI::TableSetupColumn("Tags", UI::TableColumnFlags::WidthStretch);
                     UI::TableSetupColumn(Icons::Trophy, UI::TableColumnFlags::WidthFixed);
                     UI::TableSetupColumn("", UI::TableColumnFlags::WidthFixed, 15);
                     UI::TableSetupColumn("Actions", UI::TableColumnFlags::WidthFixed);
