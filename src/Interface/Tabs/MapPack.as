@@ -198,9 +198,9 @@ class MapPackTab : Tab
                 UI::Text(Icons::AnimatedHourglass + " Loading...");
             } else {
 #if MP4
-                int columns = 7;
+                int columns = 8;
 #else
-                int columns = 5;
+                int columns = 6;
 #endif
                 if (UI::BeginTable("List", columns, UI::TableFlags::RowBg | UI::TableFlags::Hideable)) {
                     UI::TableSetupScrollFreeze(0, 1);
@@ -214,6 +214,7 @@ class MapPackTab : Tab
 #endif
                     UI::TableSetupColumn("Style", UI::TableColumnFlags::WidthStretch);
                     UI::TableSetupColumn(Icons::Trophy, UI::TableColumnFlags::WidthFixed);
+                    UI::TableSetupColumn("", UI::TableColumnFlags::WidthFixed, 15);
                     UI::TableSetupColumn("Actions", UI::TableColumnFlags::WidthFixed);
                     UI::TableHeadersRow();
                     PopTabStyle();

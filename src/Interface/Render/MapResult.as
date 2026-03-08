@@ -38,7 +38,6 @@ namespace IfaceRender
         UI::TableNextColumn();
         UI::Text(tostring(map.AwardCount));
 
-#if TMNEXT
         UI::TableNextColumn();
 
         if (map.AuthorBeaten) {
@@ -51,7 +50,6 @@ namespace IfaceRender
             UI::Text(Icons::ClockO);
             UI::SetItemTooltip("Has records");
         }
-#endif
 
         UI::TableNextColumn();
         // buttons

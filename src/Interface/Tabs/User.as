@@ -355,9 +355,9 @@ class UserTab : Tab
                 }
             } else {
 #if MP4
-                int columns = 7;
+                int columns = 8;
 #else
-                int columns = 5;
+                int columns = 6;
 #endif
                 if (UI::BeginTable("CreatedMapsList", columns, UI::TableFlags::RowBg | UI::TableFlags::Hideable)) {
                     UI::TableSetupScrollFreeze(0, 1);
@@ -371,6 +371,7 @@ class UserTab : Tab
 #endif
                     UI::TableSetupColumn("Style", UI::TableColumnFlags::WidthStretch);
                     UI::TableSetupColumn(Icons::Trophy, UI::TableColumnFlags::WidthFixed);
+                    UI::TableSetupColumn("", UI::TableColumnFlags::WidthFixed, 15);
                     UI::TableSetupColumn("Actions", UI::TableColumnFlags::WidthFixed);
                     UI::TableHeadersRow();
                     PopTabStyle();
@@ -426,9 +427,9 @@ class UserTab : Tab
                 }
             } else {
 #if MP4
-                int columns = 7;
+                int columns = 8;
 #else
-                int columns = 5;
+                int columns = 6;
 #endif
                 if (UI::BeginTable("AwardedMapsList", columns, UI::TableFlags::RowBg | UI::TableFlags::Hideable)) {
                     UI::TableSetupScrollFreeze(0, 1);
@@ -442,6 +443,7 @@ class UserTab : Tab
 #endif
                     UI::TableSetupColumn("Style", UI::TableColumnFlags::WidthStretch);
                     UI::TableSetupColumn(Icons::Trophy, UI::TableColumnFlags::WidthFixed);
+                    UI::TableSetupColumn("", UI::TableColumnFlags::WidthFixed, 15);
                     UI::TableSetupColumn("Actions", UI::TableColumnFlags::WidthFixed);
                     UI::TableHeadersRow();
                     PopTabStyle();

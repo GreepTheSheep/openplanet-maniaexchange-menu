@@ -283,7 +283,7 @@ class MapListTab : Tab
             UI::BeginChild("mapList");
 
 #if MP4
-            int columns = 7;
+            int columns = 8;
 #else
             int columns = 6;
 #endif
@@ -299,9 +299,7 @@ class MapListTab : Tab
 #endif
                 UI::TableSetupColumn("Style", UI::TableColumnFlags::WidthStretch);
                 UI::TableSetupColumn(Icons::Trophy, UI::TableColumnFlags::WidthFixed);
-#if TMNEXT
                 UI::TableSetupColumn("", UI::TableColumnFlags::WidthFixed, 15);
-#endif
                 UI::TableSetupColumn("Actions", UI::TableColumnFlags::WidthFixed);
                 UI::TableHeadersRow();
                 PopTabStyle();
