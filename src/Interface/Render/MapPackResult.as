@@ -16,8 +16,9 @@ namespace IfaceRender
         if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(mapPack.UserId), true);
 
         UI::TableNextColumn();
-        if (mapPack.Tags.Length == 0) UI::Text("No tags");
-        else {
+        if (mapPack.Tags.IsEmpty()) {
+            UI::Text("No tags");
+        } else {
             for (uint i = 0; i < mapPack.Tags.Length; i++) {
                 IfaceRender::MapTag(mapPack.Tags[i]);
                 UI::SameLine();

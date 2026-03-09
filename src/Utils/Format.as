@@ -58,9 +58,8 @@ namespace Format {
         Regex::SearchAllResult@ results = Regex::SearchAll(formatted, "[(:](\\w+)[):]");
 
         for (uint r = 0; r < results.Length; r++) {
-            string[] result = results[r]; // TODO remove when the new OP version is released
-            string match = result[0];
-            string shortname = result[1];
+            string match = results[r][0];
+            string shortname = results[r][1];
 
             if (MX::Icons.Exists(shortname)) {
                 formatted = formatted.Replace(match, string(MX::Icons[shortname]));

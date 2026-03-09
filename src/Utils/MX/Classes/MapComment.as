@@ -24,7 +24,7 @@ namespace MX
                 HasAwarded = json["HasAwarded"];
                 IsAuthor = json["IsAuthor"];
                 PostedAt = Time::ParseFormatString('%FT%T', json["PostedAt"]);
-                if (json.HasKey("ReplyTo")) ReplyTo = json["ReplyTo"];
+                ReplyTo = json.Get("ReplyTo", ReplyTo);
 
                 if (json.HasKey("Replies")) {
                     for (uint i = 0; i < json["Replies"].Length; i++) {

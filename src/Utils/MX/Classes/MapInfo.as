@@ -83,7 +83,7 @@ namespace MX
                 TrackValue = json["TrackValue"];
                 AwardCount = json["AwardCount"];
                 ReplayCount = json["ReplayCount"];
-                if (json.HasKey("CommentCount")) CommentCount = json["CommentCount"];
+                CommentCount = json.Get("CommentCount", CommentCount);
                 EmbeddedObjectsCount = json["EmbeddedObjectsCount"];
                 EmbeddedItemsSize = json["EmbeddedItemsSize"];
                 ServerSizeExceeded = json["ServerSizeExceeded"];

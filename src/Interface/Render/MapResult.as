@@ -27,8 +27,9 @@ namespace IfaceRender
 #endif
 
         UI::TableNextColumn();
-        if (map.Tags.Length == 0) UI::Text("No tags");
-        else {
+        if (map.Tags.IsEmpty()) {
+            UI::Text("No tags");
+        } else {
             for (uint i = 0; i < map.Tags.Length; i++) {
                 IfaceRender::MapTag(map.Tags[i]);
                 UI::SameLine();
@@ -52,7 +53,6 @@ namespace IfaceRender
         }
 
         UI::TableNextColumn();
-        // buttons
         if (UI::CyanButton(Icons::Kenney::InfoCircle)) {
             mxMenu.AddTab(MapTab(map), true);
         }
