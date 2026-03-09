@@ -240,7 +240,7 @@ class UserListTab : Tab
             }
 
             UI::BeginChild("usersList");
-            if (UI::BeginTable("Users", 12, UI::TableFlags::RowBg)) {
+            if (UI::BeginTable("Users", 12, UI::TableFlags::RowBg | UI::TableFlags::Hideable)) {
                 UI::TableSetupScrollFreeze(0, 1);
                 PushTabStyle();
                 UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
@@ -257,6 +257,18 @@ class UserListTab : Tab
                 UI::TableSetupColumn("Actions", UI::TableColumnFlags::WidthFixed);
                 UI::TableHeadersRow();
                 PopTabStyle();
+
+                UI::TableSetColumnEnabled(0, Setting_UserName);
+                UI::TableSetColumnEnabled(1, Setting_UserRegisterDate);
+                UI::TableSetColumnEnabled(2, Setting_UserMapCount);
+                UI::TableSetColumnEnabled(3, Setting_UserMappackCount);
+                UI::TableSetColumnEnabled(4, Setting_UserReplayCount);
+                UI::TableSetColumnEnabled(5, Setting_UserComments);
+                UI::TableSetColumnEnabled(6, Setting_UserComments);
+                UI::TableSetColumnEnabled(7, Setting_UserAwards);
+                UI::TableSetColumnEnabled(8, Setting_UserAwards);
+                UI::TableSetColumnEnabled(9, Setting_UserFavorites);
+                UI::TableSetColumnEnabled(10, Setting_UserAchievements);
 
                 UI::ListClipper clipper(users.Length);
                 while (clipper.Step()) {

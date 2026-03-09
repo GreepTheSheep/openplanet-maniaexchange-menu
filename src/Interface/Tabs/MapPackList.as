@@ -262,17 +262,34 @@ class MapPackListTab : Tab
                 if (u_typingStart == 0) UI::Text("No map packs found.");
                 return;
             }
+
+            float scale = UI::GetScale();
+
             UI::BeginChild("mapList");
-            if (UI::BeginTable("List", 5, UI::TableFlags::RowBg)) {
+
+            if (UI::BeginTable("List", 7, UI::TableFlags::RowBg | UI::TableFlags::Hideable)) {
                 UI::TableSetupScrollFreeze(0, 1);
                 PushTabStyle();
                 UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
                 UI::TableSetupColumn("Author", UI::TableColumnFlags::WidthStretch);
+                UI::TableSetupColumn("Type", UI::TableColumnFlags::WidthFixed, 80 * scale);
+#if TMNEXT
+                UI::TableSetupColumn("Vista", UI::TableColumnFlags::WidthFixed, 90 * scale);
+#else
+                UI::TableSetupColumn("Envi.", UI::TableColumnFlags::WidthFixed, 90 * scale);
+#endif
                 UI::TableSetupColumn("Tags", UI::TableColumnFlags::WidthStretch);
                 UI::TableSetupColumn("Maps", UI::TableColumnFlags::WidthFixed);
                 UI::TableSetupColumn("Actions", UI::TableColumnFlags::WidthFixed);
                 UI::TableHeadersRow();
                 PopTabStyle();
+
+                UI::TableSetColumnEnabled(0, Setting_MappackName);
+                UI::TableSetColumnEnabled(1, Setting_MappackAuthor);
+                UI::TableSetColumnEnabled(2, Setting_MappackType);
+                UI::TableSetColumnEnabled(3, Setting_MappackEnvironment && repo == MP4mxRepos::Trackmania);
+                UI::TableSetColumnEnabled(4, Setting_MappackTags);
+                UI::TableSetColumnEnabled(5, Setting_MappackMapCount);
 
                 UI::ListClipper clipper(mapPacks.Length);
                 while (clipper.Step()) {

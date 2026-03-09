@@ -83,4 +83,19 @@ namespace UI
     void RightAlignButtons(float buttonsWidth, int buttonCount) {
         RightAlignButton(buttonsWidth, buttonCount);
     }
+
+    // Tooltip
+
+    void SettingDescription(const string &in text) {
+        UI::SameLine();
+        UI::TextDisabled(Icons::QuestionCircle);
+
+        if (UI::BeginItemTooltip()) {
+            UI::PushTextWrapPos(500);
+            UI::TextWrapped(text);
+            UI::PopTextWrapPos();
+
+            UI::EndTooltip();
+        }
+    }
 }

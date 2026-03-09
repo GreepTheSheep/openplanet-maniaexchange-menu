@@ -205,27 +205,47 @@ class MapPackTab : Tab
             } else if (m_mapPack.Loading && m_mapPack.Maps.IsEmpty()) {
                 UI::Text(Icons::AnimatedHourglass + " Loading...");
             } else {
-#if MP4
-                int columns = 8;
-#else
-                int columns = 6;
-#endif
-                if (UI::BeginTable("List", columns, UI::TableFlags::RowBg | UI::TableFlags::Hideable)) {
+                float scale = UI::GetScale();
+
+                if (UI::BeginTable("List", 13, UI::TableFlags::RowBg | UI::TableFlags::Hideable)) {
                     UI::TableSetupScrollFreeze(0, 1);
                     PushTabStyle();
                     UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
                     UI::TableSetupColumn("Author", UI::TableColumnFlags::WidthFixed, m_mapPack.columnWidths.author);
-#if MP4
-                    UI::TableSetupColumn("Envi/Vehicle", UI::TableColumnFlags::WidthFixed, m_mapPack.columnWidths.enviVehicle);
-                    UI::TableSetColumnEnabled(2, repo == MP4mxRepos::Trackmania);
-                    UI::TableSetupColumn("Title pack", UI::TableColumnFlags::WidthFixed, m_mapPack.columnWidths.titlepack);
+#if TMNEXT
+                    UI::TableSetupColumn("Vista", UI::TableColumnFlags::WidthFixed, m_mapPack.columnWidths.environment);
+#else
+                    UI::TableSetupColumn("Env.", UI::TableColumnFlags::WidthFixed, m_mapPack.columnWidths.environment);
 #endif
+                    UI::TableSetupColumn("Vehicle", UI::TableColumnFlags::WidthFixed, m_mapPack.columnWidths.vehicle);
+                    UI::TableSetupColumn("Type", UI::TableColumnFlags::WidthFixed, 60 * scale);
+                    UI::TableSetupColumn("Title pack", UI::TableColumnFlags::WidthFixed, m_mapPack.columnWidths.titlepack);
                     UI::TableSetupColumn("Tags", UI::TableColumnFlags::WidthStretch);
+                    UI::TableSetupColumn("Length", UI::TableColumnFlags::WidthFixed, m_mapPack.columnWidths.length);
+                    UI::TableSetupColumn("Difficulty", UI::TableColumnFlags::WidthFixed);
                     UI::TableSetupColumn(Icons::Trophy, UI::TableColumnFlags::WidthFixed);
-                    UI::TableSetupColumn("", UI::TableColumnFlags::WidthFixed, 15);
+#if TMNEXT
+                    UI::TableSetupColumn("Records", UI::TableColumnFlags::WidthFixed, 40 * scale);
+#else
+                    UI::TableSetupColumn("Replays", UI::TableColumnFlags::WidthFixed, 40 * scale);
+#endif
+                    UI::TableSetupColumn("", UI::TableColumnFlags::WidthFixed, 15 * scale);
                     UI::TableSetupColumn("Actions", UI::TableColumnFlags::WidthFixed);
                     UI::TableHeadersRow();
                     PopTabStyle();
+
+                    UI::TableSetColumnEnabled(0, Setting_MapName);
+                    UI::TableSetColumnEnabled(1, Setting_MapAuthor);
+                    UI::TableSetColumnEnabled(2, Setting_MapEnvironment && repo == MP4mxRepos::Trackmania);
+                    UI::TableSetColumnEnabled(3, Setting_MapVehicle && repo == MP4mxRepos::Trackmania);
+                    UI::TableSetColumnEnabled(4, Setting_MapType);
+                    UI::TableSetColumnEnabled(5, Setting_MapTitlepack);
+                    UI::TableSetColumnEnabled(6, Setting_MapTags);
+                    UI::TableSetColumnEnabled(7, Setting_MapLength && repo == MP4mxRepos::Trackmania);
+                    UI::TableSetColumnEnabled(8, Setting_MapDifficulty);
+                    UI::TableSetColumnEnabled(9, Setting_MapAwards);
+                    UI::TableSetColumnEnabled(10, Setting_MapRecordCount && repo == MP4mxRepos::Trackmania);
+                    UI::TableSetColumnEnabled(11, Setting_MapAtStatus && repo == MP4mxRepos::Trackmania);
 
                     UI::ListClipper clipper(m_mapPack.Maps.Length);
                     while (clipper.Step()) {

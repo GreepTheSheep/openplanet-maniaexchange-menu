@@ -9,7 +9,8 @@ namespace MX
         string UpdatedAt;
         string Description;
         string Name;
-        int Type;
+        MappackTypes Type;
+        int Environment;
         bool IsPublic;
         bool MaplistReleased;
         bool Downloadable;
@@ -35,12 +36,17 @@ namespace MX
                 Name = json["Name"];
                 CreatedAt = json["CreatedAt"];
                 if (json["Description"].GetType() != Json::Type::Null) Description = Format::MXText(json["Description"]);
-                Type = json["Type"];
+                Type = MappackTypes(int(json["Type"]));
                 IsPublic = json["IsPublic"];
                 MaplistReleased = json["MaplistReleased"];
                 Downloadable = json["Downloadable"];
                 IsRequest = json["IsRequest"];
                 MapCount = json["MapCount"];
+
+                // Environment is null if mappack is empty
+                if (json["Environment"].GetType() != Json::Type::Null) {
+                    Environment = json["Environment"];
+                }
 
                 if (json["UpdatedAt"].GetType() != Json::Type::Null) {
                     UpdatedAt = json["UpdatedAt"];
@@ -116,7 +122,21 @@ namespace MX
         }
 
         string get_TypeName() {
-            return tostring(MappackTypes(Type));
+            return tostring(Type);
+        }
+
+        string get_EnvironmentName() {
+            if (Environment == 0) {
+                return "Multiple";
+            }
+
+            for (uint i =  0; i < m_environments.Length; i++) {
+                if (m_environments[i].ID == Environment) {
+                    return m_environments[i].Name;
+                }
+            }
+
+            return "Unknown";
         }
 
         int get_LastId() {

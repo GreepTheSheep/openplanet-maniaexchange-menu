@@ -18,9 +18,10 @@ namespace MX
         int DisplayCost;
         int Laps;
         int Environment;
-        int Difficulty;
+        Difficulties Difficulty;
         string VehicleName;
         int Length;
+        string LengthStr;
         int AuthorTime;
         bool AuthorBeaten;
         bool AuthorBeatable = true;
@@ -32,6 +33,7 @@ namespace MX
         int EmbeddedItemsSize;
         bool ServerSizeExceeded;
         int OnlineRecordCount;
+        string PlayerCountStr;
         array<MapImage@> Images;
         array<MapAuthorInfo@> Authors;
         array<MapTag@> Tags;
@@ -78,7 +80,7 @@ namespace MX
                 DisplayCost = json["DisplayCost"];
                 Laps = json["Laps"];
                 Environment = json["Environment"];
-                Difficulty = json["Difficulty"];
+                Difficulty = Difficulties(int(json["Difficulty"]));
                 VehicleName = json["VehicleName"];
                 TrackValue = json["TrackValue"];
                 AwardCount = json["AwardCount"];
@@ -117,6 +119,8 @@ namespace MX
                     Length = AuthorTime;
                 }
 
+                LengthStr = Format::MapLength(Length, GameMode);
+
                 if (json["Authors"].GetType() != Json::Type::Null) {
                     const Json::Value@ authorsObjects = json["Authors"];
 
@@ -129,6 +133,8 @@ namespace MX
                 OnlineRecordCount = json.Get("OnlineRecordCount", OnlineRecordCount);
                 AuthorBeaten = json.Get("AuthorBeaten", AuthorBeaten);
                 AuthorBeatable = json.Get("AuthorBeatable", AuthorBeatable);
+
+                PlayerCountStr = Format::PlayerCount(PlayerCount);
 
                 // Tags is an array of tag objects
                 if (json["Tags"].GetType() != Json::Type::Null) {
@@ -378,15 +384,19 @@ namespace MX
         void set_FetchedObjects(bool b) { b ? m_objectsStatus = Status::Completed : m_objectsStatus = Status::Not_Started; }
 
         int get_PlayerCount() {
+#if TMNEXT
             if (!SupportsLeaderboard) {
                 return 0;
             }
 
-            return Math::Max(OnlineRecordCount, Records.Length);
+            return Math::Max(OnlineRecordCount, ReplayCount);
+#else
+            return ReplayCount;
+#endif
         }
 
         string get_DifficultyName() {
-            return tostring(Difficulties(Difficulty));
+            return tostring(Difficulty);
         }
 
         string get_EnvironmentName() {

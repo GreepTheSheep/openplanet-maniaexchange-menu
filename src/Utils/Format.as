@@ -109,4 +109,28 @@ namespace Format {
 
         return tostring(players);
     }
+
+    string MapLength(int time, MX::GameModes mode) {
+        if (time < 0) {
+            return "";
+        }
+
+        switch (mode) {
+            case MX::GameModes::Stunt:
+                if (time < 1) return "-";
+
+                return tostring(time) + " pts";
+            case MX::GameModes::Platform:
+                if (time < 0) return "-";
+
+                return tostring(time) + " respawns";
+            case MX::GameModes::Race:
+            default:
+                if (time < 1) {
+                    return "-:--.---";
+                }
+
+                return Time::Format(time);
+        }
+    }
 }

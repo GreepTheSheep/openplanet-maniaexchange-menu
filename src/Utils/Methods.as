@@ -20,6 +20,22 @@ string GetFileNameFromHeader(dictionary headers) {
     return matches[1];
 }
 
+string GetComboText(array<bool> values) {
+    uint count = 0;
+
+    for (uint i = 0; i < values.Length; i++) {
+        if (values[i]) {
+            count++;
+        }
+    }
+
+    if (count == 0) {
+        return "Select...";
+    }
+
+    return tostring(count) + " selected";
+}
+
 array<int> JsonToIntArray(Json::Value@ json) {
     if (json.GetType() != Json::Type::Array) {
         Logging::Error("Received wrong JSON type when converting to array!");

@@ -42,6 +42,7 @@ namespace MX
         "Description",
         "Name",
         "Type",
+        "Environment",
         "IsPublic",
         "MaplistReleased",
         "Downloadable",

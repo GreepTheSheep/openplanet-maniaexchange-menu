@@ -46,7 +46,6 @@ bool Setting_Tab_MapPacks_Visible = true;
 [Setting name="Maps" category="Display Tabs"]
 bool Setting_Tab_Maps_Visible = true;
 
-#if MP4
 enum MP4mxRepos {
     Trackmania,
     Shootmania
@@ -55,6 +54,7 @@ enum MP4mxRepos {
 [Setting hidden]
 MP4mxRepos repo = MP4mxRepos::Trackmania;
 
+#if MP4
 [SettingsTab name="ManiaPlanet 4" icon="ManiaExchange" order=3]
 void RenderMP4RepoSelectSettings()
 {
@@ -156,4 +156,260 @@ void RenderDevSettings()
         }
         UI::EndCombo();
     }
+}
+
+[Setting hidden]
+bool Setting_MapName = true;
+
+[Setting hidden]
+bool Setting_MapAuthor = true;
+
+[Setting hidden]
+#if MP4
+bool Setting_MapEnvironment = true;
+#else
+bool Setting_MapEnvironment = false;
+#endif
+
+[Setting hidden]
+#if MP4
+bool Setting_MapVehicle = true;
+#else
+bool Setting_MapVehicle = false;
+#endif
+
+#if MP4
+[Setting hidden]
+bool Setting_MapTitlepack = true;
+#else
+bool Setting_MapTitlepack = false;
+#endif
+
+[Setting hidden]
+bool Setting_MapTags = true;
+
+[Setting hidden]
+bool Setting_MapLength = false;
+
+[Setting hidden]
+bool Setting_MapType = false;
+
+[Setting hidden]
+bool Setting_MapDifficulty = false;
+
+[Setting hidden]
+bool Setting_MapAwards = true;
+
+[Setting hidden]
+bool Setting_MapRecordCount = true;
+
+[Setting hidden]
+bool Setting_MapAtStatus = true;
+
+// Mappack
+
+[Setting hidden]
+bool Setting_MappackName = true;
+
+[Setting hidden]
+bool Setting_MappackAuthor = true;
+
+[Setting hidden]
+bool Setting_MappackType = true;
+
+[Setting hidden]
+bool Setting_MappackEnvironment = true;
+
+[Setting hidden]
+bool Setting_MappackTags = true;
+
+[Setting hidden]
+bool Setting_MappackMapCount = true;
+
+// User
+
+[Setting hidden]
+bool Setting_UserName = true;
+
+[Setting hidden]
+bool Setting_UserRegisterDate = true;
+
+[Setting hidden]
+bool Setting_UserMapCount = true;
+
+[Setting hidden]
+bool Setting_UserMappackCount = true;
+
+[Setting hidden]
+bool Setting_UserReplayCount = true;
+
+[Setting hidden]
+bool Setting_UserComments = true;
+
+[Setting hidden]
+bool Setting_UserAwards = true;
+
+[Setting hidden]
+bool Setting_UserFavorites = true;
+
+[Setting hidden]
+bool Setting_UserAchievements = true;
+
+[SettingsTab name="Display" order="3" icon="Eye"]
+void RenderDisplaySettings() {
+    UI::BeginChild("DisplaySettings");
+
+    if (UI::Button("Reset to default")) {
+        Setting_ColoredMapName = true;
+        Setting_ColoredTags = true;
+
+        Setting_MapName = true;
+        Setting_MapAuthor = true;
+#if MP4
+        Setting_MapEnvironment = true;
+        Setting_MapVehicle = true;
+        Setting_MapTitlepack = true;
+#else
+        Setting_MapEnvironment = false;
+        Setting_MapVehicle = false;
+        Setting_MapTitlepack = false;
+#endif
+        Setting_MapType = false;
+        Setting_MapTags = true;
+        Setting_MapLength = false;
+        Setting_MapDifficulty = false;
+        Setting_MapAwards = true;
+        Setting_MapRecordCount = true;
+        Setting_MapAtStatus = true;
+
+        Setting_MappackName = true;
+        Setting_MappackAuthor = true;
+        Setting_MappackType = true;
+        Setting_MappackEnvironment = true;
+        Setting_MappackTags = true;
+        Setting_MappackMapCount = true;
+
+        Setting_UserName = true;
+        Setting_UserRegisterDate = true;
+        Setting_UserMapCount = true;
+        Setting_UserMappackCount = true;
+        Setting_UserReplayCount = true;
+        Setting_UserComments = true;
+        Setting_UserAwards = true;
+        Setting_UserFavorites = true;
+        Setting_UserAchievements = true;
+    }
+
+    Setting_ColoredTags = UI::Checkbox("Use TMX colors for tags", Setting_ColoredTags);
+    UI::SettingDescription("When disabled, tags will use the default gray background color instead of the colors provided by TMX");
+
+    UI::PaddedHeaderSeparator("Maps");
+
+    Setting_ColoredMapName = UI::Checkbox("Use colored map names", Setting_ColoredMapName);
+
+    array<bool> mapValues = { 
+        Setting_MapName,
+        Setting_MapAuthor,
+        Setting_MapEnvironment,
+        Setting_MapVehicle,
+        Setting_MapTags,
+#if MP4
+        Setting_MapTitlepack,
+#endif
+        Setting_MapAwards,
+        Setting_MapAtStatus,
+        Setting_MapLength,
+        Setting_MapType,
+        Setting_MapRecordCount,
+        Setting_MapDifficulty
+    };
+    string mapComboText = GetComboText(mapValues);
+
+    UI::SetNextItemWidth(145);
+    if (UI::BeginCombo("Displayed columns##Map", mapComboText)) {
+        Setting_MapName = UI::Checkbox("Name##Map", Setting_MapName);
+        Setting_MapAuthor = UI::Checkbox("Author##Map", Setting_MapAuthor);
+#if MP4
+        Setting_MapEnvironment = UI::Checkbox("Environment##Map", Setting_MapEnvironment);
+#else
+        Setting_MapEnvironment = UI::Checkbox("Vista##Map", Setting_MapEnvironment);
+#endif
+        Setting_MapVehicle = UI::Checkbox("Vehicle##Map", Setting_MapVehicle);
+        Setting_MapType = UI::Checkbox("Type##Map", Setting_MapType);
+#if MP4
+        Setting_MapTitlepack = UI::Checkbox("Titlepack##Map", Setting_MapTitlepack);
+#endif
+        Setting_MapTags = UI::Checkbox("Tags##Map", Setting_MapTags);
+        Setting_MapLength = UI::Checkbox("Length##Map", Setting_MapLength);
+        Setting_MapDifficulty = UI::Checkbox("Difficulty##Map", Setting_MapDifficulty);
+        Setting_MapAwards = UI::Checkbox("Awards##Map", Setting_MapAwards);
+#if TMNEXT
+        Setting_MapRecordCount = UI::Checkbox("Record Count##Map", Setting_MapRecordCount);
+#else
+        Setting_MapRecordCount = UI::Checkbox("Replay Count##Map", Setting_MapRecordCount);
+#endif
+        Setting_MapAtStatus = UI::Checkbox("AT Status##Map", Setting_MapAtStatus);
+
+        UI::EndCombo();
+    }
+
+    UI::PaddedHeaderSeparator("Mappacks");
+
+    array<bool> mappackValues = { 
+        Setting_MappackName,
+        Setting_MappackAuthor,
+        Setting_MappackType,
+        Setting_MappackEnvironment,
+        Setting_MappackTags,
+        Setting_MappackMapCount
+    };
+    string mappackComboText = GetComboText(mappackValues);
+
+    UI::SetNextItemWidth(145);
+    if (UI::BeginCombo("Displayed columns##Mappack", mappackComboText)) {
+        Setting_MappackName = UI::Checkbox("Name##Mappack", Setting_MappackName);
+        Setting_MappackAuthor = UI::Checkbox("Author##Mappack", Setting_MappackAuthor);
+        Setting_MappackType = UI::Checkbox("Type##Mappack", Setting_MappackType);
+#if TMNEXT
+        Setting_MappackEnvironment = UI::Checkbox("Vista##Mappack", Setting_MappackEnvironment);
+#else
+        Setting_MappackEnvironment = UI::Checkbox("Environment##Mappack", Setting_MappackEnvironment);
+#endif
+        Setting_MappackTags = UI::Checkbox("Tags##Mappack", Setting_MappackTags);
+        Setting_MappackMapCount = UI::Checkbox("Map Count##Mappack", Setting_MappackMapCount);
+
+        UI::EndCombo();
+    }
+
+    UI::PaddedHeaderSeparator("Users");
+
+    array<bool> userValues = {
+        Setting_UserName,
+        Setting_UserRegisterDate,
+        Setting_UserMapCount,
+        Setting_UserMappackCount,
+        Setting_UserReplayCount,
+        Setting_UserComments,
+        Setting_UserAwards,
+        Setting_UserFavorites,
+        Setting_UserAchievements
+    };
+    string userComboText = GetComboText(userValues);
+
+    UI::SetNextItemWidth(145);
+    if (UI::BeginCombo("Displayed columns##User", userComboText)) {
+        Setting_UserName = UI::Checkbox("Name##User", Setting_UserName);
+        Setting_UserRegisterDate = UI::Checkbox("Register at##User", Setting_UserRegisterDate);
+        Setting_UserMapCount = UI::Checkbox("Map Count##User", Setting_UserMapCount);
+        Setting_UserMappackCount = UI::Checkbox("Mappack Count##User", Setting_UserMappackCount);
+        Setting_UserReplayCount = UI::Checkbox("Replay Count##User", Setting_UserReplayCount);
+        Setting_UserComments = UI::Checkbox("Comments##User", Setting_UserComments);
+        Setting_UserAwards = UI::Checkbox("Awards##User", Setting_UserAwards);
+        Setting_UserFavorites = UI::Checkbox("Favorites##User", Setting_UserFavorites);
+        Setting_UserAchievements = UI::Checkbox("Achievements##User", Setting_UserAchievements);
+
+        UI::EndCombo();
+    }
+
+    UI::EndChild();
 }

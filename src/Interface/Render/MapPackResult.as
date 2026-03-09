@@ -11,11 +11,21 @@ namespace IfaceRender
         if (UI::IsItemClicked()) mxMenu.AddTab(MapPackTab(mapPack), true);
 
         UI::TableNextColumn();
+        UI::AlignTextToFramePadding();
         UI::Text(mapPack.Username);
         UI::SetItemTooltip("Click to view "+mapPack.Username+"'s profile");
         if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(mapPack.UserId), true);
 
         UI::TableNextColumn();
+        UI::AlignTextToFramePadding();
+        UI::Text(mapPack.TypeName);
+
+        UI::TableNextColumn();
+        UI::AlignTextToFramePadding();
+        UI::Text(mapPack.EnvironmentName);
+
+        UI::TableNextColumn();
+        UI::AlignTextToFramePadding();
         if (mapPack.Tags.IsEmpty()) {
             UI::Text("No tags");
         } else {
@@ -26,6 +36,7 @@ namespace IfaceRender
         }
 
         UI::TableNextColumn();
+        UI::AlignTextToFramePadding();
         UI::Text(tostring(mapPack.MapCount));
 
         UI::TableNextColumn();

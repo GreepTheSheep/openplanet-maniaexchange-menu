@@ -208,12 +208,12 @@ namespace MX
             m_environments.InsertLast(MapEnvironment(2, "Stadium"));
             m_environments.InsertLast(MapEnvironment(3, "Valley"));
             m_environments.InsertLast(MapEnvironment(4, "Lagoon"));
-            m_environments.InsertLast(MapEnvironment(5, "Desert / TMOne Speed"));
-            m_environments.InsertLast(MapEnvironment(6, "Snow / TMOne Alpine"));
+            m_environments.InsertLast(MapEnvironment(5, "Desert / Speed"));
+            m_environments.InsertLast(MapEnvironment(6, "Snow / Alpine"));
             // m_environments.InsertLast(MapEnvironment(7, "Rally (not available)"));
             // m_environments.InsertLast(MapEnvironment(8, "Coast (not available)"));
-            m_environments.InsertLast(MapEnvironment(9, "Bay / TMOne Bay"));
-            m_environments.InsertLast(MapEnvironment(10, "Island / TM²U Island"));
+            m_environments.InsertLast(MapEnvironment(9, "Bay"));
+            m_environments.InsertLast(MapEnvironment(10, "Island"));
         } else {
             m_environments.InsertLast(MapEnvironment(1, "Storm"));
         }
@@ -224,10 +224,10 @@ namespace MX
     {
         try {
             APIRefresh = true;
-            if (m_mapTags.Length > 0) m_mapTags.RemoveRange(0, m_mapTags.Length);
-            GetAllMapTags();
             if (m_environments.Length > 0) m_environments.RemoveRange(0, m_environments.Length);
             LoadEnvironments();
+            if (m_mapTags.Length > 0) m_mapTags.RemoveRange(0, m_mapTags.Length);
+            GetAllMapTags();
             if (m_vehicles.Length > 0) m_vehicles.RemoveRange(0, m_vehicles.Length);
             GetAllVehicles();
             if (m_mapSortingOrders.Length > 0) m_mapSortingOrders.RemoveRange(0, m_mapSortingOrders.Length);

@@ -12,21 +12,29 @@ namespace IfaceRender
         if (UI::IsItemClicked()) mxMenu.AddTab(MapTab(map), true);
 
         UI::TableNextColumn();
+        UI::AlignTextToFramePadding();
         UI::Text(map.Username);
         UI::SetItemTooltip("Click to view "+map.Username+"'s profile");
         if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(map.UserId), true);
 
-#if MP4
         UI::TableNextColumn();
-        string envi = map.EnvironmentName.Length == 0 ? "Unknown" : map.EnvironmentName;
-        string vehicle = map.VehicleName.Length == 0 ? "Unknown" : map.VehicleName;
-        UI::Text(envi + "/" + vehicle);
+        UI::AlignTextToFramePadding();
+        UI::Text(map.EnvironmentName.Length == 0 ? "Unknown" : map.EnvironmentName);
 
         UI::TableNextColumn();
+        UI::AlignTextToFramePadding();
+        UI::Text(map.VehicleName.Length == 0 ? "Unknown" : map.VehicleName);
+
+        UI::TableNextColumn();
+        UI::AlignTextToFramePadding();
+        UI::Text(tostring(map.GameMode));
+
+        UI::TableNextColumn();
+        UI::AlignTextToFramePadding();
         UI::Text(map.TitlePack.Length == 0 ? "Unknown" : map.TitlePack);
-#endif
 
         UI::TableNextColumn();
+        UI::AlignTextToFramePadding();
         if (map.Tags.IsEmpty()) {
             UI::Text("No tags");
         } else {
@@ -37,9 +45,22 @@ namespace IfaceRender
         }
 
         UI::TableNextColumn();
+        UI::AlignTextToFramePadding();
+        UI::Text(map.LengthStr);
+
+        UI::TableNextColumn();
+        MX::RenderDifficultyIcon(map.Difficulty);
+
+        UI::TableNextColumn();
+        UI::AlignTextToFramePadding();
         UI::Text(tostring(map.AwardCount));
 
         UI::TableNextColumn();
+        UI::AlignTextToFramePadding();
+        UI::Text(map.PlayerCountStr);
+
+        UI::TableNextColumn();
+        UI::AlignTextToFramePadding();
 
         if (map.AuthorBeaten) {
             UI::Text("\\$9fc" + Icons::ClockO);

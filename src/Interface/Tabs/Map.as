@@ -174,7 +174,7 @@ class MapTab : Tab
 #if MP4
         if (repo == MP4mxRepos::Trackmania) {
 #endif
-            UI::Text(Icons::Hourglass + " \\$f77" + Time::Format(m_map.Length));
+            UI::Text(Icons::Hourglass + " \\$f77" + m_map.LengthStr);
             UI::SetItemTooltip("Length");
 
             if (m_map.AuthorBeaten) {
@@ -195,7 +195,7 @@ class MapTab : Tab
 #endif
 
 #if TMNEXT
-        UI::Text(Icons::ClockO + " \\$f77" + Format::PlayerCount(m_map.PlayerCount));
+        UI::Text(Icons::ClockO + " \\$f77" + m_map.PlayerCountStr);
         UI::SetItemTooltip("Online records");
 #endif
 
@@ -623,7 +623,7 @@ class MapTab : Tab
 #if TMNEXT
         UI::BeginDisabled(!m_map.SupportsLeaderboard);
 
-        if (UI::BeginTabItem("Online Leaderboard (" + Format::PlayerCount(m_map.PlayerCount) + ")")) {
+        if (UI::BeginTabItem("Online Leaderboard (" + m_map.PlayerCountStr + ")")) {
             UI::BeginDisabled(m_map.LoadingRecords);
 
             if (UI::Button(Icons::Refresh)) {
