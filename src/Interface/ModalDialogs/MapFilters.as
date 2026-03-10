@@ -23,6 +23,10 @@ class MapFilters : BaseFilters
     // Length (milliseconds/respawns/points)
     int m_minLength = 0;
     int m_maxLength = 0;
+
+    // Records
+    int m_minRecords = 0;
+    int m_maxRecords = 0;
     MX::AuthorTimeStatus m_authorTimeStatus = MX::AuthorTimeStatus::Any;
 
     MapFilters(Tab@ tab) {
@@ -57,6 +61,8 @@ class MapFilters : BaseFilters
         m_selectedEnvironments.RemoveRange(0, m_selectedEnvironments.Length);
         m_minLength = 0;
         m_maxLength = 0;
+        m_minRecords = 0;
+        m_maxRecords = 0;
     }
 
     void RenderFilters() override {
@@ -437,6 +443,28 @@ class MapFilters : BaseFilters
 
             UI::EndDisabled();
 
+#if TMNEXT
+            UI::PaddedHeaderSeparator("Records");
+
+            UI::SetItemText("Min:");
+            m_minRecords = UI::InputInt("##MinRecordsFilter", m_minRecords, 0);
+            UI::SetItemTooltip("Minimum amount of online records on the map.\n\nNote: Count might be delayed / inaccurate depending on the map.");
+
+            if (m_minRecords != 0 && UI::ResetButton()) {
+                m_minRecords = 0;
+            }
+
+            UI::SetCenteredItemText("Max:");
+            m_maxRecords = UI::InputInt("##MaxRecordsFilter", m_maxRecords, 0);
+            UI::SetItemTooltip("Maximum amount of online records on the map.\n\nNote: Count might be delayed / inaccurate depending on the map.");
+
+            if (m_maxRecords != 0 && UI::ResetButton()) {
+                m_maxRecords = 0;
+            }
+
+            UI::VPadding();
+#endif
+
             UI::SetItemText("AT Status:");
 
             if (UI::BeginCombo("##ATStatus", tostring(m_authorTimeStatus))) {
@@ -530,6 +558,13 @@ class MapFilters : BaseFilters
         if (m_minLength > 0) params.Set("authortimemin", tostring(m_minLength));
         if (m_maxLength > 0) params.Set("authortimemax", tostring(m_maxLength));
 
+        // Records
+
+#if TMNEXT
+        if (m_minRecords > 0) params.Set("recsmin", tostring(m_minRecords));
+        if (m_maxRecords > 0) params.Set("recsmax", tostring(m_maxRecords));
+#endif
+
         if (m_authorTimeStatus != MX::AuthorTimeStatus::Any) {
             params.Set("inauthortimebeaten", tostring(int(m_authorTimeStatus)));
         }
@@ -550,6 +585,8 @@ class MapFilters : BaseFilters
         json["vehicles"]         = m_selectedVehicles;
         json["minLength"]        = m_minLength;
         json["maxLength"]        = m_maxLength;
+        json["minRecords"]       = m_minRecords;
+        json["maxRecords"]       = m_maxRecords;
         json["authorTimeStatus"] = m_authorTimeStatus;
 
         array<int> enviIds;
@@ -592,6 +629,8 @@ class MapFilters : BaseFilters
         m_toDate             = json["toDate"];
         m_minLength          = json["minLength"];
         m_maxLength          = json["maxLength"];
+        m_minRecords         = json["minRecords"];
+        m_maxRecords         = json["maxRecords"];
         m_authorTimeStatus   = MX::AuthorTimeStatus(int(json["authorTimeStatus"]));
 
         for (uint i = 0; i < json["difficulties"].Length; i++) {
