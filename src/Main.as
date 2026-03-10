@@ -39,15 +39,15 @@ void RenderMenuMain() {
 
                     if (inputMapID != "") {
                         if (pressedEnter || UI::MenuItem(Icons::Play + " Play map")) {
-                            inputMapID = "";
                             UI::ShowNotification("Loading map...");
                             startnew(TM::LoadMapAsync, Text::ParseInt(inputMapID));
+                            inputMapID = "";
                         }
 
                         if (UI::MenuItem(Icons::Kenney::InfoCircle + " Open information")) {
-                            inputMapID = "";
                             if (!Setting_ShowMenu) Setting_ShowMenu = true;
                             mxMenu.AddTab(MapTab(Text::ParseInt(inputMapID)), true);
+                            inputMapID = "";
                         }
                     }
 
