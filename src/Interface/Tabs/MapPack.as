@@ -123,9 +123,22 @@ class MapPackTab : Tab
         }
         UI::NewLine();
 
-        if (!m_mapPack.IsPublic) UI::Text(Icons::Times + " \\$f77Unreleased");
+        if (!m_mapPack.IsPublic) {
+            UI::Text(Icons::Times + " \\$f77Unreleased");
+        }
+
         UI::Text(Icons::ThList + " \\$f77" + m_mapPack.TypeName);
         UI::SetItemTooltip("MapPack Type");
+
+#if MP4
+        if (repo == MP4mxRepos::Trackmania) {
+#endif
+            UI::Text(Icons::Tree + " \\$f77" + m_mapPack.EnvironmentName);
+            UI::SetItemTooltip("Environment");
+#if MP4
+        }
+#endif
+
         UI::Text(Icons::ListOl + " \\$f77" + m_mapPack.MapCount);
         UI::SetItemTooltip("Track Count");
 
