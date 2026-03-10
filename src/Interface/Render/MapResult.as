@@ -18,8 +18,17 @@ namespace IfaceRender
         if (UI::IsItemClicked()) mxMenu.AddTab(UserTab(map.UserId), true);
 
         UI::TableNextColumn();
-        UI::AlignTextToFramePadding();
-        UI::Text(map.EnvironmentName.Length == 0 ? "Unknown" : map.EnvironmentName);
+
+#if TMNEXT
+        if (Setting_VistaIcons) {
+            MX::RenderVistaIcon(map.Environment, map.EnvironmentName);
+        } else {
+#endif
+            UI::AlignTextToFramePadding();
+            UI::Text(map.EnvironmentName);
+#if TMNEXT
+        }
+#endif
 
         UI::TableNextColumn();
         UI::AlignTextToFramePadding();

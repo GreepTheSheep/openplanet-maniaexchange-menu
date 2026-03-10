@@ -226,7 +226,7 @@ class MapPackTab : Tab
                     UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
                     UI::TableSetupColumn("Author", UI::TableColumnFlags::WidthFixed, m_mapPack.columnWidths.author);
 #if TMNEXT
-                    UI::TableSetupColumn("Vista", UI::TableColumnFlags::WidthFixed, m_mapPack.columnWidths.environment);
+                    UI::TableSetupColumn("Vista", UI::TableColumnFlags::WidthFixed, Setting_VistaIcons ? 30 * scale : m_mapPack.columnWidths.environment);
 #else
                     UI::TableSetupColumn("Env.", UI::TableColumnFlags::WidthFixed, m_mapPack.columnWidths.environment);
 #endif

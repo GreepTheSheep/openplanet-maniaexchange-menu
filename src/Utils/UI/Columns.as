@@ -21,7 +21,7 @@ class MapColumns {
             titlepack = Math::Max(titlepack, UI::MeasureString(map.TitlePack).x);
 #endif
 
-            string envi = map.EnvironmentName.Length == 0 ? "Unknown" : map.EnvironmentName;
+            string envi = map.EnvironmentName;
             environment = Math::Max(environment, UI::MeasureString(envi).x);
 
             string car = map.VehicleName.Length == 0 ? "Unknown" : map.VehicleName;

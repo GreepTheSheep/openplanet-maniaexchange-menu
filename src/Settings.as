@@ -177,6 +177,9 @@ bool Setting_ColoredMapName = true;
 bool Setting_ColoredTags = true;
 
 [Setting hidden]
+bool Setting_VistaIcons = false;
+
+[Setting hidden]
 bool Setting_MapName = true;
 
 [Setting hidden]
@@ -280,6 +283,7 @@ void RenderDisplaySettings() {
     if (UI::Button("Reset to default")) {
         Setting_ColoredMapName = true;
         Setting_ColoredTags = true;
+        Setting_VistaIcons = false;
 
         Setting_MapName = true;
         Setting_MapAuthor = true;
@@ -324,6 +328,11 @@ void RenderDisplaySettings() {
     UI::PaddedHeaderSeparator("Maps");
 
     Setting_ColoredMapName = UI::Checkbox("Use colored map names", Setting_ColoredMapName);
+
+#if TMNEXT
+    Setting_VistaIcons = UI::Checkbox("Use vista icons", Setting_VistaIcons);
+    UI::SettingDescription("If enabled, environment names will be replaced by their icon.");
+#endif
 
     array<bool> mapValues = { 
         Setting_MapName,

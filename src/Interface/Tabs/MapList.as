@@ -290,7 +290,7 @@ class MapListTab : Tab
                 UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
                 UI::TableSetupColumn("Author", UI::TableColumnFlags::WidthFixed, columnWidths.author);
 #if TMNEXT
-                UI::TableSetupColumn("Vista", UI::TableColumnFlags::WidthFixed, columnWidths.environment);
+                UI::TableSetupColumn("Vista", UI::TableColumnFlags::WidthFixed, Setting_VistaIcons ? 30 * scale : columnWidths.environment);
 #else
                 UI::TableSetupColumn("Env.", UI::TableColumnFlags::WidthFixed, columnWidths.environment);
 #endif

@@ -21,8 +21,17 @@ namespace IfaceRender
         UI::Text(mapPack.TypeName);
 
         UI::TableNextColumn();
-        UI::AlignTextToFramePadding();
-        UI::Text(mapPack.EnvironmentName);
+
+#if TMNEXT
+        if (Setting_VistaIcons) {
+            MX::RenderVistaIcon(mapPack.Environment, mapPack.EnvironmentName);
+        } else {
+#endif
+            UI::AlignTextToFramePadding();
+            UI::Text(mapPack.EnvironmentName);
+#if TMNEXT
+        }
+#endif
 
         UI::TableNextColumn();
         UI::AlignTextToFramePadding();

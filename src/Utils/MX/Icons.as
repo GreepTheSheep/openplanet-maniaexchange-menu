@@ -68,4 +68,32 @@ namespace MX {
 
         UI::SetItemTooltip(tostring(difficulty));
     }
+
+#if TMNEXT
+    UI::Texture@ stadiumIcon = UI::LoadTexture("src/Interface/Assets/Icons/Stadium.png");
+    UI::Texture@ islandIcon = UI::LoadTexture("src/Interface/Assets/Icons/Red Island.png");
+    UI::Texture@ coastIcon = UI::LoadTexture("src/Interface/Assets/Icons/Green Coast.png");
+    UI::Texture@ bayIcon = UI::LoadTexture("src/Interface/Assets/Icons/Blue Bay.png");
+    UI::Texture@ shoreIcon = UI::LoadTexture("src/Interface/Assets/Icons/White Shore.png");
+
+    array<UI::Texture@> vistaIcons = {
+        stadiumIcon,
+        islandIcon,
+        coastIcon,
+        bayIcon,
+        shoreIcon
+    };
+
+    void RenderVistaIcon(int enviId, const string &in name) {
+        if (enviId == 0 || enviId > vistaIcons.Length) {
+            return;
+        }
+
+        UI::Image(vistaIcons[enviId - 1], vec2(25 * UI::GetScale()));
+
+        if (name != "" && name != "Unknown") {
+            UI::SetItemTooltip(name);
+        }
+    }
+#endif
 }

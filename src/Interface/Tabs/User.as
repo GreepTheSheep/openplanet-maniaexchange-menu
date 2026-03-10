@@ -362,7 +362,7 @@ class UserTab : Tab
                     UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
                     UI::TableSetupColumn("Author", UI::TableColumnFlags::WidthFixed, m_user.createdWidths.author);
 #if TMNEXT
-                    UI::TableSetupColumn("Vista", UI::TableColumnFlags::WidthFixed, m_user.createdWidths.environment);
+                    UI::TableSetupColumn("Vista", UI::TableColumnFlags::WidthFixed, Setting_VistaIcons ? 30 * scale : m_user.createdWidths.environment);
 #else
                     UI::TableSetupColumn("Env.", UI::TableColumnFlags::WidthFixed, m_user.createdWidths.environment);
 #endif
@@ -454,7 +454,7 @@ class UserTab : Tab
                     UI::TableSetupColumn("Name", UI::TableColumnFlags::WidthStretch);
                     UI::TableSetupColumn("Author", UI::TableColumnFlags::WidthFixed, m_user.awardedWidths.author);
 #if TMNEXT
-                    UI::TableSetupColumn("Vista", UI::TableColumnFlags::WidthFixed, m_user.awardedWidths.environment);
+                    UI::TableSetupColumn("Vista", UI::TableColumnFlags::WidthFixed, Setting_VistaIcons ? 30 * scale : m_user.awardedWidths.environment);
 #else
                     UI::TableSetupColumn("Env.", UI::TableColumnFlags::WidthFixed, m_user.awardedWidths.environment);
 #endif
@@ -547,7 +547,7 @@ class UserTab : Tab
                     UI::TableSetupColumn("Author", UI::TableColumnFlags::WidthStretch);
                     UI::TableSetupColumn("Type", UI::TableColumnFlags::WidthFixed, 80 * scale);
 #if TMNEXT
-                    UI::TableSetupColumn("Vista", UI::TableColumnFlags::WidthFixed, 90 * scale);
+                    UI::TableSetupColumn("Vista", UI::TableColumnFlags::WidthFixed, Setting_VistaIcons ? 30 * scale : 90 * scale);
 #else
                     UI::TableSetupColumn("Envi.", UI::TableColumnFlags::WidthFixed, 90 * scale);
 #endif
