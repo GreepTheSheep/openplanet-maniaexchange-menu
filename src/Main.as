@@ -58,7 +58,7 @@ void RenderMenuMain() {
                     UI::Separator();
                     if (UI::MenuItem(Icons::Kenney::InfoCircle + " " + Text::OpenplanetFormatCodes(currentMapInfo.GbxMapName))) {
                         if (!Setting_ShowMenu) Setting_ShowMenu = true;
-                        mxMenu.AddTab(MapTab(currentMapID), true);
+                        mxMenu.AddTab(MapTab(currentMapInfo), true);
                     }
                 }
 
