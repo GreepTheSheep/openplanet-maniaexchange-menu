@@ -28,19 +28,19 @@ namespace IfaceRender
 
         UI::TableNextColumn();
         UI::AlignTextToFramePadding();
-        UI::Text(tostring(user.CommentsReceivedCount));
-
-        UI::TableNextColumn();
-        UI::AlignTextToFramePadding();
-        UI::Text(tostring(user.CommentsGivenCount));
-
-        UI::TableNextColumn();
-        UI::AlignTextToFramePadding();
         UI::Text(tostring(user.AwardsReceivedCount));
 
         UI::TableNextColumn();
         UI::AlignTextToFramePadding();
         UI::Text(tostring(user.AwardsGivenCount));
+
+        UI::TableNextColumn();
+        UI::AlignTextToFramePadding();
+        UI::Text(tostring(user.CommentsReceivedCount));
+
+        UI::TableNextColumn();
+        UI::AlignTextToFramePadding();
+        UI::Text(tostring(user.CommentsGivenCount));
 
         UI::TableNextColumn();
         UI::AlignTextToFramePadding();

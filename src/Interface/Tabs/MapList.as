@@ -300,7 +300,7 @@ class MapListTab : Tab
                 UI::TableSetupColumn("Tags", UI::TableColumnFlags::WidthStretch);
                 UI::TableSetupColumn("Length", UI::TableColumnFlags::WidthFixed, columnWidths.length);
                 UI::TableSetupColumn("Difficulty", UI::TableColumnFlags::WidthFixed);
-                UI::TableSetupColumn(Icons::Trophy, UI::TableColumnFlags::WidthFixed);
+                UI::TableSetupColumn("Awards", UI::TableColumnFlags::WidthFixed, 50 * scale);
 #if TMNEXT
                 UI::TableSetupColumn("Records", UI::TableColumnFlags::WidthFixed, 40 * scale);
 #else

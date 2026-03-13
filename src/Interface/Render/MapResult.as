@@ -62,7 +62,9 @@ namespace IfaceRender
 
         UI::TableNextColumn();
         UI::AlignTextToFramePadding();
-        UI::Text(tostring(map.AwardCount));
+        if (map.AwardCount > 0) {
+            UI::Text("\\$FB1" + Icons::Trophy + "\\$z " + map.AwardCount);
+        }
 
         UI::TableNextColumn();
         UI::AlignTextToFramePadding();

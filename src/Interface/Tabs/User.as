@@ -372,7 +372,7 @@ class UserTab : Tab
                     UI::TableSetupColumn("Tags", UI::TableColumnFlags::WidthStretch);
                     UI::TableSetupColumn("Length", UI::TableColumnFlags::WidthFixed, m_user.createdWidths.length);
                     UI::TableSetupColumn("Difficulty", UI::TableColumnFlags::WidthFixed);
-                    UI::TableSetupColumn(Icons::Trophy, UI::TableColumnFlags::WidthFixed);
+                    UI::TableSetupColumn("Awards", UI::TableColumnFlags::WidthFixed, 50 * scale);
 #if TMNEXT
                     UI::TableSetupColumn("Records", UI::TableColumnFlags::WidthFixed, 40 * scale);
 #else
@@ -464,7 +464,7 @@ class UserTab : Tab
                     UI::TableSetupColumn("Tags", UI::TableColumnFlags::WidthStretch);
                     UI::TableSetupColumn("Length", UI::TableColumnFlags::WidthFixed, m_user.awardedWidths.length);
                     UI::TableSetupColumn("Difficulty", UI::TableColumnFlags::WidthFixed);
-                    UI::TableSetupColumn(Icons::Trophy, UI::TableColumnFlags::WidthFixed);
+                    UI::TableSetupColumn("Awards", UI::TableColumnFlags::WidthFixed, 50 * scale);
 #if TMNEXT
                     UI::TableSetupColumn("Records", UI::TableColumnFlags::WidthFixed, 40 * scale);
 #else

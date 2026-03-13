@@ -14,7 +14,7 @@ namespace IfaceRender
 
         if (comment.HasAwarded) {
             UI::SameLine();
-            UI::Text("· \\$FD0" + Icons::Trophy);
+            UI::Text("· \\$FB1" + Icons::Trophy);
             UI::SetItemTooltip("User has awarded this map");
         }
 

@@ -248,11 +248,11 @@ class UserListTab : Tab
                 UI::TableSetupColumn("Maps", UI::TableColumnFlags::WidthFixed);
                 UI::TableSetupColumn("Mappacks", UI::TableColumnFlags::WidthFixed);
                 UI::TableSetupColumn("Replays", UI::TableColumnFlags::WidthFixed);
+                UI::TableSetupColumn("\\$FB1" + Icons::Trophy, UI::TableColumnFlags::WidthFixed);
+                UI::TableSetupColumn("\\$FB1" + Icons::Trophy + "\\$z " + Icons::ArrowRight, UI::TableColumnFlags::WidthFixed);
                 UI::TableSetupColumn(Icons::Comment, UI::TableColumnFlags::WidthFixed);
                 UI::TableSetupColumn(Icons::Comment + Icons::ArrowRight, UI::TableColumnFlags::WidthFixed);
-                UI::TableSetupColumn(Icons::Trophy, UI::TableColumnFlags::WidthFixed);
-                UI::TableSetupColumn(Icons::Trophy + Icons::ArrowRight, UI::TableColumnFlags::WidthFixed);
-                UI::TableSetupColumn(Icons::Heart, UI::TableColumnFlags::WidthFixed);
+                UI::TableSetupColumn("\\$D34" + Icons::Heart, UI::TableColumnFlags::WidthFixed);
                 UI::TableSetupColumn(Icons::Kenney::BadgeAlt, UI::TableColumnFlags::WidthFixed);
                 UI::TableSetupColumn("Actions", UI::TableColumnFlags::WidthFixed);
                 UI::TableHeadersRow();
@@ -263,10 +263,10 @@ class UserListTab : Tab
                 UI::TableSetColumnEnabled(2, Setting_UserMapCount);
                 UI::TableSetColumnEnabled(3, Setting_UserMappackCount);
                 UI::TableSetColumnEnabled(4, Setting_UserReplayCount);
-                UI::TableSetColumnEnabled(5, Setting_UserComments);
-                UI::TableSetColumnEnabled(6, Setting_UserComments);
-                UI::TableSetColumnEnabled(7, Setting_UserAwards);
-                UI::TableSetColumnEnabled(8, Setting_UserAwards);
+                UI::TableSetColumnEnabled(5, Setting_UserAwards);
+                UI::TableSetColumnEnabled(6, Setting_UserAwards);
+                UI::TableSetColumnEnabled(7, Setting_UserComments);
+                UI::TableSetColumnEnabled(8, Setting_UserComments);
                 UI::TableSetColumnEnabled(9, Setting_UserFavorites);
                 UI::TableSetColumnEnabled(10, Setting_UserAchievements);
 
