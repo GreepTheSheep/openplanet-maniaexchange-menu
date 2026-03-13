@@ -100,6 +100,8 @@ class BaseFilters : ModalDialog
                 newName = "";
             }
 
+            UI::Separator();
+
             for (uint k = 0; k < keys.Length; k++) {
                 if (UI::Selectable(keys[k], keys[k] == presetName)) {
                     creatingPreset = false;
