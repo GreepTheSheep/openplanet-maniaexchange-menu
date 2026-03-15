@@ -66,6 +66,25 @@ namespace IfaceRender
                 UI::Text("No tags");
             } else {
                 for (uint i = 0; i < map.Tags.Length; i++) {
+                    float tagWidth = UI::MeasureButton(map.Tags[i].Name).x;
+
+                    // - 15 to avoid hiding the text itself
+                    if (i != 0 && tagWidth >= UI::GetContentRegionAvail().x - (15 * UI::GetScale())) {
+                        uint remainingTags = map.Tags.Length - i;
+
+                        UI::Text("+ " + remainingTags);
+
+                        if (UI::BeginItemTooltip()) {
+                            for (uint r = i; r < map.Tags.Length; r++) {
+                                IfaceRender::MapTag(map.Tags[r]);
+                            }
+
+                            UI::EndTooltip();
+                        }
+
+                        break;
+                    }
+
                     IfaceRender::MapTag(map.Tags[i]);
                     UI::SameLine();
                 }
