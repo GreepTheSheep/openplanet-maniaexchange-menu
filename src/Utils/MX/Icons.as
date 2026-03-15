@@ -85,7 +85,7 @@ namespace MX {
     };
 
     void RenderVistaIcon(int enviId, const string &in name) {
-        if (enviId == 0 || enviId > vistaIcons.Length) {
+        if (enviId == 0 || enviId > int(vistaIcons.Length)) {
             return;
         }
 
