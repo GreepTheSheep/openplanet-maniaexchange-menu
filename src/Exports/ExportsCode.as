@@ -40,45 +40,25 @@ namespace ManiaExchange
 
     Json::Value GetMapInfoAsync(int mapID)
     {
-        dictionary params;
-        params.Set("fields", MX::mapFields);
-        params.Set("id", tostring(mapID));
-        string urlParams = MX::DictToApiParams(params);
+        MX::MapInfo@ map = MX::GetMapById(mapID);
 
-        string url = MXURL + "/api/maps" + urlParams;
-        Logging::Debug("Exports::GetMapInfoAsync::StartRequest : "+url);
-        Json::Value mxRes = API::GetAsync(url);
-        if (mxRes.GetType() == Json::Type::Null || mxRes.Length == 0 || !mxRes.HasKey("Results")) {
-            Logging::Error("Exports::GetMapInfoAsync::CheckRequest: Error parsing response");
-            return Json::Parse("");
-        } else if (mxRes["Results"].Length == 0) {
-            Logging::Warn("Exports::GetMapInfoAsync::CheckRequest: Couldn't find a " + shortMXName + " map with the ID " + mapID);
+        if (map is null) {
+            Logging::Warn("[Exports::GetMapInfoAsync] Couldn't find a " + shortMXName + " map with the ID " + mapID);
             return Json::Parse("");
         }
-        // Handle the response
-        return MX::MapInfo(mxRes["Results"][0]).ToJson();
+
+        return map.ToJson();
     }
 
     Json::Value GetMapInfoAsync(const string &in MapUID)
     {
-        dictionary params;
-        params.Set("fields", MX::mapFields);
-        params.Set("uid", MapUID);
-        string urlParams = MX::DictToApiParams(params);
+        MX::MapInfo@ map = MX::GetMapByUid(MapUID);
 
-        string url = MXURL + "/api/maps" + urlParams;
-        Logging::Debug("Exports::GetMapInfoAsync::StartRequest : " + url);
-
-        Json::Value mxRes = API::GetAsync(url);
-
-        if (mxRes.GetType() == Json::Type::Null || mxRes.Length == 0 || !mxRes.HasKey("Results")) {
-            Logging::Error("Exports::GetMapInfoAsync::CheckRequest: Error parsing response");
-            return Json::Parse("");
-        } else if (mxRes["Results"].Length == 0) {
-            Logging::Warn("Exports::GetMapInfoAsync::CheckRequest: Couldn't find a " + shortMXName + " map with the UID " + MapUID);
+        if (map is null) {
+            Logging::Warn("[Exports::GetMapInfoAsync] Couldn't find a " + shortMXName + " map with the UID " + MapUID);
             return Json::Parse("");
         }
 
-        return MX::MapInfo(mxRes["Results"][0]).ToJson();
+        return map.ToJson();
     }
 }
