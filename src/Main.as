@@ -1,8 +1,6 @@
 string inputMapID = "";
-int currentMapID = -4;
-MX::MapInfo@ currentMapInfo;
 Window mxMenu;
-bool openedMainMenu;
+bool mainMenuOpen;
 
 void RenderMenu()
 {
@@ -22,9 +20,9 @@ void RenderMenuMain() {
 #if TMNEXT
     if (!hasPermissions) return;
 #endif
-    if (UI::BeginMenu(nameMenu + Icons::APIStatus + "###" + pluginName + "Menu")) {
-        openedMainMenu = true;
+    mainMenuOpen = UI::BeginMenu(nameMenu + Icons::APIStatus + "###" + pluginName + "Menu");
 
+    if (mainMenuOpen) {
         if (!MX::APIDown) {
             if (MX::APIRefresh) {
                 UI::Text(Icons::AnimatedHourglass + " Please wait...");
@@ -54,40 +52,40 @@ void RenderMenuMain() {
                     UI::EndMenu();
                 }
 
-                if (currentMapID > 0) {
-                    UI::Separator();
-                    if (UI::MenuItem(Icons::Kenney::InfoCircle + " " + Text::OpenplanetFormatCodes(currentMapInfo.GbxMapName))) {
-                        if (!Setting_ShowMenu) Setting_ShowMenu = true;
-                        mxMenu.AddTab(MapTab(currentMapInfo), true);
-                    }
-                }
+                UI::Separator();
 
-                if (currentMapID == -1) {
-                    UI::Separator();
-                    UI::TextDisabled(Icons::Times + " Current map not found on " + shortMXName);
-                }
+                switch (MX::CurrentStatus) {
+                    case MX::MapStatus::Found:
+                        if (UI::MenuItem(Icons::Kenney::InfoCircle + " " + Text::OpenplanetFormatCodes(MX::CurrentMapInfo.GbxMapName))) {
+                            if (!Setting_ShowMenu) {
+                                Setting_ShowMenu = true;
+                            }
 
-                if (currentMapID == -2) {
-                    UI::Separator();
-                    UI::TextDisabled("Error while checking the current map on " + shortMXName);
-                }
+                            mxMenu.AddTab(MapTab(MX::CurrentMapInfo), true);
+                        }
+                        break;
 
-                if (currentMapID == -3) {
-                    UI::Separator();
-                    UI::TextDisabled(Icons::AnimatedHourglass + " Loading...");
-                }
+                    case MX::MapStatus::Error:
+                        UI::TextDisabled("Error while checking the current map on " + shortMXName);
+                        break;
 
-#if SIG_DEVELOPER
-                if (currentMapID == -4) {
-                    UI::Separator();
-                    UI::TextDisabled("Not in a map.");
-                }
+                    case MX::MapStatus::LoadingInfo:
+                        UI::TextDisabled(Icons::AnimatedHourglass + " Loading...");
+                        break;
+                    
+                    case MX::MapStatus::Not_In_Map:
+                        UI::TextDisabled("Not in a map.");
+                        break;
+                    
+                    case MX::MapStatus::InEditor:
+                        UI::TextDisabled("In Editor");
+                        break;
 
-                if (currentMapID == -5) {
-                    UI::Separator();
-                    UI::TextDisabled("In map editor.");
+                    case MX::MapStatus::Not_Found:
+                    default:
+                        UI::TextDisabled(Icons::Times + " Current map not found on " + shortMXName);
+                        break;
                 }
-#endif
             }
         } else {
             UI::TextDisabled("\\$f00" + Icons::Server + " \\$z" + shortMXName + " is down!");
@@ -269,12 +267,12 @@ void Main() {
     startnew(BetterChatRegisterCommands);
 #endif
 
-    startnew(MapChecker);
+    startnew(MX::MapLoop);
 
 #if DEPENDENCY_NADEOSERVICES
     startnew(TM::LoadNadeoServices);
 
-    while (!mxMenu.isOpened && !openedMainMenu) {
+    while (!mxMenu.isOpened && !mainMenuOpen) {
         yield();
     }
 
@@ -297,33 +295,6 @@ UI::InputBlocking OnKeyPress(bool down, VirtualKey key) {
     }
 
     return UI::InputBlocking::DoNothing;
-}
-
-void MapChecker() {
-    CTrackMania@ app = cast<CTrackMania>(GetApp());
-
-    while (true) {
-        yield();
-
-        if (TM::IsInEditor()) {
-            currentMapID = -5;
-            continue;
-        }
-
-        if (app.RootMap is null) {
-            currentMapID = -4;
-            continue;
-        }
-
-        if (!MX::APIDown && currentMapID < -1) {
-            currentMapID = MX::GetCurrentMapMXID();
-
-            if (currentMapID < 0 && currentMapID != -3) {
-                Logging::Debug("MX ID error: " + currentMapID);
-                sleep(30000);
-            }
-        }
-    }
 }
 
 #if DEPENDENCY_BETTERCHAT

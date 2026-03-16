@@ -44,10 +44,11 @@ Those commands are available in the game chat thanks to [Better Chat](https://op
 - `ManiaExchange::ShowMapInfo(string MapUID)` - Will open the tab to the corresponding map with its UID
 - `ManiaExchange::ShowMapPackInfo(int MapPackID)` - Will open the tab to the corresponding map pack with its ID
 - `ManiaExchange::ShowUserInfo(int userID)` - Will open the tab to the corresponding user info with its ID
-- `ManiaExchange::GetCurrentMapID()` - Will return the current map ID. Possible return values in [the table below](#getcurrentmapid-possible-return-values)
-- `ManiaExchange::GetCurrentMapInfo()` - Will return a `Json::Value` containing most information from ManiaExchange for the current playing map
-- `ManiaExchange::GetMapInfoAsync(int MapID)` - Will return a `Json::Value` containing most information from ManiaExchange for the map with its ID
-- `ManiaExchange::GetMapInfoAsync(string MapUID)` - Will return a `Json::Value` containing most information from ManiaExchange for the map with its UID
+- `ManiaExchange::GetCurrentMapID()` - **(DEPRECATED)** Will return the current map ID. Possible return values in [the table below](#getcurrentmapid-possible-return-values). Use `GetCurrentMapInfo` or `GetCurrentMapInfoAsync` instead.
+- `ManiaExchange::GetCurrentMapInfo()` - Will return a `Json::Value` containing most information from ManiaExchange for the current playing map, or a null JSON if the player is not in a map, the map is not available on MX, or the plugin hasn't loaded the map information yet. Prefer using `GetCurrentMapInfoAsync` instead.
+- `ManiaExchange::GetCurrentMapInfoAsync()` - Will return a `Json::Value` containing most information from ManiaExchange for the current playing map, or a null JSON if the player is not in a map / the map is not available on MX
+- `ManiaExchange::GetMapInfoAsync(int MapID)` - Will return a `Json::Value` containing most information from ManiaExchange for the map with its ID, or a null JSON if the map does not exist.
+- `ManiaExchange::GetMapInfoAsync(string MapUID)` - Will return a `Json::Value` containing most information from ManiaExchange for the map with its UID, or a null JSON if the map does not exist.
 
 ### `GetCurrentMapID()` possible return values
 

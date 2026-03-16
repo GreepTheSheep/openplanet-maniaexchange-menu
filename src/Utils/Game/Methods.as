@@ -121,6 +121,12 @@ namespace TM {
         return app.RootMap;
     }
 
+    bool IsMapCorrect(const string &in mapUid) {
+        CGameCtnChallenge@ map = GetCurrentMap();
+
+        return map !is null && map.IdName == mapUid;
+    }
+
     string CurrentTitlePack() {
         auto app = cast<CTrackMania>(GetApp());
 

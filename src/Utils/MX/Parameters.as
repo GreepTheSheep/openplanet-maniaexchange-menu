@@ -10,8 +10,6 @@ namespace MX
     array<SortingOrder@> m_mappackSortingOrders;
     array<SortingOrder@> m_userSortingOrders;
 
-    Net::HttpRequest@ req;
-
     bool APIDown = false;
     bool APIRefresh = true;
 }

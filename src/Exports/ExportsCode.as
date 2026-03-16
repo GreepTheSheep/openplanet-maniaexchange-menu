@@ -28,14 +28,26 @@ namespace ManiaExchange
         mxMenu.AddTab(UserTab(userID), true);
     }
 
-    int GetCurrentMapID()
-    {
-        return currentMapID;
-    }
-
     Json::Value GetCurrentMapInfo()
     {
-        return currentMapInfo.ToJson();
+        if (!MX::IsCurrentMapCorrect()) {
+            return Json::Value("");
+        }
+
+        return MX::CurrentMapInfo.ToJson();
+    }
+
+    Json::Value GetCurrentMapInfoAsync()
+    {
+        if (!MX::IsCurrentMapCorrect()) {
+            MX::FetchCurrentMapInfo();
+        }
+
+        if (!MX::IsCurrentMapCorrect()) {
+            return Json::Value("");
+        }
+
+        return MX::CurrentMapInfo.ToJson();
     }
 
     Json::Value GetMapInfoAsync(int mapID)
@@ -60,5 +72,16 @@ namespace ManiaExchange
         }
 
         return map.ToJson();
+    }
+
+    // Deprecated
+
+    int GetCurrentMapID()
+    {
+        if (!MX::IsCurrentMapCorrect()) {
+            return int(MX::CurrentStatus);
+        }
+
+        return MX::CurrentMapInfo.MapId;
     }
 }

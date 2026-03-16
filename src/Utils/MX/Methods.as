@@ -312,61 +312,6 @@ namespace MX
         }
     }
 
-    /*
-     * MX ID Error codes:
-     * > 0 = MX ID
-     * -1 = Map not found
-     * -2 = Server error
-     * -3 = Loading request
-     * -4 = Not in a map
-     * -5 = In Map Editor
-    */
-    int GetCurrentMapMXID() {
-        if (TM::IsInEditor()) {
-            return -5;
-        }
-
-        auto currentMap = TM::GetCurrentMap();
-
-        if (currentMap is null) {
-            return -4;
-        }
-
-        string UIDMap = currentMap.IdName;
-
-        if (currentMapInfo !is null && UIDMap == currentMapInfo.MapUid) {
-            return currentMapInfo.MapId;
-        }
-
-        string url = MXURL + "/api/maps?fields=" + mapFields + "&uid=" + UIDMap;
-
-        if (req is null) {
-            Logging::Debug("LoadCurrentMap::StartRequest: " + url);
-            @req = API::Get(url);
-        }
-
-        if (req is null || !req.Finished()) {
-            return -3;
-        }
-
-        string response = req.String();
-        Json::Value returnedObject = req.Json();
-        @req = null;
-
-        Logging::Trace("LoadCurrentMap::CheckResponse: " + response);
-
-        try {
-            if (returnedObject["Results"].Length == 0) {
-                return -1;
-            }
-
-            @currentMapInfo = MapInfo(returnedObject["Results"][0]);
-            return currentMapInfo.MapId;
-        } catch {
-            return -2;
-        }
-    }
-
     string DictToApiParams(dictionary params) {
         string urlParams = "";
         if (!params.IsEmpty()) {
