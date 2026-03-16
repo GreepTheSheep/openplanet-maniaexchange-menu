@@ -58,7 +58,7 @@ namespace MX {
         array<MapInfo@> maps = GetMaps(parameters);
 
         if (maps.IsEmpty()) {
-            Logging::Error("[MX::GetMapById] Failed to get a map with ID " + mapId);
+            Logging::Warn("[MX::GetMapById] Failed to get a map with ID " + mapId);
             return null;
         }
 
@@ -74,7 +74,7 @@ namespace MX {
         array<MapInfo@> maps = GetMaps(parameters);
 
         if (maps.IsEmpty()) {
-            Logging::Error("[MX::GetMapByUid] Failed to get a map with UID " + mapUid);
+            Logging::Warn("[MX::GetMapByUid] Failed to get a map with UID " + mapUid);
             return null;
         }
 
@@ -206,7 +206,7 @@ namespace MX {
         }
         
         if (json["Results"].Length == 0) {
-            Logging::Error("[MX::GetMapReplays] API returned 0 replays!");
+            Logging::Warn("[MX::GetMapReplays] API returned 0 replays!");
             return {};
         }
 
@@ -281,7 +281,7 @@ namespace MX {
         }
         
         if (json["Results"].Length == 0) {
-            Logging::Error("[MX::GetMapObjects] API returned 0 embedded objects!");
+            Logging::Warn("[MX::GetMapObjects] API returned 0 embedded objects!");
             return {};
         }
 
