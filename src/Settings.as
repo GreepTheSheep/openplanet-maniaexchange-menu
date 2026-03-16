@@ -265,10 +265,10 @@ bool Setting_UserMappackCount = true;
 bool Setting_UserReplayCount = true;
 
 [Setting hidden]
-bool Setting_UserComments = true;
+bool Setting_UserAwards = true;
 
 [Setting hidden]
-bool Setting_UserAwards = true;
+bool Setting_UserComments = true;
 
 [Setting hidden]
 bool Setting_UserFavorites = true;
@@ -316,8 +316,8 @@ void RenderDisplaySettings() {
         Setting_UserMapCount = true;
         Setting_UserMappackCount = true;
         Setting_UserReplayCount = true;
-        Setting_UserComments = true;
         Setting_UserAwards = true;
+        Setting_UserComments = true;
         Setting_UserFavorites = true;
         Setting_UserAchievements = true;
     }
@@ -416,8 +416,8 @@ void RenderDisplaySettings() {
         Setting_UserMapCount,
         Setting_UserMappackCount,
         Setting_UserReplayCount,
-        Setting_UserComments,
         Setting_UserAwards,
+        Setting_UserComments,
         Setting_UserFavorites,
         Setting_UserAchievements
     };
@@ -430,8 +430,8 @@ void RenderDisplaySettings() {
         Setting_UserMapCount = UI::Checkbox("Map Count##User", Setting_UserMapCount);
         Setting_UserMappackCount = UI::Checkbox("Mappack Count##User", Setting_UserMappackCount);
         Setting_UserReplayCount = UI::Checkbox("Replay Count##User", Setting_UserReplayCount);
-        Setting_UserComments = UI::Checkbox("Comments##User", Setting_UserComments);
         Setting_UserAwards = UI::Checkbox("Awards##User", Setting_UserAwards);
+        Setting_UserComments = UI::Checkbox("Comments##User", Setting_UserComments);
         Setting_UserFavorites = UI::Checkbox("Favorites##User", Setting_UserFavorites);
         Setting_UserAchievements = UI::Checkbox("Achievements##User", Setting_UserAchievements);
 
