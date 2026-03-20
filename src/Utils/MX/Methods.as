@@ -35,7 +35,7 @@ namespace MX
         m_vehicles.InsertLast("CarDesert");
 #else
         if (repo == MP4mxRepos::Shootmania) {
-            m_vehicles.InsertLast("StormMan");
+            m_vehicles.InsertLast("ArenaPlayer");
             return;
         }
 
