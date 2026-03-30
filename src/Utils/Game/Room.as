@@ -77,18 +77,14 @@ namespace TM {
 
         if (mapList.Length > 0) {
             const string mapUid = foundRoom.room.currentMapUid.Length > 0 ? foundRoom.room.currentMapUid : mapList[0];
-            Json::Value mapInfo = TM::GetMapInfo(mapUid);
+            TM::MapInfo@ mapInfo = TM::GetMapInfo(mapUid);
 
             if (mapInfo is null) {
                 Logging::Warn("Couldn't find information for map UID " + mapUid, true);
                 return;
-            } else {
-                string serverMapType = CleanMapType(string(mapInfo["mapType"]));
-
-                if (serverMapType != map.MapType) {
-                    Logging::Error("Map type doesn't match the room's current game mode", true);
-                    return;
-                }
+            } else if (mapInfo.MapType != map.MapType) {
+                Logging::Error("Map type doesn't match the room's current game mode", true);
+                return;
             }
         }
 
