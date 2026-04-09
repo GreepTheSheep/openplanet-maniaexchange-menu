@@ -175,7 +175,7 @@ class MapTab : Tab
         if (repo == MP4mxRepos::Trackmania) {
 #endif
             UI::Text(Icons::Hourglass + " \\$f77" + m_map.LengthStr);
-            UI::SetItemTooltip("Length");
+            UI::SetItemTooltip("Duration");
 
             if (m_map.AuthorBeaten) {
                 UI::SameLine();
