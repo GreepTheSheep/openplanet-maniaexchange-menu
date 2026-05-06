@@ -29,54 +29,22 @@ class MapPackTab : Tab
         return Icons::Inbox + " " + m_mapPack.Name;
     }
 
-    void GetRequestParams(dictionary@ params)
-    {
-        params.Set("fields", MX::mapPackFields);
-        params.Set("id", tostring(m_mapPackId));
-    }
-
     void FetchMappack() {
-        dictionary params;
-        GetRequestParams(params);
-        string urlParams = MX::DictToApiParams(params);
-
-        string url = MXURL + "/api/mappacks" + urlParams;
-        Logging::Debug("MapPackTab::StartRequest (MX): " + url);
-        Net::HttpRequest@ req = API::Get(url);
-
-        while (!req.Finished()) {
-            yield();
-        }
-
-        int resCode = req.ResponseCode();
-        auto json = req.Json();
-
-        Logging::Debug("MapPackTab::CheckRequest (MX): " + req.String());
-
-        if (resCode >= 400) {
-            string errorMsg = json.Get("title", "Unknown error");
-            Logging::Error("MapPackTab::CheckRequest (MX): Error " + resCode + " - " + errorMsg);
+        try {
+            @m_mapPack = MX::GetMappack(m_mapPackId);
+        } catch {
+            Logging::Error("MapPackTab::FetchMappack (MX): Error while loading mappack - " + getExceptionInfo());
             m_error = true;
-            m_errorMessage = errorMsg;
+            m_errorMessage = "Error while loading mappack";
             return;
         }
 
-        if (json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
-            Logging::Error("MapPackTab::CheckRequest (MX): Error while loading mappack");
-            m_error = true;
-            m_errorMessage = "Empty response";
-            return;
-        }
-        
-        if (json["Results"].Length == 0) {
-            // This should be impossible
-            Logging::Error("MapPackTab::CheckRequest (MX): Failed to find a mappack with ID " + m_mapPackId);
+        if (m_mapPack is null) {
+            Logging::Error("MapPackTab::FetchMappack (MX): Failed to find a mappack with ID " + m_mapPackId);
             m_error = true;
             m_errorMessage = "Failed to find mappack";
             return;
         }
-
-        @m_mapPack = MX::MapPackInfo(json);
 
         startnew(CoroutineFunc(m_mapPack.FetchMaps));
     }

@@ -131,6 +131,22 @@ namespace MX {
         return mappacks;
     }
 
+    MapPackInfo@ GetMappack(int mappackId) {
+        dictionary parameters = {
+            { "id", tostring(mappackId) },
+            { "fields", MX::mapPackFields }
+        };
+
+        array<MapPackInfo@> packs = GetMappacks(parameters);
+
+        if (packs.IsEmpty()) {
+            Logging::Warn("[MX::GetMappack] Failed to get a mappack with ID " + mappackId);
+            return null;
+        }
+
+        return packs[0];
+    }
+
     array<UserInfo@> GetUsers(dictionary parameters) {
         if (MX::APIDown) {
             return {};
@@ -181,6 +197,23 @@ namespace MX {
         return users;
     }
 
+    UserInfo@ GetUser(int userId) {
+        dictionary parameters = {
+            { "id", tostring(userId) },
+            { "fields", MX::userFields }
+        };
+
+        array<UserInfo@> users = GetUsers(parameters);
+
+        if (users.IsEmpty()) {
+            Logging::Warn("[MX::GetUser] Failed to get an user with ID " + userId);
+            return null;
+        }
+
+        return users[0];
+    }
+
+    // TODO can fix replay positions here
     array<MapReplay@> GetMapReplays(int mapId) {
         if (MX::APIDown) {
             return {};
@@ -204,7 +237,7 @@ namespace MX {
             Logging::Error("[MX::GetMapReplays] Error parsing response");
             return {};
         }
-        
+
         if (json["Results"].Length == 0) {
             Logging::Warn("[MX::GetMapReplays] API returned 0 replays!");
             return {};
@@ -279,7 +312,7 @@ namespace MX {
             Logging::Error("[MX::GetMapObjects] Error parsing response");
             return {};
         }
-        
+
         if (json["Results"].Length == 0) {
             Logging::Warn("[MX::GetMapObjects] API returned 0 embedded objects!");
             return {};

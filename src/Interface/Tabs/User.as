@@ -57,38 +57,18 @@ class UserTab : Tab
     }
 
     void FetchUser() {
-        dictionary params;
-        params.Set("fields", MX::userFields);
-        params.Set("id", tostring(m_userId));
-        string userUrlParams = MX::DictToApiParams(params);
-
-        string url = MXURL + "/api/users" + userUrlParams;
-        Logging::Debug("UserTab::StartRequest (MX): " + url);
-        Net::HttpRequest@ req = API::Get(url);
-
-        while (!req.Finished()) {
-            yield();
-        }
-
-        int resCode = req.ResponseCode();
-        auto json = req.Json();
-
-        Logging::Debug("UserTab::CheckRequest (MX): " + req.String());
-
-        if (resCode >400 || json.GetType() != Json::Type::Object || !json.HasKey("Results")) {
-            Logging::Error("UserTab::CheckRequest (MX): Error parsing response");
-            m_error = true;
-            return;
-        }
-        
-        if (json["Results"].Length == 0) {
-            // This should be impossible
-            Logging::Error("UserTab::CheckRequest (MX): Failed to find an user with ID " + m_userId);
+        try {
+            @m_user = MX::GetUser(m_userId);
+        } catch {
+            Logging::Error("UserTab::FetchUser (MX): Error fetching user - " + getExceptionInfo());
             m_error = true;
             return;
         }
 
-        @m_user = MX::UserInfo(json["Results"][0]);
+        if (m_user is null) {
+            Logging::Error("UserTab::FetchUser (MX): Failed to find an user with ID " + m_userId);
+            m_error = true;
+        }
     }
 
     void StartMXLeaderboardRequest() // TODO doesn't exist yet

@@ -44,46 +44,25 @@ class MapTab : Tab
 
     void FetchMap()
     {
-        dictionary params;
-        params.Set("fields", MX::mapFields);
-
-        if (m_mapUid != "") {
-            params.Set("uid", m_mapUid);
-        } else {
-            params.Set("id", tostring(m_mapId));
-        }
-
-        string urlParams = MX::DictToApiParams(params);
-
-        string url = MXURL + "/api/maps" + urlParams;
-        Logging::Debug("MapTab::StartRequest (MX): " + url);
-
-        Net::HttpRequest@ req = API::Get(url);
-
-        while (!req.Finished()) {
-            yield();
-        }
-
-        int resCode = req.ResponseCode();
-        auto json = req.Json();
-
-        Logging::Debug("MapTab::CheckRequest (MX): " + req.String());
-
-        if (resCode >= 400 || json.GetType() == Json::Type::Null || !json.HasKey("Results")) {
-            Logging::Error("MapTab::CheckRequest (MX): Error parsing response");
+        try {
+            if (m_mapUid != "") {
+                @m_map = MX::GetMapByUid(m_mapUid);
+            } else {
+                @m_map = MX::GetMapById(m_mapId);
+            }
+        } catch {
+            Logging::Error("MapTab::FetchMap (MX): Error fetching map - " + getExceptionInfo());
             m_error = true;
             return;
         }
-        
-        if (json["Results"].Length == 0) {
-            // This should be impossible
+
+        if (m_map is null) {
             string reqId = m_mapUid != "" ? m_mapUid : tostring(m_mapId);
-            Logging::Error("MapTab::CheckRequest (MX): Failed to find a map with UID/ID " + reqId);
+            Logging::Error("MapTab::FetchMap (MX): Failed to find a map with UID/ID " + reqId);
             m_error = true;
             return;
         }
 
-        @m_map = MX::MapInfo(json["Results"][0]);
 #if DEPENDENCY_NADEOSERVICES
         startnew(CoroutineFunc(m_map.CheckIfUploaded));
 #endif
@@ -329,7 +308,7 @@ class MapTab : Tab
             }
         } else if (UI::RedButton(Icons::Times + " Remove from Play later")) {
             int mapIndex = g_PlayLaterMaps.Find(m_map);
-            
+
             if (mapIndex > -1) {
                 g_PlayLaterMaps.RemoveAt(mapIndex);
                 SavePlayLater(g_PlayLaterMaps);
@@ -844,7 +823,7 @@ class MapTab : Tab
                 UI::EndChild();
             }
 
-            UI::EndTabItem();  
+            UI::EndTabItem();
         }
 
         UI::EndDisabled();
