@@ -501,7 +501,7 @@ class MapFilters : BaseFilters
                 diffIds.InsertLast(tostring(int(m_selectedDifficulties[i])));
             }
 
-            params.Set("difficulty", string::Join(diffIds, ","));
+            params.Set("difficulty", Text::Join(diffIds, ","));
         }
 
         // Tags
@@ -513,7 +513,7 @@ class MapFilters : BaseFilters
                 tagIds.InsertLast(tostring(m_includedTags[i].ID));
             }
 
-            params.Set("tag", string::Join(tagIds, ","));
+            params.Set("tag", Text::Join(tagIds, ","));
         }
 
         if (m_excludedTags.Length > 0) {
@@ -523,7 +523,7 @@ class MapFilters : BaseFilters
                 etagsIds.InsertLast(tostring(m_excludedTags[i].ID));
             }
 
-            params.Set("etag", string::Join(etagsIds, ","));
+            params.Set("etag", Text::Join(etagsIds, ","));
         }
 
         if (m_tagInclusiveSearch) params.Set("taginclusive", "true");
@@ -546,11 +546,11 @@ class MapFilters : BaseFilters
                 enviIds.InsertLast(tostring(m_selectedEnvironments[i].ID));
             }
 
-            params.Set("environment", string::Join(enviIds, ","));
+            params.Set("environment", Text::Join(enviIds, ","));
         }
 
         if (m_selectedVehicles.Length > 0) {
-            params.Set("vehicle", string::Join(m_selectedVehicles, ","));
+            params.Set("vehicle", Text::Join(m_selectedVehicles, ","));
         }
 
         // Length

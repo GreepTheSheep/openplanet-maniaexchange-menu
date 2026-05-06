@@ -50,7 +50,7 @@ namespace MX
         "MapCount",
         "Tags"
     };
-    const string mapPackFields = string::Join(mapPackFieldsArray, ",");
+    const string mapPackFields = Text::Join(mapPackFieldsArray, ",");
 
     const array<string> mapFieldsArray = {
         "MapId",
@@ -89,7 +89,7 @@ namespace MX
         "AuthorBeaten",
         "AuthorBeatable"
     };
-    const string mapFields = string::Join(mapFieldsArray, ",");
+    const string mapFields = Text::Join(mapFieldsArray, ",");
 
     const array<string> userFieldsArray = {
         "UserId",
@@ -111,7 +111,7 @@ namespace MX
         "VideosCreatedCount",
         "AchievementCount"
     };
-    const string userFields = string::Join(userFieldsArray, ",");
+    const string userFields = Text::Join(userFieldsArray, ",");
 
     const array<string> commentFieldsArray = {
         "CommentId",
@@ -125,5 +125,5 @@ namespace MX
         "IsAuthor"
         "Replies"
     };
-    const string commentFields = string::Join(commentFieldsArray, ",");
+    const string commentFields = Text::Join(commentFieldsArray, ",");
 }

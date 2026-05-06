@@ -208,7 +208,7 @@ class MappackFilters : BaseFilters
                 tagIds.InsertLast(tostring(t_includedTags[i].ID));
             }
 
-            params.Set("tag", string::Join(tagIds, ","));
+            params.Set("tag", Text::Join(tagIds, ","));
         }
 
         if (t_excludedTags.Length > 0) {
@@ -218,7 +218,7 @@ class MappackFilters : BaseFilters
                 etagsIds.InsertLast(tostring(t_excludedTags[i].ID));
             }
 
-            params.Set("etag", string::Join(etagsIds, ","));
+            params.Set("etag", Text::Join(etagsIds, ","));
         }
 
         if (t_tagInclusiveSearch) params.Set("taginclusive", "true");

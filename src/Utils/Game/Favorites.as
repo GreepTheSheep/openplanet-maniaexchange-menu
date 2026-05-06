@@ -72,7 +72,7 @@ namespace TM {
 
                 auto map = TM::MapInfo(nadeoMap);
                 map.Position = i;
-    
+
                 g_favoriteMaps.InsertLast(map);
                 mapUids.InsertLast(map.Uid);
             }
@@ -89,7 +89,7 @@ namespace TM {
 
             foreach (array<string> currentChunk : uidChunks) {
                 // we do + 10 in case multiple maps have the same UID, which can happen
-                string reqUrl = MXURL + "/api/maps?fields=" + MX::mapFields + "&count=" + (MX::maxMapsRequest + 10) + "&uid=" + string::Join(currentChunk, ",");
+                string reqUrl = MXURL + "/api/maps?fields=" + MX::mapFields + "&count=" + (MX::maxMapsRequest + 10) + "&uid=" + Text::Join(currentChunk, ",");
 
                 Logging::Debug("[GetFavorites] Loading map MX infos: " + reqUrl);
 
@@ -274,11 +274,11 @@ namespace TM {
         switch (Setting_FavoritesSort){
             case FavoritesSorting::Date:
                 if (Setting_FavoritesSortOrder == FavoritesSortOrder::Ascending) {
-                    g_favoriteMaps.Sort(function(a, b) { 
+                    g_favoriteMaps.Sort(function(a, b) {
                         return a.Position > b.Position;
                     });
                 } else {
-                    g_favoriteMaps.Sort(function(a, b) { 
+                    g_favoriteMaps.Sort(function(a, b) {
                         return a.Position < b.Position;
                     });
                 }
@@ -287,11 +287,11 @@ namespace TM {
 
             case FavoritesSorting::Name:
                 if (Setting_FavoritesSortOrder == FavoritesSortOrder::Ascending) {
-                    g_favoriteMaps.Sort(function(a, b) { 
+                    g_favoriteMaps.Sort(function(a, b) {
                         return a.Name > b.Name;
                     });
                 } else {
-                    g_favoriteMaps.Sort(function(a, b) { 
+                    g_favoriteMaps.Sort(function(a, b) {
                         return a.Name < b.Name;
                     });
                 }

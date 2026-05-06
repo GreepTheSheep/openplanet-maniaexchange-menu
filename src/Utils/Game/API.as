@@ -75,7 +75,7 @@ namespace TM {
         if (accountIds.IsEmpty()) {
             return;
         }
-        
+
         string gameMode;
 
         if (mapMode == MX::GameModes::Stunt) {
@@ -84,7 +84,7 @@ namespace TM {
             gameMode = "TimeAttack";
         }
 
-        string url = NadeoServices::BaseURLCore() + "/v2/mapRecords/by-account/?accountIdList=" + string::Join(accountIds, ",") + "&mapId=" + mapId + "&gameMode=" + gameMode;
+        string url = NadeoServices::BaseURLCore() + "/v2/mapRecords/by-account/?accountIdList=" + Text::Join(accountIds, ",") + "&mapId=" + mapId + "&gameMode=" + gameMode;
 
         Net::HttpRequest@ req = NadeoServices::Get("NadeoServices", url);
         req.Start();

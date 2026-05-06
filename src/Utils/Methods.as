@@ -80,7 +80,7 @@ array<MX::MapInfo@> LoadPlayLater() {
         Logging::Info(tostring(m_maps.Length) + " maps loaded from Play Later list and migrated to PluginStorage.");
         return {};
     }
-    
+
     if (FileData.GetType() != Json::Type::Array) {
         Logging::Error("Invalid data in JSON file! If it persists, consider deleting the file in " + PlayLaterJSON, true);
         return {};
@@ -101,7 +101,7 @@ array<MX::MapInfo@> LoadPlayLater() {
                 }
             }
 
-            string reqUrl = MXURL + "/api/maps?fields=" + MX::mapFields + "&count=" + (MX::maxMapsRequest + 10) + "&id=" + string::Join(idBatch, ",");
+            string reqUrl = MXURL + "/api/maps?fields=" + MX::mapFields + "&count=" + (MX::maxMapsRequest + 10) + "&id=" + Text::Join(idBatch, ",");
             Json::Value res = API::GetAsync(reqUrl);
 
             if (res.GetType() == Json::Type::Null || !res.HasKey("Results") || res["Results"].Length == 0) {
