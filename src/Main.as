@@ -1,6 +1,6 @@
 string inputMapID = "";
 Window mxMenu;
-bool mainMenuOpen;
+bool mainMenuOpen = false;
 
 void RenderMenu()
 {
@@ -72,11 +72,11 @@ void RenderMenuMain() {
                     case MX::MapStatus::LoadingInfo:
                         UI::TextDisabled(Icons::AnimatedHourglass + " Loading...");
                         break;
-                    
+
                     case MX::MapStatus::Not_In_Map:
                         UI::TextDisabled("Not in a map.");
                         break;
-                    
+
                     case MX::MapStatus::InEditor:
                         UI::TextDisabled("In Editor");
                         break;

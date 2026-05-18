@@ -14,7 +14,7 @@ namespace UI
         }
     }
 
-    bool added_char;
+    bool added_char = false;
 
     // Callback to follow ISO 8601 formatting
     void DateCallback(UI::InputTextCallbackData@ data) {

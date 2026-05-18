@@ -11,11 +11,8 @@ namespace TM {
 
         Logging::Trace("[GetMapRecords] URL: " + url);
         Net::HttpRequest@ req = NadeoServices::Get("NadeoLiveServices", url);
-        req.Start();
 
-        while (!req.Finished()) {
-            yield();
-        }
+        await(req.Start());
 
         Logging::Trace("[GetMapRecords] Response: " + req.String());
         auto res = req.Json();
@@ -87,11 +84,8 @@ namespace TM {
         string url = NadeoServices::BaseURLCore() + "/v2/mapRecords/by-account/?accountIdList=" + Text::Join(accountIds, ",") + "&mapId=" + mapId + "&gameMode=" + gameMode;
 
         Net::HttpRequest@ req = NadeoServices::Get("NadeoServices", url);
-        req.Start();
 
-        while (!req.Finished()) {
-            yield();
-        }
+        await(req.Start());
 
         Logging::Trace("[GetRecordsData] Response: " + req.String());
         Json::Value@ res = req.Json();

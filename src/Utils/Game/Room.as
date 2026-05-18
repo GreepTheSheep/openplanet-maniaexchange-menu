@@ -20,10 +20,8 @@ namespace TM {
         string url = NadeoServices::BaseURLLive() + "/api/token/club/" + AddMapToServer_ClubId + "/room/" + AddMapToServer_RoomId;
 
         Net::HttpRequest@ req = NadeoServices::Get("NadeoLiveServices", url);
-        req.Start();
-        while (!req.Finished()) {
-            yield();
-        }
+
+        await(req.Start());
 
         g_checkingRoom = false;
 
@@ -122,8 +120,7 @@ namespace TM {
         string roomUrl = NadeoServices::BaseURLLive() + "/api/token/club/" + AddMapToServer_ClubId + "/room/" + AddMapToServer_RoomId + "/edit";
 
         Net::HttpRequest@ req = NadeoServices::Post("NadeoLiveServices", roomUrl, Json::Write(bodyJson));
-        req.Start();
-        while (!req.Finished()) yield();
+        await(req.Start());
 
         Logging::Trace("NadeoServices::UpdateRoom - " + req.String());
 
@@ -138,8 +135,7 @@ namespace TM {
             }
 
             @req = NadeoServices::Post("NadeoLiveServices", roomUrl, Json::Write(bodyJson));
-            req.Start();
-            while (!req.Finished()) yield();
+            await(req.Start());
             Logging::Trace("NadeoServices::UpdateRoom (reset S_TimeLimit) - " + req.String());
         }
 #endif

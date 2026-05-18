@@ -1,8 +1,8 @@
 namespace TM {
-    bool APIDown;
-    bool APIRefresh;
+    bool APIDown = false;
+    bool APIRefresh = false;
     array<TM::MapInfo@> g_favoriteMaps;
-    bool g_fetchedFavorites;
+    bool g_fetchedFavorites = false;
 
     bool get_FetchedFavorites() {
         return g_fetchedFavorites;
@@ -206,11 +206,8 @@ namespace TM {
         Logging::Debug("[AddMapToFavorites] URL: " + url);
 
         Net::HttpRequest@ req = NadeoServices::Post("NadeoLiveServices", url);
-        req.Start();
 
-        while (!req.Finished()) {
-            yield();
-        }
+        await(req.Start());
 
         if (req.ResponseCode() >= 400) {
             auto res = req.Json();
@@ -234,11 +231,8 @@ namespace TM {
         Logging::Debug("[RemoveMapFromFavorites] URL: " + url);
 
         Net::HttpRequest@ req = NadeoServices::Post("NadeoLiveServices", url);
-        req.Start();
 
-        while (!req.Finished()) {
-            yield();
-        }
+        await(req.Start());
 
         if (req.ResponseCode() >= 400) {
             auto res = req.Json();

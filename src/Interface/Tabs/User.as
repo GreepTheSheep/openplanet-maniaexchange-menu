@@ -201,6 +201,8 @@ class UserTab : Tab
             UI::Markdown(m_user.Bio);
             UI::EndChild();
 
+            UI::Separator();
+
             if (m_user.HasFeaturedMap) {
                 UI::Separator();
 
