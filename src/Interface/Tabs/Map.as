@@ -36,6 +36,10 @@ class MapTab : Tab
         }
 
         if (Setting_ColoredMapName) {
+            if (Setting_AdjustColors) {
+                return Icons::Map + " " +  Text::OpenplanetFormatCodes(m_map.AdjustedGbxMapName);
+            }
+
             return Icons::Map + " " + Text::OpenplanetFormatCodes(m_map.GbxMapName);
         }
 
@@ -348,7 +352,11 @@ class MapTab : Tab
         UI::PushFont(Fonts::BigBold);
 
         if (Setting_ColoredMapName) {
-            UI::TextWrapped(Text::OpenplanetFormatCodes(m_map.GbxMapName));
+            if (Setting_AdjustColors) {
+                UI::TextWrapped(Text::OpenplanetFormatCodes(m_map.AdjustedGbxMapName));
+            } else {
+                UI::TextWrapped(Text::OpenplanetFormatCodes(m_map.GbxMapName));
+            }
         } else {
             UI::TextWrapped(m_map.Name);
         }

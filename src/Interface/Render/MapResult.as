@@ -8,7 +8,11 @@ namespace IfaceRender
             UI::AlignTextToFramePadding();
 
             if (Setting_ColoredMapName) {
-                UI::Text(Text::OpenplanetFormatCodes(map.GbxMapName));
+                if (Setting_AdjustColors) {
+                    UI::Text(Text::OpenplanetFormatCodes(map.AdjustedGbxMapName));
+                } else {
+                    UI::Text(Text::OpenplanetFormatCodes(map.GbxMapName));
+                }
             } else {
                 UI::Text(map.Name);
             }

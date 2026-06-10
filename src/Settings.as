@@ -108,7 +108,7 @@ void RenderNadeoServicesSettings()
         Setting_FavoritesSortOrder = FavoritesSortOrder::Descending;
 
         if (!TM::APIRefresh && !TM::APIDown) {
-            startnew(TM::ReloadFavorites);    
+            startnew(TM::ReloadFavorites);
         }
     }
 
@@ -172,6 +172,9 @@ void RenderDevSettings()
 
 [Setting hidden]
 bool Setting_ColoredMapName = true;
+
+[Setting hidden]
+bool Setting_AdjustColors = false;
 
 [Setting hidden]
 bool Setting_ColoredTags = true;
@@ -329,12 +332,19 @@ void RenderDisplaySettings() {
 
     Setting_ColoredMapName = UI::Checkbox("Use colored map names", Setting_ColoredMapName);
 
+    UI::BeginDisabled(!Setting_ColoredMapName);
+
+    Setting_AdjustColors = UI::Checkbox("Adjust map name colors", Setting_AdjustColors);
+    UI::SettingDescription("Adjust map name colors to improve readability.\n\nNOTE: Colors might look washed out when enabling this.");
+
+    UI::EndDisabled();
+
 #if TMNEXT
     Setting_VistaIcons = UI::Checkbox("Use vista icons", Setting_VistaIcons);
     UI::SettingDescription("If enabled, environment names will be replaced by their icon.");
 #endif
 
-    array<bool> mapValues = { 
+    array<bool> mapValues = {
         Setting_MapName,
         Setting_MapAuthor,
         Setting_MapEnvironment,
@@ -382,7 +392,7 @@ void RenderDisplaySettings() {
 
     UI::PaddedHeaderSeparator("Mappacks");
 
-    array<bool> mappackValues = { 
+    array<bool> mappackValues = {
         Setting_MappackName,
         Setting_MappackAuthor,
         Setting_MappackType,

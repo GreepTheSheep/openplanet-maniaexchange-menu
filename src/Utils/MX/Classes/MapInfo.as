@@ -5,13 +5,14 @@ namespace MX
         int MapId;
         string MapUid;
         string Name;
+        string GbxMapName;
+        string AdjustedGbxMapName;
         string OnlineMapId;
         int UserId;
         string Username;
         string MapType;
         string UploadedAt;
         string UpdatedAt;
-        string GbxMapName;
         string AuthorComments;
         string TitlePack;
         string Mood;
@@ -73,7 +74,6 @@ namespace MX
                 if (json["OnlineMapId"].GetType() != Json::Type::Null) OnlineMapId = json["OnlineMapId"];
                 MapType = json["MapType"];
                 UploadedAt = json["UploadedAt"];
-                if (json["GbxMapName"].GetType() != Json::Type::Null) GbxMapName = Format::GbxText(json["GbxMapName"]);
                 if (json["AuthorComments"].GetType() != Json::Type::Null) AuthorComments = Format::MXText(json["AuthorComments"]);
                 TitlePack = json["TitlePack"];
                 Mood = json["Mood"];
@@ -89,6 +89,14 @@ namespace MX
                 EmbeddedObjectsCount = json["EmbeddedObjectsCount"];
                 EmbeddedItemsSize = json["EmbeddedItemsSize"];
                 ServerSizeExceeded = json["ServerSizeExceeded"];
+
+                if (json["GbxMapName"].GetType() != Json::Type::Null) {
+                    GbxMapName = Format::GbxText(json["GbxMapName"]);
+                } else {
+                    GbxMapName = Name;
+                }
+
+                AdjustedGbxMapName = Colors::AdjustTextContrast(GbxMapName);
 
                 if (json["UpdatedAt"].GetType() != Json::Type::Null) {
                     UpdatedAt = json["UpdatedAt"];
