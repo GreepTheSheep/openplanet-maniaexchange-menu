@@ -103,8 +103,10 @@ namespace MX
                 // TODO No way of using these orders yet
                 if (orderName.Contains("User") || orderName.Contains("Video")) continue;
 
-                // TODO currently broken and raise error 500
-                if (orderName.Contains("Rating") || orderName.Contains("Replay")) continue;
+#if TMNEXT
+                // Only useful in MP4
+                if (orderName.Contains("Rating")) continue;
+#endif
 
                 m_mapSortingOrders.InsertLast(SortingOrder(resNet[i]));
             }
