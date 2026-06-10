@@ -30,8 +30,8 @@ namespace Format {
         // automatic links. See https://daringfireball.net/projects/markdown/syntax#autolink
         formatted = Regex::Replace(formatted, "(https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&//=]*))", "<$1>", regexFlags);
 
-        // url regex replacement: https://regex101.com/r/UcN0NN/1
-        formatted = Regex::Replace(formatted, "\\[url=([^\\]]*)\\]([^\\[]*)\\[\\/url\\]", "[$2]($1)", regexFlags);
+        // url regex replacement: https://regex101.com/r/fum5Qf/1/substitution
+        formatted = Regex::Replace(formatted, "\\[url=(.*?)\\](.*?)\\[\\/url\\]", "[$2]($1)", regexFlags);
 
         // img replacement: https://regex101.com/r/WafxU9/1
         formatted = Regex::Replace(formatted, "\\[img\\]([^\\[]*)\\[\\/img\\]", "( Image: $1 )", regexFlags);
