@@ -19,7 +19,7 @@ namespace MX
         int VideosReceivedCount;
         int VideosPostedCount;
         int VideosCreatedCount;
-        int FeaturedTrackID;
+        int FeaturedMapId;
         int AchievementCount;
 
         // Featured map
@@ -63,7 +63,7 @@ namespace MX
                 VideosPostedCount = json["VideosPostedCount"];
                 VideosCreatedCount = json["VideosCreatedCount"];
                 AchievementCount = json["AchievementCount"];
-                // FeaturedTrackID = json["FeaturedTrackID"]; // TODO missing
+                if (json["FeaturedMapId"].GetType() != Json::Type::Null) FeaturedMapId = json["FeaturedMapId"];
 
                 try {
                     RegisteredTimestamp = Time::ParseFormatString("%FT%T", RegisteredAt);
@@ -97,7 +97,7 @@ namespace MX
                 json["VideosPostedCount"] = VideosPostedCount;
                 json["VideosCreatedCount"] = VideosCreatedCount;
                 json["AchievementCount"] = AchievementCount;
-                // json["FeaturedTrackID"] = FeaturedTrackID; // TODO missing
+                json["FeaturedMapId"] = FeaturedMapId;
             } catch {
                 Logging::Warn("Error converting user info to json for user " + Name + ": " + getExceptionInfo(), true);
             }
@@ -107,7 +107,7 @@ namespace MX
         // Featured
 
         bool get_HasFeaturedMap() {
-            return FeaturedTrackID > 0;
+            return FeaturedMapId > 0;
         }
 
         bool get_FeaturedMapError()   { return m_featuredStatus == Status::Error; }
@@ -121,7 +121,7 @@ namespace MX
             }
 
             m_featuredStatus = Status::Loading;
-            @FeaturedMap = MX::GetMapById(FeaturedTrackID);
+            @FeaturedMap = MX::GetMapById(FeaturedMapId);
             m_featuredStatus = Status::Completed;
 
             if (FeaturedMap is null) {

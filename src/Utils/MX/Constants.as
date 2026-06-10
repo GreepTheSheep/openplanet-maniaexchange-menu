@@ -107,7 +107,7 @@ namespace MX
         "FavoritesReceivedCount",
         "VideosReceivedCount",
         "VideosPostedCount",
-        //"FeaturedTrackID", TODO missing
+        "FeaturedMapId",
         "VideosCreatedCount",
         "AchievementCount"
     };

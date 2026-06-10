@@ -204,8 +204,6 @@ class UserTab : Tab
             UI::Separator();
 
             if (m_user.HasFeaturedMap) {
-                UI::Separator();
-
                 UI::BeginChild("UserFeaturdMapChild");
 
                 UI::Text(pluginColor + Icons::Map + " \\$zFeatured Map:");
