@@ -24,6 +24,10 @@ class MapFilters : BaseFilters
     int m_minLength = 0;
     int m_maxLength = 0;
 
+    // Awards
+    int m_minAwards = 0;
+    int m_maxAwards = 0;
+
     // Records
     int m_minRecords = 0;
     int m_maxRecords = 0;
@@ -61,6 +65,8 @@ class MapFilters : BaseFilters
         m_selectedEnvironments.RemoveRange(0, m_selectedEnvironments.Length);
         m_minLength = 0;
         m_maxLength = 0;
+        m_minAwards = 0;
+        m_maxAwards = 0;
         m_minRecords = 0;
         m_maxRecords = 0;
     }
@@ -443,6 +449,26 @@ class MapFilters : BaseFilters
 
             UI::EndDisabled();
 
+            UI::PaddedHeaderSeparator("Awards");
+
+            UI::SetItemText("Min:");
+            m_minAwards = UI::InputInt("##MinAwardsFilter", m_minAwards, 0);
+            UI::SetItemTooltip("Minimum amount of awards the map received.");
+
+            if (m_minAwards != 0 && UI::ResetButton()) {
+                m_minAwards = 0;
+            }
+
+            UI::SetCenteredItemText("Max:");
+            m_maxAwards = UI::InputInt("##MaxAwardsFilter", m_maxAwards, 0);
+            UI::SetItemTooltip("Maximum amount of awards the map received.");
+
+            if (m_maxAwards != 0 && UI::ResetButton()) {
+                m_maxAwards = 0;
+            }
+
+            UI::VPadding();
+
 #if TMNEXT
             UI::PaddedHeaderSeparator("Records");
 
@@ -558,6 +584,10 @@ class MapFilters : BaseFilters
         if (m_minLength > 0) params.Set("authortimemin", tostring(m_minLength));
         if (m_maxLength > 0) params.Set("authortimemax", tostring(m_maxLength));
 
+        // Awards
+        if (m_minAwards > 0) params.Set("awardsmin", tostring(m_minAwards));
+        if (m_maxAwards > 0) params.Set("awardsmax", tostring(m_maxAwards));
+
         // Records
 
 #if TMNEXT
@@ -585,6 +615,8 @@ class MapFilters : BaseFilters
         json["vehicles"]         = m_selectedVehicles;
         json["minLength"]        = m_minLength;
         json["maxLength"]        = m_maxLength;
+        json["minAwards"]        = m_minAwards;
+        json["maxAwards"]        = m_maxAwards;
         json["minRecords"]       = m_minRecords;
         json["maxRecords"]       = m_maxRecords;
         json["authorTimeStatus"] = m_authorTimeStatus;
@@ -629,6 +661,8 @@ class MapFilters : BaseFilters
         m_toDate             = json["toDate"];
         m_minLength          = json["minLength"];
         m_maxLength          = json["maxLength"];
+        m_minAwards          = json.Get("minAwards", 0);
+        m_maxAwards          = json.Get("maxAwards", 0);
         m_minRecords         = json["minRecords"];
         m_maxRecords         = json["maxRecords"];
         m_authorTimeStatus   = MX::AuthorTimeStatus(int(json["authorTimeStatus"]));
