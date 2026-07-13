@@ -28,7 +28,7 @@ namespace Format {
         formatted = Regex::Replace(formatted, "\\[b\\] *?(.*?) *?\\[\\/b\\]", "**$1**", regexFlags);
 
         // automatic links. See https://daringfireball.net/projects/markdown/syntax#autolink
-        formatted = Regex::Replace(formatted, "(https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&//=]*))", "<$1>", regexFlags);
+        formatted = Regex::Replace(formatted, "(https?:\\/\\/(?:www\\.)?[-a-z0-9@:%._\\+~#=]{1,256}\\.[a-z0-9()]{1,6}\\b(?:[-a-z0-9()@:%_\\+.~#?&//=]*))", "<$1>", regexFlags);
 
         // url regex replacement: https://regex101.com/r/fum5Qf/1/substitution
         formatted = Regex::Replace(formatted, "\\[url=(.*?)\\](.*?)\\[\\/url\\]", "[$2]($1)", regexFlags);
