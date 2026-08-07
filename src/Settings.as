@@ -30,6 +30,9 @@ bool Setting_Tab_Featured_Visible = true;
 #endif
 bool Setting_Tab_TOTD_Visible = false;
 
+[Setting name="Beta Area" category="Tabs"]
+bool Setting_Tab_BetaArea_Visible = false;
+
 [Setting name="Personal Lists" category="Tabs"]
 bool Setting_Tab_PersonalLists_Visible = true;
 

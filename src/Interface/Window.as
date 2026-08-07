@@ -18,6 +18,7 @@ class Window{
         AddTab(MostAwardedTab());
         AddTab(FeaturedMapsTab());
         AddTab(TOTDTab());
+        AddTab(BetaAreaTab());
         AddTab(PersonalListsTab());
         AddTab(UserListTab());
         AddTab(MapPackListTab());
