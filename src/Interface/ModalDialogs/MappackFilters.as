@@ -1,17 +1,17 @@
 class MappackFilters : BaseFilters
 {
-    string t_name;
-    string t_manager;
-    MX::MappackTypes t_type = MX::MappackTypes::Any;
+    string m_name;
+    string m_manager;
+    MX::MappackTypes m_type = MX::MappackTypes::Any;
 
     // Tags
-    array<MX::MapTag@> t_includedTags;
-    array<MX::MapTag@> t_excludedTags;
-    bool t_tagInclusiveSearch;
+    array<MX::MapTag@> m_includedTags;
+    array<MX::MapTag@> m_excludedTags;
+    bool m_tagInclusiveSearch;
 
     // Creation date
-    string t_fromDate;
-    string t_toDate;
+    string m_fromDate;
+    string m_toDate;
 
     MappackFilters(Tab@ tab) {
         super(tab);
@@ -29,14 +29,14 @@ class MappackFilters : BaseFilters
     void ResetParameters(bool resetPreset = true) override {
         BaseFilters::ResetParameters(resetPreset);
 
-        t_name = "";
-        t_manager = "";
-        t_type = MX::MappackTypes::Any;
-        t_includedTags.RemoveRange(0, t_includedTags.Length);
-        t_excludedTags.RemoveRange(0, t_excludedTags.Length);
-        t_tagInclusiveSearch = false;
-        t_fromDate = "";
-        t_toDate = "";
+        m_name = "";
+        m_manager = "";
+        m_type = MX::MappackTypes::Any;
+        m_includedTags.RemoveRange(0, m_includedTags.Length);
+        m_excludedTags.RemoveRange(0, m_excludedTags.Length);
+        m_tagInclusiveSearch = false;
+        m_fromDate = "";
+        m_toDate = "";
     }
 
     void RenderFilters() override {
@@ -45,35 +45,35 @@ class MappackFilters : BaseFilters
         UI::PaddedHeaderSeparator("Mappack");
 
         UI::SetItemText("Name:");
-        t_name = UI::InputText("##NameFilter", t_name);
+        m_name = UI::InputText("##NameFilter", m_name);
 
-        if (t_name != "" && UI::ResetButton()) {
-            t_name = "";
+        if (m_name != "" && UI::ResetButton()) {
+            m_name = "";
         }
 
         UI::SetCenteredItemText("Manager:");
-        t_manager = UI::InputText("##ManagerFilter", t_manager);
+        m_manager = UI::InputText("##ManagerFilter", m_manager);
         UI::SetItemTooltip(shortMXName + " username of a manager for the mappack.\n\nThis can include users who didn't create the mappack");
 
-        if (t_manager != "" && UI::ResetButton()) {
-            t_manager = "";
+        if (m_manager != "" && UI::ResetButton()) {
+            m_manager = "";
         }
 
         UI::VPadding();
 
         UI::SetItemText("Type:");
-        if (UI::BeginCombo("##MappackTypeFilter", tostring(t_type))) {
+        if (UI::BeginCombo("##MappackTypeFilter", tostring(m_type))) {
             for (int i = -1; i <= MX::MappackTypes::Contest; i++) {
-                if (UI::Selectable(tostring(MX::MappackTypes(i)), t_type == MX::MappackTypes(i))) {
-                    t_type = MX::MappackTypes(i);
+                if (UI::Selectable(tostring(MX::MappackTypes(i)), m_type == MX::MappackTypes(i))) {
+                    m_type = MX::MappackTypes(i);
                 }
             }
 
             UI::EndCombo();
         }
 
-        if (t_type != MX::MappackTypes::Any && UI::ResetButton()) {
-            t_type = MX::MappackTypes::Any;
+        if (m_type != MX::MappackTypes::Any && UI::ResetButton()) {
+            m_type = MX::MappackTypes::Any;
         }
 
         UI::PaddedHeaderSeparator("Tags");
@@ -81,10 +81,10 @@ class MappackFilters : BaseFilters
         UI::SetItemText("Include:");
 
         string includeText;
-        switch (t_includedTags.Length) {
+        switch (m_includedTags.Length) {
             case 0: includeText = "No tags"; break;
-            case 1: includeText = t_includedTags[0].Name; break;
-            default: includeText = tostring(t_includedTags.Length) + " tags"; break;
+            case 1: includeText = m_includedTags[0].Name; break;
+            default: includeText = tostring(m_includedTags.Length) + " tags"; break;
         }
 
         if (UI::BeginCombo("###TagsIncludeCombo", includeText)) {
@@ -104,14 +104,14 @@ class MappackFilters : BaseFilters
 
                 UI::PushID("TagBtn" + i);
 
-                bool inArray = t_includedTags.FindByRef(tag) != -1;
+                bool inArray = m_includedTags.FindByRef(tag) != -1;
 
                 if (UI::Checkbox(tag.Name, inArray)) {
                     if (!inArray) {
-                        t_includedTags.InsertLast(tag);
+                        m_includedTags.InsertLast(tag);
                     }
                 } else if (inArray) {
-                    t_includedTags.RemoveAt(t_includedTags.FindByRef(tag));
+                    m_includedTags.RemoveAt(m_includedTags.FindByRef(tag));
                 }
 
                 UI::PopID();
@@ -120,17 +120,17 @@ class MappackFilters : BaseFilters
             UI::EndCombo();
         }
 
-        if (t_includedTags.Length > 0 && UI::ResetButton()) {
-            t_includedTags.RemoveRange(0, t_includedTags.Length);
+        if (m_includedTags.Length > 0 && UI::ResetButton()) {
+            m_includedTags.RemoveRange(0, m_includedTags.Length);
         }
 
         UI::SetCenteredItemText("Exclude:");
 
         string excludeText;
-        switch (t_excludedTags.Length) {
+        switch (m_excludedTags.Length) {
             case 0: excludeText = "No tags"; break;
-            case 1: excludeText = t_excludedTags[0].Name; break;
-            default: excludeText = tostring(t_excludedTags.Length) + " tags"; break;
+            case 1: excludeText = m_excludedTags[0].Name; break;
+            default: excludeText = tostring(m_excludedTags.Length) + " tags"; break;
         }
 
         if (UI::BeginCombo("###TagsExcludeCombo", excludeText)) {
@@ -150,14 +150,14 @@ class MappackFilters : BaseFilters
 
                 UI::PushID("TagExBtn" + i);
 
-                bool inArray = t_excludedTags.FindByRef(tag) != -1;
+                bool inArray = m_excludedTags.FindByRef(tag) != -1;
 
                 if (UI::Checkbox(tag.Name, inArray)) {
                     if (!inArray) {
-                        t_excludedTags.InsertLast(tag);
+                        m_excludedTags.InsertLast(tag);
                     }
                 } else if (inArray) {
-                    t_excludedTags.RemoveAt(t_excludedTags.FindByRef(tag));
+                    m_excludedTags.RemoveAt(m_excludedTags.FindByRef(tag));
                 }
 
                 UI::PopID();
@@ -166,96 +166,96 @@ class MappackFilters : BaseFilters
             UI::EndCombo();
         }
 
-        if (t_excludedTags.Length > 0 && UI::ResetButton()) {
-            t_excludedTags.RemoveRange(0, t_excludedTags.Length);
+        if (m_excludedTags.Length > 0 && UI::ResetButton()) {
+            m_excludedTags.RemoveRange(0, m_excludedTags.Length);
         }
 
         UI::VPadding();
 
-        t_tagInclusiveSearch = UI::Checkbox("Tag inclusive search", t_tagInclusiveSearch);
+        m_tagInclusiveSearch = UI::Checkbox("Tag inclusive search", m_tagInclusiveSearch);
         UI::SetItemTooltip("If checked, maps must contain all selected tags.");
 
         UI::PaddedHeaderSeparator("Date");
 
         UI::SetItemText("From:");
-        t_fromDate = UI::InputText("##FromDateFilter", t_fromDate, UI::InputTextFlags::AutoSelectAll | UI::InputTextFlags::CharsDecimal | UI::InputTextFlags::CallbackAlways | UI::InputTextFlags::CallbackCharFilter, UI::DateCallback);
+        m_fromDate = UI::InputText("##FromDateFilter", m_fromDate, UI::InputTextFlags::AutoSelectAll | UI::InputTextFlags::CharsDecimal | UI::InputTextFlags::CallbackAlways | UI::InputTextFlags::CallbackCharFilter, UI::DateCallback);
         UI::SetItemTooltip("Minimum date when the mappack was created, formatted as YYYY-MM-DD.\n\n\\$f90" + Icons::ExclamationTriangle + "\\$z Different formats won't work / will give unexpected results!");
 
-        if (t_fromDate != "" && UI::ResetButton()) {
-            t_fromDate = "";
+        if (m_fromDate != "" && UI::ResetButton()) {
+            m_fromDate = "";
         }
 
         UI::SetCenteredItemText("To:");
-        t_toDate = UI::InputText("##ToDateFilter", t_toDate, UI::InputTextFlags::AutoSelectAll | UI::InputTextFlags::CharsDecimal | UI::InputTextFlags::CallbackAlways | UI::InputTextFlags::CallbackCharFilter, UI::DateCallback);
+        m_toDate = UI::InputText("##ToDateFilter", m_toDate, UI::InputTextFlags::AutoSelectAll | UI::InputTextFlags::CharsDecimal | UI::InputTextFlags::CallbackAlways | UI::InputTextFlags::CallbackCharFilter, UI::DateCallback);
         UI::SetItemTooltip("Maximum date when the mappack was created, formatted as YYYY-MM-DD.\n\n\\$f90" + Icons::ExclamationTriangle + "\\$z Different formats won't work / will give unexpected results!");
 
-        if (t_toDate != "" && UI::ResetButton()) {
-            t_toDate = "";
+        if (m_toDate != "" && UI::ResetButton()) {
+            m_toDate = "";
         }
     }
 
     void GetRequestParams(dictionary@ params) override {
-        if (t_name != "") params.Set("name", t_name);
-        if (t_manager != "") params.Set("manager", t_manager);
-        if (t_type != MX::MappackTypes::Any) params.Set("primarytype", tostring(int(t_type)));
+        if (m_name != "") params.Set("name", m_name);
+        if (m_manager != "") params.Set("manager", m_manager);
+        if (m_type != MX::MappackTypes::Any) params.Set("primarytype", tostring(int(m_type)));
 
         // Tags
 
-        if (t_includedTags.Length > 0) {
+        if (m_includedTags.Length > 0) {
             array<string> tagIds;
 
-            for (uint i = 0; i < t_includedTags.Length; i++) {
-                tagIds.InsertLast(tostring(t_includedTags[i].ID));
+            for (uint i = 0; i < m_includedTags.Length; i++) {
+                tagIds.InsertLast(tostring(m_includedTags[i].ID));
             }
 
             params.Set("tag", Text::Join(tagIds, ","));
         }
 
-        if (t_excludedTags.Length > 0) {
+        if (m_excludedTags.Length > 0) {
             array<string> etagsIds;
 
-            for (uint i = 0; i < t_excludedTags.Length; i++) {
-                etagsIds.InsertLast(tostring(t_excludedTags[i].ID));
+            for (uint i = 0; i < m_excludedTags.Length; i++) {
+                etagsIds.InsertLast(tostring(m_excludedTags[i].ID));
             }
 
             params.Set("etag", Text::Join(etagsIds, ","));
         }
 
-        if (t_tagInclusiveSearch) params.Set("taginclusive", "true");
+        if (m_tagInclusiveSearch) params.Set("taginclusive", "true");
 
         // Upload date
 
-        if (t_fromDate != "" && Date::IsValid(t_fromDate)) {
-            params.Set("createdafter", t_fromDate);
+        if (m_fromDate != "" && Date::IsValid(m_fromDate)) {
+            params.Set("createdafter", m_fromDate);
         }
 
-        if (t_toDate != "" && Date::IsValid(t_toDate)) {
-            params.Set("createdbefore", t_toDate);
+        if (m_toDate != "" && Date::IsValid(m_toDate)) {
+            params.Set("createdbefore", m_toDate);
         }
     }
 
     Json::Value ToJson() override {
         Json::Value json = Json::Object();
 
-        json["name"]         = t_name;
-        json["manager"]      = t_manager;
-        json["type"]         = t_type;
-        json["fromDate"]     = t_fromDate;
-        json["toDate"]       = t_toDate;
-        json["tagInclusive"] = t_tagInclusiveSearch;
+        json["name"]         = m_name;
+        json["manager"]      = m_manager;
+        json["type"]         = m_type;
+        json["fromDate"]     = m_fromDate;
+        json["toDate"]       = m_toDate;
+        json["tagInclusive"] = m_tagInclusiveSearch;
 
         array<int> tagIds;
 
-        for (uint i = 0; i < t_includedTags.Length; i++) {
-            tagIds.InsertLast(t_includedTags[i].ID);
+        for (uint i = 0; i < m_includedTags.Length; i++) {
+            tagIds.InsertLast(m_includedTags[i].ID);
         }
 
         json["includedTags"] = tagIds;
 
         array<int> etagsIds;
 
-        for (uint i = 0; i < t_excludedTags.Length; i++) {
-            etagsIds.InsertLast(t_excludedTags[i].ID);
+        for (uint i = 0; i < m_excludedTags.Length; i++) {
+            etagsIds.InsertLast(m_excludedTags[i].ID);
         }
 
         json["excludedTags"] = etagsIds;
@@ -266,12 +266,12 @@ class MappackFilters : BaseFilters
     void LoadPreset(Json::Value@ json) override {
         ResetParameters(false);
 
-        t_name               = json["name"];
-        t_manager            = json["manager"];
-        t_fromDate           = json["fromDate"];
-        t_toDate             = json["toDate"];
-        t_type               = MX::MappackTypes(int(json["type"]));
-        t_tagInclusiveSearch = json["tagInclusive"];
+        m_name               = json["name"];
+        m_manager            = json["manager"];
+        m_fromDate           = json["fromDate"];
+        m_toDate             = json["toDate"];
+        m_type               = MX::MappackTypes(int(json["type"]));
+        m_tagInclusiveSearch = json["tagInclusive"];
 
         array<int> tagIds = JsonToIntArray(json["includedTags"]);
         array<int> etagsIds = JsonToIntArray(json["excludedTags"]);
@@ -280,14 +280,14 @@ class MappackFilters : BaseFilters
             MX::MapTag@ tag = MX::m_mapTags[i];
 
             if (tagIds.Find(tag.ID) != -1) {
-                t_includedTags.InsertLast(tag);
+                m_includedTags.InsertLast(tag);
             }
 
             if (etagsIds.Find(tag.ID) != -1) {
-                t_excludedTags.InsertLast(tag);
+                m_excludedTags.InsertLast(tag);
             }
 
-            if (t_includedTags.Length == tagIds.Length && t_excludedTags.Length == etagsIds.Length) {
+            if (m_includedTags.Length == tagIds.Length && m_excludedTags.Length == etagsIds.Length) {
                 break;
             }
         }

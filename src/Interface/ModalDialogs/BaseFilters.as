@@ -1,19 +1,19 @@
 class BaseFilters : ModalDialog
 {
-    Tab@ activeTab;
+    Tab@ m_activeTab;
 
     // Presets
-    Json::Value@ preset;
-    string presetName;
-    bool creatingPreset;
-    string newName;
+    Json::Value@ m_preset;
+    string m_presetName;
+    bool m_creatingPreset;
+    string m_newName;
 
     // To search in combos
     string m_searchCombo;
 
     BaseFilters(Tab@ tab) {
         super(Icons::Filter + " " + Name + "###" + Name);
-        @activeTab = tab;
+        @m_activeTab = tab;
     }
 
     string get_Name() {
@@ -26,12 +26,12 @@ class BaseFilters : ModalDialog
 
     void ResetParameters(bool resetPreset = true) {
         if (resetPreset) {
-            @preset = null;
-            presetName = "";
+            @m_preset = null;
+            m_presetName = "";
         }
 
-        newName = "";
-        creatingPreset = false;
+        m_newName = "";
+        m_creatingPreset = false;
         m_searchCombo = "";
     }
 
@@ -55,7 +55,7 @@ class BaseFilters : ModalDialog
         UI::RightAlignButtons(searchButton.x + resetButton.x, 2);
 
         if (UI::GreenButton(Icons::Search + " Search")) {
-            startnew(CoroutineFunc(activeTab.Reload));
+            startnew(CoroutineFunc(m_activeTab.Reload));
             Close();
         }
 
@@ -85,45 +85,45 @@ class BaseFilters : ModalDialog
 
         string comboName = "None";
 
-        if (creatingPreset) {
+        if (m_creatingPreset) {
             comboName = "Create preset";
-        } else if (preset !is null) {
-            comboName = presetName;
+        } else if (m_preset !is null) {
+            comboName = m_presetName;
         }
 
         if (UI::BeginCombo("##Presets", comboName)) {
-            if (UI::Selectable("None", preset is null && !creatingPreset)) {
+            if (UI::Selectable("None", m_preset is null && !m_creatingPreset)) {
                 ResetParameters();
             }
 
-            if (UI::Selectable("Create preset", creatingPreset)) {
-                creatingPreset = true;
-                @preset = null;
-                presetName = "";
-                newName = "";
+            if (UI::Selectable("Create preset", m_creatingPreset)) {
+                m_creatingPreset = true;
+                @m_preset = null;
+                m_presetName = "";
+                m_newName = "";
             }
 
             UI::Separator();
 
             for (uint k = 0; k < keys.Length; k++) {
-                if (UI::Selectable(keys[k], keys[k] == presetName)) {
-                    creatingPreset = false;
-                    presetName = keys[k];
-                    @preset = presets[keys[k]];
-                    newName = "";
-                    LoadPreset(preset);
+                if (UI::Selectable(keys[k], keys[k] == m_presetName)) {
+                    m_creatingPreset = false;
+                    m_presetName = keys[k];
+                    @m_preset = presets[keys[k]];
+                    m_newName = "";
+                    LoadPreset(m_preset);
                 }
             }
 
             UI::EndCombo();
         }
 
-        if (preset !is null) {
+        if (m_preset !is null) {
             UI::SameLine();
 
             if (UI::GreenButton(Icons::FloppyO)) {
                 Json::Value@ newPreset = ToJson();
-                Presets::EditPreset(presetName, newPreset, PresetType);
+                Presets::EditPreset(m_presetName, newPreset, PresetType);
             }
 
             UI::SetItemTooltip("Edit preset with the current filters");
@@ -131,33 +131,33 @@ class BaseFilters : ModalDialog
             UI::SameLine();
 
             if (UI::RedButton(Icons::TrashO)) {
-                Presets::DeletePreset(presetName, PresetType);
+                Presets::DeletePreset(m_presetName, PresetType);
                 ResetParameters();
             }
 
             UI::SetItemTooltip("Delete preset");
         }
 
-        if (creatingPreset) {
+        if (m_creatingPreset) {
             UI::VPadding();
 
             UI::SetItemText("Name: ");
 
-            newName = UI::InputText("##PresetName", newName);
+            m_newName = UI::InputText("##PresetName", m_newName);
 
-            bool nameExists = keys.Find(newName) != -1;
+            bool nameExists = keys.Find(m_newName) != -1;
 
             UI::SameLine();
 
-            UI::BeginDisabled(newName == "" || nameExists);
+            UI::BeginDisabled(m_newName == "" || nameExists);
 
             if (UI::GreenButton(Icons::FloppyO)) {
                 Json::Value@ newPreset = ToJson();
-                Presets::SavePreset(newName, newPreset, PresetType);
-                presetName = newName;
-                @preset = newPreset;
-                newName = "";
-                creatingPreset = false;
+                Presets::SavePreset(m_newName, newPreset, PresetType);
+                m_presetName = m_newName;
+                @m_preset = newPreset;
+                m_newName = "";
+                m_creatingPreset = false;
             }
 
             UI::SetItemTooltip("Save current filters as a new preset.");

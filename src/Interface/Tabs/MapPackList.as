@@ -138,13 +138,13 @@ class MapPackListTab : Tab
         if (UI::BeginCombo("##NamesFilter", t_selectedMode)) {
             if (UI::Selectable("Mappack name", t_selectedMode == "Mappack name")) {
                 t_selectedMode = "Mappack name";
-                if (filters.t_name == filters.t_manager) filters.t_manager = "";
+                if (filters.m_name == filters.m_manager) filters.m_manager = "";
                 Reload();
             }
 
             if (UI::Selectable("Manager name", t_selectedMode == "Manager name")) {
                 t_selectedMode = "Manager name";
-                if (filters.t_name == filters.t_manager) filters.t_name = "";
+                if (filters.m_name == filters.m_manager) filters.m_name = "";
                 Reload();
             }
             UI::EndCombo();
@@ -157,9 +157,9 @@ class MapPackListTab : Tab
         bool changed = false;
 
         if (t_selectedMode == "Mappack name") {
-            filters.t_name = UI::InputText("##NameSearch", filters.t_name, changed);
+            filters.m_name = UI::InputText("##NameSearch", filters.m_name, changed);
         } else {
-            filters.t_manager = UI::InputText("##ManagerSearch", filters.t_manager, changed);
+            filters.m_manager = UI::InputText("##ManagerSearch", filters.m_manager, changed);
         }
 
         if (changed) {
