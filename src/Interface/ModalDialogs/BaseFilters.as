@@ -24,9 +24,12 @@ class BaseFilters : ModalDialog
         return Presets::Type::Map;
     }
 
-    void ResetParameters() {
-        @preset = null;
-        presetName = "";
+    void ResetParameters(bool resetPreset = true) {
+        if (resetPreset) {
+            @preset = null;
+            presetName = "";
+        }
+
         newName = "";
         creatingPreset = false;
         m_searchCombo = "";

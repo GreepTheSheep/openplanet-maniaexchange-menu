@@ -46,8 +46,8 @@ class MapFilters : BaseFilters
         return Presets::Type::Map;
     }
 
-    void ResetParameters() override {
-        BaseFilters::ResetParameters();
+    void ResetParameters(bool resetPreset = true) override {
+        BaseFilters::ResetParameters(resetPreset);
 
         m_name = "";
         m_author = "";
@@ -649,7 +649,7 @@ class MapFilters : BaseFilters
     }
 
     void LoadPreset(Json::Value@ json) override {
-        ResetParameters();
+        ResetParameters(false);
 
         m_name               = json["name"];
         m_author             = json["author"];

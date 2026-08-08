@@ -26,8 +26,8 @@ class MappackFilters : BaseFilters
         return Presets::Type::Mappack;
     }
 
-    void ResetParameters() override {
-        BaseFilters::ResetParameters();
+    void ResetParameters(bool resetPreset = true) override {
+        BaseFilters::ResetParameters(resetPreset);
 
         t_name = "";
         t_manager = "";
@@ -264,7 +264,7 @@ class MappackFilters : BaseFilters
     }
 
     void LoadPreset(Json::Value@ json) override {
-        ResetParameters();
+        ResetParameters(false);
 
         t_name               = json["name"];
         t_manager            = json["manager"];
