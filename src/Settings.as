@@ -289,6 +289,7 @@ void RenderDisplaySettings() {
     if (UI::Button("Reset to default")) {
         Setting_ColoredMapName = true;
         Setting_ColoredTags = true;
+        Setting_AdjustColors = false;
         Setting_VistaIcons = false;
 
         Setting_MapName = true;
