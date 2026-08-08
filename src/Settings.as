@@ -177,6 +177,9 @@ void RenderDevSettings()
 bool Setting_ColoredMapName = true;
 
 [Setting hidden]
+bool Setting_ThumbnailTooltips = true;
+
+[Setting hidden]
 bool Setting_AdjustColors = false;
 
 [Setting hidden]
@@ -287,8 +290,9 @@ void RenderDisplaySettings() {
     UI::BeginChild("DisplaySettings");
 
     if (UI::Button("Reset to default")) {
-        Setting_ColoredMapName = true;
         Setting_ColoredTags = true;
+        Setting_ThumbnailTooltips = true;
+        Setting_ColoredMapName = true;
         Setting_AdjustColors = false;
         Setting_VistaIcons = false;
 
@@ -331,6 +335,9 @@ void RenderDisplaySettings() {
 
     Setting_ColoredTags = UI::Checkbox("Use TMX colors for tags", Setting_ColoredTags);
     UI::SettingDescription("When disabled, tags will use the default gray background color instead of the colors provided by TMX");
+
+    Setting_ThumbnailTooltips = UI::Checkbox("Display thumbnail tooltips", Setting_ThumbnailTooltips);
+    UI::SettingDescription("If enabled, thumbnails will be displayed when hovering map / user / mappack names or information buttons.");
 
     UI::PaddedHeaderSeparator("Maps");
 

@@ -8,7 +8,9 @@ namespace IfaceRender
             UI::AlignTextToFramePadding();
             UI::Text(mapPack.Name);
 
-            UI::MXMapPackThumbnailTooltip(mapPack.MappackId);
+            if (Setting_ThumbnailTooltips) {
+                UI::MXMapPackThumbnailTooltip(mapPack.MappackId);
+            }
 
             if (UI::IsItemClicked()) {
                 mxMenu.AddTab(MapPackTab(mapPack), true);
@@ -67,7 +69,9 @@ namespace IfaceRender
                 mxMenu.AddTab(MapPackTab(mapPack), true);
             }
 
-            UI::MXMapPackThumbnailTooltip(mapPack.MappackId);
+            if (Setting_ThumbnailTooltips) {
+                UI::MXMapPackThumbnailTooltip(mapPack.MappackId);
+            }
         }
     }
 }

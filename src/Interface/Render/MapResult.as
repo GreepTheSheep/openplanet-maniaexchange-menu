@@ -17,7 +17,9 @@ namespace IfaceRender
                 UI::Text(map.Name);
             }
 
-            UI::MXMapThumbnailTooltip(map.MapId);
+            if (Setting_ThumbnailTooltips) {
+                UI::MXMapThumbnailTooltip(map.MapId);
+            }
 
             if (UI::IsItemClicked()) {
                 mxMenu.AddTab(MapTab(map), true);
@@ -137,7 +139,9 @@ namespace IfaceRender
                 mxMenu.AddTab(MapTab(map), true);
             }
 
-            UI::MXMapThumbnailTooltip(map.MapId);
+            if (Setting_ThumbnailTooltips) {
+                UI::MXMapThumbnailTooltip(map.MapId);
+            }
 
             UI::SameLine();
 

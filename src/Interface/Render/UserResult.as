@@ -8,7 +8,9 @@ namespace IfaceRender
             UI::AlignTextToFramePadding();
             UI::Text(user.Name);
 
-            UI::MXUserAvatarTooltip(user.UserId);
+            if (Setting_ThumbnailTooltips) {
+                UI::MXUserAvatarTooltip(user.UserId);
+            }
 
             if (UI::IsItemClicked()) {
                 mxMenu.AddTab(UserTab(user), true);
@@ -70,7 +72,9 @@ namespace IfaceRender
                 mxMenu.AddTab(UserTab(user), true);
             }
 
-            UI::MXUserAvatarTooltip(user.UserId);
+            if (Setting_ThumbnailTooltips) {
+                UI::MXUserAvatarTooltip(user.UserId);
+            }
         }
     }
 }
