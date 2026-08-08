@@ -201,12 +201,10 @@ class UserTab : Tab
             UI::Markdown(m_user.Bio);
             UI::EndChild();
 
-            UI::Separator();
-
             if (m_user.HasFeaturedMap) {
                 UI::BeginChild("UserFeaturdMapChild");
 
-                UI::Text(pluginColor + Icons::Map + " \\$zFeatured Map:");
+                UI::PaddedHeaderSeparator(pluginColor + Icons::Map + "\\$z Featured Map");
 
                 if (m_user.FeaturedMap is null) {
                     if (m_user.FeaturedMapError) {
