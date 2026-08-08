@@ -509,6 +509,14 @@ class MapFilters : BaseFilters
 #if MP4
         }
 #endif
+
+        UI::PaddedHeaderSeparator("Custom parameters");
+
+        UI::TextWrapped("Custom parameters that can be passed to the " + shortMXName + " API. Use it for any parameter this plugin might be missing.");
+
+        UI::NewLine();
+
+        m_customParams.Render();
     }
 
     void GetRequestParams(dictionary@ params) override {
@@ -598,6 +606,8 @@ class MapFilters : BaseFilters
         if (m_authorTimeStatus != MX::AuthorTimeStatus::Any) {
             params.Set("inauthortimebeaten", tostring(int(m_authorTimeStatus)));
         }
+
+        m_customParams.AddToDictionary(params);
     }
 
     Json::Value ToJson() override {
@@ -620,6 +630,7 @@ class MapFilters : BaseFilters
         json["minRecords"]       = m_minRecords;
         json["maxRecords"]       = m_maxRecords;
         json["authorTimeStatus"] = m_authorTimeStatus;
+        json["customParams"]      = m_customParams.ToJson();
 
         array<int> enviIds;
 
@@ -666,6 +677,10 @@ class MapFilters : BaseFilters
         m_minRecords         = json["minRecords"];
         m_maxRecords         = json["maxRecords"];
         m_authorTimeStatus   = MX::AuthorTimeStatus(int(json["authorTimeStatus"]));
+
+        if (json.HasKey("customParams")) {
+            m_customParams.LoadJson(json["customParams"]);
+        }
 
         for (uint i = 0; i < json["difficulties"].Length; i++) {
             MX::Difficulties diff = MX::Difficulties(int(json["difficulties"][i]));

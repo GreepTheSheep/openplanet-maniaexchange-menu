@@ -192,6 +192,14 @@ class MappackFilters : BaseFilters
         if (m_toDate != "" && UI::ResetButton()) {
             m_toDate = "";
         }
+
+        UI::PaddedHeaderSeparator("Custom parameters");
+
+        UI::TextWrapped("Custom parameters that can be passed to the " + shortMXName + " API. Use it for any parameter this plugin might be missing.");
+
+        UI::NewLine();
+
+        m_customParams.Render();
     }
 
     void GetRequestParams(dictionary@ params) override {
@@ -232,6 +240,8 @@ class MappackFilters : BaseFilters
         if (m_toDate != "" && Date::IsValid(m_toDate)) {
             params.Set("createdbefore", m_toDate);
         }
+
+        m_customParams.AddToDictionary(params);
     }
 
     Json::Value ToJson() override {
@@ -243,6 +253,7 @@ class MappackFilters : BaseFilters
         json["fromDate"]     = m_fromDate;
         json["toDate"]       = m_toDate;
         json["tagInclusive"] = m_tagInclusiveSearch;
+        json["customParams"]  = m_customParams.ToJson();
 
         array<int> tagIds;
 
@@ -272,6 +283,10 @@ class MappackFilters : BaseFilters
         m_toDate             = json["toDate"];
         m_type               = MX::MappackTypes(int(json["type"]));
         m_tagInclusiveSearch = json["tagInclusive"];
+
+        if (json.HasKey("customParams")) {
+            m_customParams.LoadJson(json["customParams"]);
+        }
 
         array<int> tagIds = JsonToIntArray(json["includedTags"]);
         array<int> etagsIds = JsonToIntArray(json["excludedTags"]);

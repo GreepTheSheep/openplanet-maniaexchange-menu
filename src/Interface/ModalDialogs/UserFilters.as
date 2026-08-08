@@ -153,6 +153,14 @@ class UserFilters : BaseFilters
 
         m_supporter = UI::Checkbox("Supporter", m_supporter);
         m_crew = UI::Checkbox(shortMXName + " Crew", m_crew);
+
+        UI::PaddedHeaderSeparator("Custom parameters");
+
+        UI::TextWrapped("Custom parameters that can be passed to the " + shortMXName + " API. Use it for any parameter this plugin might be missing.");
+
+        UI::NewLine();
+
+        m_customParams.Render();
     }
 
     void GetRequestParams(dictionary@ params) override {
@@ -183,6 +191,8 @@ class UserFilters : BaseFilters
         if (m_toDate != "" && Date::IsValid(m_toDate)) {
             params.Set("registeredbefore", m_toDate);
         }
+
+        m_customParams.AddToDictionary(params);
     }
 
     Json::Value ToJson() override {
@@ -201,6 +211,7 @@ class UserFilters : BaseFilters
         json["toDate"]         = m_toDate;
         json["supporter"]      = m_supporter;
         json["crew"]           = m_crew;
+        json["customParams"]    = m_customParams.ToJson();
 
         return json;
     }
@@ -221,5 +232,9 @@ class UserFilters : BaseFilters
         m_toDate         = json["toDate"];
         m_supporter      = json["supporter"];
         m_crew           = json["crew"];
+
+        if (json.HasKey("customParams")) {
+            m_customParams.LoadJson(json["customParams"]);
+        }
     }
 }

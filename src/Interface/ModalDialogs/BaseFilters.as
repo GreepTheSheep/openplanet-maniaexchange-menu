@@ -11,6 +11,9 @@ class BaseFilters : ModalDialog
     // To search in combos
     string m_searchCombo;
 
+    // Custom API parameters
+    CustomParameters@ m_customParams = CustomParameters();
+
     BaseFilters(Tab@ tab) {
         super(Icons::Filter + " " + Name + "###" + Name);
         @m_activeTab = tab;
@@ -33,6 +36,7 @@ class BaseFilters : ModalDialog
         m_newName = "";
         m_creatingPreset = false;
         m_searchCombo = "";
+        m_customParams.RemoveAll();
     }
 
     void GetRequestParams(dictionary@ params) { }
