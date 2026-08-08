@@ -129,10 +129,10 @@ class UserTab : Tab
             return;
         }
 
-        float width = UI::GetWindowSize().x*0.25;
+        float width = UI::GetWindowSize().x * 0.25;
         vec2 posTop = UI::GetCursorPos();
 
-        UI::BeginChild("Summary", vec2(width,0));
+        UI::BeginChild("Summary", vec2(width, 0));
 
         UI::PushFont(Fonts::BigBold);
         UI::Text(m_user.Name);
@@ -191,7 +191,7 @@ class UserTab : Tab
 
         UI::EndChild();
 
-        UI::SetCursorPos(posTop + vec2(width + 8, 0));
+        UI::SameLine();
         UI::BeginChild("Description");
 
         UI::BeginTabBar("UserTabs");
@@ -241,7 +241,7 @@ class UserTab : Tab
 
                     UI::EndChild();
 
-                    UI::SetCursorPos(posTop + vec2(featuredMapwidth + 28, 20));
+                    UI::SameLine();
 
                     UI::BeginChild("UserFeaturedMapDescriptionChild");
 

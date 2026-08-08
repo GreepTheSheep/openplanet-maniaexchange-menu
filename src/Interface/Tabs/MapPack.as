@@ -61,10 +61,9 @@ class MapPackTab : Tab
             return;
         }
 
-        float width = UI::GetWindowSize().x*0.3;
-        vec2 posTop = UI::GetCursorPos();
+        float width = UI::GetWindowSize().x * 0.3;
 
-        UI::BeginChild("Summary", vec2(width,0));
+        UI::BeginChild("Summary", vec2(width, 0));
 
         auto thumb = Images::CachedFromURL(MXURL + "/mappackthumb/"+m_mapPack.MappackId);
         if (thumb.m_texture !is null) {
@@ -154,7 +153,7 @@ class MapPackTab : Tab
 
         UI::EndChild();
 
-        UI::SetCursorPos(posTop + vec2(width + 8, 0));
+        UI::SameLine();
         UI::BeginChild("Description");
 
         UI::PushFont(Fonts::BigBold);

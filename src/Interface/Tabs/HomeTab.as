@@ -6,10 +6,9 @@ class HomePageTab : Tab {
     vec4 GetColor() override { return pluginColorVec; }
 
     void Render() override {
-        float width = (UI::GetWindowSize().x*0.35)*0.5;
-        vec2 posTop = UI::GetCursorPos();
+        float width = (UI::GetWindowSize().x * 0.35) * 0.5;
 
-        UI::BeginChild("Summary", vec2(width,0));
+        UI::BeginChild("Summary", vec2(width, 0));
 
 #if TMNEXT
         auto logo = Images::CachedFromURL("https://images.mania.exchange/logos/tmx/square_sm.png");
@@ -25,7 +24,7 @@ class HomePageTab : Tab {
         }
 
         UI::EndChild();
-        UI::SetCursorPos(posTop + vec2(width + 8, 0));
+        UI::SameLine();
         UI::BeginChild("Description");
         UI::PushFont(Fonts::TitleBold);
         UI::Text("Welcome to " + pluginName);
