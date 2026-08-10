@@ -211,7 +211,7 @@ class UserFilters : BaseFilters
         json["toDate"]         = m_toDate;
         json["supporter"]      = m_supporter;
         json["crew"]           = m_crew;
-        json["customParams"]    = m_customParams.ToJson();
+        json["customParams"]   = m_customParams.ToJson();
 
         return json;
     }

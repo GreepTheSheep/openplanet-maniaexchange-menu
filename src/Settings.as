@@ -6,7 +6,11 @@ bool Setting_ShowMenu = false;
 [Setting name="Hide Openplanet overlay when loading a map" category="General"]
 bool Setting_CloseOverlayOnLoad = true;
 
-[Setting name="Show Play Button on all map types" category="General" description="If you try to load other maps than supported types, the game will crash or return you to the main menu."]
+#if TMNEXT
+[Setting name="Show Play Button on all map types / vehicles" category="General" description="If enabled, the plugin will allow you to load maps with unsupported map types / vehicles. Game might crash or return you to the main menu."]
+#else
+[Setting name="Show Play Button on all map types" category="General" description="If enabled, the plugin will allow you to load maps with unsupported map types. Game might crash or return you to the main menu."]
+#endif
 bool Setting_ShowPlayOnAllMaps = false;
 
 [Setting name="Show/Hide window hotkey" category="General" description="Hotkey to show / hide the ManiaExchange window"]

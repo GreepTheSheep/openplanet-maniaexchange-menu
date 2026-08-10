@@ -145,47 +145,63 @@ namespace IfaceRender
 
             UI::SameLine();
 
-            bool isMapTypeSupported = MX::ModesFromMapType.Exists(map.MapType);
-
 #if TMNEXT
-            if (Permissions::PlayLocalMap() && isMapTypeSupported) {
-#else
-            if (isMapTypeSupported) {
+            if (!Permissions::PlayLocalMap()) {
+                return;
+            }
 #endif
+
+            bool isMapTypeSupported = MX::ModesFromMapType.Exists(map.MapType);
+            bool isVehicleVanilla = map.IsCarVanilla;
+
+            if (isMapTypeSupported && isVehicleVanilla) {
                 if (UI::GreenButton(Icons::Play)) {
                     UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(map.GbxMapName) + "\\$z\\$s by " + map.Username);
                     startnew(CoroutineFunc(map.PlayMap));
                 }
-
-#if TMNEXT
-            } else if (Permissions::PlayLocalMap() && !isMapTypeSupported && Setting_ShowPlayOnAllMaps) {
-#else
-            } else if (!isMapTypeSupported && Setting_ShowPlayOnAllMaps) {
-#endif
+            } else if (Setting_ShowPlayOnAllMaps) {
                 if (UI::OrangeButton(Icons::Play)) {
                     UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(map.GbxMapName) + "\\$z\\$s by " + map.Username);
-                    UI::ShowNotification(Icons::ExclamationTriangle + " Warning", "The map type is not supported for direct play, it can crash your game or returns you to the menu", UI::HSV(0.11, 1.0, 1.0), 15000);
+
+                    if (!isMapTypeSupported) {
+                        UI::ShowNotification(Icons::ExclamationTriangle + " Warning", "The map type is not supported for direct play, it can crash your game or returns you to the menu", UI::HSV(0.11, 1.0, 1.0), 15000);
+                    } else {
+                        UI::ShowNotification(Icons::ExclamationTriangle + " Warning", "The vehicle for this map is not officially supported by the game, map might not load", UI::HSV(0.11, 1.0, 1.0), 5000);
+                    }
+
                     startnew(CoroutineFunc(map.PlayMap));
                 }
+
                 if (UI::BeginItemTooltip()) {
-                    UI::Text(Icons::ExclamationTriangle + " The map type is not supported for direct play, it can crash your game or returns you to the menu");
-                    UI::TextDisabled(map.MapType);
+                    if (!isMapTypeSupported) {
+                        UI::Text(Icons::ExclamationTriangle + " The map type is not supported for direct play, it can crash your game or returns you to the menu");
+                        UI::TextDisabled(map.MapType);
+                    } else {
+                        UI::Text(Icons::ExclamationTriangle + " The vehicle for this map is not officially supported by the game, map might not load");
+                        UI::TextDisabled(map.VehicleName);
+                    }
+
                     UI::EndTooltip();
                 }
-#if TMNEXT
-            } else if (Permissions::PlayLocalMap() && !isMapTypeSupported && !Setting_ShowPlayOnAllMaps) {
-#else
-            } else if (!isMapTypeSupported && !Setting_ShowPlayOnAllMaps) {
-#endif
+            } else {
                 UI::BeginDisabled();
                 UI::OrangeButton(Icons::ExclamationTriangle);
                 UI::EndDisabled();
 
                 if (UI::BeginItemTooltip()) {
-                    UI::Text(Icons::ExclamationTriangle + " The map type is not supported for direct play, it can crash your game or returns you to the menu");
-                    UI::TextDisabled(map.MapType);
+                    if (!isMapTypeSupported) {
+                        UI::Text(Icons::ExclamationTriangle + " The map type is not supported for direct play, it can crash your game or returns you to the menu");
+                        UI::TextDisabled(map.MapType);
+                    } else {
+                        UI::Text(Icons::ExclamationTriangle + " The vehicle for this map is not officially supported by the game, map might not load");
+                        UI::TextDisabled(map.VehicleName);
+                    }
                     UI::Separator();
-                    UI::Text("If you still want to play this map, check the box \"Show Play Button on all map types\" in the plugin settings");
+#if TMNEXT
+                    UI::Text("If you still want to play this map, enable \"Show Play Button on all map types / vehicles\" in the plugin settings");
+#else
+                    UI::Text("If you still want to play this map, enable \"Show Play Button on all map types\" in the plugin settings");
+#endif
                     UI::EndTooltip();
                 }
             }

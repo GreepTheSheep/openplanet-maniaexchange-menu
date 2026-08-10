@@ -235,13 +235,30 @@ class MapTab : Tab
 #endif
 
             bool isMapTypeSupported = MX::ModesFromMapType.Exists(m_map.MapType);
-            if (!isMapTypeSupported) {
-                UI::TextWrapped("\\$f70" + Icons::ExclamationTriangle + " \\$zThe map type is not supported for direct play\nit can crash your game or returns you to the menu");
+            bool isVehicleVanilla = m_map.IsCarVanilla;
+
+            if (!isMapTypeSupported || !isVehicleVanilla) {
+                if (!isMapTypeSupported) {
+                    UI::TextWrapped("\\$f70" + Icons::ExclamationTriangle + " \\$zThe map type is not supported for direct play\nit can crash your game or returns you to the menu");
+                } else {
+                    UI::TextWrapped("\\$f70" + Icons::ExclamationTriangle + " \\$zThe vehicle for this map is not officially supported by the game\nMap might not load");
+                }
+
                 if (!Setting_ShowPlayOnAllMaps) {
+#if TMNEXT
+                    UI::SetItemTooltip("If you still want to play this map, check the box \"Show Play Button on all map types / vehicles\" in the plugin settings");
+#else
                     UI::SetItemTooltip("If you still want to play this map, check the box \"Show Play Button on all map types\" in the plugin settings");
-                } else if (UI::OrangeButton(Icons::Play + " Play Map Anyway")) {
+#endif
+                } else if (UI::OrangeButton(Icons::Play + " Play Map")) {
                     UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(m_map.GbxMapName) + "\\$z\\$s by " + m_map.Username);
-                    UI::ShowNotification(Icons::ExclamationTriangle + " Warning", "The map type is not supported for direct play, it can crash your game or returns you to the menu", UI::HSV(0.11, 1.0, 1.0), 15000);
+
+                    if (!isMapTypeSupported) {
+                        UI::ShowNotification(Icons::ExclamationTriangle + " Warning", "The map type is not supported for direct play, it can crash your game or returns you to the menu", UI::HSV(0.11, 1.0, 1.0), 15000);
+                    } else {
+                        UI::ShowNotification(Icons::ExclamationTriangle + " Warning", "The vehicle for this map is not officially supported by the game, map might not load", UI::HSV(0.11, 1.0, 1.0), 5000);
+                    }
+
                     startnew(CoroutineFunc(m_map.PlayMap));
                 }
             } else {

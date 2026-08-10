@@ -253,7 +253,7 @@ class MappackFilters : BaseFilters
         json["fromDate"]     = m_fromDate;
         json["toDate"]       = m_toDate;
         json["tagInclusive"] = m_tagInclusiveSearch;
-        json["customParams"]  = m_customParams.ToJson();
+        json["customParams"] = m_customParams.ToJson();
 
         array<int> tagIds;
 

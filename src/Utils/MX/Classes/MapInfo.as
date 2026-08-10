@@ -407,6 +407,23 @@ namespace MX
             return tostring(Difficulty);
         }
 
+#if TMNEXT
+        array<string> vanillaVehicles = {
+            "carsport",
+            "carrally",
+            "cardesert",
+            "carsnow"
+        };
+#endif
+
+        bool get_IsCarVanilla() {
+#if TMNEXT
+            return vanillaVehicles.Find(VehicleName.ToLower()) > -1;
+#else
+            return true;
+#endif
+        }
+
         string get_EnvironmentName() {
             for (uint i =  0; i < m_environments.Length; i++) {
                 if (m_environments[i].ID == Environment) {

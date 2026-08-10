@@ -630,7 +630,7 @@ class MapFilters : BaseFilters
         json["minRecords"]       = m_minRecords;
         json["maxRecords"]       = m_maxRecords;
         json["authorTimeStatus"] = m_authorTimeStatus;
-        json["customParams"]      = m_customParams.ToJson();
+        json["customParams"]     = m_customParams.ToJson();
 
         array<int> enviIds;
 
