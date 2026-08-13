@@ -27,17 +27,12 @@ namespace MX
 
     void GetAllVehicles()
     {
-#if TMNEXT
-        // TMNEXT doesn't support custom vehicles, so we can skip the API call
-        m_vehicles.InsertLast("CarSport");
-        m_vehicles.InsertLast("CarSnow");
-        m_vehicles.InsertLast("CarRally");
-        m_vehicles.InsertLast("CarDesert");
-#else
+#if MP4
         if (repo == MP4mxRepos::Shootmania) {
             m_vehicles.InsertLast("ArenaPlayer");
             return;
         }
+#endif
 
         string url = MXURL + "/api/meta/vehicles";
         Logging::Debug("Loading vehicles: " + url);
@@ -59,7 +54,6 @@ namespace MX
         } catch {
             throw("Error while loading vehicles: " + getExceptionInfo());
         }
-#endif
     }
 
     // TODO change to v2 once the endpoint is added
