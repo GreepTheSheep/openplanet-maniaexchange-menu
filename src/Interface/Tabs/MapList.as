@@ -144,13 +144,13 @@ class MapListTab : Tab
         if (UI::BeginCombo("##NamesFilter", m_selectedMode)) {
             if (UI::Selectable("Track name", m_selectedMode == "Track name")) {
                 m_selectedMode = "Track name";
-                if (filters.m_name == filters.m_author) filters.m_author = "";
+                filters.m_author = "";
                 Reload();
             }
 
             if (UI::Selectable("Author name", m_selectedMode == "Author name")) {
                 m_selectedMode = "Author name";
-                if (filters.m_name == filters.m_author) filters.m_name = "";
+                filters.m_name = "";
                 Reload();
             }
             UI::EndCombo();
