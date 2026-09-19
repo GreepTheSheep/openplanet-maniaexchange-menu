@@ -14,7 +14,7 @@ namespace TM {
             Logging::Error("You don't have permission to open the advanced map editor.", true);
             return;
         }
-        
+
         if (!intoEditor && !Permissions::PlayLocalMap()) {
             Logging::Error("You don't have permission to play custom maps.", true);
             return;
@@ -45,7 +45,7 @@ namespace TM {
                 Logging::Error("You don't have permission to open the advanced map editor.", true);
                 return;
             }
-            
+
             if (!intoEditor && !Permissions::PlayLocalMap()) {
                 Logging::Error("You don't have permission to play custom maps.", true);
                 return;
@@ -65,8 +65,16 @@ namespace TM {
                 yield();
             }
 
+            string downloadUrl = MXURL + "/mapgbx/" + map.MapId + "?t=" + map.UpdatedAt;
+
+#if TMNEXT
+            if (Setting_DownloadFromNadeo && map.OnlineMapId != "") {
+                downloadUrl = "https://core.trackmania.nadeo.live/maps/" + map.OnlineMapId + "/file";
+            }
+#endif
+
             if (intoEditor) {
-                app.ManiaTitleControlScriptAPI.EditMap(MXURL + "/mapgbx/" + map.MapId + "?t=" + map.UpdatedAt, "", "");
+                app.ManiaTitleControlScriptAPI.EditMap(downloadUrl, "", "");
             } else {
                 string Mode = "";
                 MX::ModesFromMapType.Get(map.MapType, Mode);
@@ -78,7 +86,7 @@ namespace TM {
                 }
 #endif
 
-                app.ManiaTitleControlScriptAPI.PlayMap(MXURL + "/mapgbx/" + map.MapId + "?t=" + map.UpdatedAt, Mode, "");
+                app.ManiaTitleControlScriptAPI.PlayMap(downloadUrl, Mode, "");
             }
         } catch {
             Logging::Error("Error while loading map: " + getExceptionInfo(), true);

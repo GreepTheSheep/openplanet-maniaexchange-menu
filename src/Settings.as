@@ -16,6 +16,11 @@ bool Setting_ShowPlayOnAllMaps = false;
 [Setting name="Show/Hide window hotkey" category="General" description="Hotkey to show / hide the ManiaExchange window"]
 VirtualKey Setting_WindowHotkey;
 
+#if TMNEXT
+[Setting name="Download maps from Nadeo Services" category="General" description="If enabled, the plugin will try to download maps from Nadeo's API instead."]
+bool Setting_DownloadFromNadeo = false;
+#endif
+
 // Tabs
 
 [Setting name="Your profile (Your user ID)" category="Tabs" description="Set your (or any other) User ID here to get your profile tab" min=0]
