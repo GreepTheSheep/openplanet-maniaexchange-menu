@@ -184,22 +184,34 @@ class MapTab : Tab
         UI::Text(Icons::LevelUp + " \\$f77" + m_map.DifficultyName);
         UI::SetItemTooltip("Difficulty");
 
-        UI::Text(Icons::Hashtag+ " \\$f77" + m_map.MapId);
+        UI::Text(Icons::ManiaExchange + " \\$f77" + m_map.MapId);
         UI::SetItemTooltip("Track ID");
         UI::SameLine();
         UI::TextDisabled(Icons::Clipboard);
-        UI::SetItemTooltip("Click to copy to clipboard");
+        UI::SetItemTooltip("Click to copy Track ID to clipboard");
         if (UI::IsItemClicked()) {
             IO::SetClipboard(tostring(m_map.MapId));
             UI::ShowNotification(Icons::Clipboard + " Track ID copied to clipboard");
         }
 
+#if TMNEXT
+        UI::Text(Icons::Hashtag + " \\$f77" + m_map.MapUid);
+        UI::SetItemTooltip("Track UID");
+        UI::SameLine();
+        UI::TextDisabled(Icons::Clipboard);
+        UI::SetItemTooltip("Click to copy Track UID to clipboard");
+        if (UI::IsItemClicked()) {
+            IO::SetClipboard(tostring(m_map.MapUid));
+            UI::ShowNotification(Icons::Clipboard + " Track UID copied to clipboard");
+        }
+#endif
+
         UI::Text(Icons::FileCodeO+ " \\$f77" + m_map.MapType);
         UI::SetItemTooltip("Map Type");
-        UI::Text(Icons::Calendar + " \\$f77" + m_map.UploadedAt);
+        UI::Text(Icons::Calendar + " \\$f77" + m_map.UploadedAt.SubStr(0, 19).Replace("T", " "));
         UI::SetItemTooltip("Uploaded date");
         if (m_map.UploadedAt != m_map.UpdatedAt) {
-            UI::Text(Icons::Refresh + " \\$f77" + m_map.UpdatedAt);
+            UI::Text(Icons::Refresh + " \\$f77" + m_map.UpdatedAt.SubStr(0, 19).Replace("T", " "));
             UI::SetItemTooltip("Updated date");
         }
 #if MP4
@@ -212,13 +224,17 @@ class MapTab : Tab
             UI::Text(Icons::Tree + " \\$f77" + m_map.EnvironmentName);
             UI::SetItemTooltip("Vista");
 #endif
+            UI::SameLine();
             UI::Text(Icons::Car + " \\$f77" + m_map.VehicleName);
             UI::SetItemTooltip("Vehicle");
 #if MP4
         }
 #endif
+        UI::SameLine();
         UI::Text(Icons::Sun + " \\$f77" + m_map.Mood);
         UI::SetItemTooltip("Mood");
+
+        UI::SameLine();
         UI::Text(Icons::Money + " \\$f77" + m_map.DisplayCost);
         UI::SetItemTooltip("Coppers cost");
 
