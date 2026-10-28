@@ -194,7 +194,6 @@ class MapTab : Tab
             UI::ShowNotification(Icons::Clipboard + " Track ID copied to clipboard");
         }
 
-#if TMNEXT
         UI::Text(Icons::Hashtag + " \\$f77" + m_map.MapUid);
         UI::SetItemTooltip("Track UID");
         UI::SameLine();
@@ -204,7 +203,6 @@ class MapTab : Tab
             IO::SetClipboard(tostring(m_map.MapUid));
             UI::ShowNotification(Icons::Clipboard + " Track UID copied to clipboard");
         }
-#endif
 
         UI::Text(Icons::FileCodeO+ " \\$f77" + m_map.MapType);
         UI::SetItemTooltip("Map Type");
