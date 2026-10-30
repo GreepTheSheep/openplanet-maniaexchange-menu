@@ -37,7 +37,7 @@ namespace UI
 
     void HPadding(int x) {
         UI::PushStyleVar(UI::StyleVar::ItemSpacing, vec2(0, 0));
-        UI::Dummy(vec2(x * UI::GetScale(), 0));
+        UI::Dummy(vec2(x, 0));
         UI::SameLine();
         UI::PopStyleVar();
     }
